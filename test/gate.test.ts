@@ -83,6 +83,19 @@ test("a low-confidence mismatch on a hard attribute is a review, not a refusal",
   assert.equal(r.cited?.rule, "low_confidence");
 });
 
+test("SPEC §2: hard_mismatch fires only at/above the floor, so just below it every hard attribute is low_confidence", () => {
+  const hard = ATTRIBUTES.filter((name) => POLICY[name].severity === "hard");
+  assert.deepEqual(hard, ["color", "print_pattern", "logo_text", "collar"]);
+  for (const name of hard) {
+    const below = decide(findings({ [name]: { verdict: "mismatch", confidence: POLICY[name].floor - 0.001 } }));
+    assert.equal(below.decision, "REVIEW", name);
+    assert.deepEqual(below.reasons.map((x) => x.rule), ["low_confidence"], name);
+    const at = decide(findings({ [name]: { verdict: "mismatch", confidence: POLICY[name].floor } }));
+    assert.equal(at.decision, "REFUSE", name);
+    assert.deepEqual(at.reasons.map((x) => x.rule), ["hard_mismatch"], name);
+  }
+});
+
 test("two findings for one attribute refuse, even when both match", () => {
   const r = decide([...findings(), { attribute: "color", verdict: "match", confidence: 0.99 }]);
   assert.equal(r.decision, "REFUSE");
