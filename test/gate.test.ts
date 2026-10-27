@@ -149,3 +149,27 @@ test("the gate is deterministic and does not modify its input", () => {
   assert.deepEqual(decide(input), decide(input));
   assert.deepEqual(input, copy);
 });
+
+test("fidelity makes the decision worse and is cited only when it did; it never makes one better", () => {
+  const review = { decision: "REVIEW" as const, reasons: ["delta_e 12.000 above 10"] };
+  const fid = { attribute: null, verdict: null, confidence: null, rule: "fidelity", reason: "fidelity REVIEW: delta_e 12.000 above 10" };
+  assert.deepEqual(decide(findings(), review), { decision: "REVIEW", cited: fid, reasons: [fid] });
+
+  // Equal decision: the verifier's reason stays cited, fidelity is listed last.
+  const soft = decide(findings({ hem: { verdict: "mismatch" } }), review);
+  assert.deepEqual([soft.decision, soft.cited?.rule, soft.reasons.map((x) => x.rule)], ["REVIEW", "soft_mismatch", ["soft_mismatch", "fidelity"]]);
+
+  // A fidelity RELEASE cannot lift a refusal, and adds no reason.
+  const hard = findings({ color: { verdict: "mismatch" } });
+  assert.deepEqual(decide(hard, { decision: "RELEASE", reasons: [] }), decide(hard));
+
+  const refuse = decide(findings({ hem: { verdict: "mismatch" } }), { decision: "REFUSE", reasons: [] });
+  assert.deepEqual([refuse.decision, refuse.cited?.rule, refuse.cited?.reason], ["REFUSE", "fidelity", "fidelity REFUSE: no reason given"]);
+});
+
+test("a fidelity decision outside the three is REFUSE", () => {
+  for (const decision of ["PASS", undefined, null, "release"]) {
+    const r = decide(findings(), { decision, reasons: ["?"] } as never);
+    assert.deepEqual([r.decision, r.cited?.rule], ["REFUSE", "fidelity"]);
+  }
+});

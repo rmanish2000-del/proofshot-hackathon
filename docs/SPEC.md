@@ -11,8 +11,8 @@ during the event are marked *(event)*.
 
 Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
-`src/fidelity.ts`), the job pipeline with a fixture provider
-(`src/pipeline.ts`), and the image check of §9 (`src/check.ts`, not yet the
+`src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
+entry per render (`src/pipeline.ts`), and the image check of §9 (`src/check.ts`, not yet the
 page). §7–§8 describe pre-existing features not yet rebuilt here.
 
 ## 1. Attributes
@@ -70,6 +70,16 @@ Fail-closed properties, each with a test in `test/gate.test.ts`:
 - `NaN` confidence is treated as 0, not as certainty
 - a persuasive `note` cannot change a decision
 
+Fidelity as a gate input *(event, Grok 27 Oct)*: the gate can also take the
+fidelity result of §10 (`decision`, `reasons`). The decision is the worse of
+the findings-based decision and the fidelity decision; fidelity can never make
+it better. When fidelity is what made it worse, `cited` is
+`{attribute: null, verdict: null, confidence: null, rule: "fidelity", reason:
+"fidelity <DECISION>: <reasons joined by '; '>"}` and comes first in `reasons`;
+otherwise a fidelity REVIEW or REFUSE is listed last in `reasons` and a
+fidelity RELEASE adds nothing. A fidelity decision outside the three is
+`REFUSE`.
+
 Choices this rewrite made where the table is silent *(event, confirmed by Grok
 27 Oct)*: a verdict outside the vocabulary is `uncertain`; input that is not an
 array is no findings (all nine `not_verified`); a finding that is not an object
@@ -94,8 +104,8 @@ One JSON object per line, append-only, `receipt.jsonl`.
 - The writer continues an existing file only if it verifies, and refuses a
   broken one without touching it *(event)*.
 
-Entry kinds, in the order a job writes them (`render` → `verifier` → `gate` →
-`release` repeat per render):
+Entry kinds, in the order a job writes them (`render` → `verifier` →
+`fidelity` → `gate` → `release` repeat per render):
 
 | Kind | Payload fields |
 |---|---|
@@ -103,7 +113,8 @@ Entry kinds, in the order a job writes them (`render` → `verifier` → `gate` 
 | `segments` | `count`, `segments` (`[{label, box, score, mask_sha256 \| null}]`) |
 | `render` | `render_id`, `sha256` (the image), `model`, `provider` (`meta` / `openai-images` / `fal` / `fixture`), `prompt` |
 | `verifier` | `render_id`, `findings` (the parsed array, notes included), `verifier: {provider, model, base}`, and `usage` when the provider reported it (`prompt_tokens`, `completion_tokens`, `cached_tokens`, `images[{bytes, width, height}]`) |
-| `gate` | `render_id`, `decision`, `cited` (`{attribute, verdict, confidence, rule, reason}` or null), `reasons` |
+| `fidelity` *(event)* | `render_id`, `decision`, `metrics` (`{delta_e, hist, texture, area}`, a non-finite value as `null`; or `null` when nothing was measured), `reasons`, and `error` (`<name>: <message>`) when the check threw or answered outside the three decisions, in which case `decision` is `REFUSE` |
+| `gate` | `render_id`, `decision`, `cited` (`{attribute, verdict, confidence, rule, reason}` or null), `reasons`; the decision already includes fidelity (§2) |
 | `release` | only for `RELEASE`: `render_id`, `image_sha256`, `approver`, `approved_by_human` (`approver !== "unattended"`) |
 
 The kind type also names `approval`; no current code writes it.
@@ -133,6 +144,24 @@ The kind type also names `approval`; no current code writes it.
   - If the verifier throws or its output fails §4, the `verifier` entry has
     `findings: []` and an `error` (`<name>: <message>`), and the gate refuses
     the render as `not_verified`. No new rule is needed for that.
+  - If the segmenter throws *(event, Grok 27 Oct)*, the job is refused like
+    unreadable prior records: no `segments` entry, one `gate` entry with
+    `render_id: null`, `decision: "REFUSE"`, `cited.rule: "segment_failed"`
+    and the reason `<name>: <message>`; nothing is rendered. The job entry
+    keeps the prior records it read.
+  - If the renderer throws on a scene *(event, Grok 27 Oct)*, that scene gets
+    one `gate` entry with its `render_id`, `decision: "REFUSE"`,
+    `cited.rule: "render_failed"` and the reason `<name>: <message>` (no
+    `render`, `verifier` or `fidelity` entry, no image), and the job goes on to
+    the next scene.
+  - Every scene a job attempts ends with a `gate` entry. Each of these
+    pipeline refusals has `attribute`, `verdict` and `confidence` null, is
+    listed alone in `reasons`, and counts as a refusal in later prior records.
+  - The fidelity check (§10) is an injected provider like the others. If it
+    throws or answers a decision outside the three, the `fidelity` entry is
+    `REFUSE` with `error` set, never a pass. The fixture provider's default
+    answers `RELEASE` with `metrics: null`: a fixture job measures nothing,
+    and its job entry says `provenance: "fixture"`.
   - The `segments` entry is written even when the segmenter finds nothing
     (`count: 0`). Masks are recorded only as `mask_sha256`.
 - Timestamps (`at`) come from an injectable clock, default the wall clock. A
@@ -257,7 +286,7 @@ it released.
 The page is one self-contained HTML file (no external resource, no network
 call); the browser and the server must agree on canonical bytes, verdict and head.
 
-## 10. Garment fidelity (not yet in the pipeline)
+## 10. Garment fidelity
 
 A deterministic second check, beside the verifier: SAM masks say where the
 garment is in the source and the render; code measures the masked regions and
@@ -291,5 +320,7 @@ UNCALIBRATED). No model judges anything.
   - dHash runs on the mask's bounding box: a 9×8 grid of the mean masked grey,
     one bit per horizontal neighbour pair, and a cell with no garment pixel
     takes the crop's mean grey.
-- Today nothing calls this from the pipeline, so it is not on the receipt. It is
-  wired in when the pipeline is rebuilt here.
+- On the receipt *(event, Grok 27 Oct)*: each render's fidelity result is a
+  `fidelity` entry between `verifier` and `gate` (§3), and the gate takes it as
+  an input (§2). The pipeline calls an injected checker; a checker that decodes
+  the SAM mask PNGs and calls `checkFidelity` is not wired in yet.
