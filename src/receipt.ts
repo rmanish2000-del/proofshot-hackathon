@@ -11,7 +11,7 @@ import { canonicalJson, sha256Hex } from "./util.ts";
 
 export const GENESIS = "0".repeat(64);
 
-export type EntryKind = "job" | "segments" | "render" | "verifier" | "gate" | "release" | "approval";
+export type EntryKind = "job" | "segments" | "render" | "verifier" | "fidelity" | "gate" | "release" | "approval";
 
 export interface ReceiptEntry {
   readonly seq: number;

@@ -1,14 +1,18 @@
-// The job pipeline (SPEC §3): job → segments → (render → verifier → gate →
-// release) per scene, every step appended to the job's receipt as it happens.
+// The job pipeline (SPEC §3): job → segments → (render → verifier → fidelity →
+// gate → release) per scene, every step appended to the job's receipt as it
+// happens.
 //
 // Providers are injected, so the same code runs live or on fixtures. Failure is
-// closed at each boundary: unreadable prior records refuse the job before any
-// render, and a verifier that throws or answers badly leaves its render with no
-// findings, which the gate refuses as not verified.
+// closed and visible at each boundary: unreadable prior records or a segmenter
+// that throws refuse the job before any render; a renderer that throws refuses
+// its scene and the job goes on; a verifier that throws or answers badly leaves
+// its render with no findings, which the gate refuses as not verified; a
+// fidelity check that throws is a REFUSE, never a pass.
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import type { FidelityResult } from "./fidelity.ts";
 import { decide } from "./gate.ts";
 import type { GateReason } from "./gate.ts";
 import { RECEIPT_FILE, priorRecords } from "./prior.ts";
@@ -58,10 +62,16 @@ export interface Verifier {
   verify(req: { sources: readonly SourceImage[]; render: Uint8Array; renderId: string; scene: string }): Promise<{ raw: unknown; usage?: VerifierUsage }>;
 }
 
+/** The garment-fidelity check of SPEC §10 for one render. */
+export interface FidelityChecker {
+  check(req: { sources: readonly SourceImage[]; segments: readonly Segment[]; render: Uint8Array; renderId: string; scene: string }): Promise<FidelityResult>;
+}
+
 export interface Providers {
   readonly segmenter: Segmenter;
   readonly renderer: Renderer;
   readonly verifier: Verifier;
+  readonly fidelity: FidelityChecker;
 }
 
 export interface JobInput {
@@ -83,17 +93,21 @@ export interface RunOptions {
 
 export interface RenderOutcome {
   readonly render_id: string;
-  readonly image_sha256: string;
+  /** null when the renderer threw, so there is no image. */
+  readonly image_sha256: string | null;
   readonly decision: Decision;
-  readonly cited: GateReason | JobRefusal | null;
+  readonly cited: GateReason | StepRefusal | null;
 }
 
-/** A refusal of the whole job, written as a gate entry with no render. */
-export interface JobRefusal {
+/**
+ * A refusal the pipeline writes as a gate entry because a step failed, not
+ * because of findings: the whole job (`render_id: null`) or one scene.
+ */
+export interface StepRefusal {
   readonly attribute: null;
   readonly verdict: null;
   readonly confidence: null;
-  readonly rule: "prior_records_unreadable";
+  readonly rule: "prior_records_unreadable" | "segment_failed" | "render_failed";
   readonly reason: string;
 }
 
@@ -103,7 +117,7 @@ export interface JobResult {
   readonly garment_id: string | null;
   readonly prior_records: readonly PriorRecord[] | null;
   /** Set when the job was refused before any render. */
-  readonly refused: JobRefusal | null;
+  readonly refused: StepRefusal | null;
   readonly renders: readonly RenderOutcome[];
 }
 
@@ -124,12 +138,12 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   const garment_id = garmentId(source_images.map((s) => s.sha256));
 
   let prior: PriorRecord[] | null;
-  let refused: JobRefusal | null = null;
+  let refused: StepRefusal | null = null;
   try {
     prior = priorRecords(opts.outRoot, garment_id, job.jobId);
   } catch (err) {
     prior = null;
-    refused = { attribute: null, verdict: null, confidence: null, rule: "prior_records_unreadable", reason: (err as Error).message };
+    refused = stepRefusal("prior_records_unreadable", (err as Error).message);
   }
 
   mkdirSync(dir, { recursive: true });
@@ -144,25 +158,42 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     prior_records: prior,
   });
 
-  if (refused) {
-    receipt.append("gate", { render_id: null, decision: "REFUSE", cited: refused, reasons: [refused] });
-    return { dir, head: receipt.head, garment_id, prior_records: null, refused, renders: [] };
-  }
+  // A job-level refusal: one gate entry with no render, then nothing else.
+  const refuseJob = (r: StepRefusal): JobResult => {
+    receipt.append("gate", { render_id: null, decision: "REFUSE", cited: r, reasons: [r] });
+    return { dir, head: receipt.head, garment_id, prior_records: prior, refused: r, renders: [] };
+  };
+  if (refused) return refuseJob(refused);
 
-  const segments = await opts.providers.segmenter.segment(job.sources);
+  let segments: Segment[];
+  try {
+    segments = await opts.providers.segmenter.segment(job.sources);
+  } catch (err) {
+    return refuseJob(stepRefusal("segment_failed", errorText(err)));
+  }
   receipt.append("segments", {
     count: segments.length,
     segments: segments.map((s) => ({ label: s.label, box: [...s.box], score: s.score, mask_sha256: s.mask ? sha256Hex(s.mask) : null })),
   });
 
-  const { renderer, verifier } = opts.providers;
+  const { renderer, verifier, fidelity: fidelityChecker } = opts.providers;
   const approver = job.approver ?? "unattended";
   const renders: RenderOutcome[] = [];
 
   for (const [i, scene] of job.scenes.entries()) {
     const render_id = `${job.jobId}-r${i}`;
     const prompt = renderPrompt(job.garmentNote, scene);
-    const image = await renderer.render({ scene, prompt, sources: job.sources });
+    // A renderer that throws refuses this scene and the job goes on, so every
+    // scene attempted ends with a gate entry.
+    let image: { bytes: Uint8Array; ext: string };
+    try {
+      image = await renderer.render({ scene, prompt, sources: job.sources });
+    } catch (err) {
+      const r = stepRefusal("render_failed", errorText(err));
+      receipt.append("gate", { render_id, decision: "REFUSE", cited: r, reasons: [r] });
+      renders.push({ render_id, image_sha256: null, decision: "REFUSE", cited: r });
+      continue;
+    }
     const image_sha256 = sha256Hex(image.bytes);
     writeFileSync(join(dir, `${render_id}.${image.ext}`), image.bytes);
     receipt.append("render", { render_id, sha256: image_sha256, model: renderer.model, provider: renderer.provider, prompt });
@@ -177,11 +208,14 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
       usage = out.usage;
       findings = parseFindings(out.raw);
     } catch (err) {
-      error = `${(err as Error).name}: ${(err as Error).message}`;
+      error = errorText(err);
     }
     receipt.append("verifier", { render_id, findings, verifier: { ...verifier.identity }, usage, error });
 
-    const gate = decide(findings);
+    const fidelity = await checkFidelitySafely(fidelityChecker, { sources: job.sources, segments, render: image.bytes, renderId: render_id, scene });
+    receipt.append("fidelity", { render_id, ...fidelity });
+
+    const gate = decide(findings, fidelity);
     receipt.append("gate", { render_id, decision: gate.decision, cited: gate.cited, reasons: gate.reasons });
     if (gate.decision === "RELEASE") {
       receipt.append("release", { render_id, image_sha256, approver, approved_by_human: approver !== "unattended" });
@@ -192,15 +226,57 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   return { dir, head: receipt.head, garment_id, prior_records: prior, refused: null, renders };
 }
 
+function stepRefusal(rule: StepRefusal["rule"], reason: string): StepRefusal {
+  return { attribute: null, verdict: null, confidence: null, rule, reason };
+}
+
+function errorText(err: unknown): string {
+  return err instanceof Error ? `${err.name}: ${err.message}` : `Error: ${String(err)}`;
+}
+
+/** The `fidelity` entry's payload, less `render_id`. */
+export interface FidelityEntry {
+  readonly decision: Decision;
+  /** A metric that is not a finite number is recorded as null. */
+  readonly metrics: Readonly<Record<string, number | null>> | null;
+  readonly reasons: readonly string[];
+  readonly error?: string;
+}
+
+/**
+ * Runs the fidelity check and makes its result safe to record: a throw, or a
+ * result with a decision outside the three, is REFUSE with `error` set.
+ */
+async function checkFidelitySafely(checker: FidelityChecker, req: Parameters<FidelityChecker["check"]>[0]): Promise<FidelityEntry> {
+  const refuse = (error: string): FidelityEntry => ({ decision: "REFUSE", metrics: null, reasons: [`fidelity check failed: ${error}`], error });
+  let out: FidelityResult;
+  try {
+    out = await checker.check(req);
+  } catch (err) {
+    return refuse(errorText(err));
+  }
+  const decision = (out as Partial<FidelityResult> | null)?.decision;
+  if (decision !== "RELEASE" && decision !== "REVIEW" && decision !== "REFUSE") {
+    return refuse(`Error: fidelity decision ${JSON.stringify(decision ?? null)} is not RELEASE, REVIEW or REFUSE`);
+  }
+  const metrics = out.metrics && typeof out.metrics === "object"
+    ? Object.fromEntries(Object.entries(out.metrics).map(([k, v]) => [k, typeof v === "number" && Number.isFinite(v) ? v : null]))
+    : null;
+  const reasons = Array.isArray(out.reasons) ? out.reasons.map(String) : [];
+  return { decision, metrics, reasons };
+}
+
 /**
  * Fixture providers: no network. The renderer returns fixed bytes per scene and
  * the verifier returns the given raw output per scene (a function may throw, to
- * stand in for a broken verifier).
+ * stand in for a broken verifier). Fidelity defaults to RELEASE with no
+ * metrics: a fixture job measures nothing, and its receipt says `fixture`.
  */
 export function fixtureProviders(opts: {
   renders: (scene: string) => Uint8Array;
   findings: (scene: string) => unknown;
   segments?: readonly Segment[];
+  fidelity?: (scene: string) => FidelityResult;
 }): Providers {
   return {
     segmenter: { segment: async () => [...(opts.segments ?? [])] },
@@ -209,5 +285,6 @@ export function fixtureProviders(opts: {
       identity: { provider: "fixture", model: "fixture-verifier", base: "fixture" },
       verify: async ({ scene }) => ({ raw: opts.findings(scene) }),
     },
+    fidelity: { check: async ({ scene }) => opts.fidelity?.(scene) ?? { decision: "RELEASE", metrics: null, reasons: [] } },
   };
 }

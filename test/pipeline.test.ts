@@ -32,12 +32,15 @@ const providers = (findings: (scene: string) => unknown) =>
 
 const read = (dir: string) => parseReceipt(readFileSync(join(dir, RECEIPT_FILE), "utf8"));
 
-test("a fixture job writes job, segments, then render, verifier, gate and release per scene, and the chain verifies", async () => {
+test("a fixture job writes job, segments, then render, verifier, fidelity, gate and release per scene, and the chain verifies", async () => {
   const out = root();
   const r = await runJob(job("job-1"), { outRoot: out, providers: providers(() => allMatch()), provenance: "fixture", clock: clock() });
   const entries = read(r.dir);
-  assert.deepEqual(entries.map((e) => e.kind), ["job", "segments", "render", "verifier", "gate", "release", "render", "verifier", "gate", "release"]);
-  assert.deepEqual(verifyChain(entries), { ok: true, head: r.head, length: 10 });
+  assert.deepEqual(entries.map((e) => e.kind), [
+    "job", "segments", "render", "verifier", "fidelity", "gate", "release", "render", "verifier", "fidelity", "gate", "release",
+  ]);
+  assert.deepEqual(verifyChain(entries), { ok: true, head: r.head, length: 12 });
+  assert.deepEqual(entries[4]!.payload, { render_id: "job-1-r0", decision: "RELEASE", metrics: null, reasons: [] });
 
   const jobPayload = entries[0]!.payload as Record<string, unknown>;
   assert.equal(jobPayload.provenance, "fixture");
@@ -48,7 +51,7 @@ test("a fixture job writes job, segments, then render, verifier, gate and releas
     { name: "back.png", sha256: sha256Hex("back") },
   ]);
 
-  const release = entries[5]!.payload as Record<string, unknown>;
+  const release = entries[6]!.payload as Record<string, unknown>;
   assert.deepEqual(release, { render_id: "job-1-r0", image_sha256: sha256Hex("render of studio"), approver: "unattended", approved_by_human: false });
   // The image on disk is the one the receipt names.
   assert.equal(sha256Hex(readFileSync(join(r.dir, "job-1-r0.png"))), (entries[2]!.payload as { sha256: string }).sha256);
@@ -135,6 +138,102 @@ test("the same job on the same clock gives byte-identical receipts", async () =>
     return readFileSync(join(r.dir, RECEIPT_FILE), "utf8");
   };
   assert.equal(await run(), await run());
+});
+
+test("a renderer that throws refuses its scene as render_failed and the job goes on to the next scene", async () => {
+  const out = root();
+  const p = fixtureProviders({
+    renders: (scene) => {
+      if (scene === "studio") throw new TypeError("render timed out");
+      return Buffer.from(`render of ${scene}`);
+    },
+    findings: () => allMatch(),
+  });
+  const r = await runJob(job("job-8"), { outRoot: out, providers: p, provenance: "fixture", clock: clock() });
+  const refusal = { attribute: null, verdict: null, confidence: null, rule: "render_failed", reason: "TypeError: render timed out" };
+  assert.deepEqual(r.renders.map((x) => [x.render_id, x.image_sha256, x.decision, x.cited?.rule]), [
+    ["job-8-r0", null, "REFUSE", "render_failed"],
+    ["job-8-r1", sha256Hex("render of street"), "RELEASE", undefined],
+  ]);
+  const entries = read(r.dir);
+  assert.deepEqual(entries.map((e) => e.kind), ["job", "segments", "gate", "render", "verifier", "fidelity", "gate", "release"]);
+  assert.deepEqual(entries[2]!.payload, { render_id: "job-8-r0", decision: "REFUSE", cited: refusal, reasons: [refusal] });
+  assert.equal(verifyChain(entries).ok, true);
+  assert.equal(priorRecords(out, r.garment_id)[0]!.refusals, 1);
+});
+
+test("a segmenter that throws refuses the whole job as segment_failed before any render", async () => {
+  const out = root();
+  await runJob(job("seg-0", ["studio"]), { outRoot: out, providers: providers(() => allMatch()), provenance: "fixture", clock: clock() });
+  let rendered = 0;
+  const p = providers(() => allMatch());
+  const broken = {
+    ...p,
+    segmenter: { segment: async () => { throw new Error("SAM endpoint returned 503"); } },
+    renderer: { ...p.renderer, render: async (req: Parameters<typeof p.renderer.render>[0]) => (rendered++, p.renderer.render(req)) },
+  };
+  const r = await runJob(job("seg-1"), { outRoot: out, providers: broken, provenance: "fixture", clock: clock() });
+  assert.equal(rendered, 0);
+  const refusal = { attribute: null, verdict: null, confidence: null, rule: "segment_failed", reason: "Error: SAM endpoint returned 503" };
+  assert.deepEqual(r.refused, refusal);
+  assert.deepEqual(r.renders, []);
+  // Prior records were readable, so they stay on the result and the receipt.
+  assert.deepEqual(r.prior_records?.map((x) => x.job_id), ["seg-0"]);
+  const entries = read(r.dir);
+  assert.deepEqual(entries.map((e) => e.kind), ["job", "gate"]);
+  assert.deepEqual(entries[1]!.payload, { render_id: null, decision: "REFUSE", cited: refusal, reasons: [refusal] });
+  assert.equal(verifyChain(entries).ok, true);
+  assert.deepEqual(priorRecords(out, r.garment_id).map((x) => [x.job_id, x.refusals]), [["seg-0", 0], ["seg-1", 1]]);
+});
+
+test("fidelity can only make the gate's decision worse, and is cited only when it did", async () => {
+  const out = root();
+  const findings = (scene: string) => (scene === "c" ? allMatch({ color: { verdict: "mismatch" } }) : scene === "b" ? allMatch({ hem: { verdict: "mismatch" } }) : allMatch());
+  const fidelity = (scene: string) =>
+    scene === "a"
+      ? { decision: "REVIEW" as const, metrics: { delta_e: 12, hist: 0.1, texture: 0.9, area: 1 }, reasons: ["delta_e 12 above 10"] }
+      : { decision: scene === "b" ? ("REFUSE" as const) : ("REVIEW" as const), metrics: null, reasons: ["source mask is missing"] };
+  const p = fixtureProviders({ renders: (scene) => Buffer.from(scene), findings, fidelity });
+  const r = await runJob(job("fid-1", ["a", "b", "c"]), { outRoot: out, providers: p, provenance: "fixture", clock: clock() });
+  // a: RELEASE findings, fidelity REVIEW -> REVIEW citing fidelity.
+  // b: soft mismatch REVIEW, fidelity REFUSE -> REFUSE citing fidelity.
+  // c: hard mismatch REFUSE, fidelity REVIEW -> REFUSE citing hard_mismatch, fidelity listed last.
+  assert.deepEqual(r.renders.map((x) => [x.decision, x.cited?.rule]), [["REVIEW", "fidelity"], ["REFUSE", "fidelity"], ["REFUSE", "hard_mismatch"]]);
+  const entries = read(r.dir);
+  assert.equal(entries.filter((e) => e.kind === "release").length, 0);
+  const fid = entries.filter((e) => e.kind === "fidelity").map((e) => e.payload);
+  assert.deepEqual(fid[0], { render_id: "fid-1-r0", decision: "REVIEW", metrics: { delta_e: 12, hist: 0.1, texture: 0.9, area: 1 }, reasons: ["delta_e 12 above 10"] });
+  const gates = entries.filter((e) => e.kind === "gate").map((e) => e.payload as { cited: { reason: string }; reasons: { rule: string }[] });
+  assert.equal(gates[0]!.cited.reason, "fidelity REVIEW: delta_e 12 above 10");
+  assert.equal(gates[2]!.reasons.at(-1)!.rule, "fidelity");
+});
+
+test("a fidelity check that throws or answers outside the three decisions is a REFUSE with the error, never a pass", async () => {
+  const out = root();
+  const fidelity = (scene: string) => {
+    if (scene === "studio") throw new RangeError("mask decode failed");
+    return { decision: "PASS", metrics: { delta_e: Number.NaN, hist: 0, texture: 1, area: Infinity }, reasons: [] } as never;
+  };
+  const p = fixtureProviders({ renders: (scene) => Buffer.from(scene), findings: () => allMatch(), fidelity });
+  const r = await runJob(job("fid-2"), { outRoot: out, providers: p, provenance: "fixture", clock: clock() });
+  assert.deepEqual(r.renders.map((x) => [x.decision, x.cited?.rule]), [["REFUSE", "fidelity"], ["REFUSE", "fidelity"]]);
+  const fid = read(r.dir).filter((e) => e.kind === "fidelity").map((e) => e.payload as Record<string, unknown>);
+  assert.deepEqual(fid[0], {
+    render_id: "fid-2-r0", decision: "REFUSE", metrics: null,
+    reasons: ["fidelity check failed: RangeError: mask decode failed"], error: "RangeError: mask decode failed",
+  });
+  assert.equal(fid[1]!.decision, "REFUSE");
+  assert.match(String(fid[1]!.error), /fidelity decision "PASS"/);
+});
+
+test("a fidelity result with non-finite metrics is recorded with those metrics as null", async () => {
+  const out = root();
+  const fidelity = () => ({ decision: "REVIEW" as const, metrics: { delta_e: Number.NaN, hist: 0.2, texture: 0.9, area: Infinity }, reasons: ["delta_e is not a finite number"] });
+  const p = fixtureProviders({ renders: () => Buffer.from("r"), findings: () => allMatch(), fidelity });
+  const r = await runJob(job("fid-3", ["studio"]), { outRoot: out, providers: p, provenance: "fixture", clock: clock() });
+  const fid = read(r.dir).find((e) => e.kind === "fidelity")!.payload as Record<string, unknown>;
+  assert.deepEqual(fid.metrics, { delta_e: null, hist: 0.2, texture: 0.9, area: null });
+  assert.equal(r.renders[0]!.decision, "REVIEW");
 });
 
 test("segments are recorded with mask hashes, never the masks", async () => {
