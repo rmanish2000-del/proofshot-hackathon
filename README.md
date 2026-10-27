@@ -100,10 +100,14 @@ reason, provenance, a "Verify it yourself offline" link to
 `verify.html#sha=<hex>` (which prefills the hash) and downloads of the receipt
 and image. The shop decides nothing and calls no model; it reads.
 
-Today it shows one job, `data/jobs/fixture-shirt-01` (synthetic images,
-recorded findings, `provenance: fixture`), written by the same script with a
-recorded clock, because no live render transport exists yet (SPEC §8). The page
-says so.
+Today it shows fixture jobs only, written by the same script with a recorded
+clock, because no live render transport exists yet (SPEC §8); the page says so.
+`data/jobs/fixture-shirt-01` has synthetic images. `data/jobs/kurta-01` and
+`kurta-02` are preview jobs for the two photographed garments under
+`data/garments/`: the sources are the intake photos with their `intake.json`
+hashes, and the released "render" is the garment's own front photo, unchanged
+(no generated image, no person). They let a judge see a real garment go through
+the receipt, the in-browser verification and the badge.
 
 New in this feature, all written during the event: `src/shop.ts`,
 `scripts/shop-build.ts`, `web/shop.html`, `web/shop/` (generated),

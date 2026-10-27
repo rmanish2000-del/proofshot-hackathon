@@ -267,7 +267,7 @@ async function verifyRecord(receiptText, image, subtle) {
     $("count").textContent = `${rows.length} released image${rows.length === 1 ? "" : "s"}`;
     if (rows.length === 0) $("notice").textContent = "No released image yet: the catalog is empty.";
     if (rows.length > 0 && rows.every((r) => r.provenance === "fixture")) {
-      $("notice").textContent = "Preview: these are fixture jobs (synthetic images, recorded findings), not live renders. The checks are real; the garments are not.";
+      $("notice").textContent = "Preview: these are fixture jobs with recorded findings, not live renders. The checks are real; the images are either synthetic or the owner's own photo of the garment, never a generated render.";
     }
     for (const row of rows) {
       const item = { row, verified: false, status: "checking", blobUrl: null, check: null };

@@ -386,8 +386,20 @@ it shows what the record already says, after checking the record itself.
 - The fixture job the tests use (studio released, street refused on colour,
   `provenance: "fixture"`) is written to `data/jobs/fixture-shirt-01/` by the
   same script with a recorded clock, so it is byte-identical on every run. With
-  no live render transport (§8) it is the only job the shop shows, and the page
-  says so.
+  no live render transport (§8) it is one of the jobs the shop shows, and the
+  page says so.
+- Garment preview jobs *(event, 27 Oct)*: for every folder under
+  `data/garments/` that has an `intake.json` and a `note.txt`, the same script
+  writes a fixture job `data/jobs/<garment>/` with a recorded clock. Its
+  `source_images` are every intake photo with the hashes `intake.json`
+  records (a photo whose bytes no longer match is refused, no job is written);
+  its one scene `studio` "renders" to the garment's own front photo, unchanged
+  and as a `.jpg`; the recorded findings all match, so the gate releases. No
+  image is generated and no person is in any photo. `provenance` is `fixture`
+  and the `garment_note` says the owner's photo stands in for the render. These
+  rows exist so judges can see real garments go through the receipt, the
+  verification and the badge; they are not renders and are never labelled as
+  such.
 - `web/shop.html` is plain HTML, CSS and JavaScript with no framework and no
   external resource; it fetches only its own `shop/` files. It inlines
   `src/core.js` between the same marker lines as the verify page (`npm run

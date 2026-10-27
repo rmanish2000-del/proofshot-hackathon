@@ -1,0 +1,9 @@
+# The tests compare these committed fixtures byte for byte with a fresh build
+# (test/shop.test.ts), so they stay LF on every checkout: a Windows clone with
+# core.autocrlf=true would otherwise turn them into CRLF and fail that test.
+*.jsonl text eol=lf
+web/shop/catalog.json text eol=lf
+
+# Photos and renders are bytes; their hashes are in the receipts.
+*.jpg binary
+*.png binary
