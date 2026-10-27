@@ -7,20 +7,14 @@
 
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 
-import { canonicalJson, sha256Hex } from "./util.ts";
+import { canonicalJson, chainTexts, checkChain, entryText, parseReceipt } from "./core.js";
+import type { ChainCheck, EntryKind, ReceiptEntry } from "./core.js";
+import { sha256Hex } from "./util.ts";
+
+export { parseReceipt };
+export type { ChainCheck, EntryKind, ReceiptEntry } from "./core.js";
 
 export const GENESIS = "0".repeat(64);
-
-export type EntryKind = "job" | "segments" | "render" | "verifier" | "fidelity" | "gate" | "release" | "approval";
-
-export interface ReceiptEntry {
-  readonly seq: number;
-  readonly at: string;
-  readonly kind: EntryKind;
-  readonly payload: unknown;
-  readonly prev: string;
-  readonly hash: string;
-}
 
 /** Returns an ISO timestamp for the next entry. */
 export type Clock = () => string;
@@ -41,41 +35,16 @@ export function recordedClock(timestamps: readonly string[]): Clock {
 }
 
 export function entryHash(e: Pick<ReceiptEntry, "seq" | "at" | "kind" | "payload" | "prev">): string {
-  return sha256Hex(canonicalJson({ seq: e.seq, at: e.at, kind: e.kind, payload: e.payload, prev: e.prev }));
+  return sha256Hex(entryText(e));
 }
 
-export type ChainCheck = { ok: true; head: string; length: number } | { ok: false; index: number; reason: string };
-
-/** Checks the chain is non-empty, seq runs 0..n-1, each prev links, and every hash recomputes. */
+/**
+ * Checks the chain is non-empty, seq runs 0..n-1, each prev links, and every
+ * hash recomputes. The logic is core.js checkChain, shared with the verify page;
+ * only the hashing (node:crypto here, crypto.subtle there) differs.
+ */
 export function verifyChain(entries: readonly ReceiptEntry[]): ChainCheck {
-  if (!Array.isArray(entries) || entries.length === 0) return { ok: false, index: 0, reason: "empty receipt" };
-  let prev = GENESIS;
-  for (const [index, e] of entries.entries()) {
-    if (typeof e !== "object" || e === null) return { ok: false, index, reason: "entry is not an object" };
-    if (e.seq !== index) return { ok: false, index, reason: `seq is ${String(e.seq)}, expected ${index}` };
-    if (e.prev !== prev) return { ok: false, index, reason: "prev does not match the previous hash" };
-    let expected: string;
-    try {
-      expected = entryHash(e);
-    } catch (err) {
-      return { ok: false, index, reason: `cannot hash entry: ${(err as Error).message}` };
-    }
-    if (e.hash !== expected) return { ok: false, index, reason: "hash does not match the entry" };
-    prev = e.hash;
-  }
-  return { ok: true, head: prev, length: entries.length };
-}
-
-/** Parses receipt.jsonl text. A line that is not JSON throws with its line number. */
-export function parseReceipt(text: string): ReceiptEntry[] {
-  const lines = text.split("\n").filter((line) => line.trim() !== "");
-  return lines.map((line, i) => {
-    try {
-      return JSON.parse(line) as ReceiptEntry;
-    } catch {
-      throw new Error(`receipt line ${i + 1} is not JSON`);
-    }
-  });
+  return checkChain(entries, chainTexts(entries).map((t) => (typeof t === "string" ? sha256Hex(t) : t)));
 }
 
 /**
