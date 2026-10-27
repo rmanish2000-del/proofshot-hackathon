@@ -1,14 +1,17 @@
-// npm run page: rewrites the core.js region of web/verify.html from src/core.js.
+// npm run page: rewrites the core.js region of every page in PAGES from src/core.js.
 
 import { readFileSync, writeFileSync } from "node:fs";
 
-import { CORE_PATH, PAGE_PATH, pageWithCore } from "../src/page.ts";
+import { CORE_PATH, PAGES, pageWithCore } from "../src/page.ts";
 
-const before = readFileSync(PAGE_PATH, "utf8");
-const after = pageWithCore(before, readFileSync(CORE_PATH, "utf8"));
-if (after === before) {
-  console.log("web/verify.html is up to date");
-} else {
-  writeFileSync(PAGE_PATH, after);
-  console.log("web/verify.html updated from src/core.js");
+const core = readFileSync(CORE_PATH, "utf8");
+for (const page of PAGES) {
+  const before = readFileSync(page.path, "utf8");
+  const after = pageWithCore(before, core);
+  if (after === before) {
+    console.log(`${page.name} is up to date`);
+  } else {
+    writeFileSync(page.path, after);
+    console.log(`${page.name} updated from src/core.js`);
+  }
 }

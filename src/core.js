@@ -138,6 +138,17 @@ export function checkImageWith(entries, chain, imageSha256) {
 }
 
 /**
+ * The sha256 a page URL fragment names, as in verify.html#sha=<64 hex>: the
+ * leading "#" dropped, other fragment fields ignored, the hex lower-cased.
+ * Anything that is not exactly 64 hex characters is null, never a guess.
+ */
+export function shaFromFragment(fragment) {
+  const text = String(fragment == null ? "" : fragment).replace(/^#/, "");
+  const match = /(?:^|&)sha=([0-9a-fA-F]{64})(?:&|$)/.exec(text);
+  return match ? match[1].toLowerCase() : null;
+}
+
+/**
  * The verify page's whole check, hashing with WebCrypto. With no usable
  * crypto.subtle it verifies nothing and says so; it never answers VALID.
  * image: { bytes } (the file) or { sha256 } (a pasted hash) or null.

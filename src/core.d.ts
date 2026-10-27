@@ -36,6 +36,7 @@ export function parseReceipt(text: string): ReceiptEntry[];
 export function chainTexts(entries: readonly ReceiptEntry[]): ChainText[];
 export function checkChain(entries: readonly ReceiptEntry[], digests: readonly ChainText[]): ChainCheck;
 export function checkImageWith(entries: readonly ReceiptEntry[], chain: ChainCheck, imageSha256: string): ImageCheck;
+export function shaFromFragment(fragment: string | null | undefined): string | null;
 export function verifyRecord(
   receiptText: string,
   image: { readonly bytes: Uint8Array } | { readonly sha256: string } | null,
