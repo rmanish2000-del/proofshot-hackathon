@@ -23,3 +23,7 @@
 - No secrets anywhere: in files, commits, issues or replies, use variable names only.
 - Clean room: do not open a pre-existing source file from `proofshot` in the
   same session you rewrite it here. Work from `docs/SPEC.md`.
+
+
+## Coordination
+This is the product repo. Status, ownership and blocked commands live in ../handoff/NOW.md (old repo folder). Read it before starting work, and append a Log line there when you start or finish an item.
