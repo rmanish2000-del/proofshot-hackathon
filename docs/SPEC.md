@@ -13,9 +13,10 @@ Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
 `src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
 entry per render (`src/pipeline.ts`), and the image check and verify page of §9
-(`src/core.js`, `src/check.ts`, `web/verify.html`), and the render provider
-guard of §8 (`src/render.ts`). §7 and the provider HTTP requests of §8
-describe pre-existing features not yet rebuilt here.
+(`src/core.js`, `src/check.ts`, `web/verify.html`), the render provider
+guard of §8 (`src/render.ts`), and the shopper preview of §11 (`src/shop.ts`,
+`scripts/shop-build.ts`, `web/shop.html`). §7 and the provider HTTP requests
+of §8 describe pre-existing features not yet rebuilt here.
 
 ## 1. Attributes
 
@@ -357,3 +358,50 @@ UNCALIBRATED). No model judges anything.
   `fidelity` entry between `verifier` and `gate` (§3), and the gate takes it as
   an input (§2). The pipeline calls an injected checker; a checker that decodes
   the SAM mask PNGs and calls `checkFidelity` is not wired in yet.
+
+## 11. Shopper preview *(event)*
+
+What a buyer sees: a static product page that is **only a reader of
+receipts**. It never calls a model, never runs the gate, and decides nothing;
+it shows what the record already says, after checking the record itself.
+
+- `npm run shop` (`scripts/shop-build.ts`, logic in `src/shop.ts`) walks
+  `data/jobs/*/receipt.jsonl`. For each job it parses the receipt
+  (`parseReceipt`), checks the chain (§3) and, for every `release` entry, finds
+  the image file `<render_id>.<ext>` beside the receipt, hashes it, and runs
+  the image check of §9 (`checkImageWith`): the row exists only if that answers
+  `VALID` for the release's `image_sha256`.
+- A catalog row exists **only for a `release` entry of a receipt whose chain
+  verifies**. `REVIEW` and `REFUSE` never produce a row; a job with no release
+  is simply absent. Each row carries `job_id`, `render_id`, `scene`,
+  `image_sha256`, the chain `head`, the receipt path, the image path,
+  `garment_note`, `provenance` (`fixture` or `live`), `approved_by_human` and
+  the gate's reason text for that render.
+- Fail closed: a receipt that does not parse or verify, a release whose image
+  is missing or whose bytes hash to something else, or a job entry missing its
+  fields, yields **no row for that job** and the build exits non-zero. The
+  released image and the `receipt.jsonl` of every verified job are copied to
+  `web/shop/<job_id>/`, and the rows to `web/shop/catalog.json`, with no
+  timestamp, so the same jobs give the same bytes.
+- The fixture job the tests use (studio released, street refused on colour,
+  `provenance: "fixture"`) is written to `data/jobs/fixture-shirt-01/` by the
+  same script with a recorded clock, so it is byte-identical on every run. With
+  no live render transport (§8) it is the only job the shop shows, and the page
+  says so.
+- `web/shop.html` is plain HTML, CSS and JavaScript with no framework and no
+  external resource; it fetches only its own `shop/` files. It inlines
+  `src/core.js` between the same marker lines as the verify page (`npm run
+  page` rewrites both; the stale-copy test covers both). An image gets the
+  badge **Verified by ProofShot** only after the page, in the browser,
+  re-verifies the copied receipt's chain and hashes the bytes it just fetched
+  and finds them equal to the release's `image_sha256` (`verifyRecord` →
+  `VALID`, same `render_id`). Otherwise there is no badge and the text
+  **not verified**. Without WebCrypto nothing is verified.
+- Tapping the badge opens a panel: chain head, `render_id`, gate reason,
+  provenance ("fixture job, not a live render" for a fixture), a link
+  "Verify it yourself offline" to `verify.html#sha=<hex>`, and download links
+  for the `receipt.jsonl` and the image.
+- `web/verify.html` reads `#sha=<64 hex>` from its URL fragment
+  (`shaFromFragment` in `core.js`: trimmed of `#`, lower-cased, anything else
+  is ignored) to prefill the pasted-sha field. No request is made; the CSP is
+  unchanged.
