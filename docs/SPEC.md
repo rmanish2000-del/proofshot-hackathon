@@ -12,8 +12,8 @@ during the event are marked *(event)*.
 Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
 `src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
-entry per render (`src/pipeline.ts`), and the image check of §9 (`src/check.ts`, not yet the
-page). §7–§8 describe pre-existing features not yet rebuilt here.
+entry per render (`src/pipeline.ts`), and the image check and verify page of §9
+(`src/core.js`, `src/check.ts`, `web/verify.html`). §7–§8 describe pre-existing features not yet rebuilt here.
 
 ## 1. Attributes
 
@@ -265,7 +265,7 @@ so any model id matching `/muse[\s._\/-]*image/i` is refused before a request
 leaves, on every provider. `meta` with an empty `MODEL_RENDER` throws before any
 request. The receipt names the provider and model of every render (§3).
 
-## 9. The verify page's image check (check rebuilt, page not yet)
+## 9. The verify page's image check
 
 Given a record and an image's sha256, in this order:
 
@@ -285,6 +285,26 @@ it released.
 
 The page is one self-contained HTML file (no external resource, no network
 call); the browser and the server must agree on canonical bytes, verdict and head.
+
+In this rewrite *(event, Grok 27 Oct)*:
+
+- The page is `web/verify.html`. It opens from `file://`, and a
+  Content-Security-Policy of `default-src 'none'` (inline script and style only)
+  blocks any request. It takes a `receipt.jsonl` (file or paste) and an image
+  (file or pasted sha256).
+- One source for both sides: `src/core.js` is plain JavaScript with no imports
+  (`canonicalJson`, `parseReceipt`, the chain check, `checkImageWith`). Node
+  hashes with `node:crypto` and the page with `crypto.subtle.digest('SHA-256')`;
+  the chain check takes the digests, so only the hash function differs. The page
+  inlines `core.js` between two marker lines (`export` dropped); a test fails if
+  that copy is stale, and `npm run page` rewrites it.
+- With no usable `crypto.subtle` (missing, or throwing) the page shows "cannot
+  verify in this browser" and no status, never `VALID`.
+- Text that is not a receipt fails the chain check at entry 0, so every image
+  against it is `TAMPERED`.
+- A test checks that the browser path and `node:crypto` give the same chain
+  result (head included) and the same image check on the fixture receipt, and
+  on one edited entry.
 
 ## 10. Garment fidelity
 
