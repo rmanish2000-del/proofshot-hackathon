@@ -16,6 +16,7 @@ import type { FidelityResult } from "./fidelity.ts";
 import { decide } from "./gate.ts";
 import type { GateReason } from "./gate.ts";
 import { RECEIPT_FILE, priorRecords } from "./prior.ts";
+import { refuseMuseImage } from "./render.ts";
 import type { PriorRecord } from "./prior.ts";
 import { Receipt, garmentId } from "./receipt.ts";
 import type { Clock } from "./receipt.ts";
@@ -184,9 +185,11 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     const render_id = `${job.jobId}-r${i}`;
     const prompt = renderPrompt(job.garmentNote, scene);
     // A renderer that throws refuses this scene and the job goes on, so every
-    // scene attempted ends with a gate entry.
+    // scene attempted ends with a gate entry. A Muse Image model is refused here
+    // too, before render() is called, whichever renderer was injected (SPEC §8).
     let image: { bytes: Uint8Array; ext: string };
     try {
+      refuseMuseImage(renderer.model);
       image = await renderer.render({ scene, prompt, sources: job.sources });
     } catch (err) {
       const r = stepRefusal("render_failed", errorText(err));
