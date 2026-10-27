@@ -1,0 +1,39 @@
+# Tests, typecheck and a full-history secret scan on every push and PR to master.
+# No secrets and no API keys: the suite runs offline.
+# The repo's own tree/history scan script joins this file when it is rewritten here.
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # No lockfile is committed, so npm ci cannot run; dev dependencies only.
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # every commit, not only the tip
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          # The token GitHub issues to every run, not a secret we add.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
