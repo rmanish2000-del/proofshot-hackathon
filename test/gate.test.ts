@@ -102,6 +102,18 @@ test("two findings for one attribute refuse, even when both match", () => {
   assert.equal(r.cited?.rule, "duplicate_attribute");
 });
 
+test("a match and a mismatch for one attribute refuse in either order, not last-one-wins", () => {
+  const match = { attribute: "color", verdict: "match", confidence: 0.9 } as const;
+  const mismatch = { attribute: "color", verdict: "mismatch", confidence: 0.8 } as const;
+  const rest = findings().filter((f) => f.attribute !== "color");
+  for (const pair of [[match, mismatch], [mismatch, match]]) {
+    const r = decide([...rest, ...pair]);
+    assert.equal(r.decision, "REFUSE");
+    assert.equal(r.cited?.rule, "duplicate_attribute");
+    assert.equal(r.cited?.attribute, "color");
+  }
+});
+
 test("a verdict outside the vocabulary, or a finding that is not an object, can never release", () => {
   const odd = decide(findings({ hem: { verdict: "approved" as unknown as DecisionInput["verdict"] } }));
   assert.equal(odd.decision, "REVIEW");

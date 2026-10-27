@@ -11,7 +11,9 @@ during the event are marked *(event)*.
 
 Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
-`src/fidelity.ts`). §7–§9 describe pre-existing features not yet rebuilt here.
+`src/fidelity.ts`), and the job pipeline with a fixture provider
+(`src/pipeline.ts`). §7–§9 describe pre-existing features not yet rebuilt here;
+the live providers of §8 are not rebuilt either.
 
 ## 1. Attributes
 
@@ -119,6 +121,20 @@ The kind type also names `approval`; no current code writes it.
   directory is skipped; a `null` garment id has no history. A sibling receipt
   that does not parse or verify **throws**: its refusals cannot be counted, so
   the new job does not start as if there were none.
+- The pipeline *(event)*: a job writes to `<out>/<job_id>/receipt.jsonl` and
+  the render images beside it as `<render_id>.<ext>`, `render_id` being
+  `<job_id>-r<scene index>`. A job id must be a plain directory name, and a job
+  id that already has a receipt is refused, so one chain is one job.
+  - If `prior_records` throws, the job entry carries `prior_records: null` and
+    is followed by one `gate` entry with `render_id: null`, `decision:
+    "REFUSE"` and `cited.rule: "prior_records_unreadable"` (the reason names the
+    file); nothing is rendered (confirmed by Grok 27 Oct). That entry counts as
+    a refusal in later prior records.
+  - If the verifier throws or its output fails §4, the `verifier` entry has
+    `findings: []` and an `error` (`<name>: <message>`), and the gate refuses
+    the render as `not_verified`. No new rule is needed for that.
+  - The `segments` entry is written even when the segmenter finds nothing
+    (`count: 0`). Masks are recorded only as `mask_sha256`.
 - Timestamps (`at`) come from an injectable clock, default the wall clock. A
   replay feeds the recorded timestamps in order and throws if it runs out,
   rather than falling back to the clock.
@@ -161,6 +177,12 @@ In this rewrite *(event)*: "no message content" is `null`, `undefined`, a blank
 string, or a `content` field holding one of those; a `content` field is only
 unwrapped when the object has no `findings` key; a note that is not a string is
 `"(no note)"`; an `evidence` that is not an object gives two `null` bboxes.
+
+Duplicate attributes *(event, pinned 27 Oct)*: the parser keeps every finding,
+so two findings for one attribute (say `color` match 0.9 and `color` mismatch
+0.8) reach the gate, which refuses them as `duplicate_attribute` (§2, rule 6)
+in either order. Neither the last nor the best finding wins; the operator sees
+the conflict on the receipt.
 
 ## 5. What this format deliberately cannot express
 
