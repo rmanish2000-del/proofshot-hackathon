@@ -8,7 +8,7 @@
     "node": ">=22.6"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test test/types.test.ts test/util.test.ts test/gate.test.ts test/receipt.test.ts",
+    "test": "node --experimental-strip-types --test test/types.test.ts test/util.test.ts test/gate.test.ts test/receipt.test.ts test/png.test.ts test/fidelity.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
