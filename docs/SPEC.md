@@ -13,7 +13,9 @@ Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
 `src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
 entry per render (`src/pipeline.ts`), and the image check and verify page of §9
-(`src/core.js`, `src/check.ts`, `web/verify.html`). §7–§8 describe pre-existing features not yet rebuilt here.
+(`src/core.js`, `src/check.ts`, `web/verify.html`), and the render provider
+guard of §8 (`src/render.ts`). §7 and the provider HTTP requests of §8
+describe pre-existing features not yet rebuilt here.
 
 ## 1. Attributes
 
@@ -257,13 +259,24 @@ findings, verifier identity, usage and timestamps, each file with its sha256.
 - Recording refuses a chain that does not verify and a job that is itself a
   replay, and strips credential fields and URL query strings (token counts stay).
 
-## 8. Render providers and the Muse Image refusal (not yet rebuilt here)
+## 8. Render providers and the Muse Image refusal (guard rebuilt, HTTP not yet)
 
 `RENDER_PROVIDER` picks the renderer: `openai-images` (default), `fal`, or
 `meta`. Muse Image is not available in India (Meta Geographic Use Policy §2.2),
 so any model id matching `/muse[\s._\/-]*image/i` is refused before a request
 leaves, on every provider. `meta` with an empty `MODEL_RENDER` throws before any
 request. The receipt names the provider and model of every render (§3).
+
+In this rewrite *(event)*, `src/render.ts`: `rendererFromEnv` reads only
+`RENDER_PROVIDER` and `MODEL_RENDER` (trimmed; blank is unset) and takes the
+HTTP transport as a parameter, so it reads no key. An unknown provider (the
+match is exact and case-sensitive) throws `RenderConfigError`.
+`openai-images` defaults to `gpt-image-1`; `fal`, like `meta`, throws without
+`MODEL_RENDER` (no default is specified for it). A Muse Image model throws
+`MuseImageRefused` when the renderer is built and again before each request.
+The pipeline also checks every renderer's model before calling it, so an
+injected renderer naming Muse Image is refused per scene as `render_failed`
+(§3) and never called. The HTTP request for each provider is not rebuilt yet.
 
 ## 9. The verify page's image check
 
