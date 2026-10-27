@@ -330,7 +330,9 @@ async function verifyRecord(receiptText, image, subtle) {
     tags.append(el("span", "tag", row.provenance === "fixture" ? "fixture job" : "live"));
     if (row.scene) tags.append(el("span", "tag", row.scene));
     body.append(tags);
-    body.append(el("div")).append(mark(item));
+    const status = el("div");
+    status.append(mark(item));
+    body.append(status);
     node.append(body);
   }
 
