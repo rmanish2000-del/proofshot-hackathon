@@ -11,9 +11,9 @@ during the event are marked *(event)*.
 
 Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
-`src/fidelity.ts`), and the job pipeline with a fixture provider
-(`src/pipeline.ts`). §7–§9 describe pre-existing features not yet rebuilt here;
-the live providers of §8 are not rebuilt either.
+`src/fidelity.ts`), the job pipeline with a fixture provider
+(`src/pipeline.ts`), and the image check of §9 (`src/check.ts`, not yet the
+page). §7–§8 describe pre-existing features not yet rebuilt here.
 
 ## 1. Attributes
 
@@ -236,7 +236,7 @@ so any model id matching `/muse[\s._\/-]*image/i` is refused before a request
 leaves, on every provider. `meta` with an empty `MODEL_RENDER` throws before any
 request. The receipt names the provider and model of every render (§3).
 
-## 9. The verify page's image check (not yet rebuilt here)
+## 9. The verify page's image check (check rebuilt, page not yet)
 
 Given a record and an image's sha256, in this order:
 
@@ -246,6 +246,13 @@ Given a record and an image's sha256, in this order:
 | `VALID` | the hash equals a `release` entry's `image_sha256` |
 | `NOT RELEASED` | the hash equals a `render` entry's `sha256` with no release; the page cites that render's gate decision |
 | `TAMPERED` | the hash is in no entry |
+
+In this rewrite *(event)*, `checkImage` in `src/check.ts`: the hash is trimmed
+and lower-cased before the hex check, since hex case carries no meaning. VALID
+reports the release's `render_id`. NOT RELEASED cites the `gate` entry with the
+same `render_id`, or no decision when the render never reached a gate (a job
+that aborted). A record that does not verify vouches for no image, including one
+it released.
 
 The page is one self-contained HTML file (no external resource, no network
 call); the browser and the server must agree on canonical bytes, verdict and head.
