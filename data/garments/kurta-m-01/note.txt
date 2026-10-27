@@ -1,9 +1,0 @@
-Garment note for the renderer. Replace each line's value; keep it short and factual.
-
-Type: kurta
-Fabric and weave:
-Main colour:
-Print or motif (what, where, size):
-Collar and cuffs:
-Buttons:
-Anything the render must not change:
