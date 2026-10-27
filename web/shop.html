@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self'; img-src blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+<title>ProofShot shop preview</title>
+<style>
+  :root { --ink: #1a1a1a; --muted: #5d6a79; --line: #e3e3e0; --ok: #1d6b3a; --okbg: #e6f4ea; --warnbg: #fff4e0; --badbg: #fde8e8; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; color: var(--ink); background: #fafaf8; }
+  header { padding: 1rem; border-bottom: 1px solid var(--line); background: #fff; }
+  header h1 { font-size: 1.15rem; margin: 0; }
+  header p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.9rem; }
+  main { padding: 1rem; max-width: 64rem; margin: 0 auto; }
+  #notice { padding: 0.6rem 0.8rem; border-radius: 6px; background: var(--warnbg); font-size: 0.9rem; }
+  #notice:empty { display: none; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.9rem; margin-top: 1rem; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; }
+  .card img, .product img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #eee; }
+  .card .body { padding: 0.6rem 0.7rem 0.75rem; }
+  .note { font-size: 0.9rem; margin: 0 0 0.4rem; overflow-wrap: anywhere; }
+  .tag { display: inline-block; font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 999px; background: #eee; color: var(--muted); margin-right: 0.3rem; }
+  .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: var(--ok); background: var(--okbg); border: 1px solid #bfe0c9; border-radius: 999px; padding: 0.2rem 0.6rem; cursor: pointer; font-family: inherit; }
+  .badge::before { content: "✓"; }
+  .unverified { font-size: 0.8rem; color: #8a2c2c; background: var(--badbg); border-radius: 999px; padding: 0.2rem 0.6rem; display: inline-block; }
+  .pending { font-size: 0.8rem; color: var(--muted); }
+  .product { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 1rem; }
+  .product .body { padding: 1rem; }
+  .product h2 { font-size: 1.1rem; margin: 0 0 0.5rem; }
+  .back { background: none; border: 0; color: var(--muted); font: inherit; padding: 0; cursor: pointer; text-decoration: underline; }
+  dialog { border: 1px solid var(--line); border-radius: 12px; padding: 0; max-width: min(34rem, 100vw - 2rem); width: 100%; }
+  dialog::backdrop { background: rgba(0,0,0,0.35); }
+  dialog .inner { padding: 1rem 1.1rem 1.2rem; }
+  dialog h3 { margin: 0 0 0.75rem; font-size: 1.05rem; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 0.8rem; margin: 0 0 0.9rem; font-size: 0.9rem; }
+  dt { color: var(--muted); } dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, monospace; font-size: 0.82rem; }
+  dd.text { font-family: inherit; font-size: 0.9rem; }
+  .links a { display: block; margin: 0.35rem 0; }
+  .close { margin-top: 0.8rem; padding: 0.45rem 1rem; font: inherit; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2rem 1rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ProofShot shop preview</h1>
+  <p>Every photo here was released by a receipt. This page re-checks the receipt and re-hashes the image in your browser before it shows the badge. It decides nothing; it reads.</p>
+</header>
+<main>
+  <div id="notice" role="status"></div>
+  <section id="grid" class="grid" aria-label="products"></section>
+  <section id="product" hidden></section>
+</main>
+<footer>ProofShot · the record is a hash chain, not a signature · <span id="count"></span></footer>
+
+<dialog id="panel"><div class="inner" id="panel-inner"></div></dialog>
+
+<script>
+"use strict";
+// BEGIN core.js (inlined from src/core.js by npm run page; edit it there)
+// The receipt checks shared by node and the verify page (SPEC §3, §9).
+//
+// Plain JavaScript with no imports and no hashing of its own, so web/verify.html
+// can inline this file as it is (test/page.test.ts fails if the copy drifts).
+// The chain check is split in two: chainTexts gives the text each entry's hash
+// covers, the caller hashes them (node:crypto in node, crypto.subtle in the
+// browser), and checkChain decides from the digests. Types: core.d.ts.
+
+const GENESIS = "0".repeat(64);
+const HEX64 = /^[0-9a-f]{64}$/;
+
+/**
+ * JSON with object keys sorted at every depth, so equal content always gives
+ * equal bytes. Non-finite numbers, and values JSON cannot hold (undefined in an
+ * array or at the top, functions, symbols, bigints, class instances), throw rather than being
+ * silently changed. An object property set to undefined is left out, as
+ * JSON.stringify does, so a value and its JSON round trip hash the same.
+ */
+function canonicalJson(value) {
+  return encodeCanonical(value, "$");
+}
+
+function encodeCanonical(value, path) {
+  if (value === null) return "null";
+  switch (typeof value) {
+    case "string":
+    case "boolean":
+      return JSON.stringify(value);
+    case "number":
+      if (!Number.isFinite(value)) throw new TypeError(`canonicalJson: non-finite number at ${path}`);
+      return JSON.stringify(value);
+    case "object": {
+      if (Array.isArray(value)) return `[${value.map((v, i) => encodeCanonical(v, `${path}[${i}]`)).join(",")}]`;
+      const proto = Object.getPrototypeOf(value);
+      if (proto !== Object.prototype && proto !== null) {
+        // A Date, Map or Buffer would otherwise encode as {} and hash as nothing.
+        throw new TypeError(`canonicalJson: not a plain object at ${path}`);
+      }
+      const parts = [];
+      for (const key of Object.keys(value).sort()) {
+        const v = value[key];
+        if (v === undefined) continue;
+        parts.push(`${JSON.stringify(key)}:${encodeCanonical(v, `${path}.${key}`)}`);
+      }
+      return `{${parts.join(",")}}`;
+    }
+    default:
+      throw new TypeError(`canonicalJson: cannot encode ${typeof value} at ${path}`);
+  }
+}
+
+/** The text an entry's hash covers. */
+function entryText(e) {
+  return canonicalJson({ seq: e.seq, at: e.at, kind: e.kind, payload: e.payload, prev: e.prev });
+}
+
+/** Parses receipt.jsonl text. A line that is not JSON throws with its line number. */
+function parseReceipt(text) {
+  const lines = String(text).split("\n").filter((line) => line.trim() !== "");
+  return lines.map((line, i) => {
+    try {
+      return JSON.parse(line);
+    } catch {
+      throw new Error(`receipt line ${i + 1} is not JSON`);
+    }
+  });
+}
+
+/** For each entry, the text its hash covers, or { error } when it has none. */
+function chainTexts(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.map((e) => {
+    if (typeof e !== "object" || e === null) return { error: "entry is not an object" };
+    try {
+      return entryText(e);
+    } catch (err) {
+      return { error: `cannot hash entry: ${err.message}` };
+    }
+  });
+}
+
+/**
+ * Checks the chain is non-empty, seq runs 0..n-1, each prev links, and every
+ * hash recomputes. digests[i] is the lowercase hex sha256 of chainTexts(entries)[i],
+ * or that item's { error } when it had no text.
+ */
+function checkChain(entries, digests) {
+  if (!Array.isArray(entries) || entries.length === 0) return { ok: false, index: 0, reason: "empty receipt" };
+  let prev = GENESIS;
+  for (let index = 0; index < entries.length; index++) {
+    const e = entries[index];
+    if (typeof e !== "object" || e === null) return { ok: false, index, reason: "entry is not an object" };
+    if (e.seq !== index) return { ok: false, index, reason: `seq is ${String(e.seq)}, expected ${index}` };
+    if (e.prev !== prev) return { ok: false, index, reason: "prev does not match the previous hash" };
+    const d = digests[index];
+    if (typeof d !== "string") return { ok: false, index, reason: d && typeof d.error === "string" ? d.error : "no digest for this entry" };
+    if (e.hash !== d) return { ok: false, index, reason: "hash does not match the entry" };
+    prev = e.hash;
+  }
+  return { ok: true, head: prev, length: entries.length };
+}
+
+function payloadField(e, key) {
+  return typeof e.payload === "object" && e.payload !== null ? e.payload[key] : undefined;
+}
+
+/** The image check of SPEC §9, given the record's chain check. A record that does not verify vouches for nothing. */
+function checkImageWith(entries, chain, imageSha256) {
+  const no = (reason) => ({ status: "TAMPERED", render_id: null, decision: null, reason });
+
+  if (!chain || chain.ok !== true) return no(`the record does not verify: entry ${chain ? chain.index : 0}, ${chain ? chain.reason : "not checked"}`);
+  // Hex case carries no meaning, so it is folded; anything else is not a sha256.
+  const sha = typeof imageSha256 === "string" ? imageSha256.trim().toLowerCase() : "";
+  if (!HEX64.test(sha)) return no("the image hash is not 64 hex characters");
+
+  const release = entries.find((e) => e.kind === "release" && payloadField(e, "image_sha256") === sha);
+  if (release) {
+    const id = payloadField(release, "render_id");
+    return { status: "VALID", render_id: typeof id === "string" ? id : null, decision: "RELEASE", reason: "this image was released by this record" };
+  }
+
+  const render = entries.find((e) => e.kind === "render" && payloadField(e, "sha256") === sha);
+  if (render) {
+    const id = payloadField(render, "render_id");
+    const render_id = typeof id === "string" ? id : null;
+    const gate = entries.find((e) => e.kind === "gate" && render_id !== null && payloadField(e, "render_id") === render_id);
+    const d = gate ? payloadField(gate, "decision") : undefined;
+    const decision = d === "RELEASE" || d === "REVIEW" || d === "REFUSE" ? d : null;
+    return {
+      status: "NOT RELEASED",
+      render_id,
+      decision,
+      reason: decision ? `this image was rendered but not released: the gate decided ${decision}` : "this image was rendered but never reached the gate",
+    };
+  }
+
+  return no("this image is in no entry of this record");
+}
+
+/**
+ * The sha256 a page URL fragment names, as in verify.html#sha=<64 hex>: the
+ * leading "#" dropped, other fragment fields ignored, the hex lower-cased.
+ * Anything that is not exactly 64 hex characters is null, never a guess.
+ */
+function shaFromFragment(fragment) {
+  const text = String(fragment == null ? "" : fragment).replace(/^#/, "");
+  const match = /(?:^|&)sha=([0-9a-fA-F]{64})(?:&|$)/.exec(text);
+  return match ? match[1].toLowerCase() : null;
+}
+
+/**
+ * The verify page's whole check, hashing with WebCrypto. With no usable
+ * crypto.subtle it verifies nothing and says so; it never answers VALID.
+ * image: { bytes } (the file) or { sha256 } (a pasted hash) or null.
+ */
+async function verifyRecord(receiptText, image, subtle) {
+  if (!subtle || typeof subtle.digest !== "function") return { supported: false, message: "cannot verify in this browser" };
+  const hash = async (data) => {
+    const bytes = typeof data === "string" ? new TextEncoder().encode(data) : data;
+    const digest = new Uint8Array(await subtle.digest("SHA-256", bytes));
+    return Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
+  };
+
+  let entries = [];
+  let chain;
+  try {
+    entries = parseReceipt(receiptText);
+  } catch (err) {
+    chain = { ok: false, index: 0, reason: err.message };
+  }
+  if (!chain) {
+    const digests = await Promise.all(chainTexts(entries).map((t) => (typeof t === "string" ? hash(t) : t)));
+    chain = checkChain(entries, digests);
+  }
+
+  let image_sha256 = null;
+  if (image && image.bytes) image_sha256 = await hash(image.bytes);
+  else if (image && typeof image.sha256 === "string") image_sha256 = image.sha256;
+  return { supported: true, chain, image_sha256, image: image_sha256 === null ? null : checkImageWith(entries, chain, image_sha256) };
+}
+// END core.js
+
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const subtle = globalThis.crypto ? globalThis.crypto.subtle : undefined;
+
+  /** One catalog row plus what this page found out about it. verified is false until proven. */
+  const items = new Map();
+
+  async function load() {
+    let catalog;
+    try {
+      const res = await fetch("shop/catalog.json", { cache: "no-store" });
+      if (!res.ok) throw new Error(`catalog.json: ${res.status}`);
+      catalog = await res.json();
+    } catch (err) {
+      $("notice").textContent = `No catalog yet (${err && err.message ? err.message : err}). Run npm run shop and serve the web/ folder.`;
+      return;
+    }
+    const rows = Array.isArray(catalog.rows) ? catalog.rows : [];
+    $("count").textContent = `${rows.length} released image${rows.length === 1 ? "" : "s"}`;
+    if (rows.length === 0) $("notice").textContent = "No released image yet: the catalog is empty.";
+    if (rows.length > 0 && rows.every((r) => r.provenance === "fixture")) {
+      $("notice").textContent = "Preview: these are fixture jobs (synthetic images, recorded findings), not live renders. The checks are real; the garments are not.";
+    }
+    for (const row of rows) {
+      const item = { row, verified: false, status: "checking", blobUrl: null, check: null };
+      items.set(row.render_id, item);
+      $("grid").append(card(item));
+    }
+    await Promise.all([...items.values()].map(verify));
+    route();
+  }
+
+  /** The badge is earned here and nowhere else: chain re-verified, fetched bytes re-hashed, both match the release. */
+  async function verify(item) {
+    const row = item.row;
+    try {
+      const [receiptRes, imageRes] = await Promise.all([fetch(row.receipt, { cache: "no-store" }), fetch(row.image, { cache: "no-store" })]);
+      if (!receiptRes.ok || !imageRes.ok) throw new Error("receipt or image not found");
+      const text = await receiptRes.text();
+      const bytes = new Uint8Array(await imageRes.arrayBuffer());
+      item.blobUrl = URL.createObjectURL(new Blob([bytes], { type: imageRes.headers.get("content-type") || "image/png" }));
+      const out = await verifyRecord(text, { bytes }, subtle);
+      item.check = out;
+      item.verified = Boolean(
+        out.supported && out.chain.ok && out.image && out.image.status === "VALID"
+        && out.image_sha256 === String(row.image_sha256).toLowerCase() && out.image.render_id === row.render_id,
+      );
+      item.status = item.verified ? "verified" : out.supported ? "not verified" : out.message;
+    } catch (err) {
+      item.verified = false;
+      item.status = `not verified (${err && err.message ? err.message : err})`;
+    }
+    for (const node of document.querySelectorAll(`[data-render="${CSS.escape(row.render_id)}"]`)) paint(node, item);
+  }
+
+  function card(item) {
+    const node = el("article", "card");
+    node.dataset.render = item.row.render_id;
+    node.addEventListener("click", (ev) => {
+      if (ev.target.closest(".badge")) return;
+      location.hash = `job=${encodeURIComponent(item.row.job_id)}&render=${encodeURIComponent(item.row.render_id)}`;
+    });
+    paint(node, item);
+    return node;
+  }
+
+  /** Fills a card or product view from the item's current state. */
+  function paint(node, item) {
+    const row = item.row;
+    node.replaceChildren();
+    const img = el("img");
+    img.alt = row.garment_note;
+    if (item.blobUrl) img.src = item.blobUrl;
+    node.append(img);
+    const body = el("div", "body");
+    if (node.classList.contains("product")) {
+      body.append(el("h2", null, row.garment_note));
+    } else {
+      body.append(el("p", "note", row.garment_note));
+    }
+    const tags = el("div");
+    tags.append(el("span", "tag", row.provenance === "fixture" ? "fixture job" : "live"));
+    if (row.scene) tags.append(el("span", "tag", row.scene));
+    body.append(tags);
+    body.append(el("div")).append(mark(item));
+    node.append(body);
+  }
+
+  function mark(item) {
+    if (item.status === "checking") return el("span", "pending", "checking the receipt…");
+    if (!item.verified) return el("span", "unverified", item.status);
+    const badge = el("button", "badge", "Verified by ProofShot");
+    badge.type = "button";
+    badge.addEventListener("click", (ev) => { ev.stopPropagation(); openPanel(item); });
+    return badge;
+  }
+
+  function openPanel(item) {
+    const row = item.row;
+    const chain = item.check && item.check.chain;
+    const inner = $("panel-inner");
+    inner.replaceChildren();
+    inner.append(el("h3", null, "What the receipt says"));
+    const dl = el("dl");
+    const add = (k, v, text) => { dl.append(el("dt", null, k)); dl.append(el("dd", text ? "text" : null, v)); };
+    add("chain head", chain && chain.ok ? chain.head : row.head);
+    add("entries", chain && chain.ok ? String(chain.length) : "?");
+    add("render_id", row.render_id);
+    add("image sha256", row.image_sha256);
+    add("gate", row.gate_reason, true);
+    add("released by", row.approved_by_human ? "a named approver" : "unattended (no human approved it)", true);
+    add("provenance", row.provenance === "fixture" ? "fixture job, not a live render" : row.provenance, true);
+    inner.append(dl);
+    const links = el("div", "links");
+    const verifyLink = el("a", null, "Verify it yourself offline");
+    verifyLink.href = `verify.html#sha=${encodeURIComponent(row.image_sha256)}`;
+    verifyLink.target = "_blank";
+    verifyLink.rel = "noopener";
+    links.append(verifyLink);
+    const receiptLink = el("a", null, "Download receipt.jsonl");
+    receiptLink.href = row.receipt;
+    receiptLink.setAttribute("download", `${row.job_id}-receipt.jsonl`);
+    links.append(receiptLink);
+    const imageLink = el("a", null, "Download the image");
+    imageLink.href = row.image;
+    imageLink.setAttribute("download", row.image.slice(row.image.lastIndexOf("/") + 1));
+    links.append(imageLink);
+    inner.append(links);
+    const close = el("button", "close", "Close");
+    close.type = "button";
+    close.addEventListener("click", () => $("panel").close());
+    inner.append(close);
+    $("panel").showModal();
+  }
+
+  /** #job=<id>&render=<id> shows one product; anything else, the grid. */
+  function route() {
+    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+    const render = params.get("render");
+    const item = render ? items.get(render) : null;
+    const product = $("product");
+    if (!item) {
+      product.hidden = true;
+      product.replaceChildren();
+      $("grid").hidden = false;
+      return;
+    }
+    $("grid").hidden = true;
+    product.hidden = false;
+    product.replaceChildren();
+    const back = el("button", "back", "← all products");
+    back.type = "button";
+    back.addEventListener("click", () => { location.hash = ""; });
+    product.append(back);
+    const view = el("div", "product");
+    view.dataset.render = item.row.render_id;
+    paint(view, item);
+    product.append(view);
+  }
+
+  window.addEventListener("hashchange", route);
+  load();
+})();
+</script>
+</body>
+</html>

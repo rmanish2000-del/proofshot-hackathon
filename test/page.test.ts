@@ -6,7 +6,7 @@ import { test } from "node:test";
 
 import { checkImage } from "../src/check.ts";
 import { verifyRecord } from "../src/core.js";
-import { CORE_PATH, PAGE_PATH, inlineCore, pageWithCore } from "../src/page.ts";
+import { CORE_PATH, PAGES, PAGE_PATH, inlineCore, pageWithCore } from "../src/page.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt, recordedClock, verifyChain } from "../src/receipt.ts";
@@ -35,10 +35,13 @@ async function fixtureReceipt(): Promise<string> {
   return readFileSync(join(r.dir, RECEIPT_FILE), "utf8");
 }
 
-test("web/verify.html carries the current core.js, unchanged but for its export keywords", () => {
-  const page = html();
-  assert.equal(page, pageWithCore(page, core()), "web/verify.html is stale: run npm run page");
-  assert.ok(page.includes(inlineCore(core())));
+test("every page carries the current core.js, unchanged but for its export keywords", () => {
+  assert.deepEqual(PAGES.map((p) => p.name), ["web/verify.html", "web/shop.html"]);
+  for (const { name, path } of PAGES) {
+    const page = readFileSync(path, "utf8");
+    assert.equal(page, pageWithCore(page, core()), `${name} is stale: run npm run page`);
+    assert.ok(page.includes(inlineCore(core())), name);
+  }
 });
 
 test("the page makes no network call and loads nothing from outside itself", () => {
