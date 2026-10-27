@@ -253,3 +253,96 @@ export async function writeFixtureJob(jobsRoot: string, jobId = FIXTURE_JOB_ID):
   );
   return true;
 }
+
+// ---------------------------------------------------------------------------
+// Garment preview jobs: one fixture job per photographed garment under
+// data/garments, so the shop has real garments to show the judges while no
+// live render transport exists. The "render" is the garment's own front photo
+// (nothing is generated, no person is in it); the sources are every intake
+// photo, hashed as intake.json records them; the findings are recorded as all
+// matching. The receipt says `fixture`, and so does the page.
+// ---------------------------------------------------------------------------
+
+export const GARMENTS_DIR = "data/garments";
+const INTAKE_FILE = "intake.json";
+const NOTE_FILE = "note.txt";
+
+interface IntakeRecord {
+  readonly files: readonly { readonly name: string; readonly sha256: string }[];
+}
+
+/** Garment folders under garmentsRoot that have been through intake, sorted by name. */
+export function garmentDirs(garmentsRoot: string): string[] {
+  if (!existsSync(garmentsRoot)) return [];
+  return readdirSync(garmentsRoot, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && existsSync(join(garmentsRoot, d.name, INTAKE_FILE)) && existsSync(join(garmentsRoot, d.name, NOTE_FILE)))
+    .map((d) => d.name)
+    .sort();
+}
+
+/** "kurta (women's), rust / orange" from the Type and Main colour lines of note.txt; the folder name when they are blank. */
+export function garmentNoteFrom(noteText: string, garment: string): string {
+  const field = (label: string): string | null => {
+    const m = new RegExp(`^${label}:\\s*(.+?)\\s*$`, "m").exec(noteText);
+    return m && m[1] && !/^not recorded|^as in the photos/i.test(m[1]) ? m[1] : null;
+  };
+  const parts = [field("Type"), field("Main colour")].filter((p): p is string => p !== null);
+  return parts.length > 0 ? parts.join(", ") : garment;
+}
+
+/**
+ * Writes the preview job for one garment folder as `<jobsRoot>/<garment>/`:
+ * sources are the intake photos (their bytes must still hash as intake.json
+ * says, else this throws), the one scene "studio" "renders" to the first
+ * photo, every attribute matches, so the gate releases. A recorded clock makes
+ * the receipt byte-identical on every run. Returns false when the job exists.
+ */
+export async function writeGarmentPreviewJob(jobsRoot: string, garmentDir: string, garment: string): Promise<boolean> {
+  if (existsSync(join(jobsRoot, garment, RECEIPT_FILE))) return false;
+  const intake = JSON.parse(readFileSync(join(garmentDir, INTAKE_FILE), "utf8")) as IntakeRecord;
+  if (!Array.isArray(intake.files) || intake.files.length === 0) throw new Error(`${garment}: ${INTAKE_FILE} lists no photos`);
+  const sources = [...intake.files]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((f) => {
+      const bytes = readFileSync(join(garmentDir, f.name));
+      if (sha256Hex(bytes) !== f.sha256) throw new Error(`${garment}/${f.name} does not hash as ${INTAKE_FILE} says`);
+      return { name: f.name, bytes };
+    });
+  const front = sources[0]!;
+  const findings = () => ({
+    findings: ATTRIBUTES.map((attribute) => ({
+      attribute,
+      verdict: "match",
+      confidence: 0.95,
+      note: "recorded for the preview: the image is the garment's own photo",
+      evidence: { source_bbox: null, render_bbox: null },
+    })),
+  });
+  const base = fixtureProviders({ renders: () => front.bytes, findings });
+  mkdirSync(jobsRoot, { recursive: true });
+  await runJob(
+    {
+      jobId: garment,
+      garmentNote: `${garmentNoteFrom(readFileSync(join(garmentDir, NOTE_FILE), "utf8"), garment)} (preview: the owner's photo of the garment stands in for the render)`,
+      scenes: ["studio"],
+      sources,
+    },
+    {
+      outRoot: jobsRoot,
+      provenance: "fixture",
+      // The photo is a JPEG, so the file beside the receipt says so.
+      providers: { ...base, renderer: { ...base.renderer, render: async () => ({ bytes: front.bytes, ext: "jpg" }) } },
+      clock: recordedClock(Array.from({ length: 20 }, (_, i) => `2026-10-27T17:00:${String(i).padStart(2, "0")}.000Z`)),
+    },
+  );
+  return true;
+}
+
+/** Writes the preview job of every intaken garment; returns the garments written. */
+export async function writeGarmentPreviewJobs(jobsRoot: string, garmentsRoot: string): Promise<string[]> {
+  const written: string[] = [];
+  for (const garment of garmentDirs(garmentsRoot)) {
+    if (await writeGarmentPreviewJob(jobsRoot, join(garmentsRoot, garment), garment)) written.push(garment);
+  }
+  return written;
+}

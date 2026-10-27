@@ -12,6 +12,32 @@
       "provenance": "fixture",
       "approved_by_human": false,
       "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "kurta-01",
+      "render_id": "kurta-01-r0",
+      "scene": "studio",
+      "image_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "head": "634f43803c687989e5b8840302c6b8d7b86a81e568c8934f1424694c81822d34",
+      "receipt": "shop/kurta-01/receipt.jsonl",
+      "image": "shop/kurta-01/kurta-01-r0.jpg",
+      "garment_note": "kurta (women's), rust / orange (preview: the owner's photo of the garment stands in for the render)",
+      "provenance": "fixture",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "kurta-02",
+      "render_id": "kurta-02-r0",
+      "scene": "studio",
+      "image_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "head": "63ba97fe11c8bc277ab9f1f0490823a436c6727dbdb23cb4b537a9d435006571",
+      "receipt": "shop/kurta-02/receipt.jsonl",
+      "image": "shop/kurta-02/kurta-02-r0.jpg",
+      "garment_note": "kurta (women's), peach (preview: the owner's photo of the garment stands in for the render)",
+      "provenance": "fixture",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
     }
   ]
 }

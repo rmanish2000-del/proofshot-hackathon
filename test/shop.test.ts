@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -11,7 +11,7 @@ import { CORE_PATH, SHOP_PATH, inlineCore, pageWithCore } from "../src/page.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { recordedClock } from "../src/receipt.ts";
-import { CATALOG_FILE, FIXTURE_JOB_ID, buildShop, rowsForJob, writeFixtureJob } from "../src/shop.ts";
+import { CATALOG_FILE, FIXTURE_JOB_ID, GARMENTS_DIR, buildShop, garmentDirs, garmentNoteFrom, rowsForJob, writeFixtureJob, writeGarmentPreviewJob, writeGarmentPreviewJobs } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
 
@@ -129,6 +129,52 @@ test("the fixture job is byte-identical on every run, and the committed copy and
     const bytes = readFileSync(join(ROOT, "web", row.image));
     assert.equal(sha256Hex(bytes), row.image_sha256, `${row.image} does not match its row`);
   }
+});
+
+test("garment preview jobs: sources are the intake photos, the image is the front photo, byte-identical, and the committed copies are current", async () => {
+  const garmentsRoot = join(ROOT, GARMENTS_DIR);
+  const previewed = garmentDirs(garmentsRoot);
+  assert.ok(previewed.includes("kurta-01") && previewed.includes("kurta-02"), "kurta-01 and kurta-02 have been through intake");
+
+  const a = tmp("previews");
+  const b = tmp("previews");
+  assert.deepEqual(await writeGarmentPreviewJobs(a, garmentsRoot), previewed);
+  assert.deepEqual(await writeGarmentPreviewJobs(a, garmentsRoot), [], "one job id is one chain");
+  await writeGarmentPreviewJobs(b, garmentsRoot);
+  for (const garment of previewed) {
+    const receipt = (root: string) => readFileSync(join(root, garment, RECEIPT_FILE), "utf8");
+    assert.equal(receipt(a), receipt(b), `${garment}: the receipt is byte-identical on every run`);
+    assert.equal(receipt(join(ROOT, "data", "jobs")), receipt(a), `data/jobs/${garment} is stale: delete it and run npm run shop`);
+
+    const intake = JSON.parse(readFileSync(join(garmentsRoot, garment, "intake.json"), "utf8")) as { files: { name: string; sha256: string }[] };
+    const [rowList] = [rowsForJob(join(a, garment), garment)];
+    assert.equal(rowList.length, 1);
+    const row = rowList[0]!;
+    assert.equal(row.render_id, `${garment}-r0`);
+    assert.equal(row.scene, "studio");
+    assert.equal(row.provenance, "fixture");
+    assert.equal(row.image, `shop/${garment}/${garment}-r0.jpg`);
+    assert.match(row.garment_note, /stands in for the render/);
+    const front = [...intake.files].sort((x, y) => x.name.localeCompare(y.name))[0]!;
+    assert.equal(row.image_sha256, front.sha256, `${garment}: the released image is the front photo, unchanged`);
+    const jobEntry = JSON.parse(receipt(a).split("\n")[0]!) as { payload: { source_images: { name: string; sha256: string }[] } };
+    assert.deepEqual(
+      jobEntry.payload.source_images,
+      [...intake.files].sort((x, y) => x.name.localeCompare(y.name)).map((f) => ({ name: f.name, sha256: f.sha256 })),
+      `${garment}: source_images are the intake photos with the intake hashes`,
+    );
+  }
+
+  // A photo whose bytes changed since intake is refused, not previewed.
+  const broken = tmp("garment");
+  const dir = join(broken, "kurta-01");
+  mkdirSync(dir);
+  for (const name of ["intake.json", "note.txt"]) copyFileSync(join(garmentsRoot, "kurta-01", name), join(dir, name));
+  writeFileSync(join(dir, "1-front.jpg"), "not the photo");
+  await assert.rejects(writeGarmentPreviewJob(tmp("jobs"), dir, "kurta-01"), /does not hash as intake\.json says/);
+
+  assert.equal(garmentNoteFrom("Type: kurta (women's)\nMain colour: peach\n", "x"), "kurta (women's), peach");
+  assert.equal(garmentNoteFrom("Type: not recorded\nMain colour: as in the photos\n", "kurta-09"), "kurta-09");
 });
 
 test("web/shop.html carries the current core.js, and loads nothing from outside its own folder", () => {
