@@ -84,6 +84,36 @@ record). If the browser has no WebCrypto, it says "cannot verify in this
 browser" and gives no verdict. The page and the Node side run the same
 `src/core.js`, and a test checks they agree.
 
+## Shopper preview (built during the hackathon)
+
+What a buyer sees (SPEC §11). `npm run shop` reads `data/jobs/*/receipt.jsonl`
+and writes `web/shop/`: a `catalog.json` row for every `release` entry of a
+receipt whose chain verifies and whose released image is beside it with the
+right bytes, plus a copy of that image and receipt. A REVIEW or REFUSE never
+becomes a row; a broken receipt gives its job no row and a non-zero exit.
+`web/shop.html` (serve the `web/` folder statically) shows the catalog as a
+phone-first grid. In the browser it re-verifies each copied receipt and
+re-hashes the image bytes it just fetched; only when both match the release
+does the image get the **Verified by ProofShot** badge, otherwise it says
+"not verified". The badge opens a panel with the chain head, `render_id`, gate
+reason, provenance, a "Verify it yourself offline" link to
+`verify.html#sha=<hex>` (which prefills the hash) and downloads of the receipt
+and image. The shop decides nothing and calls no model; it reads.
+
+Today it shows one job, `data/jobs/fixture-shirt-01` (synthetic images,
+recorded findings, `provenance: fixture`), written by the same script with a
+recorded clock, because no live render transport exists yet (SPEC §8). The page
+says so.
+
+New in this feature, all written during the event: `src/shop.ts`,
+`scripts/shop-build.ts`, `web/shop.html`, `web/shop/` (generated),
+`data/jobs/fixture-shirt-01/` (generated), `test/shop.test.ts`, SPEC §11, the
+`shaFromFragment` helper in `src/core.js` and the `#sha` prefill in
+`web/verify.html`, and `src/page.ts` / `scripts/page.ts` covering both pages.
+Pre-existing (rebuilt from the spec earlier in this repo, not part of this
+feature): the gate, the receipt chain, the verify-page core (`src/core.js`
+checks) and the intake.
+
 ## Providers
 
 Only environment variable names are listed here. Values are never printed or
