@@ -1,6 +1,6 @@
 # Garment intake
 
-One folder per garment: `shirt-01/`, `shirt-02/`, `shirt-03/`. Each holds:
+One folder per garment: `shirt-01/`, `shirt-02/`, `shirt-03/`, and the men's `kurta-m-01/`, `shirt-m-01/` (templates only until their photos arrive). Each holds:
 
 - `1-front.jpg`, `2-back.jpg`, `3-collar.jpg`, `4-print.jpg`: phone photos of
   the garment alone, laid flat or on a hanger. **No person in any photo.**
