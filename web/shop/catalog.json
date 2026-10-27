@@ -1,0 +1,17 @@
+{
+  "rows": [
+    {
+      "job_id": "fixture-shirt-01",
+      "render_id": "fixture-shirt-01-r0",
+      "scene": "studio",
+      "image_sha256": "47b4348b077ff0fa38a473729b36b81fb26c6854e6a1ca674f4309affcd320f4",
+      "head": "f6150f9f2d5285815da5a10288be5a431dfe72190f855c172a793acdd450c37f",
+      "receipt": "shop/fixture-shirt-01/receipt.jsonl",
+      "image": "shop/fixture-shirt-01/fixture-shirt-01-r0.png",
+      "garment_note": "indigo cotton shirt, white placket, spread collar (fixture: synthetic images, no garment was photographed)",
+      "provenance": "fixture",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    }
+  ]
+}
