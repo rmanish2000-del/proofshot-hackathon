@@ -1,0 +1,19 @@
+{
+  "garment": "kurta-02",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "removed": []
+    },
+    {
+      "source_name": "2-back.jpg",
+      "name": "2-back.jpg",
+      "source_sha256": "869eb3e4cea72edf01b35884b8c80a1b976d9a65502c91f994104b4e256b2183",
+      "sha256": "869eb3e4cea72edf01b35884b8c80a1b976d9a65502c91f994104b4e256b2183",
+      "removed": []
+    }
+  ]
+}
