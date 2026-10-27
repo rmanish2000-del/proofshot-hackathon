@@ -1,0 +1,61 @@
+{
+  "provider": "baseten",
+  "model": "meta-models/muse-spark-open-1026",
+  "url": "https://inference.baseten.co/v1/chat/completions",
+  "started_at": "2026-10-27T13:23:37.385Z",
+  "finished_at": "2026-10-27T13:23:45.454Z",
+  "latency_ms": 8069,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "Bearer [BASETEN_API_KEY]"
+    },
+    "body": {
+      "model": "meta-models/muse-spark-open-1026",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with exactly one word: ready"
+        }
+      ],
+      "max_tokens": 64
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-93a7f163451e4a4aa1eb45d56dff607d",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "content": null,
+            "role": "assistant",
+            "reasoning_content": "The user says \"Reply with exactly one word: ready\". We should reply with exactly one word: ready. That's presumably allowed. There's no policy violation. Just reply \"ready\". Must be exactly one word: ready, no punctuation? The instruction says exactly one word: ready. Should we include period?"
+          },
+          "finish_reason": "length"
+        }
+      ],
+      "created": 1793107424,
+      "model": "meta-models/muse-spark-open-1026",
+      "object": "chat.completion",
+      "usage": {
+        "prompt_tokens": 152,
+        "completion_tokens": 64,
+        "total_tokens": 216,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 128
+        },
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 48,
+          "audio_tokens": 0,
+          "reasoning_tokens": 61,
+          "rejected_prediction_tokens": 71
+        }
+      }
+    }
+  },
+  "error": null
+}
