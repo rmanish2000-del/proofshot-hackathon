@@ -535,3 +535,64 @@ it shows what the record already says, after checking the record itself.
   (`shaFromFragment` in `core.js`: trimmed of `#`, lower-cased, anything else
   is ignored) to prefill the pasted-sha field. No request is made; the CSP is
   unchanged.
+
+## 12. Seller upload *(event, 28 Oct)*
+
+What a seller does: one page, no login, phone first, Hindi or English. They
+drop up to three JPEGs of one garment and say what it is; the real pipeline of
+§3 runs on their machine; they see each step as it happens, then one result
+card; "Publish to shop" exists only when the gate said RELEASE. The page
+decides nothing: every decision, reason and hash on it was read from the
+server, which read it from the receipt.
+
+- `npm run serve` (`scripts/serve.ts`, logic in `src/serve.ts`) starts one
+  local HTTP server on 127.0.0.1 (`--port`, default 8787) that serves `web/`
+  (so `upload.html`, `shop.html` and `verify.html` all work from it) and a JSON
+  API: `GET /api/mode`, `POST /api/jobs`, `GET /api/jobs/<id>`,
+  `POST /api/jobs/<id>/publish`, and `GET /jobs/<id>/<file>` for a job's
+  receipt and render images. A path that escapes `web/` or the job, or names
+  the job's `sources/` folder, is 404.
+- Providers come from the environment (`providersFromEnv`): the renderer from
+  `RENDER_PROVIDER`, defaulting to `stand-in` (§8) since no render transport
+  exists; the segmenter is SAM 3.1 (§10) only when `MODEL_SEGMENT`,
+  `MODEL_API_KEY` and a mask parser are all present, else a fixture that finds
+  nothing and claims no model; the verifier and the fidelity check are
+  fixtures in this build (the live verifier is P6). Each step is labelled with
+  what stood behind it, and the whole run is **fixture mode** when any provider
+  is a fixture: the receipt's `provenance` is `fixture`, `GET /api/mode` says
+  `fixture: true`, and the page shows the notice and a "fixture job" tag on the
+  card. Fixture mode's verifier records every attribute as `match` with the note
+  "recorded in fixture mode: no model judged this image"; it is the same device
+  as the garment preview jobs of §11 and is labelled the same way.
+- A job: the photos are decoded, each goes through intake (metadata stripped,
+  both hashes kept; a file that is not a JPEG ends the job before the pipeline,
+  with no receipt), the stripped bytes are written to
+  `<jobs>/<id>/sources/<name>` so `demo:record` (§7) can record the job later,
+  then `runJob` runs with the one scene `studio` and writes
+  `<jobs>/<id>/receipt.jsonl` and the render images. The jobs root defaults to
+  `data/jobs`, the folder `npm run shop` reads, so prior records (§3) are the
+  real ones.
+- Progress: the server wraps each provider and keeps a step board, `exif`,
+  `segment`, `render`, `verify`, `gate`, each `pending`, `running`, `done`,
+  `failed` or `skipped` with one line of detail. A step is `done` only after
+  the provider returned, so what the page shows is what ran. A provider that
+  throws marks its step `failed` and the error goes on to the pipeline, which
+  records it as §3 says (segment_failed, render_failed, not_verified); the
+  steps the pipeline then never reached are `skipped`, and `gate` is `done`
+  with the decision.
+- The result: `decision`, `render_id`, `image_sha256`, the image and receipt
+  URLs, the chain `head`, `provenance`, the gate's `reasons` in words (read
+  back from the receipt's gate entry; empty on RELEASE) and a
+  `verify.html#sha=<hex>` link. The card shows the image (with the tag "your
+  own photo, stands in for the render" when the render label is the stand-in),
+  the RELEASE / REVIEW / REFUSE badge, the reasons, "View receipt" (the verify
+  link) and a receipt download. **Publish to shop** is painted in one place,
+  only when `decision === "RELEASE"`, and the server refuses a publish of
+  anything else with 409. A publish is a shop build (§11) of the jobs root into
+  `web/shop`, so the job is listed only if its receipt verifies and the image
+  hashes as released; the page then links to the new card.
+- `web/upload.html` is one file: plain HTML, CSS and JavaScript, no framework,
+  CSP `default-src 'none'; connect-src 'self'; img-src 'self' blob:` plus
+  inline script and style; it fetches only its own origin. The language toggle
+  switches every string between English and Hindi (Devanagari) and remembers
+  the choice in `localStorage`; nothing else is stored.
