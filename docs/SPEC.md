@@ -488,7 +488,14 @@ UNCALIBRATED). No model judges anything.
   the key) and the pipeline records `segment_failed`. Joined text with no
   `<|mask` token is **no match**: `{segments: []}`, not an error. Text with a
   mask token goes to the injected `parse` with the prompt, whose answer
-  `parseSegments` checks as above.
+  `parseSegments` checks as above. Call log *(event, Grok 28 Oct 10:20, rule
+  13)*: every request actually sent, failed or not, gives one `SamCallLog` to
+  the optional `onCall` before the answer is parsed: no header, the request
+  with the image data URL replaced by its byte count and sha256, the status and
+  raw answer (capped at 1,000,000 characters), the joined text and whether it
+  holds a mask token, the error if any, and the key's value replaced by
+  `[MODEL_API_KEY]` wherever it appears. `npm run job:live` and `npm run serve`
+  write each to `evidence/sam-<started_at>.json`.
 - The parser glue *(event, #18, Grok 28 Oct 09:00)*, `src/sam-parser.ts`
   `metaSamParser()`: feeds the joined text to `@meta-sam/parser` 0.1.0
   (Meta, SAM License, pinned exactly, no runtime dependencies of its own) as a

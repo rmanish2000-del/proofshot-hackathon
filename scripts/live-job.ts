@@ -13,7 +13,8 @@
 // allow; without them no segment exists and the fidelity check is REVIEW with
 // no metrics, so the gate's answer is REVIEW at best (SPEC §10 is not weakened
 // for this). The receipt lands in <jobs root>/<job id>/ and the verifier call's
-// redacted log in evidence/verifier-<started_at>.json. Exits 2 with no job
+// redacted log in evidence/verifier-<started_at>.json, each SAM call's in
+// evidence/sam-<started_at>.json (Grok 10:20, rule 13). Exits 2 with no job
 // when the verifier is not live, 1 when the job was refused before the gate.
 //
 // Defaults: data/garments/kurta-01, live-kurta-01, data/jobs (Grok, 28 Oct
@@ -25,7 +26,7 @@ import { basename, join } from "node:path";
 import { runJob } from "../src/pipeline.ts";
 import { fileRenderer } from "../src/render.ts";
 import { providersFromEnv } from "../src/serve.ts";
-import { writeVerifierLog } from "./verifier-log.ts";
+import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
 let renderPath: string | null = null;
@@ -46,8 +47,9 @@ if (existsSync(join(jobsRoot, jobId))) {
 }
 
 const logs: string[] = [];
+const samLogs: string[] = [];
 const providers = providersFromEnv(process.env, {
-  sam: { fetch: (url, init) => fetch(url, init) },
+  sam: { fetch: (url, init) => fetch(url, init), onCall: (log) => samLogs.push(writeSamLog("evidence", log)) },
   verifierFetch: (url, init) => fetch(url, init),
   onVerifierCall: (log) => logs.push(writeVerifierLog("evidence", log)),
 });
@@ -77,6 +79,7 @@ for (const [step, label] of Object.entries(labels)) console.log(`  ${step}: ${la
 const result = await runJob({ jobId, garmentNote, scenes: ["studio"], sources }, { outRoot: jobsRoot, providers: runProviders, provenance: providers.mode.provenance });
 
 console.log(`receipt: ${join(result.dir, "receipt.jsonl")} (head ${result.head})`);
+for (const file of samLogs) console.log(`SAM log: ${file}`);
 for (const file of logs) console.log(`verifier log: ${file}`);
 if (result.refused) {
   console.log(`REFUSE before any render: ${result.refused.rule}: ${result.refused.reason}`);
