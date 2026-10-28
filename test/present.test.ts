@@ -13,6 +13,7 @@ import { Receipt, parseReceipt, verifyChain } from "../src/receipt.ts";
 import { REPLICATE_PROVIDER } from "../src/render-replicate.ts";
 import { UploadServer } from "../src/serve.ts";
 import type { ReceiptListing } from "../src/serve.ts";
+import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -97,6 +98,39 @@ test("present: tamperedCopy changes one byte and the chain breaks at that entry;
   assert.equal(check.ok, false);
   assert.equal(!check.ok && check.index, copy.index);
   assert.equal(verifyChain(parseReceipt(text)).ok, true);
+});
+
+test("web/upload.html (NR5): the claim fields are the ATTRIBUTES vocabulary, every label has English and Hindi text, EXIF strip is stated", () => {
+  const page = readFileSync(join(ROOT, "web", "upload.html"), "utf8");
+  const attrs = /const ATTRS = (\[[^\]]*\]);/.exec(page);
+  assert.ok(attrs, "ATTRS list");
+  assert.deepEqual(JSON.parse(attrs![1]!), [...ATTRIBUTES]);
+  const keys = [...new Set([...page.matchAll(/data-t="([A-Za-z0-9]+)"/g)].map((m) => m[1]!))];
+  for (const lang of ["en", "hi"]) {
+    const table = new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0];
+    for (const key of keys) assert.match(table, new RegExp(`\\b${key}: "`), `${lang} has ${key}`);
+    for (const a of ATTRIBUTES) assert.match(table, new RegExp(`\\b${a}: "`), `${lang} labels ${a}`);
+  }
+  assert.match(page, /exifNote: "Location, camera and date \(EXIF\) are removed/);
+  // The method badge on the result card is read from the receipt API, never written by the page.
+  assert.match(page, /fetch\(`api\/receipts\//);
+  assert.doesNotMatch(page, /AI-generated model|Not AI-generated/);
+});
+
+test("web/judge.html (NR5): offline, same-origin, and names no model itself", () => {
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /Content-Security-Policy" content="default-src 'none'; connect-src 'self'; img-src 'self';/);
+  for (const banned of [/<link\b/i, /<script\b[^>]*\bsrc=/i, /<img\b[^>]*src="https?:/i, /XMLHttpRequest/, /WebSocket/, /\bimport\s*\(/]) assert.doesNotMatch(page, banned);
+  for (const model of [/SAM ?3/i, /Muse Spark/i, /Pruna/i, /Baseten/i, /Replicate/i]) assert.doesNotMatch(page, model, `judge.html must read ${model} from the receipt`);
+  // No browser runs in the suite: at least the inline scripts of both pages must parse.
+  for (const file of ["judge.html", "upload.html"]) {
+    const html = readFileSync(join(ROOT, "web", file), "utf8");
+    const script = /<script>([\s\S]*?)<\/script>/.exec(html)![1]!;
+    assert.doesNotThrow(() => new Function(script), `${file} inline script parses`);
+  }
+  assert.match(page, /Deterministic gate \(rules, no model\)/);
+  assert.match(page, /Any doubt ends in REVIEW or REFUSE, never RELEASE\./);
+  assert.match(page, /name="viewport" content="width=device-width, initial-scale=1"/);
 });
 
 test("present: serve lists receipts, verifies, runs the tamper demo without writing, and serves sources only by recorded hash", async () => {

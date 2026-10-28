@@ -55,6 +55,35 @@
   .again { margin-top: 1rem; background: none; border: 0; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
   footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2rem 1rem; }
   [hidden] { display: none !important; }
+  /* NR5: three-step flow, photo guide, input vs result. */
+  ol.wizard { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; padding: 0; margin: 0 0 1rem; counter-reset: w; }
+  ol.wizard li { counter-increment: w; font-size: 0.85rem; text-align: center; padding: 0.5rem 0.2rem; border-bottom: 4px solid var(--line); color: var(--muted); min-height: 44px; }
+  ol.wizard li::before { content: counter(w) ". "; font-weight: 700; }
+  ol.wizard li.now { border-color: var(--accent); color: var(--ink); font-weight: 600; }
+  ol.wizard li.past { border-color: var(--ok); }
+  ol.wizard li.past::before { content: "✓ "; }
+  .guide { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.92rem; }
+  .guide h2 { font-size: 1rem; margin: 0 0 0.4rem; }
+  .guide ul { margin: 0 0 0.6rem; padding-left: 1.2rem; }
+  .examples { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
+  .examples figure { margin: 0; text-align: center; font-size: 0.75rem; }
+  .examples svg { width: 100%; height: auto; border-radius: 6px; border: 2px solid var(--line); background: #f1f1ee; }
+  .examples .good svg { border-color: var(--ok); } .examples .bad svg { border-color: var(--bad); }
+  .examples .good figcaption { color: var(--ok); } .examples .bad figcaption { color: var(--bad); }
+  .exif { font-size: 0.85rem; color: var(--ok); background: var(--okbg); border-radius: 8px; padding: 0.4rem 0.7rem; margin-top: 0.6rem; }
+  .nav { display: flex; gap: 0.6rem; } .nav button { flex: 1; min-height: 44px; }
+  button.secondary { margin-top: 1rem; padding: 0.9rem; font: inherit; background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; color: var(--ink); }
+  .attrs label { font-weight: 500; font-size: 0.92rem; margin: 0.6rem 0 0.2rem; }
+  .summary { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem 1rem; font-size: 0.92rem; overflow-wrap: anywhere; }
+  .summary .thumbs { margin-top: 0.4rem; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.6rem; }
+  .compare h3 { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.3rem; font-weight: 600; }
+  .compare img { width: 100%; aspect-ratio: 3 / 4; object-fit: contain; background: #eee; border-radius: 8px; }
+  .compare .ins { display: grid; gap: 0.3rem; }
+  .method { display: inline-block; font-weight: 600; font-size: 0.85rem; border: 1px solid currentColor; border-radius: 999px; padding: 0.15rem 0.6rem; margin-left: 0.4rem; }
+  .method.ai-generated { color: var(--warn); background: var(--warnbg); } .method.not-ai { color: var(--ok); background: var(--okbg); } .method.fixture, .method.none { color: var(--muted); background: #eee; }
+  .tip { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+  @media (min-width: 768px) { main { max-width: 48rem; } .compare .ins { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -66,17 +95,56 @@
   <p class="lead" data-t="lead"></p>
   <div id="mode" role="status"></div>
 
+  <ol class="wizard" id="wizard" aria-label="Steps">
+    <li data-step="1" data-t="w1"></li>
+    <li data-step="2" data-t="w2"></li>
+    <li data-step="3" data-t="w3"></li>
+  </ol>
+
   <form id="form">
-    <label for="note" data-t="noteLabel"></label>
-    <input type="text" id="note" maxlength="300" autocomplete="off">
-    <label data-t="photosLabel"></label>
-    <div class="drop" id="drop" tabindex="0" role="button">
-      <span data-t="drop"></span>
-      <input type="file" id="file" accept="image/jpeg,.jpg,.jpeg" multiple>
-    </div>
-    <div class="thumbs" id="thumbs"></div>
+    <fieldset id="step1" style="border:0;padding:0;margin:0">
+      <div class="guide">
+        <h2 data-t="guideTitle"></h2>
+        <ul>
+          <li data-t="guide1"></li>
+          <li data-t="guide2"></li>
+          <li data-t="guide3"></li>
+          <li data-t="guide4"></li>
+        </ul>
+        <!-- Drawn examples, no photos and no people. -->
+        <div class="examples">
+          <figure class="good"><svg viewBox="0 0 60 80" role="img" aria-labelledby="ex-good"><rect width="60" height="80" fill="#f4f4f1"/><path d="M22 8 L30 12 L38 8 L50 16 L46 30 L42 28 L44 72 L16 72 L18 28 L14 30 L10 16 Z" fill="#c8642a"/></svg><figcaption id="ex-good" data-t="exGood"></figcaption></figure>
+          <figure class="bad"><svg viewBox="0 0 60 80" role="img" aria-labelledby="ex-crop"><rect width="60" height="80" fill="#f4f4f1"/><path d="M40 -10 L48 -6 L56 -10 L68 -2 L64 12 L60 10 L62 54 L34 54 L36 10 L32 12 L28 -2 Z" fill="#c8642a"/></svg><figcaption id="ex-crop" data-t="exCrop"></figcaption></figure>
+          <figure class="bad"><svg viewBox="0 0 60 80" role="img" aria-labelledby="ex-dark"><rect width="60" height="80" fill="#3a3a38"/><path d="M22 8 L30 12 L38 8 L50 16 L46 30 L42 28 L44 72 L16 72 L18 28 L14 30 L10 16 Z" fill="#5a3018"/><rect x="0" y="0" width="30" height="80" fill="#000" opacity="0.35"/></svg><figcaption id="ex-dark" data-t="exDark"></figcaption></figure>
+          <figure class="bad"><svg viewBox="0 0 60 80" role="img" aria-labelledby="ex-busy"><rect width="60" height="80" fill="#9bb07a"/><circle cx="8" cy="10" r="7" fill="#d9a13b"/><rect x="46" y="40" width="14" height="30" fill="#6b4c8a"/><path d="M22 8 L30 12 L38 8 L50 16 L46 30 L42 28 L44 72 L16 72 L18 28 L14 30 L10 16 Z" fill="#c8642a"/><circle cx="52" cy="12" r="6" fill="#3b7fd9"/></svg><figcaption id="ex-busy" data-t="exBusy"></figcaption></figure>
+        </div>
+      </div>
+      <label data-t="photosLabel"></label>
+      <div class="drop" id="drop" tabindex="0" role="button">
+        <span data-t="drop"></span>
+        <input type="file" id="file" accept="image/jpeg,.jpg,.jpeg" multiple>
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="exif" data-t="exifNote"></div>
+    </fieldset>
+
+    <fieldset id="step2" style="border:0;padding:0;margin:0" hidden>
+      <label for="note" data-t="noteLabel"></label>
+      <input type="text" id="note" maxlength="120" autocomplete="off">
+      <p class="tip" data-t="attrsLead"></p>
+      <div class="attrs" id="attrs"></div>
+    </fieldset>
+
+    <fieldset id="step3" style="border:0;padding:0;margin:0" hidden>
+      <div class="summary" id="summary"></div>
+    </fieldset>
+
     <div class="error" id="error" role="alert"></div>
-    <button type="submit" class="primary" id="start" data-t="start"></button>
+    <div class="nav">
+      <button type="button" class="secondary" id="back" data-t="back" hidden></button>
+      <button type="button" class="primary" id="next" data-t="next"></button>
+      <button type="submit" class="primary" id="start" data-t="start" hidden></button>
+    </div>
   </form>
 
   <section id="progress" hidden>
@@ -94,8 +162,8 @@
     en: {
       title: "ProofShot: seller upload",
       lead: "Drop up to 3 photos of one garment (front, back, a close-up). The pipeline strips the metadata, segments the garment, renders, checks the render against your photos and decides. Nothing reaches the shop unless the gate says RELEASE.",
-      noteLabel: "What is the garment? (type and colour)",
-      notePlaceholder: "e.g. cotton kurta, rust orange",
+      noteLabel: "What is the garment? (type)",
+      notePlaceholder: "e.g. women's cotton kurta",
       photosLabel: "Photos",
       drop: "Tap to choose photos, or drop them here (JPEG, up to 3)",
       start: "Check and render",
@@ -125,12 +193,28 @@
       errNotJpeg: "Only JPEG photos (the metadata strip is written for JPEG).",
       errNoNote: "Say what the garment is.",
       errServer: "The server did not answer. Is npm run serve running?",
+      w1: "Photos", w2: "Details", w3: "Review & submit",
+      guideTitle: "Photo guide",
+      guide1: "Front, back, and one close-up of the detail or label.",
+      guide2: "Flat on a plain surface or on a hanger, never worn: no people in the photo.",
+      guide3: "Even daylight, no harsh shadow, no flash glare.",
+      guide4: "The whole garment in frame, with a little space around it.",
+      exGood: "Good: whole, plain, even", exCrop: "Bad: cut off", exDark: "Bad: dark, uneven", exBusy: "Bad: busy background",
+      exifNote: "Location, camera and date (EXIF) are removed from every photo on upload, before anything else runs.",
+      attrsLead: "What you claim about the garment. The verifier checks each of these against your photos; leave a field empty if it does not apply.",
+      attrs: { color: "Colour", print_pattern: "Print or pattern", logo_text: "Logo or text", collar: "Collar or neckline", sleeve_length: "Sleeve length", hem: "Hem", pocket_count: "Pockets", buttons: "Buttons", fabric_texture: "Fabric" },
+      next: "Next", back: "Back",
+      sumPhotos: "Photos", sumGarment: "Garment", sumClaims: "Claims",
+      errTooLong: "The description is too long (300 characters at most): shorten some fields.",
+      input: "Your photos", output: "Result",
+      openJudge: "Side-by-side, receipt and pipeline",
+      noImage: "No image was made (see Why).",
     },
     hi: {
       title: "ProofShot: विक्रेता अपलोड",
       lead: "एक कपड़े की अधिकतम 3 तस्वीरें डालें (सामने, पीछे, क़रीब से)। पाइपलाइन मेटाडेटा हटाती है, कपड़े को सेगमेंट करती है, रेंडर करती है, रेंडर को आपकी तस्वीरों से मिलाती है और फ़ैसला करती है। गेट RELEASE कहे बिना कुछ भी दुकान तक नहीं पहुँचता।",
-      noteLabel: "कपड़ा क्या है? (प्रकार और रंग)",
-      notePlaceholder: "जैसे: सूती कुर्ता, ईंट जैसा नारंगी",
+      noteLabel: "कपड़ा क्या है? (प्रकार)",
+      notePlaceholder: "जैसे: महिलाओं का सूती कुर्ता",
       photosLabel: "तस्वीरें",
       drop: "तस्वीरें चुनने के लिए टैप करें, या यहाँ छोड़ें (JPEG, अधिकतम 3)",
       start: "जाँचें और रेंडर करें",
@@ -160,8 +244,26 @@
       errNotJpeg: "केवल JPEG तस्वीरें (मेटाडेटा हटाना JPEG के लिए लिखा गया है)।",
       errNoNote: "बताएँ कि कपड़ा क्या है।",
       errServer: "सर्वर ने जवाब नहीं दिया। क्या npm run serve चल रहा है?",
+      w1: "तस्वीरें", w2: "विवरण", w3: "जाँचें और भेजें",
+      guideTitle: "तस्वीर गाइड",
+      guide1: "सामने, पीछे, और डिज़ाइन या लेबल की एक क़रीबी तस्वीर।",
+      guide2: "सादी सतह पर बिछाकर या हैंगर पर, पहना हुआ नहीं: तस्वीर में कोई व्यक्ति नहीं।",
+      guide3: "एक जैसी रोशनी, कड़ी छाया या फ़्लैश की चमक नहीं।",
+      guide4: "पूरा कपड़ा फ़्रेम में, चारों ओर थोड़ी जगह के साथ।",
+      exGood: "सही: पूरा, सादा, एक जैसी रोशनी", exCrop: "गलत: कटा हुआ", exDark: "गलत: अँधेरा, असमान", exBusy: "गलत: भरी हुई पृष्ठभूमि",
+      exifNote: "अपलोड पर हर तस्वीर से जगह, कैमरा और तारीख़ (EXIF) हटा दी जाती है, बाकी सब से पहले।",
+      attrsLead: "कपड़े के बारे में आपका दावा। जाँचकर्ता हर बात को आपकी तस्वीरों से मिलाता है; जो लागू न हो वह खाली छोड़ें।",
+      attrs: { color: "रंग", print_pattern: "प्रिंट या पैटर्न", logo_text: "लोगो या लिखावट", collar: "कॉलर या गला", sleeve_length: "आस्तीन की लंबाई", hem: "किनारा (हेम)", pocket_count: "जेबें", buttons: "बटन", fabric_texture: "कपड़ा" },
+      next: "आगे", back: "पीछे",
+      sumPhotos: "तस्वीरें", sumGarment: "कपड़ा", sumClaims: "दावे",
+      errTooLong: "विवरण बहुत लंबा है (अधिकतम 300 अक्षर): कुछ फ़ील्ड छोटे करें।",
+      input: "आपकी तस्वीरें", output: "नतीजा",
+      openJudge: "साथ-साथ तुलना, रसीद और पाइपलाइन",
+      noImage: "कोई तस्वीर नहीं बनी (कारण देखें)।",
     },
   };
+  /** The attribute vocabulary of src/types.ts ATTRIBUTES, in order; test/present.test.ts keeps the two in step. */
+  const ATTRS = ["color", "print_pattern", "logo_text", "collar", "sleeve_length", "hem", "pocket_count", "buttons", "fabric_texture"];
   const MAX_PHOTOS = 3;
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => {
@@ -184,6 +286,8 @@
     for (const node of document.querySelectorAll("[data-t]")) node.textContent = T()[node.dataset.t];
     $("lang").textContent = lang === "en" ? "हिन्दी" : "English";
     $("note").placeholder = T().notePlaceholder;
+    paintAttrs();
+    if (stepNow === 3) paintSummary();
     paintMode();
     if (current) paintJob(current.status);
   }
@@ -270,14 +374,99 @@
 
   function setError(text) { $("error").textContent = text; }
 
+  // ---- steps: 1 photos, 2 details, 3 review & submit -------------------------
+  let stepNow = 1;
+
+  function paintAttrs() {
+    const box = $("attrs");
+    for (const name of ATTRS) {
+      let input = $(`attr-${name}`);
+      if (!input) {
+        const label = el("label");
+        label.htmlFor = `attr-${name}`;
+        label.id = `attr-label-${name}`;
+        input = el("input");
+        input.type = "text";
+        input.id = `attr-${name}`;
+        input.maxLength = 60;
+        input.autocomplete = "off";
+        box.append(label, input);
+      }
+      $(`attr-label-${name}`).textContent = T().attrs[name];
+    }
+  }
+
+  /** The claims the seller filled in, in ATTRIBUTES order. */
+  function claims() {
+    return ATTRS.map((name) => [name, $(`attr-${name}`).value.trim()]).filter(([, v]) => v !== "");
+  }
+
+  /** The garment_note the pipeline records: the type, then each claimed attribute by its vocabulary name. */
+  function garmentNote() {
+    return [$("note").value.trim(), ...claims().map(([n, v]) => `${n}: ${v}`)].join("; ");
+  }
+
+  function showStep(n) {
+    stepNow = n;
+    for (const i of [1, 2, 3]) $(`step${i}`).hidden = i !== n;
+    for (const li of $("wizard").children) {
+      const i = Number(li.dataset.step);
+      li.className = i === n ? "now" : i < n ? "past" : "";
+      if (i === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+    }
+    $("back").hidden = n === 1;
+    $("next").hidden = n === 3;
+    $("start").hidden = n !== 3;
+    if (n === 3) paintSummary();
+  }
+
+  function paintSummary() {
+    const box = $("summary");
+    box.replaceChildren();
+    box.append(el("strong", null, T().sumGarment), el("div", null, $("note").value.trim()));
+    const list = claims();
+    if (list.length > 0) {
+      box.append(el("strong", null, T().sumClaims));
+      const ul = el("ul");
+      for (const [n, v] of list) ul.append(el("li", null, `${T().attrs[n]}: ${v}`));
+      box.append(ul);
+    }
+    box.append(el("strong", null, `${T().sumPhotos} (${photos.length})`));
+    const thumbs = el("div", "thumbs");
+    for (const p of photos) {
+      const img = el("img");
+      img.src = p.url;
+      img.alt = p.file.name;
+      thumbs.append(img);
+    }
+    box.append(thumbs);
+  }
+
+  $("next").addEventListener("click", () => {
+    setError("");
+    if (stepNow === 1) {
+      if (photos.length === 0) return setError(T().errNoPhotos);
+      return showStep(2);
+    }
+    if (stepNow === 2) {
+      if (!$("note").value.trim()) return setError(T().errNoNote);
+      if (garmentNote().length > 300) return setError(T().errTooLong);
+      return showStep(3);
+    }
+  });
+  $("back").addEventListener("click", () => { setError(""); showStep(Math.max(1, stepNow - 1)); });
+
   // ---- submit --------------------------------------------------------------
   $("form").addEventListener("submit", async (ev) => {
     ev.preventDefault();
     setError("");
-    const note = $("note").value.trim();
-    if (!note) return setError(T().errNoNote);
+    if (stepNow !== 3) return;
+    const note = garmentNote();
+    if (!$("note").value.trim()) return setError(T().errNoNote);
+    if (note.length > 300) return setError(T().errTooLong);
     if (photos.length === 0) return setError(T().errNoPhotos);
     $("start").disabled = true;
+    $("back").hidden = true;
     $("start").textContent = T().running;
     try {
       const files = await Promise.all(photos.map(async (p) => ({ name: safeName(p.file.name), base64: await toBase64(p.file) })));
@@ -292,6 +481,7 @@
       setError(err && err.message ? err.message : T().errServer);
       $("start").disabled = false;
       $("start").textContent = T().start;
+      $("back").hidden = false;
     }
   });
 
@@ -356,15 +546,51 @@
       ul.append(el("li", null, status.error || "unknown"));
       body.append(ul);
     } else {
+      // Input vs result, side by side.
+      const compare = el("div", "compare");
+      const left = el("div");
+      left.append(el("h3", null, T().input));
+      const ins = el("div", "ins");
+      for (const p of photos) {
+        const img = el("img");
+        img.src = p.url;
+        img.alt = p.file.name;
+        ins.append(img);
+      }
+      left.append(ins);
+      const right = el("div");
+      right.append(el("h3", null, T().output));
       if (result.image) {
         const img = el("img");
         img.src = result.image;
         img.alt = $("note").value;
-        card.append(img);
+        right.append(img);
+      } else {
+        right.append(el("div", "tip", T().noImage));
       }
+      compare.append(left, right);
+      card.append(compare);
       const line = el("div");
       body.append(line);
       line.append(el("span", `badge ${result.decision}`, T().badge[result.decision] || result.decision));
+      // The render-method badge comes from the job's receipt (render entry), never from the page.
+      const method = el("span", "method none");
+      method.hidden = true;
+      line.append(method);
+      const tip = el("div", "tip");
+      body.append(tip);
+      fetch(`api/receipts/${encodeURIComponent(status.job_id)}`, { cache: "no-store" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((view) => {
+          const r = view && view.renders.find((x) => x.render_id === result.render_id);
+          if (!r) return;
+          method.className = `method ${r.badge.kind}`;
+          method.textContent = r.badge.label;
+          method.title = r.badge.tooltip;
+          method.hidden = false;
+          tip.textContent = r.badge.tooltip;
+        })
+        .catch(() => {});
       if (status.mode && status.mode.fixture) line.append(el("span", "tag", T().fixtureTag));
       if (status.mode && /^stand-in/.test(status.mode.labels.render) && result.image) line.append(el("span", "tag", T().standIn));
       body.append(el("h2", null, T().reasons));
@@ -380,6 +606,9 @@
         a.rel = "noopener";
         links.append(a);
       }
+      const judge = el("a", null, T().openJudge);
+      judge.href = `judge?job=${encodeURIComponent(status.job_id)}`;
+      links.append(judge);
       const dl = el("a", null, T().downloadReceipt);
       dl.href = result.receipt;
       dl.setAttribute("download", `${status.job_id}-receipt.jsonl`);
@@ -434,6 +663,8 @@
     photos = [];
     paintThumbs();
     $("note").value = "";
+    for (const name of ATTRS) $(`attr-${name}`).value = "";
+    showStep(1);
     $("result").hidden = true;
     $("result").replaceChildren();
     $("progress").hidden = true;
@@ -443,6 +674,7 @@
   }
 
   applyLanguage();
+  showStep(1);
   loadMode();
 })();
 </script>
