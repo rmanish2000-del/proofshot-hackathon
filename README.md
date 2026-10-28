@@ -295,8 +295,8 @@ committed.
   shop panel say "Lighting only: no colour correction was applied".
 - `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`):
   an AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta).
-  **Five live calls so far (n=5): one REVIEW, four REFUSE, none released;
-  the gate caught every one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
+  **Seven live Pruna calls as of ace95ac (n=7): two REVIEW, five REFUSE,
+  none released; the gate caught every one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
   length and drew shorts below it; the verifier flagged the hem as a mismatch
   (0.98) and the fidelity check found the garment shrank in frame (area
   0.212). The gate caught an AI model changing the garment, and nothing was
@@ -318,7 +318,16 @@ committed.
   `live-kurta-01-tryon-s02`, both **REFUSE** on fidelity, area 0.210 and
   0.183). This time the verifier answered and flagged the hem as a mismatch on
   both. The garment image sent is the whole kurta, hem included (NR4d,
-  `evidence/tryon-sent/`); since NR4d it has a white margin. Since NR4e each
+  `evidence/tryon-sent/`); since NR4d it has a white margin. The margin did
+  not keep the length either (ace95ac, synthetic-02: `live-kurta-02-tryon-m`
+  **REFUSE**, area 0.176, delta_e 22.687; `live-kurta-01-tryon-m` **REVIEW**,
+  area 0.301, delta_e 17.522). So for long garments the honest demo is
+  composite v2, with the try-on shown as what the gate catches. Separately,
+  two committed try-on images were re-verified without a new Pruna call (the
+  render entry is a stand-in file, so these are not try-on calls):
+  `live-kurta-02-tryon-2-reverify` **REVIEW** (the verifier answered: hem
+  mismatch 0.96, soft) and `live-kurta-01-tryon-reverify` **REFUSE**
+  (fidelity: texture 0.641, area 0.206). Since NR4e each
   model folder declares how far down the model's own outfit reaches
   (`model.json` `covers`: synthetic-01 `hip`, synthetic-02 `ankle`). A garment
   claimed longer than that falls back to composite v2 with `fallback_reason`
