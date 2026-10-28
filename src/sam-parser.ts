@@ -28,6 +28,8 @@ import { imageSize } from "./verifier.ts";
 
 export const META_SAM_PARSER = "@meta-sam/parser";
 export const META_SAM_PARSER_VERSION = "0.1.0";
+/** A frame larger than this is a malformed token, not a render: no camera or model emits it. */
+export const MAX_FRAME_DIM = 100_000;
 
 /** One decoded segment before it becomes the sam.ts shape; exported for tests. */
 export interface DecodedSegment {
@@ -63,7 +65,14 @@ export function frameSize(text: string, image: SourceImage): { width: number; he
   if (own && own.width > 0 && own.height > 0) return own;
   const m = /<\|box;[^|]*?\bw=(\d+);h=(\d+)/.exec(text);
   if (!m) return null;
-  return { width: Number(m[1]), height: Number(m[2]) };
+  // A token is not a header: a zero, negative-free but zero-valued or absurd size must be refused,
+  // or a truncated mask would be sized 0x0 and every later ratio would be meaningless.
+  const width = Number(m[1]);
+  const height = Number(m[2]);
+  if (!(Number.isSafeInteger(width) && Number.isSafeInteger(height))) return null;
+  if (width <= 0 || height <= 0) return null;
+  if (width > MAX_FRAME_DIM || height > MAX_FRAME_DIM) return null;
+  return { width, height };
 }
 
 /**
