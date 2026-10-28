@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # No lockfile is committed, so npm ci cannot run; dev dependencies only.
+      # package-lock.json is tracked (npm ci works locally); this step still uses npm install.
       - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run typecheck

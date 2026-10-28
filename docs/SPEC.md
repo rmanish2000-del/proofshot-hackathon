@@ -536,6 +536,50 @@ stays. Tests use synthetic images only. Running it on `data/garments/*` waits
 on JPEG decoding inside the fidelity check and on SAM masks for those photos;
 until then the thresholds stay UNCALIBRATED.
 
+### View-aware compare: post-submission proposal *(event, 28 Oct, Grok-reviewed DeepSeek draft)*
+
+A design option only. It does not change the gate: the multiplier stays x1,
+the thresholds above stay, and view-aware compare is not built. No accuracy
+figure is claimed.
+
+Calibration facts (`evidence/calibration-sam-20261028-1515.json`, fidelity
+only, not a gate decision):
+
+- Two garments; 5/5 SAM masks; 20 ordered pairs measured: 8 same, 12 different.
+- At x1: 0/12 different pairs false matched; 6/8 same pairs refused, all six
+  front-vs-back.
+- `delta_e`: 2.6–10.8 on same pairs, 32.3–41.6 on different pairs (a clean gap
+  in this small set).
+- `texture`: 0.45–0.94 on same pairs, 0.34–0.61 on different pairs (overlap);
+  `texture.refuse_below` 0.65 is what refuses the front/back same pairs.
+- Verifier accuracy is not measured; no calibrated false-match rate exists.
+
+Options:
+
+- **A. Compare only same-view pairs.** Fixes: the same-view texture limit is no
+  longer applied to front/back pairs. Risks: front/back matching stays
+  unsolved, legitimate cross-view pairs stay refused or excluded, and
+  similar-colour same-view false matches remain possible since texture
+  overlaps. Needs: a view label per image, about 12 garments including
+  similar-colour pairs, same-view and cross-view pair groups.
+- **B. Weight `delta_e` over `texture` across views.** Fixes: uses the
+  `delta_e` gap so front/back same pairs can pass without leaning on the
+  overlapping texture signal. Risks: too much weight on `delta_e` lets
+  similar-colour garments false-match, and down-weighting texture drops a
+  signal that refuses different pairs in this sample. Needs: about 12 garments
+  including similar-colour pairs, front/back same pairs and different pairs,
+  per-pair `delta_e` and `texture`; any weights are set only after that
+  calibration and at x1.
+- **C. Per-view texture thresholds.** Fixes: cross-view pairs get their own
+  texture refusal path instead of the same-view 0.65. Risks: the current
+  overlap gives no clean per-view threshold, and a lower cross-view limit could
+  admit similar-colour false matches. Needs: per-view texture distributions on
+  about 12 garments including similar-colour pairs; no values until then.
+
+Proposal: **B**, after the 12-garment calibration. The `delta_e` gap is the
+strongest current reason for that direction on front/back pairs. Until then
+nothing changes.
+
 ## 11. Shopper preview *(event)*
 
 What a buyer sees: a static product page that is **only a reader of
