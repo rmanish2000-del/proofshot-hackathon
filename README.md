@@ -29,10 +29,10 @@ No API keys are needed. Without keys the run is **fixture mode**; the page and
 receipt are labelled as such. The render step shows the owner's photo as a
 stand-in; nothing is generated.
 
-1. Install dependencies:
+1. Install dependencies from the committed lockfile:
 
 ```bash
-npm install
+npm ci
 ```
 
 2. Run the tests:
