@@ -328,8 +328,9 @@ committed.
   (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
   `REPLICATE_MODEL_IMAGE` picks another). The render entry's `input` records
   exactly the fields sent (images by sha256, seed, the prompt when one was
-  sent, and `preserve_input_size` / `reference_pose` only when
-  `REPLICATE_PRESERVE_INPUT_SIZE` / `REPLICATE_REFERENCE_POSE` is `true` or `false`) and carries no pipeline `prompt`. The token is read from `REPLICATE_API_TOKEN` only. Meta did
+  sent, and `preserve_input_size` only when
+  `REPLICATE_PRESERVE_INPUT_SIZE` is `true` or `false`; `reference_pose` is
+  never sent, since Pruna types it as an image input) and carries no pipeline `prompt`. The token is read from `REPLICATE_API_TOKEN` only. Meta did
   not draw the image: SAM 3.1 (cut-out and fidelity masks), Muse Spark (the
   verifier) and the ProofShot gate decide what is released, with thresholds
   unchanged. The receipt says `generative: true` and "AI preview: look only".

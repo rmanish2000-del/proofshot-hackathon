@@ -309,21 +309,23 @@ test("NR4/NR4d: the garment cut-out is the whole masked box of seller pixels wit
   assert.equal(stripImageMetadata(Buffer.from("GIF89a")), null);
 });
 
-test("NR4d: preserve_input_size and reference_pose are sent only when their env var is true or false, and the record's input matches the body", async () => {
+test("NR4d/NR4f: preserve_input_size is sent only when its env var is true or false, reference_pose never, and the record's input matches the body", async () => {
   assert.deepEqual(tryOnOptions({}), {});
-  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "yes", REPLICATE_REFERENCE_POSE: "" }), {});
-  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "true", REPLICATE_REFERENCE_POSE: "false" }), { preserve_input_size: true, reference_pose: false });
+  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "yes" }), {});
+  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "false" }), { preserve_input_size: false });
+  // reference_pose is an image input in Pruna's schema, so a boolean env var must not reach the body.
+  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "true", REPLICATE_REFERENCE_POSE: "true" }), { preserve_input_size: true });
 
   const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
-  const { renderer } = base({ env: { REPLICATE_API_TOKEN: TOKEN, REPLICATE_PRESERVE_INPUT_SIZE: "true", REPLICATE_REFERENCE_POSE: "true" }, fetch });
+  const { renderer } = base({ env: { REPLICATE_API_TOKEN: TOKEN, REPLICATE_PRESERVE_INPUT_SIZE: "false", REPLICATE_REFERENCE_POSE: "true" }, fetch });
   const out = await renderer.render(req);
   const body = JSON.parse(calls.find((c) => c.url === REPLICATE_PREDICTIONS_URL)!.body!) as { input: Record<string, unknown> };
-  assert.equal(body.input.preserve_input_size, true);
-  assert.equal(body.input.reference_pose, true);
+  assert.equal(body.input.preserve_input_size, false);
+  assert.equal("reference_pose" in body.input, false);
   const input = out.record!.input as Record<string, unknown>;
   assert.deepEqual(Object.keys(input).sort(), Object.keys(body.input).sort());
-  assert.equal(input.preserve_input_size, true);
-  assert.equal(input.reference_pose, true);
+  assert.equal(input.preserve_input_size, false);
+  assert.equal("reference_pose" in input, false);
 });
 
 test("NR4e: a garment claimed longer than the model's own outfit falls back with model_too_short before any request; a long enough outfit or no claim sends", async () => {
