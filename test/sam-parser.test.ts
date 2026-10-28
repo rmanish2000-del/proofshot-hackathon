@@ -79,11 +79,12 @@ test("the glue's answer is what src/sam.ts accepts, and the whole chain from the
   assert.equal(segments[0]!.score > 0.95, true);
   assert.deepEqual(segmenter.identity, { provider: "meta", model: META_SAM_MODEL_ID });
 
-  // With these masks the fidelity check reaches the images, and a JPEG is unmeasured in this build.
+  // With these masks the fidelity check decodes the JPEG and measures it: the photo against itself is a pass.
   const fidelity = maskedFidelityChecker({ segmenter: { segment: async () => segments.map((x) => ({ ...x, label: `render/${x.label.split("/")[1]}` })) } });
   const out = await fidelity.check({ sources: [FRONT], segments, render: FRONT.bytes, renderId: "r0", scene: "studio" });
-  assert.equal(out.decision, "REVIEW");
-  assert.match(out.reasons[0]!, /^source image is not a PNG/);
+  assert.equal(out.decision, "RELEASE", out.reasons.join("; "));
+  assert.equal(out.metrics!.delta_e, 0);
+  assert.equal(out.metrics!.area, 1);
 });
 
 test("fails closed: text with no mask is no match, a broken mask token or a mask without confidence throws SegmentProtocolError", async () => {

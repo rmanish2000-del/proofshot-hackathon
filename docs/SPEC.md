@@ -449,11 +449,14 @@ UNCALIBRATED). No model judges anything.
   whose label starts `<first source name>/`; the render mask comes from the
   given segmenter, asked once with the render as an image named `render`.
   No source mask, no segmenter, a segmenter that finds nothing in the render,
-  an image that is not a PNG (this build decodes only PNG: there is no JPEG
-  decoder, so a JPEG render or source is unmeasured), or a mask or image that
-  does not decode is `REVIEW` with `metrics: null` and the reason, never a
+  an image that is not a JPEG or PNG, or a mask or image that does not decode,
+  is `REVIEW` with `metrics: null` and the reason, never a
   pass; otherwise the result is `checkFidelity`'s. A replay's hash-only mask
-  is not mask bytes, so a replay is unmeasured too.
+  is not mask bytes, so a replay is unmeasured too. Images are decoded by
+  `decodeRgb` in `src/image.ts` *(event, R3)*: PNG by `src/png.ts`, JPEG by
+  the open-source jpeg-js 0.4.4 (decode only, 50 MP cap, EXIF orientation
+  not applied since intake strips it). Before R3 a JPEG was unmeasured; the
+  receipts written then (e.g. `data/jobs/live-kurta-01-sam`) keep that reason.
 - The segmenter *(event, #18)*, `src/sam.ts`: `samSegmenter({model, transport,
   prompt?})` is the pipeline's `Segmenter` behind an injected transport that
   does the HTTP request, so the adapter reads no key. It asks once per source
@@ -485,7 +488,14 @@ UNCALIBRATED). No model judges anything.
   the key) and the pipeline records `segment_failed`. Joined text with no
   `<|mask` token is **no match**: `{segments: []}`, not an error. Text with a
   mask token goes to the injected `parse` with the prompt, whose answer
-  `parseSegments` checks as above.
+  `parseSegments` checks as above. Call log *(event, Grok 28 Oct 10:20, rule
+  13)*: every request actually sent, failed or not, gives one `SamCallLog` to
+  the optional `onCall` before the answer is parsed: no header, the request
+  with the image data URL replaced by its byte count and sha256, the status and
+  raw answer (capped at 1,000,000 characters), the joined text and whether it
+  holds a mask token, the error if any, and the key's value replaced by
+  `[MODEL_API_KEY]` wherever it appears. `npm run job:live` and `npm run serve`
+  write each to `evidence/sam-<started_at>.json`.
 - The parser glue *(event, #18, Grok 28 Oct 09:00)*, `src/sam-parser.ts`
   `metaSamParser()`: feeds the joined text to `@meta-sam/parser` 0.1.0
   (Meta, SAM License, pinned exactly, no runtime dependencies of its own) as a
@@ -512,8 +522,13 @@ UNCALIBRATED). No model judges anything.
 Calibration scorer *(event, 28 Oct)*, `scoreCalibration(cases, candidates)` in
 `src/calibrate.ts`: each case is a source image, a render, their masks and a
 label, `same` or `different`, plus optional verifier findings. For each
-candidate thresholds set it runs `checkFidelity`, and the gate's `decide` on
-top when the case has findings, and counts false matches (`different`
+candidate thresholds set it runs `checkFidelity` and the gate's `decide` on
+top. A case with no findings (absent or `undefined`) goes to the gate as an
+empty list and is refused as `not_verified`, the same as a failed verifier: it
+fails closed *(event, 28 Oct, N1; until then it took the fidelity decision
+alone and could RELEASE)*. Scoring fidelity alone is an explicit option,
+`{ scope: "fidelity" }`, which `npm run calibrate` uses because no verifier has
+judged its pairs, and prints as not a gate decision. It counts false matches (`different`
 released), false refuses (`same` refused), REVIEW per label and unmeasured
 cases. `scaledCandidates(base, factors)` multiplies the delta_e and hist
 limits by each factor and divides the texture limits (capped at 1); area
@@ -646,8 +661,8 @@ server, which read it from the receipt.
   auth header replaced by a placeholder, every image data URL replaced by its
   byte count and sha256, and the key's value replaced wherever it appears;
   `npm run serve` and `npm run job:live` write it to
-  `evidence/verifier-<started_at>.json`. Images are sent as they are: this
-  build has no JPEG decoder, so it cannot resize (Baseten's limits are 10 MB
+  `evidence/verifier-<started_at>.json`. Images are sent as they are, not
+  resized (Grok 09:55; jpeg-js is used for fidelity decode only) (Baseten's limits are 10 MB
   an image, 8 images, 100 MiB a body; each is refused before the request).
 - `npm run job:live [-- <garment dir> <job id> [<jobs root>]]`
   (`scripts/live-job.ts`) runs one real job on a garment's intake photos

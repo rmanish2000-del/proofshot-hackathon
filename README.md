@@ -143,8 +143,8 @@ check is the masked one of SPEC §10, and the run is live; until a segmenter
 runs there is no mask, so fidelity is REVIEW and the gate can say REVIEW at
 best. The segmenter becomes SAM 3.1 once `MODEL_SEGMENT` and `MODEL_API_KEY`
 are set (the masks are decoded by `@meta-sam/parser`, see Dependencies); with
-masks the fidelity check reaches the images, and a JPEG is still unmeasured
-because this build decodes only PNG. Every step's provider is listed under
+masks the fidelity check decodes the images (JPEG through jpeg-js, PNG in
+house) and measures them. Every step's provider is listed under
 "Which provider ran each step" on the page and in the `npm run serve` output.
 Jobs go to `data/jobs/upload-<stamp>/` (the stripped photos under `sources/`);
 `.gitignore` covers `data/jobs/upload-*/`, so a seller's photos are never
@@ -206,11 +206,13 @@ renderer takes an injected transport.
 
 ## Dependencies and datasets
 
-- Runtime: one package, `@meta-sam/parser` 0.1.0 (Meta's streaming parser
-  for SAM 3 segmentation tokens, pinned exactly, no runtime dependencies of
+- Runtime: two packages, pinned exactly. `@meta-sam/parser` 0.1.0 (Meta's
+  streaming parser for SAM 3 segmentation tokens, no runtime dependencies of
   its own; glue in `src/sam-parser.ts`). Its licence is the **SAM License**
   (`node_modules/@meta-sam/parser/LICENSE`, not MIT): read it before
-  redistributing anything built on it. Everything else uses only Node's
+  redistributing anything built on it. `jpeg-js` 0.4.4 (BSD-3-Clause), used
+  only to decode JPEG photos and renders for the fidelity check
+  (`src/image.ts`). Everything else uses only Node's
   standard library (`node:crypto`, `node:fs`, `node:zlib` for PNG masks,
   `node:test`).
 - Development: `typescript`, `@types/node`.
@@ -224,18 +226,18 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 162 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 09:30 IST, tree of 256dcc5 plus this change |
+| Test suite green | 187 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 11:35 IST, tree of 56def45 |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
 | Live verifier call with images (4 JPEGs, 715×1600) | 2 calls, both HTTP 200: the first cut off at max_tokens 1500 (finish_reason length, 1338 reasoning tokens), the second complete at 4096 (finish_reason stop, 1808 completion tokens, 9 findings all `match`) | `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `evidence/verifier-2026-10-28T03-59-30-015Z.json` (key placeholder, images as size and hash) |
-| Live pipeline job through the verifier | 2 jobs on kurta-01, stand-in render, no segmenter: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer), `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask); both receipts verify | `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `demo/recordings/live-kurta-01-2/` |
-| Deliberate-mismatch live job | 1 job (n=1): kurta-01 sources, kurta-02 front as the render (`--render`), no segmenter: REFUSE (`hard_mismatch`, color mismatch at 0.99) | `data/jobs/live-kurta-01-mismatch/`, `evidence/verifier-2026-10-28T04-25-58-791Z.json` |
+| Live pipeline job through the verifier | 4 jobs on kurta-01, stand-in render: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer) and `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask), both with no segmenter; `live-kurta-01-sam` REVIEW with SAM 3.1 masks (fidelity unmeasured: run before the JPEG decode); `live-kurta-01-sam-2` (189f87c) RELEASE with SAM 3.1 masks and fidelity measured on the JPEGs (delta_e 0.0001, texture 1). **That RELEASE is the owner's photo checked against itself** (the stand-in render is kurta-01 front): it proves the measured path runs end to end, not that the gate is accurate, and its shop card is tagged "owner's photo, stands in for render" | `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `data/jobs/live-kurta-01-sam/`, `data/jobs/live-kurta-01-sam-2/`, `demo/recordings/live-kurta-01-2/` |
+| Deliberate-mismatch live job | 1 job (n=1): kurta-01 sources, kurta-02 front as the render (`--render`), no segmenter: REFUSE (`hard_mismatch`, color mismatch at 0.99) | `data/jobs/live-kurta-01-mismatch/`, `evidence/verifier-2026-10-28T04-25-58-791Z.json`, recording `demo/recordings/live-kurta-01-mismatch/` (replays to REFUSE) |
 | Verifier accuracy | **not measured**: two live comparisons are a photo against itself (the stand-in) and one is a single deliberate mismatch that was refused; that shows the model can catch one obvious mismatch, not how often it does | the three live jobs above |
 | Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
 | SAM 3.1 masks decoded | yes, in tests: `@meta-sam/parser` 0.1.0 turns the logged answer into one box (27,169 to 651,1408 of 715×1600, confidence 0.957) and one full-frame mask whose garment pixels all fall inside that box | `test/sam-parser.test.ts` against `evidence/sam-2026-10-28T03-04-30-778Z.json` and the committed photo |
-| SAM 3.1 segmentation in the gate | **wired, not yet run live in a job**: `providersFromEnv` builds the SAM segmenter from `MODEL_SEGMENT` + `MODEL_API_KEY` with the parser glue as default, and the fidelity check takes its masks; no pipeline job has run through SAM live yet, and with JPEG photos fidelity stays REVIEW (no JPEG decoder) | tests in `test/sam-parser.test.ts` and `test/serve.test.ts` |
-| Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
+| SAM 3.1 segmentation in the gate | **run live in one job**: `live-kurta-01-sam` (kurta-01, stand-in render) got 3 kurta segments from SAM 3.1 (scores 0.957, 0.949, 0.973); fidelity was unmeasured (REVIEW: that job ran before the JPEG decode of R3), so the gate said REVIEW. Its SAM calls have no per-call log in `evidence/` (only the receipt's segments entry). The re-run `live-kurta-01-sam-2` (189f87c) logged each of its 4 SAM calls (`evidence/sam-2026-10-28T05-4*.json`, key and headers left out) and measured fidelity on the masks | `data/jobs/live-kurta-01-sam/`, `data/jobs/live-kurta-01-sam-2/`, tests in `test/sam-parser.test.ts` and `test/serve.test.ts` |
+| Fidelity thresholds | **uncalibrated**: `npm run calibrate` (R4) scores 20 ordered pairs of the 5 committed kurta photos (same garment dir = same). With SAM masks (re-run 28 Oct 11:35, after the sam-2 logs) 3 of 5 photos have masks (all kurta-01): 6 same-garment pairs are measured, and the current values refuse 4 of them (none at 1.5x looser); the other 14 pairs, including every different-garment pair, are unmeasured because kurta-02 has no SAM log, so there is no false-match rate yet. With whole-frame masks (background included, not the SPEC §10 measure) the current values refuse all 8 same-garment pairs (front against back counts as same); at 2x looser the 8 are released and the 12 different-garment pairs go to REVIEW. 5 photos of 2 garments, so no threshold is changed on this. The CLI scores the fidelity check alone (no verifier findings, said in its output); in the scorer a pair with no findings now fails closed at the gate (REFUSE `not_verified`), fixed in N1 after PS-1 found it released |  `config/fidelity.json`, `evidence/calibration-sam-20261028.json`, `evidence/calibration-sam-20261028-1135.json`, `evidence/calibration-whole-frame-20261028.json` |
 | Verify page in a real browser | **not checked** | tested in Node against the same core |
 | Seller upload page in a real browser | **not checked** | the server, the API, the gate states and the page's text are tested in Node (`test/serve.test.ts`); no browser has loaded `upload.html` yet |
 | Public repo | private until the 3 Nov secret scan and Manish's click | |

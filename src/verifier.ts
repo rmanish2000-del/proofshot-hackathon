@@ -16,8 +16,8 @@
 // the Authorization header. The call log handed to `onCall` carries the request
 // with every image replaced by its byte count and hash, the response, and the
 // key's value replaced wherever it appears. The fetch is injected, so a test
-// runs zero network calls. No image is resized: this build has no JPEG decoder,
-// so the photos go as they are (Baseten allows 10 MB per image, 100 MiB a body).
+// runs zero network calls. No image is resized (jpeg-js is for the fidelity
+// decode only), so the photos go as they are (Baseten allows 10 MB per image, 100 MiB a body).
 
 import { BASETEN_BASE, BASETEN_MODEL, BasetenConfigError, KEY_PLACEHOLDER } from "./baseten.ts";
 import type { SourceImage, Verifier, VerifierUsage } from "./pipeline.ts";

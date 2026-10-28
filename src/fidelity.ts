@@ -7,9 +7,11 @@
 
 import { readFileSync } from "node:fs";
 
+import { decodeRgb } from "./image.ts";
 import type { FidelityChecker, Segmenter } from "./pipeline.ts";
-import { decodePng, maskFromPng, rgbFromPng } from "./png.ts";
+import { decodePng, maskFromPng } from "./png.ts";
 import type { Mask, RgbImage } from "./png.ts";
+import { imageExt } from "./render.ts";
 import type { Decision } from "./types.ts";
 
 export interface Thresholds {
@@ -237,7 +239,7 @@ export interface MaskedFidelityOptions {
  * first segment with mask bytes for the first source photo (labels are
  * `<image name>/<label>`); the render mask comes from the given segmenter, asked
  * once with the render as an image named `render`. A missing mask, or an image
- * this build cannot decode (only PNG is decoded: there is no JPEG decoder), is
+ * that is not a JPEG or PNG or does not decode (image.ts), is
  * REVIEW with `metrics: null` and the reason, never a pass. With both masks and
  * both images decoded, the result is checkFidelity's.
  */
@@ -257,9 +259,9 @@ export function maskedFidelityChecker(opts: MaskedFidelityOptions = {}): Fidelit
 
       const decoded: Record<"source" | "render", RgbImage | null> = { source: null, render: null };
       for (const [name, bytes] of [["source", source.bytes], ["render", render]] as const) {
-        if (!isPng(bytes)) return unmeasured(`${name} image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured`);
+        if (!imageExt(bytes)) return unmeasured(`${name} image is not a JPEG or PNG, so it cannot be measured`);
         try {
-          decoded[name] = rgbFromPng(decodePng(bytes));
+          decoded[name] = decodeRgb(bytes);
         } catch (err) {
           return unmeasured(`${name} image could not be decoded: ${err instanceof Error ? err.message : String(err)}`);
         }
@@ -275,9 +277,4 @@ export function maskedFidelityChecker(opts: MaskedFidelityOptions = {}): Fidelit
       return checkFidelity({ source: decoded.source!, render: decoded.render!, sourceMask: masks.source, renderMask: masks.render }, t);
     },
   };
-}
-
-const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
-function isPng(bytes: Uint8Array): boolean {
-  return bytes.length >= 8 && PNG_SIGNATURE.every((b, i) => bytes[i] === b);
 }
