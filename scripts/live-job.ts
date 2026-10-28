@@ -16,16 +16,20 @@
 // redacted log in evidence/verifier-<started_at>.json, each SAM call's in
 // evidence/sam-<started_at>.json (Grok 10:20, rule 13). Exits 2 with no job
 // when the verifier is not live, 1 when the job was refused before the gate.
+// When the jobs root is the repo's data/jobs it rebuilds web/shop afterwards
+// (N6), and exits 1 if the shop then has problems.
 //
 // Defaults: data/garments/kurta-01, live-kurta-01, data/jobs (Grok, 28 Oct
 // 09:00). The garment note is the "Key: value" lines of the garment's note.txt.
 
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { runJob } from "../src/pipeline.ts";
 import { fileRenderer } from "../src/render.ts";
 import { providersFromEnv } from "../src/serve.ts";
+import { shopAfterJob } from "../src/shop.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
@@ -87,4 +91,16 @@ if (result.refused) {
 }
 for (const r of result.renders) {
   console.log(`${r.render_id}: ${r.decision}${r.cited ? ` (${r.cited.rule}: ${r.cited.reason})` : ""}`);
+}
+
+// N6: a job in data/jobs feeds the committed shop, so rebuild it here rather
+// than leave web/shop/catalog.json stale for the shop test in CI.
+const shop = shopAfterJob(jobsRoot, fileURLToPath(new URL("..", import.meta.url)));
+if (shop) {
+  for (const p of shop.build.problems) console.error(`shop: skip ${p.job_id}: ${p.reason}`);
+  console.log(`shop rebuilt: ${shop.build.rows.length} row(s) in ${shop.out}; commit web/shop with the job`);
+  if (shop.build.problems.length > 0) {
+    console.error("the shop has problems: fix them before committing this job");
+    process.exitCode = 1;
+  }
 }

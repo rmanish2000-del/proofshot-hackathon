@@ -12,7 +12,7 @@ import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { Receipt, recordedClock } from "../src/receipt.ts";
 import type { EntryKind } from "../src/receipt.ts";
-import { CATALOG_FILE, FIXTURE_JOB_ID, GARMENTS_DIR, buildShop, garmentDirs, garmentNoteFrom, rowsForJob, writeFixtureJob, writeGarmentPreviewJob, writeGarmentPreviewJobs } from "../src/shop.ts";
+import { CATALOG_FILE, FIXTURE_JOB_ID, GARMENTS_DIR, buildShop, garmentDirs, garmentNoteFrom, rowsForJob, shopAfterJob, writeFixtureJob, writeGarmentPreviewJob, writeGarmentPreviewJobs } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
 
@@ -227,4 +227,39 @@ test("#sha prefill parses the fragment and lower-cases it; anything else is null
   assert.equal(shaFromFragment(""), null);
   assert.equal(shaFromFragment(null), null);
   assert.equal(shaFromFragment(undefined), null);
+});
+
+test("N6: a job written to the repo's data/jobs rebuilds web/shop; a scratch jobs root writes no shop", async () => {
+  const repo = tmp("repo");
+  const jobs = join(repo, "data", "jobs");
+  await job(jobs, "first");
+  const built = shopAfterJob(jobs, repo);
+  assert.ok(built, "data/jobs feeds the committed shop");
+  assert.equal(built.out, join(repo, "web", "shop"));
+  assert.deepEqual(built.build.problems, []);
+  const catalog = () => (JSON.parse(readFileSync(join(repo, "web", "shop", CATALOG_FILE), "utf8")) as { rows: { job_id: string }[] }).rows.map((r) => r.job_id);
+  assert.deepEqual(catalog(), ["first"]);
+
+  // The next job lands in the catalog with no separate npm run shop.
+  await job(jobs, "second");
+  assert.deepEqual(shopAfterJob(join(jobs, "."), repo)!.build.rows.map((r) => r.job_id), ["first", "second"]);
+  assert.deepEqual(catalog(), ["first", "second"]);
+
+  // A broken receipt is reported, so the runner can exit non-zero.
+  const path = join(jobs, "first", RECEIPT_FILE);
+  writeFileSync(path, readFileSync(path, "utf8").replace("note for first", "note for someone else"));
+  assert.deepEqual(shopAfterJob(jobs, repo)!.build.problems.map((p) => p.job_id), ["first"]);
+
+  const scratch = tmp("scratch-repo");
+  await job(join(scratch, "out", "jobs"), "scratch");
+  assert.equal(shopAfterJob(join(scratch, "out", "jobs"), scratch), null);
+  assert.equal(existsSync(join(scratch, "web")), false, "nothing written for a scratch jobs root");
+});
+
+test("N6: job:live calls the shop step after the job and fails loudly on shop problems", () => {
+  const source = readFileSync(join(ROOT, "scripts", "live-job.ts"), "utf8");
+  const run = source.indexOf("await runJob(");
+  const shop = source.indexOf("shopAfterJob(jobsRoot,");
+  assert.ok(run > 0 && shop > run, "shopAfterJob runs after runJob, on the same jobs root");
+  assert.match(source.slice(shop), /problems\.length > 0\)[\s\S]*process\.exitCode = 1/);
 });
