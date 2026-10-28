@@ -13,6 +13,8 @@ import {
   MAX_IMAGE_BYTES,
   VERIFIER_MAX_TOKENS,
   VERIFIER_RETRY_MAX_TOKENS,
+  VERIFIER_RETRY_TIMEOUT_MS,
+  VERIFIER_TIMEOUT_MS,
   VerifierTransportError,
   VerifierTruncatedError,
   basetenVerifier,
@@ -266,4 +268,84 @@ test("finish_reason length twice: VerifierTruncatedError, and in the pipeline th
   assert.equal(replay.renders[0]!.cited!.rule, "verifier_truncated");
   const replayed = parseReceipt(readFileSync(join(replay.dir, "receipt.jsonl"), "utf8"));
   assert.deepEqual(replayed.slice(1).map((e) => e.payload), entries.slice(1).map((e) => e.payload));
+});
+
+/** A fetch that hangs until its signal aborts (as the live 17:08 and 17:11 calls did) for the listed call numbers, else answers. */
+function hangs(hang: readonly number[], body: string) {
+  let n = 0;
+  const fetch: VerifierFetch = (_url, init) => {
+    n++;
+    if (!hang.includes(n)) return Promise.resolve({ status: 200, text: async () => body });
+    // AbortSignal.timeout's timer is unref'd, so hold the event loop open until it fires.
+    const keep = setInterval(() => {}, 1000);
+    return new Promise((_resolve, reject) =>
+      init.signal.addEventListener("abort", () => {
+        clearInterval(keep);
+        reject(init.signal.reason);
+      }),
+    );
+  };
+  return { fetch, calls: () => n };
+}
+
+test("NR4c: a timeout is sent once more with the longer timeout; both attempts are on the usage and both calls are logged", async () => {
+  assert.equal(VERIFIER_RETRY_TIMEOUT_MS > VERIFIER_TIMEOUT_MS, true);
+  const h = hangs([1], FULL);
+  const logs: VerifierCallLog[] = [];
+  const out = await basetenVerifier({ env, fetch: h.fetch, onCall: (l) => logs.push(l), timeoutMs: 20, retryTimeoutMs: 400 }).verify(req);
+  assert.equal(h.calls(), 2);
+  assert.equal(logs.length, 2);
+  assert.match(logs[0]!.error!, /^TimeoutError/);
+  assert.equal(out.raw, JSON.stringify(findings));
+  assert.deepEqual(out.usage?.attempts, [
+    { max_tokens: VERIFIER_MAX_TOKENS, finish_reason: null, timeout_ms: 20, error: "VerifierTransportError: TimeoutError: The operation was aborted due to timeout" },
+    { max_tokens: VERIFIER_MAX_TOKENS, finish_reason: "stop", completion_tokens: 9000, reasoning_tokens: 8100, timeout_ms: 400 },
+  ]);
+});
+
+test("NR4c: two timeouts refuse as not_verified (one retry, not more), with both attempts on the receipt, and replay keeps them", async () => {
+  const h = hangs([1, 2, 3], FULL);
+  const err = await basetenVerifier({ env, fetch: h.fetch, timeoutMs: 10, retryTimeoutMs: 20 }).verify(req).then(
+    () => assert.fail("a second timeout must throw"),
+    (e: unknown) => e as VerifierTransportError & { usage: { attempts: { timeout_ms: number; finish_reason: null }[] } },
+  );
+  assert.ok(err instanceof VerifierTransportError);
+  assert.equal(err.timedOut, true);
+  assert.equal(h.calls(), 2);
+  assert.deepEqual(err.usage.attempts.map((a) => [a.timeout_ms, a.finish_reason]), [[10, null], [20, null]]);
+
+  const out = mkdtempSync(join(tmpdir(), "verifier-timeout-"));
+  const sources = [{ name: "1-front.jpg", bytes: JPEG }];
+  const providers = {
+    segmenter: { segment: async () => [] },
+    renderer: standInRenderer(),
+    verifier: basetenVerifier({ env, fetch: hangs([1, 2], FULL).fetch, timeoutMs: 10, retryTimeoutMs: 20 }),
+    fidelity: { check: async () => ({ decision: "RELEASE" as const, metrics: null, reasons: [] }) },
+  };
+  const r = await runJob({ jobId: "live-timeout", garmentNote: "kurta", scenes: ["studio"], sources }, { outRoot: out, providers, provenance: "live" });
+  assert.equal(r.renders[0]!.decision, "REFUSE");
+  assert.equal(r.renders[0]!.cited!.rule, "not_verified");
+  const entries = parseReceipt(readFileSync(join(r.dir, "receipt.jsonl"), "utf8"));
+  const v = entries.find((e) => e.kind === "verifier")!.payload as { findings: unknown[]; usage: { attempts: { timeout_ms: number; error: string }[] }; error: string };
+  assert.deepEqual(v.findings, []);
+  assert.deepEqual(v.usage.attempts.map((a) => a.timeout_ms), [10, 20]);
+  assert.ok(v.usage.attempts.every((a) => /TimeoutError/.test(a.error)));
+  assert.match(v.error, /^VerifierTransportError: TimeoutError/);
+  assert.equal(entries.some((e) => e.kind === "release"), false);
+
+  const to = join(mkdtempSync(join(tmpdir(), "verifier-rec-")), "timeout");
+  recordJob({ jobDir: r.dir, sources, to });
+  const replay = await replayJob(loadRecording(to), { outRoot: mkdtempSync(join(tmpdir(), "verifier-replay-")) });
+  assert.equal(replay.renders[0]!.cited!.rule, "not_verified");
+  const replayed = parseReceipt(readFileSync(join(replay.dir, "receipt.jsonl"), "utf8"));
+  assert.deepEqual(replayed.slice(1).map((e) => e.payload), entries.slice(1).map((e) => e.payload));
+});
+
+test("NR4c: an HTTP error is not a timeout and is not retried", async () => {
+  const { calls, fetch } = recording(500, "{}");
+  const err = await basetenVerifier({ env, fetch }).verify(req).catch((e: unknown) => e as VerifierTransportError & { usage?: unknown });
+  assert.ok(err instanceof VerifierTransportError);
+  assert.equal(err.timedOut, false);
+  assert.equal(err.usage, undefined, "one request: no attempts list");
+  assert.equal(calls.length, 1);
 });

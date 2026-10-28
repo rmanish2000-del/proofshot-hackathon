@@ -6,7 +6,8 @@
 // one user message whose content parts name each image ("source 1: <name>",
 // ... "render") before its data URL, with the instruction last. temperature 0,
 // max_tokens 8192 (the model reasons before it answers; one retry at 16384 when
-// the answer is cut off, NR2), no response_format
+// the answer is cut off, NR2; one retry at a longer timeout when the request
+// times out, NR4c), no response_format
 // (Muse Spark Open on Baseten has no JSON mode). The answer's message content is
 // returned raw for src/schema.ts parseFindings, after one defensive step: code
 // fences and prose around the first JSON object are dropped. Anything that is
@@ -37,6 +38,15 @@ export const VERIFIER_MAX_TOKENS = 8192;
 /** The one retry after a finish_reason "length" answer asks for this many. */
 export const VERIFIER_RETRY_MAX_TOKENS = 16384;
 export const VERIFIER_TIMEOUT_MS = 180_000;
+/**
+ * A request that times out is sent once more with this timeout (NR4c). The
+ * evening of 28 Oct the endpoint slowed down: the 16:49 try-on answer took
+ * 126 s for 2201 completion tokens (morning answers of 1800 to 2460 tokens took
+ * 12 to 28 s), and both 17:08 and 17:11 calls hit 180 s with no answer
+ * (evidence/verifier-2026-10-28T17-08-14-529Z.json, ...T17-11-38-050Z.json).
+ * The render images were 151 and 163 KB, smaller than the source photos.
+ */
+export const VERIFIER_RETRY_TIMEOUT_MS = 360_000;
 /** Baseten's per-image limit; a larger image is refused before the request. */
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 /** Baseten's per-request image limit. */
@@ -57,6 +67,12 @@ export const VERIFIER_FINAL_INSTRUCTION =
 
 export class VerifierTransportError extends Error {
   override name = "VerifierTransportError";
+  /** True when the request was aborted by its timeout. */
+  readonly timedOut: boolean;
+  constructor(message: string, timedOut = false) {
+    super(message);
+    this.timedOut = timedOut;
+  }
 }
 
 /**
@@ -109,6 +125,7 @@ export interface BasetenVerifierOptions {
   readonly maxTokens?: number;
   readonly retryMaxTokens?: number;
   readonly timeoutMs?: number;
+  readonly retryTimeoutMs?: number;
   readonly now?: () => number;
 }
 
@@ -217,7 +234,11 @@ function errorText(err: unknown): string {
  * content throws, after the redacted log went to `onCall`. An answer with
  * finish_reason "length" is cut off and is never read: the request is sent once
  * more at the retry limit, and a second "length" throws VerifierTruncatedError.
- * After a retry the usage lists both attempts (limit, finish_reason, tokens).
+ * A request that times out is sent once more, once per render, with the longer
+ * retry timeout (NR4c); a second timeout throws. Whenever more than one request
+ * was sent, the usage (on the result or on the thrown error) lists every attempt
+ * in order (limit, finish_reason, tokens; timeout and error for one that got no
+ * answer), so the receipt shows what was tried.
  * On success the raw value is the message content with fences and prose around
  * the JSON object dropped; parseFindings decides whether it is the schema.
  */
@@ -230,25 +251,51 @@ export function basetenVerifier(opts: BasetenVerifierOptions): Verifier {
   const now = opts.now ?? Date.now;
   const maxTokens = opts.maxTokens ?? VERIFIER_MAX_TOKENS;
   const retryMaxTokens = opts.retryMaxTokens ?? VERIFIER_RETRY_MAX_TOKENS;
+  const timeoutMs = opts.timeoutMs ?? VERIFIER_TIMEOUT_MS;
+  const retryTimeoutMs = opts.retryTimeoutMs ?? VERIFIER_RETRY_TIMEOUT_MS;
 
   return {
     identity: { provider: VERIFIER_PROVIDER, model, base: BASETEN_BASE },
     verify: async (req) => {
       const messages = verifierMessages(req);
       const images = [...req.sources.map((s) => s.bytes), req.render].map((b) => ({ bytes: b.length, ...(imageSize(b) ?? { width: 0, height: 0 }) }));
-      const send = (limit: number) => call({ opts, key, model, url, now, messages, maxTokens: limit, renderId: req.renderId });
+      const attempts: VerifierAttempt[] = [];
+      let timeoutRetried = false;
 
-      const first = await send(maxTokens);
-      if (finishReason(first) !== "length") {
-        const usage = usageOf(first, images);
-        return { raw: extractJsonObject(messageContent(first)), ...(usage ? { usage } : {}) };
+      /** One request at `limit` tokens, sent again once per render if it times out. */
+      const send = async (limit: number): Promise<unknown> => {
+        for (;;) {
+          const timeout = timeoutRetried ? retryTimeoutMs : timeoutMs;
+          const longer = timeoutRetried ? { timeout_ms: timeout } : {};
+          try {
+            const body = await call({ opts, key, model, url, now, messages, maxTokens: limit, timeoutMs: timeout, renderId: req.renderId });
+            attempts.push({ ...attemptOf(body, limit), ...longer });
+            return body;
+          } catch (e) {
+            const timedOut = e instanceof VerifierTransportError && e.timedOut;
+            attempts.push({ max_tokens: limit, finish_reason: null, ...(timedOut ? { timeout_ms: timeout } : longer), error: errorText(e) });
+            if (timedOut && !timeoutRetried) {
+              timeoutRetried = true;
+              continue;
+            }
+            // The pipeline puts a thrown error's usage on the receipt (and replay keeps it).
+            if (attempts.length > 1 && e instanceof Error) Object.assign(e, { usage: { images, attempts: [...attempts] } });
+            throw e;
+          }
+        }
+      };
+      const usageAfter = (body: unknown): VerifierUsage | undefined =>
+        attempts.length > 1 ? { ...usageOf(body, images), attempts: [...attempts] } : usageOf(body, images);
+
+      let body = await send(maxTokens);
+      if (finishReason(body) === "length") {
+        body = await send(retryMaxTokens);
+        if (finishReason(body) === "length") {
+          throw new VerifierTruncatedError(`the answer was cut off at max_tokens ${maxTokens} and again at ${retryMaxTokens} (finish_reason length)`, usageAfter(body)!);
+        }
       }
-      const retry = await send(retryMaxTokens);
-      const usage: VerifierUsage = { ...usageOf(retry, images), attempts: [attemptOf(first, maxTokens), attemptOf(retry, retryMaxTokens)] };
-      if (finishReason(retry) === "length") {
-        throw new VerifierTruncatedError(`the answer was cut off at max_tokens ${maxTokens} and again at ${retryMaxTokens} (finish_reason length)`, usage);
-      }
-      return { raw: extractJsonObject(messageContent(retry)), usage };
+      const usage = usageAfter(body);
+      return { raw: extractJsonObject(messageContent(body)), ...(usage ? { usage } : {}) };
     },
   };
 }
@@ -262,6 +309,7 @@ async function call(a: {
   now: () => number;
   messages: VerifierMessage[];
   maxTokens: number;
+  timeoutMs: number;
   renderId: string;
 }): Promise<unknown> {
   const { opts, key, model, url, now, messages } = a;
@@ -269,17 +317,19 @@ async function call(a: {
   const started = now();
   let response: VerifierCallLog["response"] = null;
   let error: string | null = null;
+  let timedOut = false;
   try {
     const res = await opts.fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(opts.timeoutMs ?? VERIFIER_TIMEOUT_MS),
+      signal: AbortSignal.timeout(a.timeoutMs),
     });
     response = { status: res.status, body: parseOrText(await res.text()) };
     if (res.status < 200 || res.status > 299) error = `VerifierTransportError: Baseten answered HTTP ${res.status}`;
   } catch (e) {
     error = errorText(e);
+    timedOut = e instanceof Error && e.name === "TimeoutError";
   }
   const finished = now();
 
@@ -298,7 +348,7 @@ async function call(a: {
   };
   opts.onCall?.(scrub(log, key));
 
-  if (error) throw new VerifierTransportError(error.replace(/^VerifierTransportError: /, ""));
+  if (error) throw new VerifierTransportError(error.replace(/^VerifierTransportError: /, ""), timedOut);
   if (typeof response!.body !== "object" || response!.body === null) throw new VerifierProtocolError("verifier output: the response body is not JSON");
   return response!.body;
 }

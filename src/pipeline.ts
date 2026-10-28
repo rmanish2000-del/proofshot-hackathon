@@ -108,12 +108,19 @@ export interface Renderer {
   render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[]; garmentNote?: string }): Promise<RenderedImage>;
 }
 
-/** One verifier request when the first answer was cut off: the limit asked for and how it ended. */
+/**
+ * One verifier request when there was more than one (a cut-off answer, or a
+ * timeout, NR4c): the limit asked for and how it ended. `timeout_ms` is on a
+ * request that timed out and on every request sent at the longer retry
+ * timeout; `error` is on a request that got no answer.
+ */
 export interface VerifierAttempt {
   readonly max_tokens: number;
   readonly finish_reason: string | null;
   readonly completion_tokens?: number;
   readonly reasoning_tokens?: number;
+  readonly timeout_ms?: number;
+  readonly error?: string;
 }
 
 export interface VerifierUsage {

@@ -719,8 +719,11 @@ server, which read it from the receipt.
   read: the request is sent once more at `max_tokens: 16384`; if that answer
   is cut off too, the verifier throws `VerifierTruncatedError` and the gate
   refuses the render with `cited.rule: "verifier_truncated"` (ahead of the
-  `not_verified` reasons). After a retry, `usage.attempts` lists each attempt
-  (`max_tokens`, `finish_reason`, completion and reasoning tokens), on a pass
+  `not_verified` reasons). A request that times out (180 s) is sent once more
+  per render with a 360 s timeout (NR4c); a second timeout is a thrown
+  verifier and a `not_verified` REFUSE. After any retry, `usage.attempts`
+  lists each attempt (`max_tokens`, `finish_reason`, completion and reasoning
+  tokens; `timeout_ms` and `error` for an attempt that timed out), on a pass
   and on a refusal, and a replay repeats it. The message content is the
   raw value, after code fences and prose around the first JSON object are
   dropped; `parseFindings` (§4) still checks it strictly, so prose, a cut-off
