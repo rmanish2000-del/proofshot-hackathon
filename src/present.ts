@@ -86,8 +86,10 @@ export interface JobView {
   readonly sources: readonly { readonly name: string; readonly sha256: string }[];
   readonly chain: ChainCheck;
   readonly renders: readonly RenderView[];
-  /** The pipeline for the first render, as /judge draws it. */
+  /** The pipeline for the first render. */
   readonly pipeline: readonly PipelineNode[];
+  /** The pipeline for each render by render_id, as /judge draws it for the render picked (NR5b). */
+  readonly pipelines: Readonly<Record<string, readonly PipelineNode[]>>;
   readonly cards: readonly EntryCard[];
   /** Every model or service name this view shows; the test checks each has its entry. */
   readonly components: readonly string[];
@@ -222,7 +224,6 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
     };
   });
 
-  const first = ids[0] ?? null;
   const node = (key: NodeKey, title: string, e: ReceiptEntry | undefined, component: string | null, detail: string): PipelineNode => ({
     key, title, component,
     status: e ? "done" : "UNVERIFIED",
@@ -230,19 +231,25 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
     seq: e ? e.seq : null,
     latency_ms: e && prevAt(e) ? ms(prevAt(e)!, e.at) : null,
   });
-  const render = first ? forRender("render", first) : undefined;
-  const verifier = first ? forRender("verifier", first) : undefined;
-  const gate = first ? forRender("gate", first) : undefined;
-  const rv = renders[0];
-  const renderComponent = render
-    ? obj(render.payload).provider === REPLICATE_PROVIDER && rv?.badge.kind === "ai-generated"
+  const renderComponentOf = (id: string | null): string | null => {
+    const render = id ? forRender("render", id) : undefined;
+    if (!render) return null;
+    const rv = renders.find((r) => r.render_id === id);
+    return obj(render.payload).provider === REPLICATE_PROVIDER && rv?.badge.kind === "ai-generated"
       ? `Pruna P-Image-Try-On via Replicate (${str(obj(render.payload).model) ?? "model not recorded"})`
-      : `${str(obj(render.payload).provider) ?? "?"} / ${str(obj(render.payload).model) ?? "?"}`
-    : null;
+      : `${str(obj(render.payload).provider) ?? "?"} / ${str(obj(render.payload).model) ?? "?"}`;
+  };
   const segName = segments ? segmenterName(segments.payload) : null;
-  const verName = verifier ? verifierName(verifier.payload) : null;
   const last = entries.at(-1);
-  const pipeline: PipelineNode[] = [
+  // NR5b: one pipeline per render, so /judge shows the steps of the render picked, not always the first.
+  const pipelineOf = (id: string | null): PipelineNode[] => {
+    const render = id ? forRender("render", id) : undefined;
+    const verifier = id ? forRender("verifier", id) : undefined;
+    const gate = id ? forRender("gate", id) : undefined;
+    const rv = renders.find((r) => r.render_id === id);
+    const renderComponent = renderComponentOf(id);
+    const verName = verifier ? verifierName(verifier.payload) : null;
+    return [
     node("upload", "Upload", job, null, `${sources.length} source photo(s), metadata stripped at intake`),
     {
       ...node("segment", "Segmentation", segments, segName, segName ? `${num(obj(segments?.payload).count) ?? 0} segment(s)` : "the entry records no segmenter: 0 segments"),
@@ -257,13 +264,16 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
       ...(chain.ok ? {} : { status: "UNVERIFIED" as const }),
       latency_ms: null,
     },
-  ];
+    ];
+  };
+  const pipeline = pipelineOf(ids[0] ?? null);
+  const pipelines = Object.fromEntries(ids.map((id) => [id, pipelineOf(id)]));
 
   const components = [
     ...entries.filter((e) => e.kind === "segments").map((e) => segmenterName(e.payload)),
     ...entries.filter((e) => e.kind === "verifier").map((e) => verifierName(e.payload)),
-    ...(renderComponent && rv?.badge.kind === "ai-generated" ? [renderComponent] : []),
-    ...(gate ? [GATE_LABEL] : []),
+    ...renders.filter((r) => r.badge.kind === "ai-generated").map((r) => renderComponentOf(r.render_id)),
+    ...(entries.some((e) => e.kind === "gate") ? [GATE_LABEL] : []),
   ].filter((c): c is string => c !== null);
 
   return {
@@ -274,6 +284,7 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
     chain,
     renders,
     pipeline,
+    pipelines,
     cards: entries.map((e) => ({ seq: e.seq, at: e.at, kind: e.kind, summary: summary(e), hash: e.hash, prev: e.prev })),
     components: [...new Set(components)],
   };

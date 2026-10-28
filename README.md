@@ -257,7 +257,7 @@ per gate attribute; review and submit), and the result card shows the seller's
 photos beside the result with the render-method badge read from the receipt.
 `http://127.0.0.1:8787/judge` is the judge view: a job picker (last 20 jobs
 under `--jobs`, with RELEASE / REVIEW / REFUSE counts), the pipeline for that
-job, input vs result, the gate chip with each reason (attribute, verdict,
+job (for the render picked, when a job has several), input vs result, the gate chip with each reason (attribute, verdict,
 hard/soft, evidence boxes over the photos), and the receipt as a timeline with
 **Verify chain**, a download, and a tamper demo that checks a copy with one
 byte changed and never touches the stored file. Every name on it comes from
@@ -265,7 +265,11 @@ the job's receipt (`src/present.ts`): SAM 3.1 only with a `segments` entry
 that records it, Muse Spark Open only with a `verifier` entry, the Pruna
 try-on only with a generative `render` entry; a step with no entry says
 UNVERIFIED. Source photos are served only when a file's bytes hash to the
-receipt's recorded sha256 (`--garments`, default `data/garments`). Not yet
+receipt's recorded sha256 (`--garments`, default `data/garments`); when no
+file matches, the page shows "Source photo not stored here (hash recorded)".
+If `/judge` answers 404, an older `npm run serve` from before NR5 is still
+holding port 8787 (seen 29 Oct 00:05, Grok's screenshot run): stop it, or
+start this one with `npm run serve -- --port 8788`. Not yet
 loaded in a real browser: the inline scripts are parse-checked in
 `test/present.test.ts`, and no screenshots exist.
 
