@@ -20,6 +20,8 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { COMPOSITE_MODEL, CompositeError, FEATHER_PX, WARP, composite, loadTemplate } from "./composite.ts";
+import { COMPOSITE_V2_MODEL, V2_CORRECTION_NOTE, V2_PARAMS, compositeV2 } from "./composite-v2.ts";
+import type { V2Params } from "./composite-v2.ts";
 import type { Template } from "./composite.ts";
 import { decodeRgb } from "./image.ts";
 import type { Renderer, Segment, SourceImage } from "./pipeline.ts";
@@ -171,6 +173,49 @@ export function compositeRenderer(template: Template): Renderer {
   };
 }
 
+/**
+ * The composite v2 renderer (SPEC-composite-v2): the front photo's garment as
+ * a ghost-mannequin product shot on a studio backdrop, 1200x1600, by
+ * deterministic code, no template. No mask throws CompositeError
+ * (render_failed, REFUSE); a photo that fails the quality pre-check throws
+ * CompositeQualityReview (render_quality, REVIEW, no image). The fidelity
+ * check still compares against the seller's unmodified photo: the pipeline
+ * hands the checker the job's sources, never this output.
+ */
+export function compositeV2Renderer(params: V2Params = V2_PARAMS): Renderer {
+  return {
+    provider: "composite",
+    model: COMPOSITE_V2_MODEL,
+    render: async ({ sources, segments }) => {
+      const front = sources[0];
+      if (!front) throw new CompositeError("no garment mask: the job has no source photo");
+      const pick = frontMaskSegment(sources, segments ?? []);
+      if (!pick) throw new CompositeError(`no garment mask: no segment with mask bytes for ${front.name}`);
+      let src, mask;
+      try {
+        src = decodeRgb(front.bytes);
+        mask = maskFromPng(decodePng(pick.segment.mask));
+      } catch (err) {
+        throw new CompositeError(`${front.name} or its mask did not decode: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      const out = compositeV2(src, mask, params);
+      return {
+        bytes: out.png,
+        ext: "png",
+        renderMask: encodeGreyPng(out.renderMask.width, out.renderMask.height, out.renderMask.data.map((v) => (v ? 255 : 0))),
+        record: {
+          method: COMPOSITE_V2_MODEL,
+          generative: false,
+          mask: { source: front.name, segment_index: pick.index, sam_score: pick.segment.score },
+          composite: { params: out.params },
+          note: V2_CORRECTION_NOTE,
+          camera_use: "UNVERIFIED for camera",
+        },
+      };
+    },
+  };
+}
+
 /** Throws MuseImageRefused when the model id names Muse Image. */
 export function refuseMuseImage(model: string): void {
   if (MUSE_IMAGE.test(model)) throw new MuseImageRefused(`${JSON.stringify(model)} is Muse Image, which is not available in India (Meta GUP §2.2)`);
@@ -205,10 +250,22 @@ export function rendererFromEnv(env: Readonly<Record<string, string | undefined>
     return standInRenderer();
   }
   if (name === "composite") {
-    if (wanted && wanted !== COMPOSITE_MODEL) {
+    if (wanted && wanted !== COMPOSITE_MODEL && wanted !== COMPOSITE_V2_MODEL) {
       throw new RenderConfigError(`RENDER_PROVIDER composite runs no image model, so MODEL_RENDER ${JSON.stringify(wanted)} cannot go on a receipt; leave it unset`);
     }
-    const id = (env.RENDER_TEMPLATE ?? "").trim() || DEFAULT_TEMPLATE;
+    // v2 is the default. v1 stays selectable for old receipts: COMPOSITE_VERSION=v1,
+    // MODEL_RENDER composite-v1, or a RENDER_TEMPLATE (only v1 uses a template).
+    const template = (env.RENDER_TEMPLATE ?? "").trim();
+    const version = (env.COMPOSITE_VERSION ?? "").trim() || (wanted === COMPOSITE_MODEL || template ? "v1" : "v2");
+    if (version !== "v1" && version !== "v2") throw new RenderConfigError(`COMPOSITE_VERSION ${JSON.stringify(version)} is not v1 or v2`);
+    if (wanted && wanted !== (version === "v1" ? COMPOSITE_MODEL : COMPOSITE_V2_MODEL)) {
+      throw new RenderConfigError(`MODEL_RENDER ${JSON.stringify(wanted)} does not match COMPOSITE_VERSION ${version}`);
+    }
+    if (version === "v2") {
+      if (template) throw new RenderConfigError("composite v2 uses no template, so RENDER_TEMPLATE must be unset");
+      return compositeV2Renderer();
+    }
+    const id = template || DEFAULT_TEMPLATE;
     if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(id)) throw new RenderConfigError(`RENDER_TEMPLATE ${JSON.stringify(id)} is not a template id`);
     return compositeRenderer(loadTemplate(join(templatesDir, id), id));
   }

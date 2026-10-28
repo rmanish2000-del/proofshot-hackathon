@@ -51,7 +51,7 @@ export interface RecordedScene {
   /** The image under renders/, or null when the renderer threw. */
   /** `record` is the renderer's own render-entry fields (method, generative, template...), absent when it had none. */
   readonly render: { readonly file: string; readonly sha256: string; readonly record?: Readonly<Record<string, unknown>> } | null;
-  /** The render_failed reason, `<name>: <message>`, when `render` is null. */
+  /** The render_failed (or render_quality) reason, `<name>: <message>`, when `render` is null. */
   readonly render_error: string | null;
   readonly verifier: { readonly findings: readonly Finding[]; readonly usage?: VerifierUsage; readonly error?: string } | null;
   readonly fidelity: FidelityEntry | null;
@@ -187,7 +187,8 @@ export function recordJob(opts: RecordOptions): Manifest {
     const render_id = `${job_id}-r${i}`;
     const gate = byId("gate", render_id) ?? refuse(`scene ${i} (${render_id}) has no gate entry: the job did not finish`);
     const cited = payloadOf(gate).cited;
-    if (isObject(cited) && cited.rule === "render_failed") {
+    // A composite quality REVIEW (SPEC-composite-v2 §7) has no image either; its reason replays by name.
+    if (isObject(cited) && (cited.rule === "render_failed" || cited.rule === "render_quality")) {
       recordedScenes.push({ scene, render_id, render: null, render_error: String(cited.reason), verifier: null, fidelity: null });
       continue;
     }

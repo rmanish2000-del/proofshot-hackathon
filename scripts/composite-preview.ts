@@ -1,22 +1,25 @@
-// npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id>]
+// npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id> | v2]
 //
-// Offline look at the composite renderer (NR1): the mask comes from a committed
-// SAM call log (its output_text, decoded by src/sam-parser.ts) and the photo
-// is the one the log was made on (its sha256 must match the log's), so no
-// request is made. Writes the composite PNG and prints its sha256, the mask
-// used and the quads. A preview, not a job: nothing goes on a receipt.
+// Offline look at the composite renderer (NR1, NR3): the mask comes from a
+// committed SAM call log (its output_text, decoded by src/sam-parser.ts) and the
+// photo is the one the log was made on (its sha256 must match the log's), so no
+// request is made. Writes the composite PNG and prints its sha256, the mask used
+// and the parameters. `v2` runs composite v2 (SPEC-composite-v2); a template id
+// runs v1 on that template. A v2 quality REVIEW writes no image and prints the
+// reason and every check (exit 3). A preview, not a job: nothing goes on a receipt.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 import { loadTemplate } from "../src/composite.ts";
-import { DEFAULT_TEMPLATE, TEMPLATES_DIR, compositeRenderer } from "../src/render.ts";
+import { CompositeQualityReview, V2_PARAMS } from "../src/composite-v2.ts";
+import { DEFAULT_TEMPLATE, TEMPLATES_DIR, compositeRenderer, compositeV2Renderer } from "../src/render.ts";
 import { decodeSegments } from "../src/sam-parser.ts";
 import { sha256Hex } from "../src/util.ts";
 
-const [logPath, photoPath, outPath, templateId = DEFAULT_TEMPLATE] = process.argv.slice(2);
+const [logPath, photoPath, outPath, which = DEFAULT_TEMPLATE] = process.argv.slice(2);
 if (!logPath || !photoPath || !outPath) {
-  console.error("usage: npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id>]");
+  console.error("usage: npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id> | v2]");
   process.exit(2);
 }
 const log = JSON.parse(readFileSync(logPath, "utf8")) as { output_text: string; prompt?: string; image: { sha256: string } };
@@ -33,8 +36,18 @@ const segments = (await decodeSegments(log.output_text, front, log.prompt ?? "ku
   score: s.score,
   mask: new Uint8Array(Buffer.from(s.mask, "base64")),
 }));
-const renderer = compositeRenderer(loadTemplate(join(TEMPLATES_DIR, templateId), templateId));
-const out = await renderer.render({ scene: "studio", prompt: "preview", sources: [front], segments });
-writeFileSync(outPath, out.bytes);
-console.log(`${outPath}: sha256 ${sha256Hex(out.bytes)}`);
-console.log(JSON.stringify(out.record));
+// `v2-debug` switches the quality checks off to look at the pixels of a photo that
+// would REVIEW. Debug only: never a product shot, never on a receipt or in the shop.
+const debug = { ...V2_PARAMS, clip_max: 1, shadow_max: Infinity, max_corr_de: Infinity, frag_max: Infinity };
+const renderer = which === "v2" ? compositeV2Renderer() : which === "v2-debug" ? compositeV2Renderer(debug) : compositeRenderer(loadTemplate(join(TEMPLATES_DIR, which), which));
+try {
+  const out = await renderer.render({ scene: "studio", prompt: "preview", sources: [front], segments });
+  writeFileSync(outPath, out.bytes);
+  console.log(`${outPath}: sha256 ${sha256Hex(out.bytes)}`);
+  console.log(JSON.stringify(out.record));
+} catch (err) {
+  if (!(err instanceof CompositeQualityReview)) throw err;
+  console.log(`REVIEW (no image written): ${err.message}`);
+  console.log(JSON.stringify(err.quality));
+  process.exit(3);
+}
