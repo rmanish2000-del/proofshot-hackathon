@@ -22,6 +22,21 @@ import { pathToFileURL } from "node:url";
 
 const IMAGE = /\.(jpe?g|png|webp)$/i;
 
+/**
+ * Folders whose images this repository publishes (PS-2). `data/jobs/` and
+ * `web/shop/` are DERIVED: written by a job or by `npm run shop` from the
+ * garments above, so they are allowed but named separately in the report.
+ */
+export const SOURCE_FOLDERS = ["data/garments/", "data/demo/", "demo/", "evidence/", "data/evidence/"];
+export const DERIVED_FOLDERS = ["data/jobs/", "web/shop/"];
+export const ALLOWED_FOLDERS = [...SOURCE_FOLDERS, ...DERIVED_FOLDERS];
+
+/** True when the image sits in a folder the repository publishes. */
+export function pathAllowed(path) {
+  const normal = String(path).replace(/\\/g, "/");
+  return ALLOWED_FOLDERS.some((prefix) => normal.startsWith(prefix));
+}
+
 /** Tags that identify a place or a person, by EXIF name. */
 const SENSITIVE_TIFF_TAGS = new Map([
   [0x010f, "Make"],
@@ -156,9 +171,14 @@ export function stripJpeg(bytes) {
 export function auditFile(path) {
   const bytes = readFileSync(path);
   const lower = path.toLowerCase();
-  if (lower.endsWith(".png")) return { path, kind: "png", ...auditPng(bytes) };
-  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return { path, kind: "jpeg", ...auditJpeg(bytes) };
-  return { path, kind: "other", flags: [], found: [] };
+  const base = lower.endsWith(".png")
+    ? { kind: "png", ...auditPng(bytes) }
+    : lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+      ? { kind: "jpeg", ...auditJpeg(bytes) }
+      : { kind: "other", flags: [], found: [] };
+  // PS-2 asks for two things from one guard: clean metadata AND a published folder.
+  const folderFlags = pathAllowed(path) ? [] : ["outside-folder"];
+  return { path, ...base, flags: [...base.flags, ...folderFlags] };
 }
 
 function trackedImages() {
@@ -211,7 +231,9 @@ function main(argv) {
       const detail = report.flags.length === 0 ? "" : `  ${report.flags.join(",")}${report.found.length ? ` (${report.found.join(",")})` : ""}`;
       console.log(`${mark} ${report.path}${detail}`);
     }
-    console.log(`\n${reports.length} image(s) checked, ${dirty.length} with metadata to remove`);
+    const misfiled = reports.filter((report) => report.flags.includes("outside-folder")).length;
+    console.log(`\n${reports.length} image(s) checked, ${dirty.length} with something to fix`
+      + ` (${dirty.length - misfiled} with metadata, ${misfiled} outside the published folders)`);
   }
 
   process.exit(dirty.length === 0 || strip ? 0 : 1);

@@ -8,7 +8,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { auditJpeg, auditPng, stripJpeg } from "../scripts/asset-guard.mjs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { ALLOWED_FOLDERS, auditFile, auditJpeg, auditPng, pathAllowed, stripJpeg } from "../scripts/asset-guard.mjs";
 
 /** Minimal little-endian TIFF with Make, Model, Orientation and a GPS pointer. */
 function exifTiff() {
@@ -116,4 +121,36 @@ test("a PNG text chunk naming a location is flagged; a harmless one is not", () 
   // A harmless caption stays clean; "Software" is deliberately not used here,
   // because an editing app can identify a device and the guard flags it.
   assert.deepEqual(auditPng(png("Title", "indigo shirt")).flags, []);
+});
+
+test("folder policy: the published folders pass and a stray photo does not", () => {
+  for (const prefix of ALLOWED_FOLDERS) {
+    assert.equal(pathAllowed(`${prefix}anything/photo.jpg`), true, prefix);
+    assert.equal(pathAllowed(`${prefix.replaceAll("/", "\\")}photo.jpg`), true, `windows path for ${prefix}`);
+  }
+  for (const path of ["photos/leak.jpg", "data/private/x.jpg", "docs/garment.jpg", "data/garments"]) {
+    assert.equal(pathAllowed(path), false, path);
+  }
+});
+
+test("a clean image outside the published folders is still a finding", () => {
+  const dir = mkdtempSync(join(tmpdir(), "asset-guard-"));
+  const path = join(dir, "stray.jpg");
+  writeFileSync(path, Buffer.from([0xff, 0xd8, 0xff, 0xda, 0x00, 0x02, 0xff, 0xd9]));
+  const report = auditFile(path);
+  assert.deepEqual(report.flags, ["outside-folder"]);
+});
+
+test("the repository's own tracked images are clean and sit in published folders", () => {
+  let listed;
+  try {
+    listed = execFileSync("git", ["ls-files"], { encoding: "utf8" });
+  } catch {
+    return; // not a checkout: nothing to enforce
+  }
+  const paths = listed.split(/\r?\n/).filter((line) => line && /\.(jpe?g|png|webp)$/i.test(line));
+  assert.ok(paths.length > 0, "expected tracked images");
+  const reports = paths.map(auditFile);
+  const dirty = reports.filter((report) => report.flags.length > 0);
+  assert.deepEqual(dirty.map((r) => `${r.path}:${r.flags.join(",")}`), []);
 });
