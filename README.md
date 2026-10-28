@@ -81,8 +81,10 @@ Title cards (S1, S11), the replay's terminal lines (S4) and the tampered byte
 (S5, S7) are plain pages it writes from committed files. `out/demo/shots.json`
 gives each shot's seconds (under 115 s in total) and `out/demo/frames.txt` is
 an ffmpeg concat list of the 1280 px frames; the video is assembled from it
-elsewhere, the script runs no ffmpeg. No upload, no publish, no live call, no
-key read.
+elsewhere, the script runs no ffmpeg. `out/demo/captions.srt` (DEMO1c) is the
+subtitle track for the muted cut: one cue per narrated shot, the `docs/DEMO.md`
+voiceover verbatim, timed from the same seconds (a line still marked TBD gets no
+cue). No upload, no publish, no live call, no key read.
 
 6. Optional: keep generated jobs out of tracked folders:
 
