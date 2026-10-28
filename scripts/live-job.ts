@@ -1,4 +1,9 @@
-// npm run job:live [-- <garment dir> <job id> [<jobs root>]]
+// npm run job:live [-- [--render <image>] <garment dir> <job id> [<jobs root>]]
+//
+// --render <image> (Grok, 28 Oct 09:55, R2): that file stands in for the
+// render instead of the garment's own front photo, for a deliberate-mismatch
+// job. It is still the stand-in provider (nothing generated) and the receipt's
+// render model is file:<path as given>, so the record names the file.
 //
 // One real pipeline job (P6): the garment's intake photos go through the
 // providers the environment names (src/serve.ts providersFromEnv), which must
@@ -18,10 +23,22 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 import { runJob } from "../src/pipeline.ts";
+import { fileRenderer } from "../src/render.ts";
 import { providersFromEnv } from "../src/serve.ts";
 import { writeVerifierLog } from "./verifier-log.ts";
 
-const [garmentDir = "data/garments/kurta-01", jobId = "live-kurta-01", jobsRoot = "data/jobs"] = process.argv.slice(2);
+const args = process.argv.slice(2);
+let renderPath: string | null = null;
+const flag = args.indexOf("--render");
+if (flag !== -1) {
+  renderPath = args[flag + 1] ?? null;
+  if (!renderPath || renderPath.startsWith("--")) {
+    console.error("--render needs an image path");
+    process.exit(2);
+  }
+  args.splice(flag, 2);
+}
+const [garmentDir = "data/garments/kurta-01", jobId = "live-kurta-01", jobsRoot = "data/jobs"] = args;
 
 if (existsSync(join(jobsRoot, jobId))) {
   console.error(`${join(jobsRoot, jobId)} already exists: a job id is used once`);
@@ -38,6 +55,12 @@ if (providers.mode.fixture) {
   console.error(`the verifier is not live (${providers.mode.labels.verify}): no job run. Set BASETEN_API_KEY in this process.`);
   process.exit(2);
 }
+const runProviders = renderPath
+  ? { ...providers.providers, renderer: fileRenderer(renderPath.replace(/\\/g, "/"), new Uint8Array(readFileSync(renderPath))) }
+  : providers.providers;
+const labels = renderPath
+  ? { ...providers.mode.labels, render: `${runProviders.renderer.provider} / ${runProviders.renderer.model}: that file stands in for the render, nothing generated` }
+  : providers.mode.labels;
 
 const intake = JSON.parse(readFileSync(join(garmentDir, "intake.json"), "utf8")) as { files: { name: string }[] };
 const sources = intake.files.map((f) => ({ name: f.name, bytes: new Uint8Array(readFileSync(join(garmentDir, f.name))) }));
@@ -49,9 +72,9 @@ const note = readFileSync(join(garmentDir, "note.txt"), "utf8")
 const garmentNote = `${basename(garmentDir)}: ${note || "no note"}`;
 
 console.log(`job ${jobId}: ${sources.length} source photo(s) from ${garmentDir}, providers:`);
-for (const [step, label] of Object.entries(providers.mode.labels)) console.log(`  ${step}: ${label}`);
+for (const [step, label] of Object.entries(labels)) console.log(`  ${step}: ${label}`);
 
-const result = await runJob({ jobId, garmentNote, scenes: ["studio"], sources }, { outRoot: jobsRoot, providers: providers.providers, provenance: providers.mode.provenance });
+const result = await runJob({ jobId, garmentNote, scenes: ["studio"], sources }, { outRoot: jobsRoot, providers: runProviders, provenance: providers.mode.provenance });
 
 console.log(`receipt: ${join(result.dir, "receipt.jsonl")} (head ${result.head})`);
 for (const file of logs) console.log(`verifier log: ${file}`);

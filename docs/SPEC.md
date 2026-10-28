@@ -356,6 +356,16 @@ model that generated nothing. It exists so a real pipeline job (live verifier,
 real receipt) can run while no render transport exists, with the stand-in
 named on the record and on every card that shows its image (§11).
 
+The file stand-in *(event, 28 Oct)*, `fileRenderer(label, bytes)` in
+`src/render.ts`, used by `npm run job:live -- --render <image>`: like the
+stand-in it generates nothing and its provider is `stand-in`, but it returns
+the given file instead of the job's first source, and the render entry's
+model is `file:<label>` (the path as given), so the record never calls that
+image the owner's photo of this garment. It exists for deliberate-mismatch
+jobs (another garment's photo checked against this garment's sources). Bytes
+that are not a JPEG or PNG, or an empty label, throw `StandInError` before
+any job runs.
+
 ## 9. The verify page's image check
 
 Given a record and an image's sha256, in this order:
