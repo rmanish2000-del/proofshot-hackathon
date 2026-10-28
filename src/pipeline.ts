@@ -54,6 +54,11 @@ export interface Segment {
 }
 
 export interface Segmenter {
+  /**
+   * Which model segmented, recorded on the segments entry as `segmenter`. A
+   * fixture segmenter has none and the entry carries no claim (SPEC §3, §10).
+   */
+  readonly identity?: { readonly provider: string; readonly model: string };
   segment(sources: readonly SourceImage[]): Promise<Segment[]>;
 }
 
@@ -191,8 +196,10 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   } catch (err) {
     return refuseJob(stepRefusal("segment_failed", errorText(err)));
   }
+  const segmenterId = opts.providers.segmenter.identity;
   receipt.append("segments", {
     count: segments.length,
+    ...(segmenterId ? { segmenter: { provider: segmenterId.provider, model: segmenterId.model } } : {}),
     segments: segments.map((s) => ({ label: s.label, box: [...s.box], score: s.score, mask_sha256: maskSha256(s.mask) })),
   });
 
