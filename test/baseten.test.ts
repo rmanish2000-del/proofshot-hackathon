@@ -5,7 +5,7 @@ import { BASETEN_MODEL, BasetenConfigError, KEY_PLACEHOLDER, basetenCall } from 
 import type { Fetch } from "../src/baseten.ts";
 import { MuseImageRefused } from "../src/render.ts";
 
-const KEY = "test-key-0123456789abcdef";
+const KEY = "fake-key-aaaaaaaaaaaaaaaa"; // gitleaks:allow (low-entropy test fixture, not a key)
 const messages = [{ role: "user" as const, content: "hi" }];
 
 /** A fetch that records every request and answers with the given status and body. */
