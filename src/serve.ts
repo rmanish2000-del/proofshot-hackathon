@@ -211,7 +211,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     : renderer.provider === "composite"
       ? `composite / ${renderer.model}: the seller's garment pixels, cut out by the SAM mask, placed on a template by deterministic code; no image model, and no mask means REFUSE`
       : renderer.provider === REPLICATE_PROVIDER
-        ? `${renderer.provider} / ${renderer.model}: AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta); falls back to composite v2 with the reason on the receipt; long garments (calf or longer) get composite v2 unless ${TRYON_LONG_ENV}=1`
+        ? `${renderer.provider} / ${renderer.model}: AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta); falls back to composite v2 with the reason on the receipt; long garments (knee or longer) get composite v2 unless ${TRYON_LONG_ENV}=1`
         : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
 
   let verifier: Verifier = fixtureVerifier();

@@ -238,12 +238,13 @@ export function claimedReach(garmentNote: string): Reach | null {
 }
 
 /**
- * NR6 (Grok 29 Oct 00:15): a garment claimed to reach the calf ("below the
- * knee") or further is long. Seven live try-ons up to cf3c1d5 shortened every
- * long kurta, so a long garment gets the deterministic composite by default and
- * reaches the try-on only when TRYON_LONG_ENV is "1" or "true".
+ * NR6 (Grok 29 Oct 00:15): a garment claimed to reach the knee or further is
+ * long (NR6b, Grok 00:30: knee, since most kurtas are knee length). Seven live
+ * try-ons up to cf3c1d5 shortened every long kurta, so a long garment gets the
+ * deterministic composite by default and reaches the try-on only when
+ * TRYON_LONG_ENV is "1" or "true".
  */
-export const LONG_FROM: Reach = "calf";
+export const LONG_FROM: Reach = "knee";
 export const TRYON_LONG_ENV = "PROOFSHOT_TRYON_LONG";
 
 /** Whether the seller's length claim makes the garment long (NR6). */

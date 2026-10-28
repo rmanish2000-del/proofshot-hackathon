@@ -393,7 +393,9 @@ test("option B: REPLICATE_GARMENT_CONTEXT=front sends the stripped front photo a
 test("NR6: a long garment with no flag never reaches the try-on transport; the receipt says why the composite was chosen", async () => {
   assert.equal(isLongGarment("Type: kurta; Length: long, below the knee (as photographed)"), true);
   assert.equal(isLongGarment("Length: ankle length"), true);
-  assert.equal(isLongGarment("Length: knee"), false);
+  assert.equal(isLongGarment("Length: knee"), true, "NR6b: knee length is long");
+  assert.equal(isLongGarment("Length: mid thigh"), false);
+  assert.equal(isLongGarment("Length: to the hip"), false);
   assert.equal(isLongGarment("Type: kurta"), false);
   assert.equal(tryOnLongRequested({ [TRYON_LONG_ENV]: "1" }), true);
   assert.equal(tryOnLongRequested({ [TRYON_LONG_ENV]: "TRUE" }), true);
@@ -416,6 +418,24 @@ test("NR6: a long garment with no flag never reaches the try-on transport; the r
   assert.equal(render.render_choice_reason, "long_garment_default");
   assert.match(String(render.render_choice_detail), /calf.*PROOFSHOT_TRYON_LONG=1/);
   assert.equal("fallback_reason" in render, false, "a choice, not a failure");
+});
+
+test("NR6b: a knee-length garment with no flag gets the composite: no request, nothing spent; a thigh-length one is still sent", async () => {
+  const knee = fakeReplicate(sources[0]!.bytes);
+  const a = base({ env: { REPLICATE_API_TOKEN: TOKEN }, fetch: knee.fetch });
+  const out = await a.renderer.render({ ...req, garmentNote: "Type: kurta; Length: knee length" });
+  assert.equal(knee.calls.length, 0, "no request reaches Replicate");
+  assert.equal(a.ledger.entries.length, 0, "nothing spent");
+  assert.equal(a.fallback.calls, 1);
+  assert.equal(out.record!.render_choice_reason, "long_garment_default");
+  assert.match(String(out.record!.render_choice_detail), /reach the knee/);
+
+  const thigh = fakeReplicate(sources[0]!.bytes);
+  const b = base({ env: { REPLICATE_API_TOKEN: TOKEN }, fetch: thigh.fetch });
+  const r = await b.renderer.render({ ...req, garmentNote: "Type: kurti; Length: mid thigh" });
+  assert.ok(thigh.calls.some((c) => c.url === REPLICATE_PREDICTIONS_URL), "a thigh-length garment reaches the try-on");
+  assert.equal(b.fallback.calls, 0);
+  assert.equal(r.record!.render_choice_reason, undefined);
 });
 
 test("NR6: with the flag a long garment goes to the try-on, labelled AI preview, and the gate still judges it", async () => {
