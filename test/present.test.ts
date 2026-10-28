@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { fixtureProviders } from "../src/pipeline.ts";
-import { GATE_LABEL, presentJob, renderBadge, tamperedCopy } from "../src/present.ts";
+import { GATE_LABEL, presentJob, renderBadge, sourceLabels, tamperedCopy } from "../src/present.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { Receipt, parseReceipt, verifyChain } from "../src/receipt.ts";
 import { REPLICATE_PROVIDER } from "../src/render-replicate.ts";
@@ -82,6 +82,17 @@ test("NR5b: a source photo not on this machine shows a card naming the recorded 
   const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
   assert.match(page, /Source photo not stored here \(hash recorded\)/);
   assert.match(page, /notStored\(s\)\)/, "the source frames pass the card to frame()");
+});
+
+test("NR5b: kurta-01 shows three labelled inputs, both fronts kept with their own hashes", () => {
+  const view = presentJob(load("live-kurta-01-composite-r2"));
+  const intake = JSON.parse(readFileSync(join(ROOT, "data", "garments", "kurta-01", "intake.json"), "utf8")) as { files: { name: string; sha256: string }[] };
+  assert.deepEqual(view.sources.map((s) => s.label), ["Front", "Front (2nd shot)", "Back"]);
+  assert.deepEqual(view.sources.map((s) => [s.name, s.sha256]), intake.files.map((f) => [f.name, f.sha256]), "intake order, every image and hash kept");
+  assert.notEqual(view.sources[0]!.sha256, view.sources[1]!.sha256);
+  assert.deepEqual(sourceLabels(["front.png", "x.jpg", "2-side.jpg"]), ["Front", "Photo 2", "Side"]);
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /el\("strong", \{ text: s\.label \}\)/, "judge.html captions each input with its label");
 });
 
 test("present: across every committed job, a model name appears only when its receipt entry exists", () => {

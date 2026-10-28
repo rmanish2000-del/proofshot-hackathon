@@ -83,7 +83,8 @@ export interface JobView {
   readonly job_id: string | null;
   readonly provenance: string | null;
   readonly garment_note: string | null;
-  readonly sources: readonly { readonly name: string; readonly sha256: string }[];
+  /** In receipt (intake) order; `label` is the view read from the file name, see sourceLabels. */
+  readonly sources: readonly { readonly name: string; readonly sha256: string; readonly label: string }[];
   readonly chain: ChainCheck;
   readonly renders: readonly RenderView[];
   /** The pipeline for the first render. */
@@ -175,6 +176,24 @@ function summary(e: ReceiptEntry): string {
   }
 }
 
+/**
+ * A label per source photo, in intake order, from the view its file name names
+ * (front, back, side, detail): "Front", then "Front (2nd shot)" for a second
+ * front, and so on (NR5b item 3: kurta-01's two fronts are two shots, each with
+ * its own hash, not a duplicate). A name naming no view is "Photo <n>".
+ */
+export function sourceLabels(names: readonly string[]): string[] {
+  const seen: Record<string, number> = {};
+  const nth = ["", "2nd", "3rd"];
+  return names.map((name, i) => {
+    const view = /front|back|side|detail/i.exec(name)?.[0]?.toLowerCase();
+    if (!view) return `Photo ${i + 1}`;
+    const n = (seen[view] = (seen[view] ?? 0) + 1);
+    const base = view[0]!.toUpperCase() + view.slice(1);
+    return n === 1 ? base : `${base} (${nth[n - 1] ?? `${n}th`} shot)`;
+  });
+}
+
 const ms = (a: string, b: string): number | null => {
   const d = Date.parse(b) - Date.parse(a);
   return Number.isFinite(d) ? d : null;
@@ -185,10 +204,12 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
   const chain = verifyChain(entries);
   const job = entries.find((e) => e.kind === "job");
   const jp = obj(job?.payload);
-  const sources = (Array.isArray(jp.source_images) ? jp.source_images : [])
+  const named = (Array.isArray(jp.source_images) ? jp.source_images : [])
     .map(obj)
     .filter((s) => str(s.name) !== null && str(s.sha256) !== null)
     .map((s) => ({ name: s.name as string, sha256: s.sha256 as string }));
+  const labels = sourceLabels(named.map((s) => s.name));
+  const sources = named.map((s, i) => ({ ...s, label: labels[i]! }));
   const segments = entries.find((e) => e.kind === "segments");
   const prevAt = (e: ReceiptEntry): string | null => entries[e.seq - 1]?.at ?? null;
 
