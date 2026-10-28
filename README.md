@@ -266,7 +266,8 @@ that records it, Muse Spark Open only with a `verifier` entry, the Pruna
 try-on only with a generative `render` entry; a step with no entry says
 UNVERIFIED. Source photos are served only when a file's bytes hash to the
 receipt's recorded sha256 (`--garments`, default `data/garments`); when no
-file matches, the page shows "Source photo not stored here (hash recorded)".
+file matches, the page shows "We don't have this source file here, but its
+hash is recorded."
 If `/judge` answers 404, an older `npm run serve` from before NR5 is still
 holding port 8787 (seen 29 Oct 00:05, Grok's screenshot run): stop it, or
 start this one with `npm run serve -- --port 8788`. Not yet
