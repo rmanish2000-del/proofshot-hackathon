@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt, recordedClock } from "../src/receipt.ts";
-import { MuseImageRefused, RenderConfigError, STAND_IN_MODEL, StandInError, imageExt, refuseMuseImage, rendererFromEnv, standInRenderer } from "../src/render.ts";
+import { FILE_MODEL_PREFIX, MuseImageRefused, RenderConfigError, STAND_IN_MODEL, StandInError, fileRenderer, imageExt, refuseMuseImage, rendererFromEnv, standInRenderer } from "../src/render.ts";
 import type { RenderTransport } from "../src/render.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
@@ -114,6 +114,25 @@ test("a stand-in job's receipt says stand-in / owner-photo on the render entry a
   );
   assert.deepEqual(bad.renders.map((x) => [x.decision, x.cited?.rule]), [["REFUSE", "render_failed"]]);
   assert.match(String(bad.renders[0]!.cited?.reason), /^StandInError: note\.txt is not a JPEG or PNG/);
+});
+
+test("a file stand-in returns the given image, not the job's front, and the receipt names the file", async () => {
+  assert.throws(() => fileRenderer("kurta-02/1-front.jpg", Buffer.from("not an image")), StandInError);
+  assert.throws(() => fileRenderer("  ", JPEG), /needs a label/);
+  const r = fileRenderer("kurta-02/1-front.jpg", PNG);
+  assert.deepEqual([r.provider, r.model], ["stand-in", `${FILE_MODEL_PREFIX}kurta-02/1-front.jpg`]);
+  const p = fixtureProviders({
+    renders: () => Buffer.from("never used"),
+    findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "mismatch", confidence: 0.95 })) }),
+  });
+  const out = await runJob(
+    { jobId: "mismatch", garmentNote: "peach kurta", scenes: ["studio"], sources: [{ name: "1-front.jpg", bytes: JPEG }] },
+    { outRoot: mkdtempSync(join(tmpdir(), "file-stand-in-")), providers: { ...p, renderer: r }, provenance: "fixture", clock: recordedClock(Array(20).fill("2026-10-28T04:30:00.000Z")) },
+  );
+  assert.deepEqual(out.renders.map((x) => x.image_sha256), [sha256Hex(PNG)], "the released bytes are the file's, not the source's");
+  assert.notEqual(out.renders[0]!.decision, "RELEASE", "mismatch findings never release");
+  const render = parseReceipt(readFileSync(join(out.dir, RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload as { provider: string; model: string };
+  assert.deepEqual([render.provider, render.model], ["stand-in", "file:kurta-02/1-front.jpg"]);
 });
 
 test("the pipeline refuses every scene of a renderer that names Muse Image, without calling it", async () => {

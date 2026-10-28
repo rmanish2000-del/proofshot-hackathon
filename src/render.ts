@@ -69,6 +69,29 @@ export function standInRenderer(): Renderer {
   };
 }
 
+/** The model-id prefix of a file stand-in: `file:<label>`. */
+export const FILE_MODEL_PREFIX = "file:";
+
+/**
+ * A stand-in that returns one given image file instead of the job's own front
+ * photo (job:live --render, for a deliberate-mismatch job). It generates
+ * nothing either, so the provider stays `stand-in`; the model is
+ * `file:<label>`, naming the file, so the receipt never claims the image is the
+ * owner's photo of this garment. Bytes that are not a JPEG or PNG throw
+ * StandInError here, before any job runs.
+ */
+export function fileRenderer(label: string, bytes: Uint8Array): Renderer {
+  const ext = imageExt(bytes);
+  if (!ext) throw new StandInError(`${label} is not a JPEG or PNG, so it cannot stand in for a render`);
+  const name = label.trim();
+  if (!name) throw new StandInError("a file stand-in needs a label for the receipt");
+  return {
+    provider: "stand-in",
+    model: `${FILE_MODEL_PREFIX}${name}`,
+    render: async () => ({ bytes, ext }),
+  };
+}
+
 /** Throws MuseImageRefused when the model id names Muse Image. */
 export function refuseMuseImage(model: string): void {
   if (MUSE_IMAGE.test(model)) throw new MuseImageRefused(`${JSON.stringify(model)} is Muse Image, which is not available in India (Meta GUP §2.2)`);
