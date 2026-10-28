@@ -84,7 +84,7 @@ an ffmpeg concat list of the 1280 px frames; the video is assembled from it
 elsewhere, the script runs no ffmpeg. `out/demo/captions.srt` (DEMO1c) is the
 subtitle track for the muted cut: one cue per narrated shot, the `docs/DEMO.md`
 voiceover verbatim, timed from the same seconds (a line still marked TBD gets no
-cue). No upload, no publish, no live call, no key read. `npm run demo:stage`
+cue; since DEMO1f no beat is TBD, so every shot has one). No upload, no publish, no live call, no key read. `npm run demo:stage`
 (DEMO1d) then copies the 1280 px frames, shots.json, frames.txt and captions.srt
 to `%LOCALAPPDATA%\ProofShotStaging\demo\<UTC timestamp>\` (or `-- --to <dir>`)
 with a `manifest.json` of each file's sha256 and size; frames.txt names bare

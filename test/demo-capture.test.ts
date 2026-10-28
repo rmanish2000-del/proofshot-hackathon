@@ -101,11 +101,9 @@ test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md,
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
   assert.ok(voice.get(4)!.startsWith("Wi-Fi is off."), "beat 4 voiceover");
-  assert.ok(voice.get(1)!.includes("TBD"), "beat 1 is still TBD");
   const narration = shotNarration(DEMO_SHOTS, voice);
   const narrated = DEMO_SHOTS.filter((s) => narration.get(s.id));
   assert.ok(narrated.length > 0);
-  assert.equal(narration.get("S1"), null, "a TBD line gives no cue");
   for (const s of narrated) {
     const text = narration.get(s.id)!;
     assert.ok(voice.get(s.beat)!.includes(text), `${s.id}: cue text is verbatim from beat ${s.beat}`);
@@ -149,6 +147,28 @@ test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md,
   assert.equal(captionsSrt(shots, syn), "1\n00:00:03,000 --> 00:00:05,000\nOne.\n\n2\n00:00:05,000 --> 00:00:09,000\nTwo. Three.\n");
   const piped = narrationFromDemoMd("| # | Screen | Voiceover |\n|---|---|---|\n| 3 | a \\| b | Said. |\n");
   assert.equal(piped.get(3), "Said.");
+});
+
+test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 and 6 carry Grok's lines, and S1's card shows beat 1", () => {
+  const voice = narrationFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
+  assert.equal(voice.get(1), "A wrong image can sink a seller. ProofShot proves what was checked.");
+  assert.equal(
+    voice.get(3),
+    "This is a replay of the recorded job live-kurta-01-2. Each receipt entry is one line, and every line is chained to the one before it.",
+  );
+  assert.equal(
+    voice.get(6),
+    "Here the image to publish shows a different kurta. The verifier flags a hard mismatch, and the gate refuses it. A wrong image cannot ship.",
+  );
+  for (const [beat, line] of voice) assert.ok(!line.includes("TBD") && !line.includes("["), `beat ${beat} voiceover has no TBD`);
+  const narration = shotNarration(DEMO_SHOTS, voice);
+  for (const s of DEMO_SHOTS) assert.ok(narration.get(s.id), `${s.id} has a cue`);
+  const srt = captionsSrt(DEMO_SHOTS, narration);
+  assert.ok(!srt.includes("TBD") && !srt.includes("["), "no TBD in captions.srt");
+  assert.equal(srt.trim().split("\n\n").length, DEMO_SHOTS.length);
+  const s1 = DEMO_SHOTS.find((s) => s.id === "S1")!.frames[0]!.page;
+  assert.ok(s1?.kind === "card");
+  assert.equal(s1.lines.join(" "), voice.get(1));
 });
 
 test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
