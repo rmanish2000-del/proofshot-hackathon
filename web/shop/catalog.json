@@ -46,6 +46,21 @@
       "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
     },
     {
+      "job_id": "live-kurta-01-composite-r2",
+      "render_id": "live-kurta-01-composite-r2-r0",
+      "scene": "studio",
+      "image_sha256": "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b",
+      "head": "4e684d96fc6cad23a87b0c34cbe14cafd97c4f0b19513e16be84f48b83d06287",
+      "receipt": "shop/live-kurta-01-composite-r2/receipt.jsonl",
+      "image": "shop/live-kurta-01-composite-r2/live-kurta-01-composite-r2-r0.png",
+      "garment_note": "kurta-01: Type: kurta (women's); Fabric and weave: not recorded; Main colour: rust / orange; Print or motif (what, where, size): as in the photos; not recorded in words; Collar and cuffs: as in the photos; Buttons: as in the photos; Anything the render must not change: colour, print and neckline exactly as photographed",
+      "provenance": "live",
+      "render_provider": "composite",
+      "render_model": "composite-v1",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
       "job_id": "live-kurta-01-sam-2",
       "render_id": "live-kurta-01-sam-2-r0",
       "scene": "studio",
