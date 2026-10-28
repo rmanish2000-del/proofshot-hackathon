@@ -226,7 +226,7 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 187 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 11:35 IST, tree of 56def45 |
+| Test suite green | 189 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 13:35 IST, tree of the N6 commit (job:live rebuilds web/shop) |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | on 00fe261, reported by Grok (28 Oct 11:40 IST); the run id was not read for this README | earlier: [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
