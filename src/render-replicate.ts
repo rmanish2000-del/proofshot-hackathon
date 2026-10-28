@@ -54,7 +54,7 @@ export const DEFAULT_MODEL_IMAGE = "synthetic-01";
 /** The repo's data/models/ folder, one sub-folder per synthetic model image. */
 export const MODELS_DIR = fileURLToPath(new URL("../data/models/", import.meta.url));
 
-export type FallbackReason = "no_api_token" | "no_model_image" | "no_garment_mask" | "spend_cap" | "replicate_timeout" | "replicate_failed" | "unsupported_output";
+export type FallbackReason = "no_api_token" | "no_model_image" | "model_too_short" | "no_garment_mask" | "spend_cap" | "replicate_timeout" | "replicate_failed" | "unsupported_output";
 
 export interface ReplicateResponse {
   readonly ok: boolean;
@@ -194,6 +194,16 @@ const COLOUR_WORD = /\b(red|orange|rust|yellow|gold(en)?|green|blue|navy|indigo|
  * (then no prompt is sent). A claim that names a colour or print is dropped.
  */
 export function tryOnPrompt(garmentNote: string): string | null {
+  const got = claims(garmentNote);
+  const lines = [
+    ...(got.type ? [`Garment type: ${got.type}.`] : []),
+    ...(got.length ? [`Garment length: ${got.length}. Keep the garment's full length; do not shorten it.`] : []),
+  ];
+  return lines.length > 0 ? lines.join(" ") : null;
+}
+
+/** The first usable type and length claims in the garment note (colour or print values dropped). */
+function claims(garmentNote: string): { type?: string; length?: string } {
   const got: { type?: string; length?: string } = {};
   for (const part of garmentNote.split(/[;\r\n]/)) {
     const m = CLAIM.exec(part.trim());
@@ -203,11 +213,42 @@ export function tryOnPrompt(garmentNote: string): string | null {
     if (!value || UNCLAIMED.test(value) || COLOUR_WORD.test(value) || got[key]) continue;
     got[key] = value;
   }
-  const lines = [
-    ...(got.type ? [`Garment type: ${got.type}.`] : []),
-    ...(got.length ? [`Garment length: ${got.length}. Keep the garment's full length; do not shorten it.`] : []),
-  ];
-  return lines.length > 0 ? lines.join(" ") : null;
+  return got;
+}
+
+/** Lower-body reach, shortest first: how far down a garment, or a model's own outfit, goes (NR4e). */
+export const REACH = ["waist", "hip", "thigh", "knee", "calf", "ankle"] as const;
+export type Reach = (typeof REACH)[number];
+
+/**
+ * Where the seller's length claim reaches, or null when it names no place this
+ * knows (then the guard does not apply). "below the knee" reaches the calf.
+ */
+export function claimedReach(garmentNote: string): Reach | null {
+  const length = claims(garmentNote).length?.toLowerCase();
+  if (!length) return null;
+  if (/\b(ankle|floor|maxi)\b/.test(length)) return "ankle";
+  if (/\bbelow the knee\b|\b(calf|mid-calf|midi)\b/.test(length)) return "calf";
+  if (/\bknee\b/.test(length)) return "knee";
+  if (/\bthigh\b/.test(length)) return "thigh";
+  if (/\bhip\b/.test(length)) return "hip";
+  if (/\b(waist|crop(ped)?)\b/.test(length)) return "waist";
+  return null;
+}
+
+/**
+ * How far down the model's own outfit reaches: data/models/<id>/model.json
+ * `{ "covers": "<reach>" }`. Null when the file is missing or says something else.
+ * The try-on keeps the model's outfit silhouette (9b3b226, 4427c81), so a garment
+ * that reaches further than this comes back short.
+ */
+export function modelCovers(modelsDir: string, id: string): Reach | null {
+  try {
+    const v = JSON.parse(readFileSync(join(modelsDir, id, "model.json"), "utf8")) as { covers?: unknown };
+    return (REACH as readonly unknown[]).includes(v.covers) ? (v.covers as Reach) : null;
+  } catch {
+    return null;
+  }
 }
 
 // PNG chunks kept when stripping an output: the image and its colour, nothing else.
@@ -306,6 +347,12 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
       if (!opts.fetch) return fallback(req, "no_api_token", "no HTTP transport was given for Replicate");
       const model = loadModelImage(opts.modelsDir ?? MODELS_DIR, modelImageId);
       if ("missing" in model) return fallback(req, "no_model_image", model.missing);
+      // NR4e: before any paid call, a garment claimed longer than the model's own outfit goes to the composite.
+      const reach = claimedReach(req.garmentNote ?? "");
+      const covers = modelCovers(opts.modelsDir ?? MODELS_DIR, model.id);
+      if (reach && covers && REACH.indexOf(reach) > REACH.indexOf(covers)) {
+        return fallback(req, "model_too_short", `the garment is claimed to reach the ${reach}; ${model.id}'s own outfit covers only to the ${covers}, and the try-on keeps that silhouette`);
+      }
       const garment = garmentCutout(req.sources, req.segments ?? []);
       if (!garment) return fallback(req, "no_garment_mask", "no usable SAM mask on the front photo");
 

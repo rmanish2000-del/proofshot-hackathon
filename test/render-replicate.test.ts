@@ -13,7 +13,7 @@ import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import {
   AI_PREVIEW_LABEL, DEFAULT_MODEL_IMAGE, MODELS_DIR, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
-  GARMENT_MARGIN, estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnOptions, tryOnPrompt,
+  GARMENT_MARGIN, claimedReach, estimateCostUsd, modelCovers, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnOptions, tryOnPrompt,
 } from "../src/render-replicate.ts";
 import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
 import { loadRecording, recordJob, replayJob } from "../src/replay.ts";
@@ -324,6 +324,45 @@ test("NR4d: preserve_input_size and reference_pose are sent only when their env 
   assert.deepEqual(Object.keys(input).sort(), Object.keys(body.input).sort());
   assert.equal(input.preserve_input_size, true);
   assert.equal(input.reference_pose, true);
+});
+
+test("NR4e: a garment claimed longer than the model's own outfit falls back with model_too_short before any request; a long enough outfit or no claim sends", async () => {
+  assert.equal(claimedReach("kurta-01: Type: kurta; Length: long, below the knee (as photographed)"), "calf");
+  assert.equal(claimedReach("Length: ankle length"), "ankle");
+  assert.equal(claimedReach("hem: at the hip"), "hip");
+  assert.equal(claimedReach("Length: not recorded"), null);
+  assert.equal(claimedReach("Type: kurta"), null);
+  // The committed models declare their reach.
+  assert.equal(modelCovers(MODELS_DIR, "synthetic-01"), "hip");
+  assert.equal(modelCovers(MODELS_DIR, "synthetic-02"), "ankle");
+
+  const dir = modelsDir();
+  assert.equal(modelCovers(dir, DEFAULT_MODEL_IMAGE), null, "no model.json: unknown, the guard does not apply");
+  writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "model.json"), JSON.stringify({ covers: "hip" }));
+  const long = { ...req, garmentNote: "Type: kurta; Length: long, below the knee" };
+
+  const short = fakeReplicate(sources[0]!.bytes);
+  const a = base({ fetch: short.fetch, modelsDir: dir });
+  const out = await a.renderer.render(long);
+  assert.equal(short.calls.length, 0, "no paid call");
+  assert.equal(a.fallback.calls, 1);
+  assert.equal(out.record!.fallback_reason, "model_too_short");
+  assert.match(String(out.record!.fallback_detail), /calf.*hip/);
+
+  // A hip-length claim fits a hip outfit, and no length claim leaves the guard out: both are sent.
+  for (const note of ["Type: kurta; Length: to the hip", "Type: kurta"]) {
+    const ok = fakeReplicate(sources[0]!.bytes);
+    const b = base({ fetch: ok.fetch, modelsDir: dir });
+    const r = await b.renderer.render({ ...req, garmentNote: note });
+    assert.equal(b.fallback.calls, 0, note);
+    assert.equal(r.record!.fallback_reason, undefined);
+  }
+  writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "model.json"), JSON.stringify({ covers: "ankle" }));
+  const ankle = fakeReplicate(sources[0]!.bytes);
+  const c = base({ fetch: ankle.fetch, modelsDir: dir });
+  await c.renderer.render(long);
+  assert.equal(c.fallback.calls, 0);
+  assert.ok(ankle.calls.length > 0);
 });
 
 test("NR4: PROOFSHOT_RENDER selects the try-on in providersFromEnv, with a label naming Replicate", () => {
