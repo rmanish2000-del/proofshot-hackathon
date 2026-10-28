@@ -80,7 +80,7 @@ test("DEMO1b: no shot is skipped; title cards show only text that is in docs/DEM
 
 test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode, and the total is under 115 s", () => {
   const beats = beatSecondsFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
-  assert.equal(beats.get(2), 14, "beat 2 is 0:08-0:22");
+  assert.equal(beats.get(2), 14, "beat 2 is 0:05-0:19");
   const perBeat = new Map<number, number>();
   for (const s of DEMO_SHOTS) {
     assert.ok(Number.isInteger(s.seconds) && s.seconds > 0, `${s.id} seconds`);
@@ -169,6 +169,25 @@ test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 an
   const s1 = DEMO_SHOTS.find((s) => s.id === "S1")!.frames[0]!.page;
   assert.ok(s1?.kind === "card");
   assert.equal(s1.lines.join(" "), voice.get(1));
+});
+
+test("DEMO1g: the DEMO.md beat table has no [TBD], its timecodes are the cumulative shot seconds, and the last one ends at the shots.json total", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  const table = md.split("## Timecode table")[1]!.split("\n## ")[0]!;
+  const rows = table.split("\n").filter((l) => /^\|\s*\d+\s*\|/.test(l));
+  assert.equal(rows.length, new Set(DEMO_SHOTS.map((s) => s.beat)).size, "one row per beat");
+  for (const row of rows) assert.ok(!row.includes("TBD"), `no [TBD] in: ${row.slice(0, 40)}`);
+  const sec = (t: string) => Number(t.split(":")[0]) * 60 + Number(t.split(":")[1]);
+  let at = 0;
+  for (const row of rows) {
+    const [, beat, from, to] = /^\|\s*(\d+)\s*\|\s*(\d+:\d\d)-(\d+:\d\d)\s*\|/.exec(row)!;
+    const shots = DEMO_SHOTS.filter((s) => s.beat === Number(beat)).reduce((n, s) => n + s.seconds, 0);
+    assert.equal(sec(from!), at, `beat ${beat} starts where the one before ends`);
+    assert.equal(sec(to!) - sec(from!), shots, `beat ${beat} lasts its shots' ${shots} s`);
+    at = sec(to!);
+  }
+  assert.equal(at, DEMO_SHOTS.reduce((n, s) => n + s.seconds, 0), "last timecode is the shots.json total");
+  assert.equal(at, 101, "1:41");
 });
 
 test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
