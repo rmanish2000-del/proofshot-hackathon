@@ -22,6 +22,7 @@
     "calibrate": "node --experimental-strip-types scripts/calibrate.ts",
     "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts",
     "demo:capture": "node --experimental-strip-types scripts/demo-capture.ts",
+    "demo:stage": "node --experimental-strip-types scripts/demo-stage.ts",
     "composite:preview": "node --experimental-strip-types scripts/composite-preview.ts",
     "make:template":"node --experimental-strip-types scripts/make-template.ts"
   },
