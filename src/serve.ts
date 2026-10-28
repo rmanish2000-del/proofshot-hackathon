@@ -20,7 +20,7 @@
 // .gitignore so a seller's photos can never be committed by a sync.
 
 import { randomBytes } from "node:crypto";
-import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, resolve, sep } from "node:path";
 
@@ -29,7 +29,9 @@ import { intakeJpeg } from "./intake.ts";
 import type { IntakeFile } from "./intake.ts";
 import { fixtureProviders, runJob } from "./pipeline.ts";
 import type { FidelityChecker, Provenance, Providers, Renderer, Segment, Segmenter, SourceImage, Verifier } from "./pipeline.ts";
+import { presentJob, tamperedCopy } from "./present.ts";
 import { RECEIPT_FILE } from "./prior.ts";
+import { parseReceipt, verifyChain } from "./receipt.ts";
 import type { Clock } from "./receipt.ts";
 import { compositeV2Renderer, rendererFromEnv } from "./render.ts";
 import { REPLICATE_PROVIDER, defaultLedgerPath, fileLedger, replicateTryOnRenderer } from "./render-replicate.ts";
@@ -43,6 +45,7 @@ import { buildShop } from "./shop.ts";
 import type { CatalogRow } from "./shop.ts";
 import { ATTRIBUTES } from "./types.ts";
 import type { Decision } from "./types.ts";
+import { sha256Hex } from "./util.ts";
 import { basetenVerifier } from "./verifier.ts";
 import type { VerifierCallLog, VerifierFetch } from "./verifier.ts";
 
@@ -235,6 +238,8 @@ export interface UploadServerOptions {
   readonly webDir: string;
   readonly jobsRoot: string;
   readonly shopDir: string;
+  /** data/garments: where the source photos of committed jobs are found, by recorded hash (NR5 side-by-side). */
+  readonly garmentsDir?: string;
   readonly providers: ServeProviders;
   readonly clock?: Clock;
   readonly now?: () => Date;
@@ -471,7 +476,10 @@ export class UploadServer {
         }
         return sendJson(res, 405, { error: "method not allowed" });
       }
+      const receiptMatch = /^\/api\/receipts(?:\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})(?:\/(verify|tamper|source)(?:\/(\d{1,2}))?)?)?$/.exec(path);
+      if (receiptMatch) return this.receiptRoute(req, res, receiptMatch[1] ?? null, receiptMatch[2] ?? null, receiptMatch[3] ?? null);
       if (req.method !== "GET" && req.method !== "HEAD") return sendJson(res, 405, { error: "method not allowed" });
+      if (path === "/judge") return sendFile(res, safeJoin(this.opts.webDir, "judge.html"));
       const jobFile = /^\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})\/([^/]+)$/.exec(path);
       if (jobFile) return sendFile(res, safeJoin(join(this.opts.jobsRoot, jobFile[1]!), jobFile[2]!));
       return sendFile(res, safeJoin(this.opts.webDir, path === "/" ? "upload.html" : path));
@@ -480,7 +488,75 @@ export class UploadServer {
       sendJson(res, 500, { error: err instanceof Error ? `${err.name}: ${err.message}` : String(err) });
     }
   };
+
+  /** The jobs under the jobs root that have a receipt, newest job entry first, at most `limit`. */
+  listReceipts(limit = 20): ReceiptListing {
+    const root = this.opts.jobsRoot;
+    const rows: ReceiptListing["jobs"][number][] = [];
+    for (const name of existsSync(root) ? readdirSync(root) : []) {
+      if (!JOB_ID.test(name) || !existsSync(join(root, name, RECEIPT_FILE))) continue;
+      try {
+        const entries = parseReceipt(readFileSync(join(root, name, RECEIPT_FILE), "utf8"));
+        const view = presentJob(entries);
+        rows.push({ job_id: name, at: entries[0]?.at ?? "", decision: view.renders[0]?.decision ?? null, provenance: view.provenance, badge: view.renders[0]?.badge.label ?? null });
+      } catch {
+        rows.push({ job_id: name, at: "", decision: null, provenance: null, badge: null });
+      }
+    }
+    rows.sort((a, b) => (a.at === b.at ? a.job_id.localeCompare(b.job_id) : b.at.localeCompare(a.at)));
+    const jobs = rows.slice(0, limit);
+    const counts = { RELEASE: 0, REVIEW: 0, REFUSE: 0 };
+    for (const j of jobs) if (j.decision) counts[j.decision]++;
+    return { jobs, counts };
+  }
+
+  private receiptText(id: string): string {
+    const file = join(this.opts.jobsRoot, id, RECEIPT_FILE);
+    if (!existsSync(file)) throw new UploadError(`no receipt for job ${id}`, 404);
+    return readFileSync(file, "utf8");
+  }
+
+  /** One job's source photo, served only when a file's bytes hash to the receipt's recorded sha256. */
+  sourcePhoto(id: string, index: number): { file: string } {
+    const view = presentJob(parseReceipt(this.receiptText(id)));
+    const source = view.sources[index];
+    if (!source) throw new UploadError("not found", 404);
+    const dirs = [join(this.opts.jobsRoot, id, SOURCES_DIR), ...(this.opts.garmentsDir && existsSync(this.opts.garmentsDir) ? readdirSync(this.opts.garmentsDir).map((d) => join(this.opts.garmentsDir!, d)) : [])];
+    for (const dir of dirs) {
+      const file = join(dir, source.name);
+      if (source.name.includes("/") || source.name.includes("\\") || !existsSync(file) || !statSync(file).isFile()) continue;
+      if (sha256Hex(new Uint8Array(readFileSync(file))) === source.sha256) return { file };
+    }
+    throw new UploadError(`no file matches the recorded hash of ${source.name}`, 404);
+  }
+
+  private receiptRoute(req: IncomingMessage, res: ServerResponse, id: string | null, action: string | null, index: string | null): void {
+    if (id === null) {
+      if (req.method !== "GET") return sendJson(res, 405, { error: "method not allowed" });
+      return sendJson(res, 200, this.listReceipts());
+    }
+    if (action === null && req.method === "GET") {
+      const view = presentJob(parseReceipt(this.receiptText(id)));
+      const images = Object.fromEntries(view.renders.map((r) => [r.render_id, imageFile(join(this.opts.jobsRoot, id), r.render_id)]).filter(([, f]) => f !== null).map(([r, f]) => [r, `/jobs/${id}/${f}`]));
+      return sendJson(res, 200, { ...view, images, receipt: `/jobs/${id}/${RECEIPT_FILE}` });
+    }
+    if (action === "source" && index !== null && req.method === "GET") return sendFile(res, this.sourcePhoto(id, Number(index)).file);
+    // Verify and tamper read the stored file and write nothing.
+    if (action === "verify" && req.method === "POST") return sendJson(res, 200, verifyChain(parseReceipt(this.receiptText(id))));
+    if (action === "tamper" && req.method === "POST") {
+      const copy = tamperedCopy(this.receiptText(id));
+      return sendJson(res, 200, { tampered_entry: copy.index, result: verifyChain(parseReceipt(copy.text)) });
+    }
+    return sendJson(res, 405, { error: "method not allowed" });
+  }
 }
+
+export interface ReceiptListing {
+  readonly jobs: readonly { readonly job_id: string; readonly at: string; readonly decision: Decision | null; readonly provenance: string | null; readonly badge: string | null }[];
+  readonly counts: Readonly<Record<Decision, number>>;
+}
+
+const JOB_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
 function defaultJobId(now: Date): string {
   const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "").replace("T", "-");
