@@ -251,6 +251,24 @@ New in this feature: `src/serve.ts`, `scripts/serve.ts`, `web/upload.html`,
 `test/serve.test.ts` (the three gate states, a failing segmenter and verifier,
 a non-JPEG upload, the HTTP surface, the page's CSP and strings), SPEC §12.
 
+**Presentation (NR5).** The upload page is now three steps (photos with a
+drawn photo guide and the EXIF-strip notice; the claimed attributes, one field
+per gate attribute; review and submit), and the result card shows the seller's
+photos beside the result with the render-method badge read from the receipt.
+`http://127.0.0.1:8787/judge` is the judge view: a job picker (last 20 jobs
+under `--jobs`, with RELEASE / REVIEW / REFUSE counts), the pipeline for that
+job, input vs result, the gate chip with each reason (attribute, verdict,
+hard/soft, evidence boxes over the photos), and the receipt as a timeline with
+**Verify chain**, a download, and a tamper demo that checks a copy with one
+byte changed and never touches the stored file. Every name on it comes from
+the job's receipt (`src/present.ts`): SAM 3.1 only with a `segments` entry
+that records it, Muse Spark Open only with a `verifier` entry, the Pruna
+try-on only with a generative `render` entry; a step with no entry says
+UNVERIFIED. Source photos are served only when a file's bytes hash to the
+receipt's recorded sha256 (`--garments`, default `data/garments`). Not yet
+loaded in a real browser: the inline scripts are parse-checked in
+`test/present.test.ts`, and no screenshots exist.
+
 ## Providers
 
 Only environment variable names are listed here. Values are never printed or
