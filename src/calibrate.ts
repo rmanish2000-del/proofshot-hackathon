@@ -85,6 +85,46 @@ export function scoreCalibration(cases: readonly CalibrationCase[], candidates: 
   });
 }
 
+export interface GarmentPhoto {
+  /** The garment's directory name, e.g. `kurta-01`. */
+  readonly garment: string;
+  readonly name: string;
+}
+
+export interface LabelledPair<T extends GarmentPhoto> {
+  readonly id: string;
+  readonly label: CalibrationLabel;
+  readonly source: T;
+  readonly render: T;
+}
+
+/**
+ * Every ordered pair of two different photos, the first as the source and the
+ * second as the render, labelled `same` when both come from one garment
+ * directory and `different` otherwise (Grok 28 Oct 10:48, answer to 1002-23).
+ * The id is `<garment>/<name> -> <garment>/<name>`.
+ */
+export function labelledPairs<T extends GarmentPhoto>(photos: readonly T[]): LabelledPair<T>[] {
+  const pairs: LabelledPair<T>[] = [];
+  for (const source of photos) {
+    for (const render of photos) {
+      if (source === render) continue;
+      pairs.push({
+        id: `${source.garment}/${source.name} -> ${render.garment}/${render.name}`,
+        label: source.garment === render.garment ? "same" : "different",
+        source,
+        render,
+      });
+    }
+  }
+  return pairs;
+}
+
+/** A mask that is garment everywhere: for a whole-frame baseline run only, background included. */
+export function wholeFrameMask(img: RgbImage): Mask {
+  return { width: img.width, height: img.height, data: new Uint8Array(img.width * img.height).fill(1) };
+}
+
 /**
  * Candidates around a base set: factor f multiplies the delta_e and hist
  * limits and divides the texture limits (capped at 1), so f > 1 is looser and
