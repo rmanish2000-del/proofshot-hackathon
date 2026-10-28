@@ -4,7 +4,7 @@
 // (palette, 16-bit, interlaced, a bad CRC, a truncated file) throws with the
 // reason rather than guessing.
 
-import { crc32, inflateSync } from "node:zlib";
+import { crc32, deflateSync, inflateSync } from "node:zlib";
 
 export interface DecodedPng {
   readonly width: number;
@@ -149,4 +149,38 @@ export function rgbFromPng(png: DecodedPng): RgbImage {
     out[j + 2] = data[i + 2]!;
   }
   return { width, height, data: out };
+}
+
+/**
+ * An 8-bit greyscale, non-interlaced PNG of `data` (row-major, one byte per
+ * pixel, filter 0 on every row), the form a SAM mask takes on its way to the
+ * receipt (SPEC §10, #18): decodePng + maskFromPng read it back exactly.
+ */
+export function encodeGreyPng(width: number, height: number, data: Uint8Array): Uint8Array {
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0) throw new PngError(`cannot encode a ${width}x${height} PNG`);
+  if (data.length !== width * height) throw new PngError(`PNG data is ${data.length} bytes, not ${width}x${height}`);
+  const raw = new Uint8Array(height * (width + 1));
+  for (let y = 0; y < height; y++) raw.set(data.subarray(y * width, (y + 1) * width), y * (width + 1) + 1);
+  const ihdr = new Uint8Array(13);
+  new DataView(ihdr.buffer).setUint32(0, width);
+  new DataView(ihdr.buffer).setUint32(4, height);
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 0; // greyscale
+  const chunk = (type: string, body: Uint8Array): Uint8Array => {
+    const out = new Uint8Array(12 + body.length);
+    const view = new DataView(out.buffer);
+    view.setUint32(0, body.length);
+    out.set(Buffer.from(type, "ascii"), 4);
+    out.set(body, 8);
+    view.setUint32(8 + body.length, crc32(out.subarray(4, 8 + body.length)));
+    return out;
+  };
+  const parts = [Uint8Array.from(SIGNATURE), chunk("IHDR", ihdr), chunk("IDAT", new Uint8Array(deflateSync(raw))), chunk("IEND", new Uint8Array(0))];
+  const png = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+  let at = 0;
+  for (const p of parts) {
+    png.set(p, at);
+    at += p.length;
+  }
+  return png;
 }

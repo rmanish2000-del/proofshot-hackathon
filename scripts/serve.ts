@@ -29,6 +29,7 @@ if (!Number.isInteger(port) || port < 0 || port > 65535) {
 }
 
 const providers = providersFromEnv(process.env, {
+  sam: { fetch: (url, init) => fetch(url, init) },
   verifierFetch: (url, init) => fetch(url, init),
   onVerifierCall: (log) => console.log(`  verifier call logged: ${writeVerifierLog(`${root}evidence`, log)}`),
 });

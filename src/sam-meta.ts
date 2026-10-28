@@ -7,10 +7,10 @@
 // "true"}. The answer is a server-sent event stream; the text of every
 // `response.output_text.delta` event is joined, and the masks are `<|mask;...|>`
 // tokens inside that text. Turning those tokens into segments is the job of
-// @meta-sam/parser (>= 0.0.13), which is not installed in this tree, so the
-// parser is injected: this module builds the request, reads the stream and
-// fails closed on everything it does not understand. No mask token at all is
-// "no match", an empty segment list, not an error.
+// @meta-sam/parser (0.1.0, the glue is src/sam-parser.ts); the parser is
+// injected so this module builds the request, reads the stream and fails
+// closed on everything it does not understand, with zero network in tests.
+// No mask token at all is "no match", an empty segment list, not an error.
 //
 // The key comes from MODEL_API_KEY through an injected env; it goes into the
 // Authorization header and nowhere else, never into an error or a log. The
@@ -40,10 +40,12 @@ export type FetchLike = (
 
 /**
  * Turns the joined output text, mask tokens included, into what
- * src/sam.ts `parseSegments` accepts: `{ segments: [{ label, box, score, mask }] }`.
- * @meta-sam/parser does the decoding; the glue that calls it is passed here.
+ * src/sam.ts `parseSegments` accepts: `{ segments: [{ label, box, score, mask }] }`,
+ * or a promise of it. @meta-sam/parser does the decoding; the glue that calls
+ * it (src/sam-parser.ts `metaSamParser`) is passed here, with the prompt so
+ * the segments can carry it as their label.
  */
-export type MaskParser = (outputText: string, image: SourceImage) => unknown;
+export type MaskParser = (outputText: string, image: SourceImage, prompt: string) => unknown;
 
 export interface MetaSamTransportOptions {
   readonly fetch: FetchLike;
@@ -178,7 +180,7 @@ export function metaSamTransport(opts: MetaSamTransportOptions): SamTransport {
     if (!res.ok) throw new SegmentTransportError(`Meta Model API answered HTTP ${res.status} for ${image.name}`);
     const text = joinOutputText(answer, image.name);
     if (!text.includes(MASK_TOKEN_START)) return { segments: [] };
-    return opts.parse(text, image);
+    return opts.parse(text, image, prompt);
   };
 }
 

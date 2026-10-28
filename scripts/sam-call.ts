@@ -7,8 +7,8 @@
 // image data URL replaced by its byte count and sha256, the raw answer text
 // (capped), the joined output text and whether it holds a mask token. The whole
 // log is checked for the key's value before it is written, and nothing is
-// written when the key is unset. @meta-sam/parser is not installed, so the
-// mask tokens are logged, not decoded. Exits 1 when the call failed.
+// written when the key is unset. The mask tokens are logged, not decoded here
+// (src/sam-parser.ts decodes them in the pipeline). Exits 1 when the call failed.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -77,7 +77,7 @@ const log = {
   mask_token_present: output_text === null ? null : output_text.includes(MASK_TOKEN_START),
   join_error,
   error,
-  note: "no header is logged; the image data URL is replaced by its size and hash; @meta-sam/parser is not installed, so mask tokens are logged, not decoded",
+  note: "no header is logged; the image data URL is replaced by its size and hash; mask tokens are logged here, not decoded (src/sam-parser.ts decodes them in the pipeline)",
 };
 let json = JSON.stringify(log, null, 2);
 if (json.includes(key)) json = json.split(key).join("[MODEL_API_KEY]");

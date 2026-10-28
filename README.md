@@ -141,8 +141,10 @@ judged by a model. The receipt says `fixture` too. With `BASETEN_API_KEY` set
 the verifier is Muse Spark Open on Baseten (`src/verifier.ts`), the fidelity
 check is the masked one of SPEC §10, and the run is live; until a segmenter
 runs there is no mask, so fidelity is REVIEW and the gate can say REVIEW at
-best. The segmenter becomes SAM 3.1 only once `MODEL_SEGMENT`, `MODEL_API_KEY`
-and the mask parser are all present. Every step's provider is listed under
+best. The segmenter becomes SAM 3.1 once `MODEL_SEGMENT` and `MODEL_API_KEY`
+are set (the masks are decoded by `@meta-sam/parser`, see Dependencies); with
+masks the fidelity check reaches the images, and a JPEG is still unmeasured
+because this build decodes only PNG. Every step's provider is listed under
 "Which provider ran each step" on the page and in the `npm run serve` output.
 Jobs go to `data/jobs/upload-<stamp>/` (the stripped photos under `sources/`);
 `.gitignore` covers `data/jobs/upload-*/`, so a seller's photos are never
@@ -196,8 +198,13 @@ renderer takes an injected transport.
 
 ## Dependencies and datasets
 
-- Runtime: none. The code uses only Node's standard library (`node:crypto`,
-  `node:fs`, `node:zlib` for PNG masks, `node:test`).
+- Runtime: one package, `@meta-sam/parser` 0.1.0 (Meta's streaming parser
+  for SAM 3 segmentation tokens, pinned exactly, no runtime dependencies of
+  its own; glue in `src/sam-parser.ts`). Its licence is the **SAM License**
+  (`node_modules/@meta-sam/parser/LICENSE`, not MIT): read it before
+  redistributing anything built on it. Everything else uses only Node's
+  standard library (`node:crypto`, `node:fs`, `node:zlib` for PNG masks,
+  `node:test`).
 - Development: `typescript`, `@types/node`.
 - CI (`.github/workflows/ci.yml`): `actions/checkout`, `actions/setup-node`,
   `gitleaks/gitleaks-action`.
@@ -217,7 +224,8 @@ renderer takes an injected transport.
 | Live pipeline job through the verifier | 2 jobs on kurta-01, stand-in render, no segmenter: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer), `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask); both receipts verify | `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `demo/recordings/live-kurta-01-2/` |
 | Verifier accuracy | **not measured**: the only live comparisons are a photo against itself (the stand-in), so a `match` on every attribute shows the call works, not that the model catches a mismatch | the two live jobs above |
 | Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
-| SAM 3.1 segmentation in the gate | **not wired**: the adapter (`src/sam.ts`) and transport (`src/sam-meta.ts`) are tested against fixtures; the mask token is logged but not decoded, because `@meta-sam/parser` is not installed, and no pipeline job has run through SAM | tests plus the one call log above |
+| SAM 3.1 masks decoded | yes, in tests: `@meta-sam/parser` 0.1.0 turns the logged answer into one box (27,169 to 651,1408 of 715×1600, confidence 0.957) and one full-frame mask whose garment pixels all fall inside that box | `test/sam-parser.test.ts` against `evidence/sam-2026-10-28T03-04-30-778Z.json` and the committed photo |
+| SAM 3.1 segmentation in the gate | **wired, not yet run live in a job**: `providersFromEnv` builds the SAM segmenter from `MODEL_SEGMENT` + `MODEL_API_KEY` with the parser glue as default, and the fidelity check takes its masks; no pipeline job has run through SAM live yet, and with JPEG photos fidelity stays REVIEW (no JPEG decoder) | tests in `test/sam-parser.test.ts` and `test/serve.test.ts` |
 | Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
 | Verify page in a real browser | **not checked** | tested in Node against the same core |
 | Seller upload page in a real browser | **not checked** | the server, the API, the gate states and the page's text are tested in Node (`test/serve.test.ts`); no browser has loaded `upload.html` yet |

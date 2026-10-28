@@ -30,6 +30,7 @@ if (existsSync(join(jobsRoot, jobId))) {
 
 const logs: string[] = [];
 const providers = providersFromEnv(process.env, {
+  sam: { fetch: (url, init) => fetch(url, init) },
   verifierFetch: (url, init) => fetch(url, init),
   onVerifierCall: (log) => logs.push(writeVerifierLog("evidence", log)),
 });
