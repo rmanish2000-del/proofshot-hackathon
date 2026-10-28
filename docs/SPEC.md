@@ -449,11 +449,14 @@ UNCALIBRATED). No model judges anything.
   whose label starts `<first source name>/`; the render mask comes from the
   given segmenter, asked once with the render as an image named `render`.
   No source mask, no segmenter, a segmenter that finds nothing in the render,
-  an image that is not a PNG (this build decodes only PNG: there is no JPEG
-  decoder, so a JPEG render or source is unmeasured), or a mask or image that
-  does not decode is `REVIEW` with `metrics: null` and the reason, never a
+  an image that is not a JPEG or PNG, or a mask or image that does not decode,
+  is `REVIEW` with `metrics: null` and the reason, never a
   pass; otherwise the result is `checkFidelity`'s. A replay's hash-only mask
-  is not mask bytes, so a replay is unmeasured too.
+  is not mask bytes, so a replay is unmeasured too. Images are decoded by
+  `decodeRgb` in `src/image.ts` *(event, R3)*: PNG by `src/png.ts`, JPEG by
+  the open-source jpeg-js 0.4.4 (decode only, 50 MP cap, EXIF orientation
+  not applied since intake strips it). Before R3 a JPEG was unmeasured; the
+  receipts written then (e.g. `data/jobs/live-kurta-01-sam`) keep that reason.
 - The segmenter *(event, #18)*, `src/sam.ts`: `samSegmenter({model, transport,
   prompt?})` is the pipeline's `Segmenter` behind an injected transport that
   does the HTTP request, so the adapter reads no key. It asks once per source
@@ -646,8 +649,8 @@ server, which read it from the receipt.
   auth header replaced by a placeholder, every image data URL replaced by its
   byte count and sha256, and the key's value replaced wherever it appears;
   `npm run serve` and `npm run job:live` write it to
-  `evidence/verifier-<started_at>.json`. Images are sent as they are: this
-  build has no JPEG decoder, so it cannot resize (Baseten's limits are 10 MB
+  `evidence/verifier-<started_at>.json`. Images are sent as they are, not
+  resized (Grok 09:55; jpeg-js is used for fidelity decode only) (Baseten's limits are 10 MB
   an image, 8 images, 100 MiB a body; each is refused before the request).
 - `npm run job:live [-- <garment dir> <job id> [<jobs root>]]`
   (`scripts/live-job.ts`) runs one real job on a garment's intake photos

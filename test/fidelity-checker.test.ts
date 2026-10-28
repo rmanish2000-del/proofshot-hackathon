@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
+import jpeg from "jpeg-js";
+
 import { loadThresholds, maskedFidelityChecker } from "../src/fidelity.ts";
 import type { Segment } from "../src/pipeline.ts";
 import { encodePng } from "./helpers.ts";
@@ -16,6 +18,8 @@ const maskPng = (inside: (x: number, y: number) => boolean = () => true) => {
   return new Uint8Array(encodePng(W, H, 1, data));
 };
 const JPEG = Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]);
+// A real solid-grey JPEG (jpeg-js encode, test only), same size as the masks.
+const jpg = (v: number) => new Uint8Array(jpeg.encode({ width: W, height: H, data: Buffer.alloc(W * H * 4, v) }, 90).data);
 
 const seg = (label: string, mask: Segment["mask"]): Segment => ({ label, box: [0, 0, 1, 1], score: 0.9, mask });
 const segmenterOf = (segments: Segment[]) => ({ segment: async () => segments });
@@ -41,12 +45,28 @@ test("with a source mask but no segmenter for the render, or a segmenter that fi
   assert.match(empty.reasons[0]!, /render mask is missing: the segmenter found no garment/);
 });
 
-test("a JPEG image cannot be measured in this build (no JPEG decoder): REVIEW with the reason", async () => {
+test("an image that is not a JPEG or PNG, or a JPEG that does not decode, cannot be measured: REVIEW with the reason", async () => {
   const c = maskedFidelityChecker({ thresholds: T, segmenter: segmenterOf([seg("render/kurta", maskPng())]) });
-  const out = await c.check(req([{ name: "1-front.jpg", bytes: JPEG }], [seg("1-front.jpg/kurta", maskPng())], rgb(100)));
-  assert.equal(out.decision, "REVIEW");
-  assert.equal(out.metrics, null);
-  assert.match(out.reasons[0]!, /^source image is not a PNG: this build decodes only PNG/);
+  const broken = await c.check(req([{ name: "1-front.jpg", bytes: JPEG }], [seg("1-front.jpg/kurta", maskPng())], rgb(100)));
+  assert.equal(broken.decision, "REVIEW");
+  assert.equal(broken.metrics, null);
+  assert.match(broken.reasons[0]!, /^source image could not be decoded: JPEG did not decode/);
+  const gif = await c.check(req([{ name: "1-front.jpg", bytes: rgb(100) }], [seg("1-front.jpg/kurta", maskPng())], new Uint8Array(Buffer.from("GIF89a..."))));
+  assert.deepEqual(gif, { decision: "REVIEW", metrics: null, reasons: ["render image is not a JPEG or PNG, so it cannot be measured"] });
+});
+
+test("JPEG sources and renders are decoded (jpeg-js) and measured: same colour RELEASE, a different colour REFUSE, JPEG against PNG works", async () => {
+  const c = maskedFidelityChecker({ thresholds: T, segmenter: segmenterOf([seg("render/kurta", maskPng())]) });
+  const segments = [seg("1-front.jpg/kurta", maskPng())];
+  const same = await c.check(req([{ name: "1-front.jpg", bytes: jpg(120) }], segments, jpg(120)));
+  assert.equal(same.decision, "RELEASE", same.reasons.join("; "));
+  assert.ok(same.metrics!.delta_e < 2, `delta_e ${same.metrics!.delta_e}`);
+  assert.equal(same.metrics!.area, 1);
+  const differentColour = await c.check(req([{ name: "1-front.jpg", bytes: jpg(30) }], segments, jpg(220)));
+  assert.equal(differentColour.decision, "REFUSE");
+  assert.match(differentColour.reasons[0]!, /^delta_e .* above 20/);
+  const mixed = await c.check(req([{ name: "1-front.jpg", bytes: jpg(120) }], segments, rgb(120)));
+  assert.equal(mixed.decision, "RELEASE", mixed.reasons.join("; "));
 });
 
 test("with both masks and both PNG images the result is checkFidelity's: same image RELEASE, a different colour REFUSE, a bad mask REVIEW", async () => {
