@@ -5,7 +5,8 @@
 // from the environment (src/serve.ts providersFromEnv); with no model key the
 // run is labelled fixture mode on the page and `fixture` on the receipt; with
 // BASETEN_API_KEY the verifier is Muse Spark Open on Baseten (P6) and every
-// call's redacted log goes to evidence/verifier-<started_at>.json. Jobs are
+// call's redacted log goes to evidence/verifier-<started_at>.json (each SAM
+// call's to evidence/sam-<started_at>.json). Jobs are
 // written under --jobs (default data/jobs, the folder npm run shop reads; the
 // upload-* job folders are gitignored), and "Publish to shop" rebuilds --shop
 // (default web/shop) from it.
@@ -14,7 +15,7 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 
 import { UploadServer, providersFromEnv } from "../src/serve.ts";
-import { writeVerifierLog } from "./verifier-log.ts";
+import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string): string => {
@@ -29,7 +30,7 @@ if (!Number.isInteger(port) || port < 0 || port > 65535) {
 }
 
 const providers = providersFromEnv(process.env, {
-  sam: { fetch: (url, init) => fetch(url, init) },
+  sam: { fetch: (url, init) => fetch(url, init), onCall: (log) => console.log(`  SAM call logged: ${writeSamLog(`${root}evidence`, log)}`) },
   verifierFetch: (url, init) => fetch(url, init),
   onVerifierCall: (log) => console.log(`  verifier call logged: ${writeVerifierLog(`${root}evidence`, log)}`),
 });

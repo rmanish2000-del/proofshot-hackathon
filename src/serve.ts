@@ -35,7 +35,7 @@ import { rendererFromEnv } from "./render.ts";
 import { segmenterFromEnv } from "./sam.ts";
 import type { SamTransport } from "./sam.ts";
 import { metaSamTransportFromEnv } from "./sam-meta.ts";
-import type { FetchLike, MaskParser } from "./sam-meta.ts";
+import type { FetchLike, MaskParser, SamCallLog } from "./sam-meta.ts";
 import { metaSamParser } from "./sam-parser.ts";
 import { buildShop } from "./shop.ts";
 import type { CatalogRow } from "./shop.ts";
@@ -137,8 +137,12 @@ export function fixtureVerifier(): Verifier {
 }
 
 export interface ProvidersFromEnvOptions {
-  /** Needed for a live segmenter: the fetch it calls api.meta.ai with. The parser defaults to the @meta-sam/parser glue. */
-  readonly sam?: { readonly fetch: FetchLike; readonly parse?: MaskParser };
+  /**
+   * Needed for a live segmenter: the fetch it calls api.meta.ai with. The parser
+   * defaults to the @meta-sam/parser glue; `onCall` receives the redacted log of
+   * every SAM request sent.
+   */
+  readonly sam?: { readonly fetch: FetchLike; readonly parse?: MaskParser; readonly onCall?: (log: SamCallLog) => void };
   /** Overrides MODEL_API_KEY-based wiring in tests. */
   readonly samTransport?: SamTransport;
   /** Needed for the live verifier (P6): the fetch it calls Baseten with. Without it the verifier is a fixture even with a key. */
@@ -170,7 +174,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
 
   let segmenter: Segmenter = base.segmenter;
   const wantsSam = (env.MODEL_SEGMENT ?? "").trim() !== "";
-  const transport = opts.samTransport ?? (opts.sam && (env.MODEL_API_KEY ?? "").trim() !== "" ? metaSamTransportFromEnv(env, opts.sam.fetch, opts.sam.parse ?? metaSamParser()) : null);
+  const transport = opts.samTransport ?? (opts.sam && (env.MODEL_API_KEY ?? "").trim() !== "" ? metaSamTransportFromEnv(env, opts.sam.fetch, opts.sam.parse ?? metaSamParser(), opts.sam.onCall) : null);
   if (wantsSam && transport) {
     segmenter = segmenterFromEnv(env, transport);
     labels.segment = `${segmenter.identity!.provider} / ${segmenter.identity!.model}`;

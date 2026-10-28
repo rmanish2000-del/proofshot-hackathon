@@ -9,9 +9,10 @@ import type { SourceImage } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt, recordedClock } from "../src/receipt.ts";
 import { META_MODEL_API_URL, META_SAM_MODEL_ID, META_SAM_REQUEST_MODEL, SegmentTransportError, joinOutputText, metaSamRequestBody, metaSamTransport, metaSamTransportFromEnv } from "../src/sam-meta.ts";
-import type { FetchLike } from "../src/sam-meta.ts";
+import type { FetchLike, SamCallLog } from "../src/sam-meta.ts";
 import { SegmentConfigError, SegmentProtocolError, samSegmenter } from "../src/sam.ts";
 import { ATTRIBUTES } from "../src/types.ts";
+import { sha256Hex } from "../src/util.ts";
 import { encodePng } from "./helpers.ts";
 
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 2, 3]);
@@ -137,4 +138,44 @@ test("before any request: a wrong MODEL_SEGMENT, a blank key, or a non-image sou
   assert.equal(r.refused?.rule, "segment_failed");
   assert.equal(r.refused?.reason, "SegmentTransportError: Meta Model API answered HTTP 401 for 1-front.jpg");
   assert.deepEqual(r.renders, []);
+});
+
+test("onCall gets one redacted log per request sent (rule 13): no header, image as size and hash, the answer, the joined text; failures are logged before they throw; nothing for a request never sent", async () => {
+  const logs: SamCallLog[] = [];
+  const onCall = (l: SamCallLog) => logs.push(l);
+  const parse = () => ({ segments: [] });
+  // The server echoes the key back: the log must still not hold it.
+  const { fetch } = fakeFetch((body) => (body.includes("image/jpeg") ? { status: 200, text: sse(delta(`<|mask;1|> ${KEY}`)) } : { status: 500, text: "oops" }));
+  const transport = metaSamTransport({ fetch, apiKey: () => KEY, parse, onCall });
+  await transport({ model: META_SAM_MODEL_ID, prompt: "kurta", image: front });
+  await assert.rejects(transport({ model: META_SAM_MODEL_ID, prompt: "kurta", image: back }), SegmentTransportError);
+  await assert.rejects(transport({ model: "sam-3.1", prompt: "kurta", image: front }), SegmentConfigError);
+  assert.equal(logs.length, 2, "the refused-before-sending call is not logged");
+
+  const [ok, failed] = logs as [SamCallLog, SamCallLog];
+  const json = JSON.stringify(logs);
+  assert.ok(!json.includes(KEY), "the key's value is nowhere in the logs");
+  assert.ok(!json.includes(JPEG.toString("base64")) && !json.includes(PNG.toString("base64")), "no image bytes");
+  assert.ok(!/authorization|bearer/i.test(json), "no header");
+  assert.match(ok.started_at, /^\d{4}-\d\d-\d\dT/);
+  assert.equal(ok.url, META_MODEL_API_URL);
+  assert.equal(ok.model_segment, META_SAM_MODEL_ID);
+  assert.equal(ok.prompt, "kurta");
+  assert.deepEqual(ok.image, { name: "1-front.jpg", bytes: JPEG.length, sha256: sha256Hex(JPEG) });
+  assert.match(JSON.stringify(ok.request), new RegExp(`data:image/jpeg;base64,\\[${JPEG.length} bytes, sha256 ${sha256Hex(JPEG)}, left out of the log\\]`));
+  assert.equal(ok.response!.status, 200);
+  assert.equal(ok.output_text, "<|mask;1|> [MODEL_API_KEY]");
+  assert.equal(ok.mask_token_present, true);
+  assert.equal(ok.error, null);
+  assert.equal(failed.response!.status, 500);
+  assert.equal(failed.output_text, null);
+  assert.equal(failed.mask_token_present, null);
+  assert.equal(failed.error, "SegmentTransportError: Meta Model API answered HTTP 500 for 2-back.png");
+
+  // A fetch that throws (network) is logged with no response, then rethrown.
+  const net = metaSamTransport({ fetch: async () => { throw new TypeError("fetch failed"); }, apiKey: () => KEY, parse, onCall });
+  await assert.rejects(net({ model: META_SAM_MODEL_ID, prompt: "kurta", image: front }), /fetch failed/);
+  assert.equal(logs.length, 3);
+  assert.equal(logs[2]!.response, null);
+  assert.equal(logs[2]!.error, "TypeError: fetch failed");
 });

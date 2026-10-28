@@ -13,13 +13,17 @@
 // No mask token at all is "no match", an empty segment list, not an error.
 //
 // The key comes from MODEL_API_KEY through an injected env; it goes into the
-// Authorization header and nowhere else, never into an error or a log. The
+// Authorization header and nowhere else, never into an error or a log. Each
+// request sent gives one redacted SamCallLog to the optional `onCall` (no
+// header, image as size and hash, the key's value replaced if echoed), which
+// npm run job:live and serve write to evidence/sam-<started_at>.json. The
 // fetch is injected too, so a test runs zero network calls.
 
 import type { SourceImage } from "./pipeline.ts";
 import { imageExt } from "./render.ts";
 import { SegmentConfigError, SegmentProtocolError } from "./sam.ts";
 import type { SamTransport } from "./sam.ts";
+import { sha256Hex } from "./util.ts";
 
 export const META_MODEL_API_URL = "https://api.meta.ai/v1/responses";
 /** The model named in the request body. */
@@ -53,6 +57,49 @@ export interface MetaSamTransportOptions {
   readonly apiKey: () => string;
   readonly parse: MaskParser;
   readonly url?: string;
+  /** Gets one redacted log per request that was sent (rule 13), before the answer is parsed or an error is thrown. */
+  readonly onCall?: (log: SamCallLog) => void;
+}
+
+/**
+ * One SAM call as it goes to evidence/sam-<started_at>.json: no header at all,
+ * the request with the image data URL replaced by its byte count and sha256,
+ * the raw answer (capped), the joined output text and whether it holds a mask
+ * token. The key's value is replaced wherever it appears.
+ */
+export interface SamCallLog {
+  readonly started_at: string;
+  readonly latency_ms: number;
+  readonly url: string;
+  readonly model_segment: string;
+  readonly prompt: string;
+  readonly image: { readonly name: string; readonly bytes: number; readonly sha256: string };
+  readonly request: unknown;
+  readonly response: { readonly status: number; readonly body: string } | null;
+  readonly output_text: string | null;
+  readonly mask_token_present: boolean | null;
+  readonly error: string | null;
+  readonly note: string;
+}
+
+const LOG_CAP = 1_000_000;
+const capped = (s: string | null) => (s === null ? null : s.length > LOG_CAP ? `${s.slice(0, LOG_CAP)}…[truncated, ${s.length} chars in all]` : s);
+
+/** The request body with its image data URL replaced by size and hash, for a log. */
+export function redactedSamRequest(body: string, image: SourceImage): unknown {
+  const request = JSON.parse(body) as { input: { content: { type: string; image_url?: string }[] }[] };
+  for (const part of request.input[0]!.content) {
+    if (part.type === "input_image" && part.image_url) {
+      const mime = /^data:([^;]+);/.exec(part.image_url)?.[1] ?? "?";
+      part.image_url = `data:${mime};base64,[${image.bytes.length} bytes, sha256 ${sha256Hex(image.bytes)}, left out of the log]`;
+    }
+  }
+  return request;
+}
+
+function scrubKey(log: SamCallLog, key: string): SamCallLog {
+  const json = JSON.stringify(log);
+  return json.includes(key) ? (JSON.parse(json.split(key).join("[MODEL_API_KEY]")) as SamCallLog) : log;
 }
 
 /** The request body for one image, as JSON. Exported so a test can check it without a fetch. */
@@ -171,20 +218,49 @@ export function metaSamTransport(opts: MetaSamTransportOptions): SamTransport {
     const key = opts.apiKey();
     if (key === "") throw new SegmentConfigError("MODEL_API_KEY is not set");
     const body = metaSamRequestBody(prompt, image);
-    const res = await opts.fetch(url, {
-      method: "POST",
-      headers: { authorization: `Bearer ${key}`, "content-type": "application/json", accept: "text/event-stream" },
-      body,
-    });
-    const answer = await res.text();
-    if (!res.ok) throw new SegmentTransportError(`Meta Model API answered HTTP ${res.status} for ${image.name}`);
-    const text = joinOutputText(answer, image.name);
+    const started_at = new Date().toISOString();
+    const t0 = performance.now();
+    let response: { status: number; body: string } | null = null;
+    let text: string | null = null;
+    let failure: unknown = null;
+    try {
+      const res = await opts.fetch(url, {
+        method: "POST",
+        headers: { authorization: `Bearer ${key}`, "content-type": "application/json", accept: "text/event-stream" },
+        body,
+      });
+      response = { status: res.status, body: await res.text() };
+      if (!res.ok) throw new SegmentTransportError(`Meta Model API answered HTTP ${res.status} for ${image.name}`);
+      text = joinOutputText(response.body, image.name);
+    } catch (err) {
+      failure = err;
+    }
+    opts.onCall?.(
+      scrubKey(
+        {
+          started_at,
+          latency_ms: Math.round(performance.now() - t0),
+          url,
+          model_segment: model,
+          prompt,
+          image: { name: image.name, bytes: image.bytes.length, sha256: sha256Hex(image.bytes) },
+          request: redactedSamRequest(body, image),
+          response: response && { status: response.status, body: capped(response.body)! },
+          output_text: capped(text),
+          mask_token_present: text === null ? null : text.includes(MASK_TOKEN_START),
+          error: failure === null ? null : failure instanceof Error ? `${failure.name}: ${failure.message}` : String(failure),
+          note: "no header is logged; the image data URL is replaced by its size and hash; mask tokens are logged as returned (src/sam-parser.ts decodes them)",
+        },
+        key,
+      ),
+    );
+    if (failure !== null || text === null) throw failure;
     if (!text.includes(MASK_TOKEN_START)) return { segments: [] };
     return opts.parse(text, image, prompt);
   };
 }
 
 /** The transport with the key read from MODEL_API_KEY at request time. The value is never returned or logged. */
-export function metaSamTransportFromEnv(env: Readonly<Record<string, string | undefined>>, fetch: FetchLike, parse: MaskParser): SamTransport {
-  return metaSamTransport({ fetch, parse, apiKey: () => (env.MODEL_API_KEY ?? "").trim() });
+export function metaSamTransportFromEnv(env: Readonly<Record<string, string | undefined>>, fetch: FetchLike, parse: MaskParser, onCall?: (log: SamCallLog) => void): SamTransport {
+  return metaSamTransport({ fetch, parse, apiKey: () => (env.MODEL_API_KEY ?? "").trim(), ...(onCall ? { onCall } : {}) });
 }
