@@ -38,6 +38,8 @@ export const V2_PARAMS = Object.freeze({
   // §4 ghost mannequin
   insert_darken: 0.62,
   insert_gradient: 0.12,
+  // NR3c: the back neckline's curve dips this share of the opening's height at its centre.
+  insert_back_depth: 0.35,
   neck_top_band: 0.25,
   neck_centre_band: 0.15,
   max_rotate_deg: 4,
@@ -373,6 +375,35 @@ export function neckRegion(m: Mask, p: V2Params = V2_PARAMS): { region: Uint8Arr
   return { region, bbox: bboxOf(region, w, h)!, px: comp.sizes[best]! };
 }
 
+/**
+ * NR3c: the back of the neckline seen through the opening. Its top edge is an
+ * arc, at the opening's top at the sides and `insert_back_depth` of the
+ * opening's height lower at the centre, so the insert reads as a curved back
+ * collar rather than a flat block. `top[x]` is the arc's row for each column of
+ * the bbox (x - bbox.x0); `mask` is 1 on region pixels on or below it.
+ */
+export function backNeckInsert(neck: { region: Uint8Array; bbox: Box }, w: number, p: V2Params = V2_PARAMS): { mask: Uint8Array; top: Float64Array; px: number } {
+  const nb = neck.bbox;
+  const mask = new Uint8Array(neck.region.length);
+  const top = new Float64Array(nb.x1 - nb.x0);
+  const cx = (nb.x0 + nb.x1) / 2, half = Math.max(0.5, (nb.x1 - nb.x0) / 2);
+  const depth = p.insert_back_depth * (nb.y1 - nb.y0);
+  let px = 0;
+  for (let x = nb.x0; x < nb.x1; x++) {
+    const u = (x + 0.5 - cx) / half;
+    const yArc = nb.y0 + depth * Math.sqrt(Math.max(0, 1 - u * u));
+    top[x - nb.x0] = yArc;
+    for (let y = Math.ceil(yArc); y < nb.y1; y++) {
+      const i = y * w + x;
+      if (neck.region[i]) {
+        mask[i] = 1;
+        px++;
+      }
+    }
+  }
+  return { mask, top, px };
+}
+
 // ---------- §5 illumination and colour ----------
 
 /** Illumination L: masked box-blur x3 of Y, normalised by the blurred mask, so the background never leaks in. */
@@ -680,6 +711,7 @@ export function compositeV2(src: RgbImage, mask: Mask, p: V2Params = V2_PARAMS):
   const neck = neckRegion(m, p);
   const union = new Uint8Array(m.data);
   let insertColour: number[] | null = null;
+  let back: ReturnType<typeof backNeckInsert> | null = null;
   const layer = new Uint8Array(w * h * 3);
   for (let i = 0; i < w * h; i++) if (m.data[i]) for (let c = 0; c < 3; c++) layer[i * 3 + c] = corr.image.data[i * 3 + c]!;
   if (neck) {
@@ -697,12 +729,15 @@ export function compositeV2(src: RgbImage, mask: Mask, p: V2Params = V2_PARAMS):
     });
     insertColour = median.map((v) => byte(v * p.insert_darken));
     const nb = neck.bbox;
-    for (let y = nb.y0; y < nb.y1; y++) {
-      const t = nb.y1 - nb.y0 > 1 ? (y - nb.y0) / (nb.y1 - nb.y0 - 1) : 1;
-      const f = 1 - p.insert_gradient + p.insert_gradient * t; // darker at the top
-      for (let x = nb.x0; x < nb.x1; x++) {
+    back = backNeckInsert(neck, w, p);
+    for (let x = nb.x0; x < nb.x1; x++) {
+      const yArc = back.top[x - nb.x0]!;
+      for (let y = Math.ceil(yArc); y < nb.y1; y++) {
         const i = y * w + x;
-        if (!neck.region[i]) continue;
+        if (!back.mask[i]) continue;
+        // Darker just under the back collar's edge, lighter towards the bottom of the opening.
+        const t = nb.y1 - yArc > 1 ? (y - yArc) / (nb.y1 - yArc - 1) : 1;
+        const f = 1 - p.insert_gradient + p.insert_gradient * Math.min(1, t);
         union[i] = 1;
         for (let c = 0; c < 3; c++) layer[i * 3 + c] = byte(insertColour[c]! * f);
       }
@@ -843,7 +878,7 @@ export function compositeV2(src: RgbImage, mask: Mask, p: V2Params = V2_PARAMS):
   const params = {
     ...base,
     colour,
-    insert: neck ? { present: true, bbox: [neck.bbox.x0, neck.bbox.y0, neck.bbox.x1, neck.bbox.y1], px: neck.px, colour: insertColour } : { present: false, bbox: null, px: 0, colour: null },
+    insert: neck && back ? { present: true, shape: "curved-back", bbox: [neck.bbox.x0, neck.bbox.y0, neck.bbox.x1, neck.bbox.y1], opening_px: neck.px, px: back.px, colour: insertColour } : { present: false, bbox: null, px: 0, colour: null },
     rotation: { angle_deg: angle, applied: rotate },
     crop_box: [crop.x0, crop.y0, crop.x1, crop.y1],
     scale: round4(s),
