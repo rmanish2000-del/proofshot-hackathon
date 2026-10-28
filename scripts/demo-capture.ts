@@ -8,7 +8,8 @@
 // from committed files. No upload, no publish, no live or paid call, no key
 // read. out/demo/shots.json gives each shot's seconds (the total stays under
 // MAX_TOTAL_SECONDS) and out/demo/frames.txt is an ffmpeg concat list of the
-// 1280 px frames with those durations; the video is assembled elsewhere, so
+// 1280 px frames with those durations, and out/demo/captions.srt (DEMO1c) has
+// one cue per narrated shot on the same timings; the video is assembled elsewhere, so
 // nothing here runs ffmpeg.
 //
 // The browser is Edge or Chrome (PROOFSHOT_BROWSER names another), driven
@@ -26,9 +27,12 @@ import {
   VIEWPORTS,
   browserCandidates,
   bytesHtml,
+  captionsSrt,
   cardHtml,
   concatList,
+  narrationFromDemoMd,
   replayLogLines,
+  shotNarration,
   tamperOneByte,
   terminalHtml,
   type CapturedFrame,
@@ -237,6 +241,9 @@ writeFileSync(join(outDir, "frames.txt"), concatList(pngs));
 const total = report.reduce((n, r) => n + r.seconds, 0);
 const video = "not made here: assemble out/demo/frames.txt (ffmpeg -f concat)";
 writeFileSync(join(outDir, "shots.json"), JSON.stringify({ browser: browser.split(/[\\/]/).pop(), video, total_seconds: total, shots: report }, null, 2) + "\n");
+// DEMO1c: the subtitle track for the muted cut, timed from the same seconds.
+const narration = shotNarration(DEMO_SHOTS, narrationFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8")));
+writeFileSync(join(outDir, "captions.srt"), captionsSrt(DEMO_SHOTS, narration));
 rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 
 for (const r of report) {

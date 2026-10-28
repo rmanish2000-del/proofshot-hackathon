@@ -165,6 +165,70 @@ export function beatSecondsFromDemoMd(md: string): Map<number, number> {
   return out;
 }
 
+/** The cells of one markdown table row; an escaped `\|` stays inside its cell. */
+const tableCells = (line: string): string[] =>
+  line
+    .trim()
+    .replace(/^\||\|$/g, "")
+    .split(/(?<!\\)\|/)
+    .map((c) => c.trim().replace(/\\\|/g, "|"));
+
+/** The Voiceover cell per beat from the "## Timecode table" of docs/DEMO.md. */
+export function narrationFromDemoMd(md: string): Map<number, string> {
+  const out = new Map<number, string>();
+  let col = -1;
+  for (const line of md.split("\n")) {
+    if (!line.startsWith("|")) {
+      col = -1;
+      continue;
+    }
+    const cells = tableCells(line);
+    if (cells[0] === "#" && cells.includes("Voiceover")) col = cells.indexOf("Voiceover");
+    else if (col >= 0 && /^\d+$/.test(cells[0]!)) out.set(Number(cells[0]), cells[col] ?? "");
+  }
+  return out;
+}
+
+/**
+ * DEMO1c: each shot's narration. DEMO.md narrates per beat, so a beat's
+ * voiceover sentences are shared in order between that beat's shots (verbatim,
+ * never reworded). A beat whose line is empty or still has a [TBD] gives its
+ * shots no narration rather than invented text.
+ */
+export function shotNarration(shots: readonly Shot[], narration: ReadonlyMap<number, string>): Map<string, string | null> {
+  const out = new Map<string, string | null>();
+  const beats = [...new Set(shots.map((s) => s.beat))];
+  for (const beat of beats) {
+    const mine = shots.filter((s) => s.beat === beat);
+    const line = (narration.get(beat) ?? "").trim();
+    const sentences = line && !line.includes("TBD") ? line.split(/(?<=[.!?])\s+(?=\S)/) : [];
+    mine.forEach((s, j) => {
+      const part = sentences.slice(Math.floor((j * sentences.length) / mine.length), Math.floor(((j + 1) * sentences.length) / mine.length));
+      out.set(s.id, part.length ? part.join(" ") : null);
+    });
+  }
+  return out;
+}
+
+/** An SRT timestamp, `HH:MM:SS,mmm`. */
+export function srtTime(seconds: number): string {
+  const ms = Math.round(seconds * 1000);
+  const p = (n: number, w: number) => String(n).padStart(w, "0");
+  return `${p(Math.floor(ms / 3600000), 2)}:${p(Math.floor(ms / 60000) % 60, 2)}:${p(Math.floor(ms / 1000) % 60, 2)},${p(ms % 1000, 3)}`;
+}
+
+/** One SRT cue per narrated shot; start and end are the cumulative shot seconds, as in frames.txt. */
+export function captionsSrt(shots: readonly Shot[], narration: ReadonlyMap<string, string | null>): string {
+  const cues: string[] = [];
+  let at = 0;
+  for (const s of shots) {
+    const text = narration.get(s.id);
+    if (text) cues.push(`${cues.length + 1}\n${srtTime(at)} --> ${srtTime(at + s.seconds)}\n${text}\n`);
+    at += s.seconds;
+  }
+  return cues.join("\n");
+}
+
 /** An ffmpeg concat list of the 1280 px frames in shot order, each shot's seconds shared by its frames. */
 export function concatList(entries: readonly { readonly file: string; readonly seconds: number }[]): string {
   if (!entries.length) return "";
