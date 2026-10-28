@@ -20,7 +20,8 @@
     "demo:replay": "node --experimental-strip-types scripts/replay.ts",
     "demo:record": "node --experimental-strip-types scripts/record.ts",
     "calibrate": "node --experimental-strip-types scripts/calibrate.ts",
-    "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts"
+    "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts",
+    "make:template": "node --experimental-strip-types scripts/make-template.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

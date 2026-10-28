@@ -247,15 +247,23 @@ export function maskedFidelityChecker(opts: MaskedFidelityOptions = {}): Fidelit
   const t = opts.thresholds ?? loadThresholds();
   const unmeasured = (reason: string): FidelityResult => ({ decision: "REVIEW", metrics: null, reasons: [reason] });
   return {
-    check: async ({ sources, segments, render }) => {
+    check: async ({ sources, segments, render, renderMask }) => {
       const source = sources[0];
       if (!source) return unmeasured("source mask is missing: the job has no source photo");
       const sourceSeg = segments.find((s) => s.label.startsWith(`${source.name}/`) && s.mask instanceof Uint8Array);
       if (!sourceSeg) return unmeasured(`source mask is missing: no segment with mask bytes for ${source.name}`);
-      if (!opts.segmenter) return unmeasured("render mask is missing: no segmenter is available for the render");
-      const renderSegs = await opts.segmenter.segment([{ name: "render", bytes: render }]);
-      const renderSeg = renderSegs.find((s) => s.mask instanceof Uint8Array);
-      if (!renderSeg) return unmeasured("render mask is missing: the segmenter found no garment in the render");
+      // A composite knows its render mask exactly (the source mask through the
+      // warp), so the render is not segmented again (SPEC-render-fix §4).
+      let renderSeg: { mask: Uint8Array };
+      if (renderMask) {
+        renderSeg = { mask: renderMask };
+      } else {
+        if (!opts.segmenter) return unmeasured("render mask is missing: no segmenter is available for the render");
+        const renderSegs = await opts.segmenter.segment([{ name: "render", bytes: render }]);
+        const found = renderSegs.find((s) => s.mask instanceof Uint8Array);
+        if (!found) return unmeasured("render mask is missing: the segmenter found no garment in the render");
+        renderSeg = { mask: found.mask as Uint8Array };
+      }
 
       const decoded: Record<"source" | "render", RgbImage | null> = { source: null, render: null };
       for (const [name, bytes] of [["source", source.bytes], ["render", render]] as const) {
@@ -274,7 +282,8 @@ export function maskedFidelityChecker(opts: MaskedFidelityOptions = {}): Fidelit
           return unmeasured(`${name} mask could not be decoded: ${err instanceof Error ? err.message : String(err)}`);
         }
       }
-      return checkFidelity({ source: decoded.source!, render: decoded.render!, sourceMask: masks.source, renderMask: masks.render }, t);
+      const result = checkFidelity({ source: decoded.source!, render: decoded.render!, sourceMask: masks.source, renderMask: masks.render }, t);
+      return renderMask ? { ...result, render_mask: "warped-source-mask" } : result;
     },
   };
 }

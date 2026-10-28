@@ -62,11 +62,33 @@ export interface Segmenter {
   segment(sources: readonly SourceImage[]): Promise<Segment[]>;
 }
 
+export interface RenderedImage {
+  readonly bytes: Uint8Array;
+  readonly ext: string;
+  /**
+   * Extra fields for the receipt's render entry, after the fixed ones: how the
+   * image was made (`method`, `generative`, template, mask, params). A renderer
+   * that gives none adds nothing, so older receipts keep their shape.
+   */
+  readonly record?: Readonly<Record<string, unknown>>;
+  /**
+   * The garment's mask in the render's own frame, when the renderer knows it
+   * exactly (a composite carries the source mask through its warp), as a
+   * greyscale PNG. The fidelity check uses it instead of segmenting the render.
+   */
+  readonly renderMask?: Uint8Array;
+}
+
 export interface Renderer {
-  /** `stand-in` generates nothing: it returns the owner's own photo (SPEC §8). */
-  readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in";
+  /**
+   * `stand-in` generates nothing: it returns the owner's own photo (SPEC §8).
+   * `composite` generates nothing either: it places the seller's garment pixels
+   * on a template by deterministic code (SPEC-render-fix).
+   */
+  readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in" | "composite";
   readonly model: string;
-  render(req: { scene: string; prompt: string; sources: readonly SourceImage[] }): Promise<{ bytes: Uint8Array; ext: string }>;
+  /** `segments` is the job's segmentation, which runs before any render (runJob always passes it); most renderers ignore it. */
+  render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[] }): Promise<RenderedImage>;
 }
 
 export interface VerifierUsage {
@@ -84,7 +106,8 @@ export interface Verifier {
 
 /** The garment-fidelity check of SPEC §10 for one render. */
 export interface FidelityChecker {
-  check(req: { sources: readonly SourceImage[]; segments: readonly Segment[]; render: Uint8Array; renderId: string; scene: string }): Promise<FidelityResult>;
+  /** `renderMask` is the renderer's own mask of the garment in the render (a greyscale PNG), when it has one. */
+  check(req: { sources: readonly SourceImage[]; segments: readonly Segment[]; render: Uint8Array; renderMask?: Uint8Array; renderId: string; scene: string }): Promise<FidelityResult & { readonly render_mask?: string }>;
 }
 
 export interface Providers {
@@ -214,10 +237,10 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     // A renderer that throws refuses this scene and the job goes on, so every
     // scene attempted ends with a gate entry. A Muse Image model is refused here
     // too, before render() is called, whichever renderer was injected (SPEC §8).
-    let image: { bytes: Uint8Array; ext: string };
+    let image: RenderedImage;
     try {
       refuseMuseImage(renderer.model);
-      image = await renderer.render({ scene, prompt, sources: job.sources });
+      image = await renderer.render({ scene, prompt, sources: job.sources, segments });
     } catch (err) {
       const r = stepRefusal("render_failed", errorText(err));
       receipt.append("gate", { render_id, decision: "REFUSE", cited: r, reasons: [r] });
@@ -226,7 +249,10 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     }
     const image_sha256 = sha256Hex(image.bytes);
     writeFileSync(join(dir, `${render_id}.${image.ext}`), image.bytes);
-    receipt.append("render", { render_id, sha256: image_sha256, model: renderer.model, provider: renderer.provider, prompt });
+    // The renderer's own fields follow the fixed ones and can never replace them.
+    const fixed = { render_id, sha256: image_sha256, model: renderer.model, provider: renderer.provider, prompt };
+    const extra = Object.fromEntries(Object.entries(image.record ?? {}).filter(([k]) => !(k in fixed)));
+    receipt.append("render", { ...fixed, ...extra });
 
     // A verifier that throws or breaks the schema is a refusal, never a pass:
     // its render goes to the gate with no findings, so nothing is verified.
@@ -242,7 +268,14 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     }
     receipt.append("verifier", { render_id, findings, verifier: { ...verifier.identity }, usage, error });
 
-    const fidelity = await checkFidelitySafely(fidelityChecker, { sources: job.sources, segments, render: image.bytes, renderId: render_id, scene });
+    const fidelity = await checkFidelitySafely(fidelityChecker, {
+      sources: job.sources,
+      segments,
+      render: image.bytes,
+      ...(image.renderMask ? { renderMask: image.renderMask } : {}),
+      renderId: render_id,
+      scene,
+    });
     receipt.append("fidelity", { render_id, ...fidelity });
 
     const gate = decide(findings, fidelity);
@@ -275,6 +308,8 @@ export interface FidelityEntry {
   /** A metric that is not a finite number is recorded as null. */
   readonly metrics: Readonly<Record<string, number | null>> | null;
   readonly reasons: readonly string[];
+  /** Where the render-side mask came from, when the checker says (`warped-source-mask` for a composite). */
+  readonly render_mask?: string;
   readonly error?: string;
 }
 
@@ -284,7 +319,7 @@ export interface FidelityEntry {
  */
 async function checkFidelitySafely(checker: FidelityChecker, req: Parameters<FidelityChecker["check"]>[0]): Promise<FidelityEntry> {
   const refuse = (error: string): FidelityEntry => ({ decision: "REFUSE", metrics: null, reasons: [`fidelity check failed: ${error}`], error });
-  let out: FidelityResult;
+  let out: FidelityResult & { readonly render_mask?: string };
   try {
     out = await checker.check(req);
   } catch (err) {
@@ -298,7 +333,7 @@ async function checkFidelitySafely(checker: FidelityChecker, req: Parameters<Fid
     ? Object.fromEntries(Object.entries(out.metrics).map(([k, v]) => [k, typeof v === "number" && Number.isFinite(v) ? v : null]))
     : null;
   const reasons = Array.isArray(out.reasons) ? out.reasons.map(String) : [];
-  return { decision, metrics, reasons };
+  return { decision, metrics, reasons, ...(typeof out.render_mask === "string" ? { render_mask: out.render_mask } : {}) };
 }
 
 /**

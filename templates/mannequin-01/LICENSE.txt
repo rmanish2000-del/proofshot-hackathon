@@ -1,0 +1,6 @@
+mannequin-01: a dress form drawn by src/mannequin.ts in this repository
+(npm run make:template regenerates base.png and anchors.json byte for byte).
+
+No photograph and no person are in it, and no third-party image was used.
+The authors dedicate this template to the public domain under CC0 1.0
+Universal: https://creativecommons.org/publicdomain/zero/1.0/

@@ -9,12 +9,26 @@
 // photo of the garment, so the receipt's render entry names `stand-in` /
 // `owner-photo` and a reader can tell the image was never rendered.
 
-import type { Renderer, SourceImage } from "./pipeline.ts";
+//
+// The `composite` provider generates nothing either: it cuts the garment out of
+// the owner's front photo with the job's SAM mask and places it on a body
+// template by deterministic code (src/composite.ts, SPEC-render-fix). Its render
+// entry says method `composite`, generative false, and names the template and
+// mask it used.
 
-export const RENDER_PROVIDERS = ["openai-images", "fal", "meta", "stand-in"] as const;
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { COMPOSITE_MODEL, CompositeError, FEATHER_PX, WARP, composite, loadTemplate } from "./composite.ts";
+import type { Template } from "./composite.ts";
+import { decodeRgb } from "./image.ts";
+import type { Renderer, Segment, SourceImage } from "./pipeline.ts";
+import { decodePng, encodeGreyPng, maskFromPng } from "./png.ts";
+
+export const RENDER_PROVIDERS = ["openai-images", "fal", "meta", "stand-in", "composite"] as const;
 export type RenderProvider = (typeof RENDER_PROVIDERS)[number];
-/** The providers that send a request; the stand-in sends none. */
-export type HttpRenderProvider = Exclude<RenderProvider, "stand-in">;
+/** The providers that send a request; the stand-in and the composite send none. */
+export type HttpRenderProvider = Exclude<RenderProvider, "stand-in" | "composite">;
 
 export const MUSE_IMAGE = /muse[\s._\/-]*image/i;
 
@@ -27,7 +41,13 @@ export const DEFAULT_MODEL: Readonly<Record<RenderProvider, string | null>> = Ob
   fal: null,
   meta: null,
   "stand-in": STAND_IN_MODEL,
+  composite: COMPOSITE_MODEL,
 });
+
+/** The template RENDER_TEMPLATE names when it is empty. */
+export const DEFAULT_TEMPLATE = "mannequin-01";
+/** The repo's templates/ folder, one sub-folder per template id. */
+export const TEMPLATES_DIR = fileURLToPath(new URL("../templates/", import.meta.url));
 
 export class RenderConfigError extends Error {
   override name = "RenderConfigError";
@@ -92,6 +112,65 @@ export function fileRenderer(label: string, bytes: Uint8Array): Renderer {
   };
 }
 
+/**
+ * The segment the composite cuts with: among the front source's segments
+ * (label `<front name>/...`) that carry mask bytes, the top score; the first
+ * of equals. Null when there is none.
+ */
+export function frontMaskSegment(sources: readonly SourceImage[], segments: readonly Segment[]): { segment: Segment & { mask: Uint8Array }; index: number } | null {
+  const front = sources[0];
+  if (!front) return null;
+  let best: { segment: Segment & { mask: Uint8Array }; index: number } | null = null;
+  segments.forEach((s, index) => {
+    if (!s.label.startsWith(`${front.name}/`) || !(s.mask instanceof Uint8Array)) return;
+    if (!best || s.score > best.segment.score) best = { segment: s as Segment & { mask: Uint8Array }, index };
+  });
+  return best;
+}
+
+/**
+ * The composite renderer (SPEC-render-fix): the front photo's garment, cut out
+ * with its SAM mask, warped onto `template` and laid over it, as a PNG. No
+ * request, no key, no image model. No mask, a mask the wrong size, or a photo
+ * that does not decode throws CompositeError, which the pipeline records as
+ * `render_failed`, so the gate refuses: there is never a silent fall-back to
+ * the stand-in.
+ */
+export function compositeRenderer(template: Template): Renderer {
+  return {
+    provider: "composite",
+    model: COMPOSITE_MODEL,
+    render: async ({ sources, segments }) => {
+      const front = sources[0];
+      if (!front) throw new CompositeError("no garment mask: the job has no source photo");
+      const pick = frontMaskSegment(sources, segments ?? []);
+      if (!pick) throw new CompositeError(`no garment mask: no segment with mask bytes for ${front.name}`);
+      let src, mask;
+      try {
+        src = decodeRgb(front.bytes);
+        mask = maskFromPng(decodePng(pick.segment.mask));
+      } catch (err) {
+        throw new CompositeError(`${front.name} or its mask did not decode: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      const out = composite(src, mask, template);
+      const renderMask = new Uint8Array(out.renderMask.data.length);
+      for (let i = 0; i < renderMask.length; i++) renderMask[i] = out.renderMask.data[i] ? 255 : 0;
+      return {
+        bytes: out.png,
+        ext: "png",
+        renderMask: encodeGreyPng(out.renderMask.width, out.renderMask.height, renderMask),
+        record: {
+          method: "composite",
+          generative: false,
+          template: { id: template.id, sha256_base: template.sha256_base, sha256_anchors: template.sha256_anchors, licence: template.licence, kind: template.kind },
+          mask: { source: front.name, segment_index: pick.index, sam_score: pick.segment.score },
+          params: { feather_px: FEATHER_PX, warp: WARP, quad_from: out.quad_from, quad_to: out.quad_to },
+        },
+      };
+    },
+  };
+}
+
 /** Throws MuseImageRefused when the model id names Muse Image. */
 export function refuseMuseImage(model: string): void {
   if (MUSE_IMAGE.test(model)) throw new MuseImageRefused(`${JSON.stringify(model)} is Muse Image, which is not available in India (Meta GUP §2.2)`);
@@ -113,7 +192,7 @@ export type RenderTransport = (req: {
  * calls the transport, and a MODEL_RENDER other than its own id is refused: the
  * receipt would otherwise claim a model that generated nothing.
  */
-export function rendererFromEnv(env: Readonly<Record<string, string | undefined>>, transport: RenderTransport): Renderer {
+export function rendererFromEnv(env: Readonly<Record<string, string | undefined>>, transport: RenderTransport, templatesDir: string = TEMPLATES_DIR): Renderer {
   const name = (env.RENDER_PROVIDER ?? "").trim() || "openai-images";
   if (!(RENDER_PROVIDERS as readonly string[]).includes(name)) {
     throw new RenderConfigError(`RENDER_PROVIDER ${JSON.stringify(name)} is not one of ${RENDER_PROVIDERS.join(", ")}`);
@@ -125,6 +204,14 @@ export function rendererFromEnv(env: Readonly<Record<string, string | undefined>
     }
     return standInRenderer();
   }
+  if (name === "composite") {
+    if (wanted && wanted !== COMPOSITE_MODEL) {
+      throw new RenderConfigError(`RENDER_PROVIDER composite runs no image model, so MODEL_RENDER ${JSON.stringify(wanted)} cannot go on a receipt; leave it unset`);
+    }
+    const id = (env.RENDER_TEMPLATE ?? "").trim() || DEFAULT_TEMPLATE;
+    if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(id)) throw new RenderConfigError(`RENDER_TEMPLATE ${JSON.stringify(id)} is not a template id`);
+    return compositeRenderer(loadTemplate(join(templatesDir, id), id));
+  }
   const provider = name as HttpRenderProvider;
   const model = wanted || DEFAULT_MODEL[provider];
   if (!model) throw new RenderConfigError(`RENDER_PROVIDER ${provider} needs MODEL_RENDER`);
@@ -134,7 +221,8 @@ export function rendererFromEnv(env: Readonly<Record<string, string | undefined>
     model,
     render: async ({ scene, prompt, sources }) => {
       refuseMuseImage(model);
-      return transport({ provider, model, scene, prompt, sources });
+      const out = await transport({ provider, model, scene, prompt, sources });
+      return { ...out, record: { method: "generative", generative: true } };
     },
   };
 }
