@@ -61,6 +61,29 @@ test("present: a fixture REFUSE cites the hard colour mismatch with its severity
   assert.ok(!view.components.some((c) => /SAM|Muse Spark|Pruna/.test(c)));
 });
 
+test("NR5b: each render has its own pipeline, so /judge shows the gate of the render picked (fixture-shirt-01 r0 vs r1)", () => {
+  const view = presentJob(load("fixture-shirt-01"));
+  assert.ok(view.renders.length >= 2);
+  const gateOf = (id: string) => view.pipelines[id]!.find((n) => n.key === "gate")!;
+  for (const r of view.renders) {
+    assert.equal(gateOf(r.render_id).detail, r.decision, `${r.render_id}: the pipeline's gate is this render's decision`);
+    const gateEntry = load("fixture-shirt-01").find((e) => e.kind === "gate" && (e.payload as { render_id: string }).render_id === r.render_id)!;
+    assert.equal(gateOf(r.render_id).seq, gateEntry.seq);
+  }
+  assert.notEqual(gateOf(view.renders[0]!.render_id).detail, gateOf(view.renders[1]!.render_id).detail, "r0 and r1 differ, so a single pipeline was wrong for one of them");
+  assert.deepEqual(view.pipeline, view.pipelines[view.renders[0]!.render_id]);
+
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /view\.pipelines\?\.\[r\.render_id\]/, "judge.html draws the picked render's pipeline");
+  assert.match(page, /function drawRender\(r\) \{\n  drawPipeline\(r\);/, "picking a render redraws the pipeline");
+});
+
+test("NR5b: a source photo not on this machine shows a card naming the recorded hash, not an error line", () => {
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /Source photo not stored here \(hash recorded\)/);
+  assert.match(page, /notStored\(s\)\)/, "the source frames pass the card to frame()");
+});
+
 test("present: across every committed job, a model name appears only when its receipt entry exists", () => {
   for (const job of readdirSync(JOBS)) {
     const entries = load(job);

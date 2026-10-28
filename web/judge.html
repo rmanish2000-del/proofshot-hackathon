@@ -192,15 +192,15 @@ async function loadJob(id) {
   pick.textContent = "";
   for (const r of view.renders) pick.append(el("option", { value: r.render_id, text: `${r.render_id} (${r.decision ?? "no gate"})` }));
   $("render-pick-row").hidden = view.renders.length < 2;
-  drawPipeline();
   drawTimeline();
   drawRender(view.renders[0]);
 }
 
-function drawPipeline() {
+// NR5b: the pipeline of the render picked, not always the first.
+function drawPipeline(r) {
   const ol = $("pipeline");
   ol.textContent = "";
-  for (const n of view.pipeline) {
+  for (const n of (r && view.pipelines?.[r.render_id]) || view.pipeline) {
     const lat = n.latency_ms == null ? "" : ` · ${(n.latency_ms / 1000).toFixed(1)} s`;
     const body = el("div", {},
       el("div", { text: n.title }),
@@ -226,7 +226,8 @@ function drawTimeline() {
   }
 }
 
-function frame(src, alt, boxes) {
+// `missing` is the card shown when no file on this machine matches the recorded hash.
+function frame(src, alt, boxes, missing) {
   const img = el("img", { src, alt, loading: "lazy" });
   const f = el("div", { class: "frame" }, img);
   for (const b of boxes) {
@@ -235,18 +236,23 @@ function frame(src, alt, boxes) {
     d.style.width = `${b.box[2] * 100}%`; d.style.height = `${b.box[3] * 100}%`;
     f.append(d);
   }
-  img.addEventListener("error", () => f.replaceWith(el("div", { class: "missing", text: `${alt}: no file matches the recorded hash on this machine` })));
+  img.addEventListener("error", () => f.replaceWith(missing ?? el("div", { class: "missing", text: `${alt}: no file matches the recorded hash on this machine` })));
   return f;
 }
 
 function drawRender(r) {
+  drawPipeline(r);
   const reasons = r ? [...(r.cited ? [r.cited] : []), ...r.reasons.filter((x) => !r.cited || x.reason !== r.cited.reason)] : [];
   const srcBoxes = reasons.filter((x) => x.source_bbox).map((x) => ({ box: x.source_bbox, label: x.attribute }));
   const renBoxes = reasons.filter((x) => x.render_bbox).map((x) => ({ box: x.render_bbox, label: x.attribute }));
 
   const sources = $("sources");
   sources.textContent = "";
-  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, s.name, i === 0 ? srcBoxes : []), el("figcaption", { text: `${s.name} · ${s.sha256.slice(0, 12)}` }))));
+  // NR5b: a source photo that is not on this machine gets a neat card naming the recorded hash, not an error line.
+  const notStored = (s) => el("div", { class: "missing source-card" },
+    el("strong", { text: "Source photo not stored here (hash recorded)" }),
+    el("div", { class: "muted", text: `sha256 ${s.sha256.slice(0, 16)}…` }));
+  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, s.name, i === 0 ? srcBoxes : [], notStored(s)), el("figcaption", { text: `${s.name} · ${s.sha256.slice(0, 12)}` }))));
   if (view.sources.length === 0) sources.append(el("div", { class: "missing", text: "The receipt records no source photos." }));
 
   const badgeRow = $("badge-row");
