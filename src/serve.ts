@@ -187,7 +187,9 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
   });
   labels.render = renderer.provider === "stand-in"
     ? "stand-in: the seller's own front photo, nothing generated"
-    : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
+    : renderer.provider === "composite"
+      ? `composite / ${renderer.model}: the seller's garment pixels, cut out by the SAM mask, placed on a template by deterministic code; no image model, and no mask means REFUSE`
+      : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
 
   let verifier: Verifier = fixtureVerifier();
   let fidelity: FidelityChecker = base.fidelity;

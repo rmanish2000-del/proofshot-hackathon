@@ -157,15 +157,29 @@ export function rgbFromPng(png: DecodedPng): RgbImage {
  * receipt (SPEC §10, #18): decodePng + maskFromPng read it back exactly.
  */
 export function encodeGreyPng(width: number, height: number, data: Uint8Array): Uint8Array {
+  return encodePng(width, height, 1, data);
+}
+
+/**
+ * An 8-bit RGB, non-interlaced PNG of `data` (row-major, three bytes per pixel,
+ * filter 0 on every row): the composite render's output (SPEC-render-fix §2).
+ * The bytes depend only on the pixels, so the same image always hashes the same.
+ */
+export function encodeRgbPng(width: number, height: number, data: Uint8Array): Uint8Array {
+  return encodePng(width, height, 3, data);
+}
+
+function encodePng(width: number, height: number, channels: 1 | 3, data: Uint8Array): Uint8Array {
   if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0) throw new PngError(`cannot encode a ${width}x${height} PNG`);
-  if (data.length !== width * height) throw new PngError(`PNG data is ${data.length} bytes, not ${width}x${height}`);
-  const raw = new Uint8Array(height * (width + 1));
-  for (let y = 0; y < height; y++) raw.set(data.subarray(y * width, (y + 1) * width), y * (width + 1) + 1);
+  const stride = width * channels;
+  if (data.length !== stride * height) throw new PngError(`PNG data is ${data.length} bytes, not ${width}x${height}x${channels}`);
+  const raw = new Uint8Array(height * (stride + 1));
+  for (let y = 0; y < height; y++) raw.set(data.subarray(y * stride, (y + 1) * stride), y * (stride + 1) + 1);
   const ihdr = new Uint8Array(13);
   new DataView(ihdr.buffer).setUint32(0, width);
   new DataView(ihdr.buffer).setUint32(4, height);
   ihdr[8] = 8; // bit depth
-  ihdr[9] = 0; // greyscale
+  ihdr[9] = channels === 1 ? 0 : 2; // greyscale or RGB
   const chunk = (type: string, body: Uint8Array): Uint8Array => {
     const out = new Uint8Array(12 + body.length);
     const view = new DataView(out.buffer);
