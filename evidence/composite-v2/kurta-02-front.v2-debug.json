@@ -1,0 +1,29 @@
+{
+  "debug": true,
+  "note": "quality checks off, NOT a ProofShot output, not referenced by any receipt or the shop. For a visual look only (Grok 28 Oct 19:58, NR3b). Manish's visual sign-off is required before any v2 image is used in the demo.",
+  "garment": "kurta-02",
+  "photo": "data/garments/kurta-02/1-front.jpg",
+  "mask_log": "evidence/sam-2026-10-28T12-31-25-516Z.json",
+  "command": "npm run composite:preview -- evidence/sam-2026-10-28T12-31-25-516Z.json data/garments/kurta-02/1-front.jpg evidence/composite-v2/kurta-02-front.v2-debug.png v2-debug evidence/composite-v2/kurta-02-front.before-after.v2-debug.png",
+  "checks_off": { "clip_max": 1, "shadow_max": "Infinity", "max_corr_de": "Infinity", "frag_max": "Infinity" },
+  "files": {
+    "kurta-02-front.v2-debug.png": "cdb7d86463b1a00995c3ee94858ed3f0b2a29638d199812a8bd43d93bd1fb6ce",
+    "kurta-02-front.before-after.v2-debug.png": "2f931013157a6e6ba8f6bcfa09b4abecfbcf4764812428014ff9199b7978cb51"
+  },
+  "before_after": "original photo left (box-averaged to 1600 px high), debug render right",
+  "would_be_with_checks_on": "REVIEW render_quality: over- or under-exposed photo (clipped 0.0468 > 0.03); shadow 0.4148 and correction dE 4.7116 are within their limits",
+  "colour": {
+    "garment_chroma": 12.3486,
+    "wb_max_chroma": 8,
+    "wb_applied": false,
+    "wb_reason": "garment chroma C* 12.3486 > 8: coloured garment, gray-world WB skipped",
+    "wb_gains": [1, 1, 1],
+    "gain_applied": [0.86, 1.1646],
+    "correction_delta_e": 4.7116,
+    "correction_delta_e_before_nr3b": 9.48,
+    "shadow_score": 0.4148,
+    "shadow_score_after": 0.1753
+  },
+  "metadata": "PNG with IHDR, IDAT, IEND only (no EXIF, no text chunks)",
+  "person_in_frame": "none: garment on a hanger in front of a curtain (checked by eye 28 Oct 20:15 IST)"
+}
