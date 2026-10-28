@@ -80,8 +80,16 @@ test("NR5b: each render has its own pipeline, so /judge shows the gate of the re
 
 test("NR5b: a source photo not on this machine shows a card naming the recorded hash, not an error line", () => {
   const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
-  assert.match(page, /Source photo not stored here \(hash recorded\)/);
+  assert.match(page, /We don't have this source file here, but its hash is recorded\./);
   assert.match(page, /notStored\(s\)\)/, "the source frames pass the card to frame()");
+});
+
+test("NR5c: judge microcopy: render picker hint, hash tooltip on the source hashes, old card text gone", () => {
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /<div id="render-pick-row" hidden>\s*<p class="muted" id="render-pick-hint">Pipeline card redraws for whichever render you pick\.<\/p>/, "the hint sits above the picker and hides with it");
+  assert.match(page, /const HASH_TIP = "Shown so the exact source file can be identified\.";/);
+  assert.equal(page.match(/title: HASH_TIP/g)?.length, 2, "the tooltip is on the card's hash and the caption's hash");
+  assert.doesNotMatch(page, /Source photo not stored here/);
 });
 
 test("NR5b: kurta-01 shows three labelled inputs, both fronts kept with their own hashes", () => {

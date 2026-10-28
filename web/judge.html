@@ -101,7 +101,10 @@
 
   <section aria-labelledby="h-result">
     <h2 id="h-result">Input vs result</h2>
-    <div class="row" id="render-pick-row" hidden><label for="render-pick">Render</label><select id="render-pick"></select></div>
+    <div id="render-pick-row" hidden>
+      <p class="muted" id="render-pick-hint">Pipeline card redraws for whichever render you pick.</p>
+      <div class="row"><label for="render-pick">Render</label><select id="render-pick" aria-describedby="render-pick-hint"></select></div>
+    </div>
     <div class="side">
       <div>
         <h3 class="muted">Seller photos (input)</h3>
@@ -249,10 +252,12 @@ function drawRender(r) {
   const sources = $("sources");
   sources.textContent = "";
   // NR5b: a source photo that is not on this machine gets a neat card naming the recorded hash, not an error line.
+  // NR5c (DeepSeek PS-UI2, reviewed by Grok): the card text and the hash tooltip.
+  const HASH_TIP = "Shown so the exact source file can be identified.";
   const notStored = (s) => el("div", { class: "missing source-card" },
-    el("strong", { text: "Source photo not stored here (hash recorded)" }),
-    el("div", { class: "muted", text: `sha256 ${s.sha256.slice(0, 16)}…` }));
-  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, `${s.label}: ${s.name}`, i === 0 ? srcBoxes : [], notStored(s)), el("figcaption", {}, el("strong", { text: s.label }), ` · ${s.name} · ${s.sha256.slice(0, 12)}`))));
+    el("strong", { text: "We don't have this source file here, but its hash is recorded." }),
+    el("div", { class: "muted", title: HASH_TIP, text: `sha256 ${s.sha256.slice(0, 16)}…` }));
+  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, `${s.label}: ${s.name}`, i === 0 ? srcBoxes : [], notStored(s)), el("figcaption", {}, el("strong", { text: s.label }), ` · ${s.name} · `, el("span", { title: HASH_TIP, text: s.sha256.slice(0, 12) })))));
   if (view.sources.length === 0) sources.append(el("div", { class: "missing", text: "The receipt records no source photos." }));
 
   const badgeRow = $("badge-row");
