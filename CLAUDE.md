@@ -3,7 +3,7 @@
 ## Canonical repo rule (27 Oct 2026, 12:20 IST, from proofshot #23)
 
 1. **All new hackathon code, docs and assets go only into this repository,
-   private `rmanish2000-del/proofshot-hackathon`** (branch `master`, first commit
+   `rmanish2000-del/proofshot-hackathon`** (branch `master`, first commit
    4aa99f9). They are rebuilt from the spec (`docs/SPEC.md`), never copied from
    old code. The README states which code was written during the event and
    labels open-source dependencies and public datasets.
@@ -13,8 +13,8 @@
    product code goes there.
 3. **Every spec, issue, board row, review and report names its target repo
    explicitly**: `proofshot-hackathon` or `proofshot (coordination)`.
-4. **This repo goes public only after the secret scan passes on 3 Nov, by
-   Manish's click.**
+4. **This repo has been public since 28 Oct 2026** (Manish made it public after
+   a clean history scan). Everything committed here is public at once.
 
 ## Working here
 
