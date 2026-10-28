@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { labelledPairs, scaledCandidates, scoreCalibration, wholeFrameMask } from "../src/calibrate.ts";
+import { labelledPairs, pairMetricLines, scaledCandidates, scoreCalibration, wholeFrameMask } from "../src/calibrate.ts";
 import type { CalibrationCase } from "../src/calibrate.ts";
 import { loadThresholds } from "../src/fidelity.ts";
 import { ATTRIBUTES } from "../src/types.ts";
@@ -55,6 +55,20 @@ test("findings on a case put the gate on top of fidelity: a hard mismatch refuse
   const matches = ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match" as const, confidence: 0.95 }));
   const [ok] = scoreCalibration([pair("same-exact", "same", grey, grey, { findings: matches })], [{ name: "config", thresholds: base }]);
   assert.equal(ok!.cases[0]!.decision, "RELEASE");
+});
+
+test("N10: every case carries its raw fidelity values, the same under every candidate, and pairMetricLines prints them or unmeasured", () => {
+  const scores = scoreCalibration(cases, scaledCandidates(base, [0.001, 1, 1000]), FIDELITY);
+  const exact = scores[1]!.cases.find((c) => c.id === "same-exact")!;
+  assert.deepEqual(exact.metrics, { delta_e: 0, hist: 0, texture: 1, area: 1 });
+  assert.ok(scores[1]!.cases.find((c) => c.id === "different-red")!.metrics!.delta_e > base.delta_e.refuse_above);
+  assert.equal(scores[1]!.cases.find((c) => c.id === "no-mask")!.metrics, null);
+  assert.deepEqual(scores[0]!.cases.map((c) => c.metrics), scores[2]!.cases.map((c) => c.metrics), "values do not depend on the thresholds");
+  const lines = pairMetricLines(scores[1]!.cases);
+  assert.equal(lines.length, cases.length);
+  assert.equal(lines[0], "same       same-exact: delta_e 0.000  hist 0.000  texture 1.000  area 1.000");
+  assert.equal(lines[3], "same       no-mask: unmeasured");
+  assert.ok(lines.every((l) => !/RELEASE|REVIEW|REFUSE/.test(l)), "values only, no decision");
 });
 
 test("scaled candidates keep area, cap texture at 1, and reject bad input", () => {
