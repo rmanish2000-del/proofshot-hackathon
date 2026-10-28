@@ -16,6 +16,7 @@ import type { ReceiptEntry } from "./core.js";
 import { fixtureProviders, runJob } from "./pipeline.ts";
 import { RECEIPT_FILE } from "./prior.ts";
 import { recordedClock, verifyChain } from "./receipt.ts";
+import { standInRenderer } from "./render.ts";
 import { ATTRIBUTES } from "./types.ts";
 import { sha256Hex } from "./util.ts";
 
@@ -31,6 +32,13 @@ export interface CatalogRow {
   readonly image: string;
   readonly garment_note: string;
   readonly provenance: string;
+  /**
+   * The render entry's provider and model, as the receipt says them (SPEC §8).
+   * `stand-in` / `owner-photo` means the image is the owner's own photo and
+   * nothing was generated; the page labels such a card from this field.
+   */
+  readonly render_provider: string;
+  readonly render_model: string;
   readonly approved_by_human: boolean;
   /** What the gate said about this render, in words. */
   readonly gate_reason: string;
@@ -103,6 +111,13 @@ export function rowsForJob(jobDir: string, jobId: string): CatalogRow[] {
       throw new Error(`${file} does not hash to the release's image_sha256 (${check.status})`);
     }
 
+    // A row says who rendered its image, from the record; a release whose render
+    // entry is missing or unnamed is not shown.
+    const render = payload(entries.find((e) => e.kind === "render" && payload(e).render_id === render_id));
+    const render_provider = str(render.provider);
+    const render_model = str(render.model);
+    if (render_provider === null || render_model === null) throw new Error(`the render entry for ${render_id} is missing or lacks provider or model`);
+
     const gate = payload(entries.find((e) => e.kind === "gate" && payload(e).render_id === render_id));
     const sceneIndex = /-r(\d+)$/.exec(render_id);
     rows.push({
@@ -115,6 +130,8 @@ export function rowsForJob(jobDir: string, jobId: string): CatalogRow[] {
       image: `${RELEASE_SUBDIR}/${job_id}/${file}`,
       garment_note,
       provenance,
+      render_provider,
+      render_model,
       approved_by_human: release.approved_by_human === true,
       gate_reason: gateReason(gate),
     });
@@ -257,9 +274,11 @@ export async function writeFixtureJob(jobsRoot: string, jobId = FIXTURE_JOB_ID):
 // ---------------------------------------------------------------------------
 // Garment preview jobs: one fixture job per photographed garment under
 // data/garments, so the shop has real garments to show the judges while no
-// live render transport exists. The "render" is the garment's own front photo
-// (nothing is generated, no person is in it); the sources are every intake
-// photo, hashed as intake.json records them; the findings are recorded as all
+// live render transport exists. The renderer is the stand-in (SPEC §8): the
+// "render" is the garment's own front photo (nothing is generated, no person
+// is in it), and the render entry says `stand-in` / `owner-photo`, which is
+// what the page's card label reads. The sources are every intake photo,
+// hashed as intake.json records them; the findings are recorded as all
 // matching. The receipt says `fixture`, and so does the page.
 // ---------------------------------------------------------------------------
 
@@ -293,9 +312,10 @@ export function garmentNoteFrom(noteText: string, garment: string): string {
 /**
  * Writes the preview job for one garment folder as `<jobsRoot>/<garment>/`:
  * sources are the intake photos (their bytes must still hash as intake.json
- * says, else this throws), the one scene "studio" "renders" to the first
- * photo, every attribute matches, so the gate releases. A recorded clock makes
- * the receipt byte-identical on every run. Returns false when the job exists.
+ * says, else this throws), the one scene "studio" is "rendered" by the
+ * stand-in, which returns the first photo as it is, every attribute matches,
+ * so the gate releases. A recorded clock makes the receipt byte-identical on
+ * every run. Returns false when the job exists.
  */
 export async function writeGarmentPreviewJob(jobsRoot: string, garmentDir: string, garment: string): Promise<boolean> {
   if (existsSync(join(jobsRoot, garment, RECEIPT_FILE))) return false;
@@ -308,7 +328,6 @@ export async function writeGarmentPreviewJob(jobsRoot: string, garmentDir: strin
       if (sha256Hex(bytes) !== f.sha256) throw new Error(`${garment}/${f.name} does not hash as ${INTAKE_FILE} says`);
       return { name: f.name, bytes };
     });
-  const front = sources[0]!;
   const findings = () => ({
     findings: ATTRIBUTES.map((attribute) => ({
       attribute,
@@ -318,7 +337,7 @@ export async function writeGarmentPreviewJob(jobsRoot: string, garmentDir: strin
       evidence: { source_bbox: null, render_bbox: null },
     })),
   });
-  const base = fixtureProviders({ renders: () => front.bytes, findings });
+  const base = fixtureProviders({ renders: () => new Uint8Array(0), findings });
   mkdirSync(jobsRoot, { recursive: true });
   await runJob(
     {
@@ -330,8 +349,8 @@ export async function writeGarmentPreviewJob(jobsRoot: string, garmentDir: strin
     {
       outRoot: jobsRoot,
       provenance: "fixture",
-      // The photo is a JPEG, so the file beside the receipt says so.
-      providers: { ...base, renderer: { ...base.renderer, render: async () => ({ bytes: front.bytes, ext: "jpg" }) } },
+      // The stand-in returns the front photo as it is and names itself on the render entry.
+      providers: { ...base, renderer: standInRenderer() },
       clock: recordedClock(Array.from({ length: 20 }, (_, i) => `2026-10-27T17:00:${String(i).padStart(2, "0")}.000Z`)),
     },
   );

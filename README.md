@@ -106,8 +106,11 @@ clock, because no live render transport exists yet (SPEC §8); the page says so.
 `kurta-02` are preview jobs for the two photographed garments under
 `data/garments/`: the sources are the intake photos with their `intake.json`
 hashes, and the released "render" is the garment's own front photo, unchanged
-(no generated image, no person). They let a judge see a real garment go through
-the receipt, the in-browser verification and the badge.
+(no generated image, no person), returned by the `stand-in` render provider,
+which the receipt's render entry names (`stand-in` / `owner-photo`). Every card
+and product view built from such a receipt carries the tag "owner's photo,
+stands in for render". They let a judge see a real garment go through the
+receipt, the in-browser verification and the badge.
 
 New in this feature, all written during the event: `src/shop.ts`,
 `scripts/shop-build.ts`, `web/shop.html`, `web/shop/` (generated),
@@ -123,9 +126,11 @@ checks) and the intake.
 Only environment variable names are listed here. Values are never printed or
 committed.
 
-- `RENDER_PROVIDER`: `openai-images` (the default), `fal` or `meta`.
-  `MODEL_RENDER` sets the model. `openai-images` defaults to `gpt-image-1`, and
-  `fal` and `meta` require it.
+- `RENDER_PROVIDER`: `openai-images` (the default), `fal`, `meta` or
+  `stand-in`. `MODEL_RENDER` sets the model. `openai-images` defaults to
+  `gpt-image-1`, and `fal` and `meta` require it. `stand-in` generates nothing:
+  it returns the owner's own front photo and records `owner-photo` as its
+  model; any other `MODEL_RENDER` with it is refused (`src/render.ts`).
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
   and again before each request (`src/render.ts`).
