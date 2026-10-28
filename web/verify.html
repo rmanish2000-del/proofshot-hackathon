@@ -254,6 +254,16 @@ async function verifyRecord(receiptText, image, subtle) {
     }
     const c = out.chain;
     line(c.ok ? `The record verifies: ${c.length} entries, head ${c.head}` : `The record does not verify: entry ${c.index}, ${c.reason}`, c.ok ? "ok" : "bad");
+    if (c.ok) {
+      // A replay (SPEC §7) is labelled on its job entry; say so, so nobody reads it as a live call.
+      let job = null;
+      try { job = parseReceipt($("receipt-text").value)[0]; } catch { job = null; }
+      const payload = job && job.kind === "job" && job.payload && typeof job.payload === "object" ? job.payload : null;
+      if (payload && payload.mode === "replay") {
+        const from = payload.recorded_from && typeof payload.recorded_from === "object" ? payload.recorded_from : {};
+        line(`Replay of a recorded run: not a live call. Recording ${from.recording || "?"}, recorded job ${from.job_id || "?"}, recorded head ${from.head || "?"}.`, "warn");
+      }
+    }
     if (!out.image) {
       line("No image given: add the image, or its sha256, to check it against this record.", "info");
       return;

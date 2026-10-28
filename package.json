@@ -8,12 +8,15 @@
     "node": ">=22.6"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test test/types.test.ts test/util.test.ts test/gate.test.ts test/receipt.test.ts test/png.test.ts test/fidelity.test.ts test/prior.test.ts test/schema.test.ts test/pipeline.test.ts test/check.test.ts test/page.test.ts test/render.test.ts test/baseten.test.ts test/intake.test.ts test/shop.test.ts",
+    "test": "node --experimental-strip-types --test test/types.test.ts test/util.test.ts test/gate.test.ts test/receipt.test.ts test/png.test.ts test/fidelity.test.ts test/prior.test.ts test/schema.test.ts test/pipeline.test.ts test/check.test.ts test/page.test.ts test/render.test.ts test/baseten.test.ts test/intake.test.ts test/shop.test.ts test/replay.test.ts",
     "typecheck": "tsc --noEmit",
     "page": "node --experimental-strip-types scripts/page.ts",
     "call:baseten": "node --experimental-strip-types scripts/baseten-call.ts",
     "intake": "node --experimental-strip-types scripts/intake.ts",
-    "shop": "node --experimental-strip-types scripts/shop-build.ts"
+    "shop": "node --experimental-strip-types scripts/shop-build.ts",
+    "demo:replay": "node --experimental-strip-types scripts/replay.ts",
+    "demo:record": "node --experimental-strip-types scripts/record.ts",
+    "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

@@ -1,0 +1,12 @@
+{
+  "name": "release",
+  "recorded_from": {
+    "job_id": "demo-release",
+    "head": "d3eb9ae25c840c0c522bcaeb5451e6deb79212c0bf1e2603f2d55b5d3cfac287"
+  },
+  "files": {
+    "renders/demo-release-r0.png": "04e5ec461d04e3efb7151bdeb015de37637615c44c55425c6f23800b5351f665",
+    "sources/front.png": "5c4bb882814154ce4c71777ac8bba19dcbd504fb1c688ca6bcf5c713fadd4260",
+    "steps.json": "19cba3ed16cd9639bd95f95a202873cd616bec01de22314c18e0145e4ba39f5c"
+  }
+}

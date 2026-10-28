@@ -25,7 +25,15 @@ import type { Finding } from "./schema.ts";
 import type { Decision } from "./types.ts";
 import { sha256Hex } from "./util.ts";
 
-export type Provenance = "live" | "fixture";
+export type Provenance = "live" | "fixture" | "replay";
+
+/** What a replay's job entry names: the recording it ran from (SPEC §7). */
+export interface RecordedFrom {
+  readonly recording: string;
+  readonly job_id: string;
+  /** The recorded job's chain head. */
+  readonly head: string;
+}
 
 export interface SourceImage {
   readonly name: string;
@@ -37,7 +45,12 @@ export interface Segment {
   /** [x, y, w, h], each 0..1 of the image. */
   readonly box: readonly [number, number, number, number];
   readonly score: number;
-  readonly mask: Uint8Array | null;
+  /**
+   * The mask bytes, or only their sha256 when the bytes are gone: a replay
+   * (SPEC §7) knows a recorded mask by its hash alone, since the receipt
+   * records masks as mask_sha256 and nothing else.
+   */
+  readonly mask: Uint8Array | { readonly sha256: string } | null;
 }
 
 export interface Segmenter {
@@ -89,6 +102,8 @@ export interface RunOptions {
   readonly outRoot: string;
   readonly providers: Providers;
   readonly provenance: Provenance;
+  /** Required with provenance "replay", refused with any other. */
+  readonly recordedFrom?: RecordedFrom;
   readonly clock?: Clock;
 }
 
@@ -134,6 +149,9 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   const path = join(dir, RECEIPT_FILE);
   // One job, one chain: a job id that already has a receipt is never written into twice.
   if (existsSync(path)) throw new Error(`job ${job.jobId} already has a receipt at ${path}`);
+  // A replay is always labelled, and nothing else may wear the label (SPEC §7).
+  if (opts.provenance === "replay" && !opts.recordedFrom) throw new Error("a replay job must name the recording it ran from");
+  if (opts.provenance !== "replay" && opts.recordedFrom) throw new Error(`a ${opts.provenance} job cannot name a recording`);
 
   const source_images = job.sources.map((s) => ({ name: s.name, sha256: sha256Hex(s.bytes) }));
   const garment_id = garmentId(source_images.map((s) => s.sha256));
@@ -153,6 +171,7 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     job_id: job.jobId,
     garment_note: job.garmentNote,
     provenance: opts.provenance,
+    ...(opts.recordedFrom ? { mode: "replay", recorded_from: { ...opts.recordedFrom } } : {}),
     scenes: [...job.scenes],
     source_images,
     garment_id,
@@ -174,7 +193,7 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   }
   receipt.append("segments", {
     count: segments.length,
-    segments: segments.map((s) => ({ label: s.label, box: [...s.box], score: s.score, mask_sha256: s.mask ? sha256Hex(s.mask) : null })),
+    segments: segments.map((s) => ({ label: s.label, box: [...s.box], score: s.score, mask_sha256: maskSha256(s.mask) })),
   });
 
   const { renderer, verifier, fidelity: fidelityChecker } = opts.providers;
@@ -227,6 +246,11 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
   }
 
   return { dir, head: receipt.head, garment_id, prior_records: prior, refused: null, renders };
+}
+
+function maskSha256(mask: Segment["mask"]): string | null {
+  if (mask === null) return null;
+  return mask instanceof Uint8Array ? sha256Hex(mask) : mask.sha256;
 }
 
 function stepRefusal(rule: StepRefusal["rule"], reason: string): StepRefusal {

@@ -14,9 +14,11 @@ Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
 entry per render (`src/pipeline.ts`), and the image check and verify page of §9
 (`src/core.js`, `src/check.ts`, `web/verify.html`), the render provider
-guard of §8 (`src/render.ts`), and the shopper preview of §11 (`src/shop.ts`,
-`scripts/shop-build.ts`, `web/shop.html`). §7 and the provider HTTP requests
-of §8 describe pre-existing features not yet rebuilt here.
+guard of §8 (`src/render.ts`), the shopper preview of §11 (`src/shop.ts`,
+`scripts/shop-build.ts`, `web/shop.html`), and replay and record of §7
+(`src/replay.ts`, `scripts/replay.ts`, `scripts/record.ts`,
+`demo/recordings/`). The provider HTTP requests of §8 describe a pre-existing
+feature not yet rebuilt here.
 
 ## 1. Attributes
 
@@ -245,7 +247,7 @@ And the bound on the product claim: a render the verifier marks `match` on every
 attribute ships. The failure mode is a false match; its rate belongs in the golden
 set report, not in an adjective.
 
-## 7. Replay and record (not yet rebuilt here)
+## 7. Replay and record
 
 A recording (`demo/recordings/<name>/`) holds a finished job's inputs, renders,
 findings, verifier identity, usage and timestamps, each file with its sha256.
@@ -259,6 +261,62 @@ findings, verifier identity, usage and timestamps, each file with its sha256.
   it reproduces its receipt byte for byte.
 - Recording refuses a chain that does not verify and a job that is itself a
   replay, and strips credential fields and URL query strings (token counts stay).
+
+In this rewrite *(event, Grok 27 Oct: proposals 1 and 2, recorded fidelity
+results)*, `src/replay.ts`:
+
+- **Layout.** `manifest.json` (`name`, `recorded_from: {job_id, head}`, and
+  `files`: every other file's path to its sha256), `sources/<name>` (the input
+  photos, by the job entry's names), `renders/<render_id>.<ext>` (the images
+  the job wrote), and `steps.json` (the job's id, note, scenes, approver and
+  source hashes; every entry's `at` in order; the `segments` as the receipt
+  recorded them; the renderer's provider and model; the verifier identity; and
+  per scene either the render file and hash, the verifier's findings, usage
+  and error, and the fidelity result, or the `render_failed` reason). A job
+  refused on `segment_failed` records its reason and replays to the same
+  refusal; one refused on `prior_records_unreadable` is not recorded, since
+  prior records belong to the replay's own output directory.
+- **"Byte for byte" means this.** Every entry after the job entry has the
+  recorded `seq`, `at`, `kind` and `payload`. The job entry itself says
+  `provenance: "replay"`, `mode: "replay"` and
+  `recorded_from: {recording, job_id, head}`, so its hash, and through `prev`
+  every hash after it, differ from the recorded chain. Two replays of one
+  recording are byte-identical, whole file. Each replay must go to an output
+  directory with no receipt for that job id (§3: one chain is one job).
+- **Recorded answers, not re-measured ones.** Replay providers answer from
+  `steps.json`: the segmenter returns the recorded segments with each mask
+  known only by its `mask_sha256` (the receipt never held the bytes), the
+  renderer hands out the recorded images in scene order, the verifier returns
+  the recorded findings as its raw output (the §4 parser is a fixed point on
+  its own output) and the recorded usage, and the fidelity check returns the
+  recorded `decision`, `metrics`, `reasons`. A recorded error (`<name>:
+  <message>` on a render, verifier or fidelity step) is thrown again with that
+  name and message, so the pipeline writes the same refusal. Nothing in a
+  replay reads a key or can reach the network; a test fails if `fetch` is
+  called.
+- **Refusals on record.** The receipt does not verify; the job is a replay;
+  the sources given are not the job's own (name and sha256, in order); a
+  render image on disk does not hash to its `render` entry; a scene has no
+  gate entry (the job did not finish); a render's prompt is not what this
+  build's template gives for that note and scene; a recording of that name
+  already exists.
+- **Stripping.** Over the whole of `steps.json`: any key matching
+  `api_key`, `secret`, `password`, `authorization`, `bearer`, `credential`,
+  `cookie`, `key`, or ending in `token` is dropped (`*_tokens` counts stay),
+  and any URL loses its query string. A verifier `base` with a query string
+  therefore replays without it, and that one field then differs from the
+  recorded receipt.
+- **One gap.** A verifier that returned usage and then failed the §4 schema
+  has both `usage` and `error` on its entry; the replay verifier throws the
+  recorded error, so its entry has no `usage`. No other difference is known.
+- The verify page (§9) prints "Replay of a recorded run" with the recording
+  name, recorded job id and recorded head when the job entry carries
+  `mode: "replay"`.
+- `npm run demo:record -- <job dir> <sources dir> <recording dir> [name]`,
+  `npm run demo:replay -- <recording dir> <out root>`, and `npm run demo:canned`
+  writes the three canned fixture recordings (`release`, `review`, `refuse`)
+  into `demo/recordings/`, synthetic images and table-driven findings, no
+  model and no garment.
 
 ## 8. Render providers and the Muse Image refusal (guard rebuilt, HTTP not yet)
 

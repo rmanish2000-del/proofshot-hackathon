@@ -3,6 +3,9 @@
 # core.autocrlf=true would otherwise turn them into CRLF and fail that test.
 *.jsonl text eol=lf
 web/shop/catalog.json text eol=lf
+# A recording's manifest hashes steps.json byte for byte (SPEC §7), so a CRLF
+# checkout would make every recording refuse to load.
+demo/recordings/**/*.json text eol=lf
 
 # Photos and renders are bytes; their hashes are in the receipts.
 *.jpg binary
