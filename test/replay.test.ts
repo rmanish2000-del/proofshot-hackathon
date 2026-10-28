@@ -194,6 +194,22 @@ test("recording strips credential fields and URL query strings, and keeps token 
   });
 });
 
+test("a renderer's own render-entry fields (a composite's method, generative, template) are recorded and replayed unchanged", async () => {
+  const p = providers();
+  const extra = { method: "composite", generative: false, template: { id: "mannequin-01", kind: "mannequin" } };
+  const withRecord = {
+    ...p,
+    renderer: { ...p.renderer, provider: "composite" as const, model: "composite-v1", render: async (req: Parameters<typeof p.renderer.render>[0]) => ({ ...(await p.renderer.render(req)), record: extra }) },
+  };
+  const r = await runJob(job("rec"), { outRoot: root(), providers: withRecord, provenance: "fixture", clock: clock() });
+  const render = read(r.dir).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.equal(render.method, "composite");
+  const to = join(root(), "rec");
+  recordJob({ jobDir: r.dir, sources: job().sources, to });
+  const replay = await replayJob(loadRecording(to), { outRoot: root() });
+  assert.deepEqual(read(replay.dir).slice(1).map(content), read(r.dir).slice(1).map(content));
+});
+
 test("a job that was refused before any render on segment_failed replays; one refused on prior records does not record", async () => {
   const out = root();
   const p = providers();
