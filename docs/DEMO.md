@@ -87,7 +87,7 @@ recording (checklist).
 | S2 | 2 | Three phone photos of one garment | `data/garments/kurta-01` (owner's own garment, no person, metadata stripped by intake) |
 | S3 | 2 | The shop grid with badges, every card captioned by its tag (no generated on-model image exists) | `web/shop.html` served from `web/` (`npm run shop` first) |
 | S4 | 3 | Terminal running the replay, label visible | `npm run demo:replay -- demo/recordings/live-kurta-01-2 out/replay` |
-| S5 | 4 | System tray showing Wi-Fi off | OS |
+| S5 | 4 | The kurta-01 receipt bytes around the byte that will change | `web/shop/kurta-01/` receipt (the tamper bytes page of `npm run demo:capture`) |
 | S6 | 4, 5 | Verify page: VALID, then TAMPERED with the entry number | `web/verify.html` opened from disk; receipt and image from `web/shop/kurta-01/` |
 | S7 | 5 | Text editor changing one byte of the receipt file | any editor, on a copy |
 | S8 | 5 | Gate decision for one job and the top of its receipt (no per-attribute gate input is on screen) | the gate section of `/judge?job=live-kurta-01-2` (`npm run serve`) |
@@ -103,7 +103,7 @@ recording (checklist).
 - [ ] Every owner's-photo card on screen carries the tag "owner's photo, stands in for render", and its panel says "nothing was generated".
 - [ ] Gate fields in beat 5 match SPEC §2 of this repository.
 - [ ] The verify page really shows the broken entry for TAMPERED (check before recording).
-- [ ] Wi-Fi off before beat 4 and visibly so.
+- [ ] verify.html opened from disk (file:// URL visible), no server running.
 - [ ] No terminal shows a key, a token, `.env`, an email address or a home path.
 - [ ] Captions burned in; each beat under its word cap; total at or under 2:48.
 - [ ] End slide URL is `github.com/rmanish2000-del/proofshot-hackathon`; licence only if `LICENSE` exists.
