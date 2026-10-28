@@ -168,6 +168,17 @@ The kind type also names `approval`; no current code writes it.
     no image, so nothing can be released or shown in the shop. It is the one
     pipeline rule that is REVIEW, not REFUSE. A replay reproduces the decision
     and reason, not the `quality` object.
+  - Composite v2 white balance *(decision, Grok 28 Oct 19:58, NR3b; note to
+    SPEC-composite-v2 §5)*: gray-world WB assumes a grey subject, so it runs
+    only when the garment mask's mean Lab chroma C* is at most
+    `wb_max_chroma` (8). Measured on the front photos: kurta-01 C* 42.6,
+    kurta-02 C* 12.3, so both skip WB; the near-grey test fixture (about 2.5)
+    applies it. The bounded flatten always runs. `composite.params.colour`
+    records `garment_chroma`, `wb_max_chroma`, `wb_applied` and `wb_reason`.
+    `correction_delta_e` still measures everything applied (WB included when
+    it runs) against `max_corr_de` 6, which is unchanged; a garment still over
+    6 after the skip is REVIEW "correction too large". No other §7 threshold
+    changed.
   - Every scene a job attempts ends with a `gate` entry. Each of these
     pipeline refusals has `attribute`, `verdict` and `confidence` null, is
     listed alone in `reasons`, and counts as a refusal in later prior records.
