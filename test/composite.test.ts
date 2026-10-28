@@ -152,8 +152,8 @@ test("RENDER_PROVIDER composite loads its template, refuses another MODEL_RENDER
   const out = await r.render({ scene: "studio", prompt: "p", sources: [front], segments: [{ label: "1-front.png/kurta", box: [0, 0, 1, 1], score: 0.9, mask: maskPng(mask) }] });
   assert.equal(out.ext, "png");
   assert.equal(calls.length, 0, "composite sends no request");
-  // The default template is mannequin-01, committed in templates/.
-  assert.equal(rendererFromEnv({ RENDER_PROVIDER: "composite" }, transport).model, COMPOSITE_MODEL);
+  // v1's default template is mannequin-01, committed in templates/ (v2 is the default version, test/composite-v2.test.ts).
+  assert.equal(rendererFromEnv({ RENDER_PROVIDER: "composite", COMPOSITE_VERSION: "v1" }, transport).model, COMPOSITE_MODEL);
   assert.equal(calls.length, 0);
 });
 

@@ -162,8 +162,12 @@ export interface StepRefusal {
   readonly attribute: null;
   readonly verdict: null;
   readonly confidence: null;
-  /** `verifier_truncated` is per scene: the verifier's answer stopped at max_tokens twice (SPEC §4). */
-  readonly rule: "prior_records_unreadable" | "segment_failed" | "render_failed" | "verifier_truncated";
+  /**
+   * `verifier_truncated` is per scene: the verifier's answer stopped at max_tokens twice (SPEC §4).
+   * `render_quality` is per scene and the one rule that is REVIEW, not REFUSE: the composite's
+   * pre-check found the photo unfit for a product shot (SPEC-composite-v2 §7), so there is no image.
+   */
+  readonly rule: "prior_records_unreadable" | "segment_failed" | "render_failed" | "verifier_truncated" | "render_quality";
   readonly reason: string;
 }
 
@@ -253,6 +257,16 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
       refuseMuseImage(renderer.model);
       image = await renderer.render({ scene, prompt, sources: job.sources, segments });
     } catch (err) {
+      // A composite's quality pre-check (SPEC-composite-v2 §7) is REVIEW with
+      // its reason and every check, and no image: never a product shot, never a
+      // pass. Matched by name, not class, so a replay reviews the same way.
+      if (err instanceof Error && err.name === "CompositeQualityReview") {
+        const r = stepRefusal("render_quality", errorText(err));
+        const quality = (err as { quality?: unknown }).quality;
+        receipt.append("gate", { render_id, decision: "REVIEW", cited: r, reasons: [r], ...(isRecord(quality) ? { quality } : {}) });
+        renders.push({ render_id, image_sha256: null, decision: "REVIEW", cited: r });
+        continue;
+      }
       const r = stepRefusal("render_failed", errorText(err));
       receipt.append("gate", { render_id, decision: "REFUSE", cited: r, reasons: [r] });
       renders.push({ render_id, image_sha256: null, decision: "REFUSE", cited: r });
@@ -315,6 +329,10 @@ function maskSha256(mask: Segment["mask"]): string | null {
 
 function stepRefusal(rule: StepRefusal["rule"], reason: string): StepRefusal {
   return { attribute: null, verdict: null, confidence: null, rule, reason };
+}
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
 function errorText(err: unknown): string {

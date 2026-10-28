@@ -197,7 +197,9 @@ test("web/shop.html carries the current core.js, and loads nothing from outside 
   assert.match(page, /row\.render_provider === "stand-in"\) tags\.append\(el\("span", "tag standin", "owner's photo, stands in for render"\)\)/);
   assert.equal(page.split("owner's photo, stands in for render").length - 1, 2, "once on the card, once in the panel");
   // A composite card says what it is (SPEC-render-fix §3), from the same field.
-  assert.match(page, /row\.render_provider === "composite"\) tags\.append\(el\("span", "tag composite", "Composite: your garment photo on a mannequin\. Not AI-generated\."\)\)/);
+  assert.match(page, /row\.render_provider === "composite"\) tags\.append\(el\("span", "tag composite", row\.render_model === "composite-v2"\s+\? "Composite: your garment photo on a studio backdrop, lighting adjusted within recorded bounds\. Not AI-generated\. UNVERIFIED for camera\."\s+: "Composite: your garment photo on a mannequin\. Not AI-generated\."\)\)/);
+  // composite-v2 (SPEC-composite-v2 §5): the panel carries the bounded-correction note.
+  assert.match(page, /Lighting and white balance were adjusted by bounded, recorded amounts \(max ±8% per colour channel, shadow gain 0\.80 to 1\.35\)\. Fidelity checks compare against the seller's original photo\./);
   assert.match(page, /No image model generated this picture\./);
 });
 
