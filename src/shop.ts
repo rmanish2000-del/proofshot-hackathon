@@ -8,7 +8,7 @@
 // checkImageWith. Nothing here decides anything they do not.
 
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { crc32, deflateSync } from "node:zlib";
 
 import { checkImageWith, parseReceipt } from "./core.js";
@@ -183,6 +183,20 @@ export function buildShop(jobsRoot: string, outDir: string): ShopBuild {
   mkdirSync(outDir, { recursive: true });
   writeFileSync(join(outDir, CATALOG_FILE), `${JSON.stringify({ rows } satisfies Catalog, null, 2)}\n`);
   return { rows, problems };
+}
+
+/**
+ * The shop step a job runner owes after writing a job (Grok, 28 Oct 11:40, N6):
+ * when jobsRoot is the repo's data/jobs, the one the committed shop is built
+ * from, rebuild <repoRoot>/web/shop so a committed job never leaves
+ * web/shop/catalog.json stale (CI red on 189f87c). Any other jobs root feeds no
+ * committed shop, so it returns null and writes nothing. The caller exits
+ * non-zero when the build has problems.
+ */
+export function shopAfterJob(jobsRoot: string, repoRoot: string): { readonly out: string; readonly build: ShopBuild } | null {
+  if (resolve(jobsRoot) !== resolve(repoRoot, "data", "jobs")) return null;
+  const out = join(repoRoot, "web", "shop");
+  return { out, build: buildShop(jobsRoot, out) };
 }
 
 // ---------------------------------------------------------------------------
