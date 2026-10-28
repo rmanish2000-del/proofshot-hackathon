@@ -49,7 +49,8 @@ export interface RecordedScene {
   readonly scene: string;
   readonly render_id: string;
   /** The image under renders/, or null when the renderer threw. */
-  readonly render: { readonly file: string; readonly sha256: string } | null;
+  /** `record` is the renderer's own render-entry fields (method, generative, template...), absent when it had none. */
+  readonly render: { readonly file: string; readonly sha256: string; readonly record?: Readonly<Record<string, unknown>> } | null;
   /** The render_failed reason, `<name>: <message>`, when `render` is null. */
   readonly render_error: string | null;
   readonly verifier: { readonly findings: readonly Finding[]; readonly usage?: VerifierUsage; readonly error?: string } | null;
@@ -205,10 +206,12 @@ export function recordJob(opts: RecordOptions): Manifest {
     if (sha256Hex(bytes) !== render.sha256) refuse(`${file} does not hash to the receipt's ${String(render.sha256)}`);
     writes.push({ rel: `${RENDERS_DIR}/${file}`, bytes });
 
+    const FIXED = ["render_id", "sha256", "model", "provider", "prompt"];
+    const extra = Object.fromEntries(Object.entries(render).filter(([k]) => !FIXED.includes(k)));
     recordedScenes.push({
       scene,
       render_id,
-      render: { file, sha256: String(render.sha256) },
+      render: { file, sha256: String(render.sha256), ...(Object.keys(extra).length > 0 ? { record: extra } : {}) },
       render_error: null,
       verifier: {
         findings: (Array.isArray(verified.findings) ? verified.findings : []) as Finding[],
@@ -363,7 +366,8 @@ export function replayProviders(rec: Recording): Providers {
         const s = steps.scenes[next++];
         if (!s || s.scene !== scene) refuse(`replay asked to render ${JSON.stringify(scene)}, the recording's scene ${next - 1} is ${JSON.stringify(s?.scene ?? null)}`);
         if (!s.render) throwRecorded(s.render_error ?? "Error: render failed");
-        return rec.renders.get(s.render_id) ?? refuse(`no image for ${s.render_id}`);
+        const image = rec.renders.get(s.render_id) ?? refuse(`no image for ${s.render_id}`);
+        return s.render.record ? { ...image, record: { ...s.render.record } } : image;
       },
     },
     verifier: {
