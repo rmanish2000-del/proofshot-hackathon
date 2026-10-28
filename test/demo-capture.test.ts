@@ -5,7 +5,22 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
-import { DEMO_SHOTS, REPLAYED_RECORDINGS, browserCandidates, shotIdsFromDemoMd, tamperOneByte } from "../src/demo-capture.ts";
+import {
+  DEMO_SHOTS,
+  MAX_TOTAL_SECONDS,
+  REPLAYED_RECORDINGS,
+  beatSecondsFromDemoMd,
+  browserCandidates,
+  bytesHtml,
+  cardHtml,
+  concatList,
+  redactLine,
+  replayLogLines,
+  shotIdsFromDemoMd,
+  tamperOneByte,
+  tamperSpot,
+  terminalHtml,
+} from "../src/demo-capture.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
@@ -26,12 +41,97 @@ test("DEMO1: every shot is either captured or says why not, and every captured f
       const job = /[?&]job=([^&]+)/.exec(f.path)?.[1];
       if (f.from === "jobs" && job) assert.ok(existsSync(join(root, "data/jobs", decodeURIComponent(job), "receipt.jsonl")), `${f.name}: data/jobs/${job} is committed`);
       if (f.from === "replay") assert.ok(REPLAYED_RECORDINGS.includes(/@([A-Za-z0-9._-]+)/.exec(f.path)![1]!), `${f.name} names a replayed recording`);
-      if (f.from === "disk") assert.ok(existsSync(join(root, f.path)), `${f.name}: ${f.path} exists`);
+      if (f.from === "disk" || f.from === "page") assert.ok(existsSync(join(root, f.path)), `${f.name}: ${f.path} exists`);
+      assert.equal(f.from === "page", f.page !== undefined, `${f.name}: a page frame has a page and only it`);
+      if (f.page?.kind === "log") {
+        assert.ok(REPLAYED_RECORDINGS.includes(f.page.recording), `${f.name} names a replayed recording`);
+        assert.equal(f.path, `demo/recordings/${f.page.recording}`);
+      }
       for (const a of f.actions)
         if ("verify" in a) for (const p of [a.verify.receipt, a.verify.image]) assert.ok(existsSync(join(root, p)), `${f.name}: ${p} exists`);
     }
   }
   for (const name of REPLAYED_RECORDINGS) assert.ok(existsSync(join(root, "demo/recordings", name, "manifest.json")), `recording ${name}`);
+});
+
+test("DEMO1b: no shot is skipped; title cards show only text that is in docs/DEMO.md, and no [TBD]", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  for (const shot of DEMO_SHOTS) {
+    assert.ok(shot.frames.length > 0, `${shot.id} has frames`);
+    assert.equal(shot.skip, undefined, `${shot.id} is not skipped`);
+    for (const f of shot.frames) {
+      if (f.page?.kind !== "card") continue;
+      assert.equal(f.path, "docs/DEMO.md");
+      for (const line of [f.page.title, ...f.page.lines]) {
+        assert.ok(md.includes(line), `${f.name}: "${line}" is in DEMO.md`);
+        assert.ok(!line.includes("TBD"), `${f.name}: no [TBD] on screen`);
+      }
+      if (f.page.licence) assert.ok(readFileSync(join(root, "LICENSE"), "utf8").includes(`${f.page.licence} License`), `${f.name}: LICENSE is ${f.page.licence}`);
+    }
+  }
+  const html = cardHtml({ title: "A <b>", lines: ["x & y"], licence: "MIT" });
+  assert.ok(html.includes("A &lt;b&gt;") && html.includes("x &amp; y") && html.includes("Licence: MIT"));
+  assert.ok(!cardHtml({ title: "T", lines: [] }).includes("Licence"));
+});
+
+test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode, and the total is under 115 s", () => {
+  const beats = beatSecondsFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
+  assert.equal(beats.get(2), 14, "beat 2 is 0:08-0:22");
+  const perBeat = new Map<number, number>();
+  for (const s of DEMO_SHOTS) {
+    assert.ok(Number.isInteger(s.seconds) && s.seconds > 0, `${s.id} seconds`);
+    perBeat.set(s.beat, (perBeat.get(s.beat) ?? 0) + s.seconds);
+  }
+  for (const [beat, sec] of perBeat) {
+    assert.ok(beats.has(beat), `beat ${beat} is in the timecode table`);
+    assert.ok(sec <= beats.get(beat)!, `beat ${beat}: shots ${sec} s fit in ${beats.get(beat)} s`);
+  }
+  const total = DEMO_SHOTS.reduce((n, s) => n + s.seconds, 0);
+  assert.equal(MAX_TOTAL_SECONDS, 115);
+  assert.ok(total < MAX_TOTAL_SECONDS, `total ${total} s`);
+  assert.equal(concatList([{ file: "a.png", seconds: 7 }, { file: "b.png", seconds: 3.5 }]), "file 'a.png'\nduration 7\nfile 'b.png'\nduration 3.5\nfile 'b.png'\n");
+  assert.equal(concatList([]), "");
+});
+
+test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
+  const receipt = readFileSync(join(root, "data/jobs/live-kurta-01-2/receipt.jsonl"), "utf8");
+  const lines = replayLogLines({
+    recording: "live-kurta-01-2",
+    recordedJob: "live-kurta-01-2",
+    recordedHead: "6a0c5a9d",
+    dir: "out/demo/replay-jobs/x",
+    head: "abc",
+    refused: null,
+    renders: [{ render_id: "x-r0", decision: "REVIEW", cited: { rule: "fidelity" } }],
+    receipt,
+  });
+  assert.equal(lines[0], "$ npm run demo:replay -- demo/recordings/live-kurta-01-2 out/replay");
+  assert.ok(lines.includes("x-r0: REVIEW (fidelity)"));
+  const entries = receipt.trim().split("\n").length;
+  assert.equal(lines.filter((l) => /^ ?\d+ {2}\w/.test(l)).length, entries);
+  assert.ok(lines.some((l) => l.includes("gate") && l.endsWith("REVIEW")));
+  // Redaction: the fake values below are placeholders, not keys.
+  assert.equal(redactLine(`"api_key":"xxxx-placeholder"`), `"api_key":"[REDACTED]"`); // gitleaks:allow
+  assert.equal(redactLine("Authorization: Bearer xxxxplaceholder"), "Authorization: Bearer [REDACTED]"); // gitleaks:allow
+  assert.equal(redactLine(`"prompt_tokens":6918`), `"prompt_tokens":6918`);
+  const html = terminalHtml("Replay of a recorded run", ["$ cmd", `token=xxxx`]);
+  assert.ok(html.includes("token=[REDACTED]") && !html.includes("xxxx"));
+  assert.ok(!html.includes("C:\\Users") && !html.includes("/home/"));
+});
+
+test("DEMO1b: the S5/S7 bytes page highlights the same byte S6 changes", () => {
+  const text = readFileSync(join(root, "web/shop/kurta-01/receipt.jsonl"), "utf8");
+  const spot = tamperSpot(text)!;
+  const bad = tamperOneByte(text)!;
+  assert.equal(text[spot.offset], spot.before);
+  assert.equal(bad[spot.offset], spot.after);
+  assert.equal(spot.line, 1);
+  const both = bytesHtml("web/shop/kurta-01/receipt.jsonl", text, "both");
+  assert.ok(both.includes(`<mark>${spot.before}</mark>`) && both.includes(`<mark>${spot.after}</mark>`));
+  assert.ok(both.includes(`byte ${spot.offset}`) && both.includes("entry 1"));
+  const before = bytesHtml("web/shop/kurta-01/receipt.jsonl", text, "before");
+  assert.ok(before.includes(`<mark>${spot.before}</mark>`) && !before.includes("After"));
+  assert.throws(() => bytesHtml("x", "{}", "both"));
 });
 
 test("DEMO1: the tampered receipt differs by one byte and fails the chain check; the original passes", () => {
