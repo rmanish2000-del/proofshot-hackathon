@@ -50,7 +50,8 @@ export interface RecordedScene {
   readonly render_id: string;
   /** The image under renders/, or null when the renderer threw. */
   /** `record` is the renderer's own render-entry fields (method, generative, template...), absent when it had none. */
-  readonly render: { readonly file: string; readonly sha256: string; readonly record?: Readonly<Record<string, unknown>> } | null;
+  /** `prompt_sent: false` when the render entry has no `prompt` (a try-on records what it sent in `input`, NR4b). */
+  readonly render: { readonly file: string; readonly sha256: string; readonly record?: Readonly<Record<string, unknown>>; readonly prompt_sent?: false } | null;
   /** The render_failed (or render_quality) reason, `<name>: <message>`, when `render` is null. */
   readonly render_error: string | null;
   readonly verifier: { readonly findings: readonly Finding[]; readonly usage?: VerifierUsage; readonly error?: string } | null;
@@ -196,7 +197,8 @@ export function recordJob(opts: RecordOptions): Manifest {
     const verified = payloadOf(byId("verifier", render_id) ?? refuse(`${render_id} has no verifier entry`));
     const fidelity = payloadOf(byId("fidelity", render_id) ?? refuse(`${render_id} has no fidelity entry`));
 
-    if (render.prompt !== renderPrompt(garment_note, scene)) refuse(`${render_id} was rendered from a prompt this build does not produce`);
+    const promptSent = render.prompt !== undefined;
+    if (promptSent && render.prompt !== renderPrompt(garment_note, scene)) refuse(`${render_id} was rendered from a prompt this build does not produce`);
     const model = { provider: render.provider as Renderer["provider"], model: String(render.model) };
     if (renderer && (renderer.provider !== model.provider || renderer.model !== model.model)) refuse(`${render_id} names a different renderer than an earlier scene`);
     renderer ??= model;
@@ -212,7 +214,7 @@ export function recordJob(opts: RecordOptions): Manifest {
     recordedScenes.push({
       scene,
       render_id,
-      render: { file, sha256: String(render.sha256), ...(Object.keys(extra).length > 0 ? { record: extra } : {}) },
+      render: { file, sha256: String(render.sha256), ...(Object.keys(extra).length > 0 ? { record: extra } : {}), ...(promptSent ? {} : { prompt_sent: false as const }) },
       render_error: null,
       verifier: {
         findings: (Array.isArray(verified.findings) ? verified.findings : []) as Finding[],
@@ -368,7 +370,7 @@ export function replayProviders(rec: Recording): Providers {
         if (!s || s.scene !== scene) refuse(`replay asked to render ${JSON.stringify(scene)}, the recording's scene ${next - 1} is ${JSON.stringify(s?.scene ?? null)}`);
         if (!s.render) throwRecorded(s.render_error ?? "Error: render failed");
         const image = rec.renders.get(s.render_id) ?? refuse(`no image for ${s.render_id}`);
-        return s.render.record ? { ...image, record: { ...s.render.record } } : image;
+        return { ...image, ...(s.render.record ? { record: { ...s.render.record } } : {}), ...(s.render.prompt_sent === false ? { promptNotSent: true } : {}) };
       },
     },
     verifier: {

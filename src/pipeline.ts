@@ -84,6 +84,12 @@ export interface RenderedImage {
    * model that drew nothing.
    */
   readonly madeBy?: { readonly provider: Renderer["provider"]; readonly model: string };
+  /**
+   * True when the renderer did not send the pipeline's prompt anywhere and
+   * records what it did send in its own fields (the try-on's `input`, NR4b):
+   * the render entry then has no `prompt`, so it names nothing that was not sent.
+   */
+  readonly promptNotSent?: boolean;
 }
 
 export interface Renderer {
@@ -95,8 +101,11 @@ export interface Renderer {
    */
   readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in" | "composite" | "replicate-pruna-tryon";
   readonly model: string;
-  /** `segments` is the job's segmentation, which runs before any render (runJob always passes it); most renderers ignore it. */
-  render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[] }): Promise<RenderedImage>;
+  /**
+   * `segments` is the job's segmentation, which runs before any render (runJob always passes it); most renderers ignore it.
+   * `garmentNote` is the job's note, the seller's claims (runJob always passes it); only the try-on reads it.
+   */
+  render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[]; garmentNote?: string }): Promise<RenderedImage>;
 }
 
 /** One verifier request when the first answer was cut off: the limit asked for and how it ended. */
@@ -263,7 +272,7 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     let image: RenderedImage;
     try {
       refuseMuseImage(renderer.model);
-      image = await renderer.render({ scene, prompt, sources: job.sources, segments });
+      image = await renderer.render({ scene, prompt, sources: job.sources, segments, garmentNote: job.garmentNote });
     } catch (err) {
       // A composite's quality pre-check (SPEC-composite-v2 §7) is REVIEW with
       // its reason and every check, and no image: never a product shot, never a
@@ -283,8 +292,14 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     const image_sha256 = sha256Hex(image.bytes);
     writeFileSync(join(dir, `${render_id}.${image.ext}`), image.bytes);
     // The renderer's own fields follow the fixed ones and can never replace them.
-    const fixed = { render_id, sha256: image_sha256, model: image.madeBy?.model ?? renderer.model, provider: image.madeBy?.provider ?? renderer.provider, prompt };
-    const extra = Object.fromEntries(Object.entries(image.record ?? {}).filter(([k]) => !(k in fixed)));
+    const fixed = {
+      render_id,
+      sha256: image_sha256,
+      model: image.madeBy?.model ?? renderer.model,
+      provider: image.madeBy?.provider ?? renderer.provider,
+      ...(image.promptNotSent ? {} : { prompt }),
+    };
+    const extra = Object.fromEntries(Object.entries(image.record ?? {}).filter(([k]) => !["render_id", "sha256", "model", "provider", "prompt"].includes(k)));
     receipt.append("render", { ...fixed, ...extra });
 
     // A verifier that throws or breaks the schema is a refusal, never a pass:

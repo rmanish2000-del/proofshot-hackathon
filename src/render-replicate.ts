@@ -14,9 +14,18 @@
 // header and nowhere else: not in the receipt, the errors, or any log. The
 // spend ledger lives outside the repo (%LOCALAPPDATA%\ProofShot).
 //
-// The request body follows the model page README (person_image, garment_images,
-// seed). The exact input schema on the API tab was NOT checked from this
-// machine (no web access in autorun): check it before the first live call.
+// The request body is person_image, garment_images, seed and, when the seller
+// claimed a garment type or length, prompt (the API schema Grok read 28 Oct
+// 22:25 also has reference_pose, turbo, preserve_input_size, output_format and
+// output_quality, which are not sent). The render entry's `input` records
+// exactly the fields sent, images by hash, and the pipeline's own prompt is
+// left off the entry because it is never sent (NR4b).
+//
+// NR4b, why the first live try-on (14dad54) lost the kurta's length: the
+// cut-out was whole (the front segment's box runs y 0.15 to 0.97 of the photo),
+// but the synthetic model wears a hip-length T-shirt over leggings and no
+// prompt was sent, so Pruna replaced the T-shirt and drew the rest of the kurta
+// as shorts. The prompt now says the type and length the seller claimed.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -166,6 +175,34 @@ export function garmentCutout(sources: readonly SourceImage[], segments: readonl
   return encodeRgbPng(w, h, out);
 }
 
+// Seller claim keys the try-on prompt may use (Grok 28 Oct 22:30): type and length, never colour or print.
+// note.txt says "Type:" (job:live prefixes the folder name); the upload page says "hem:" for the length claim.
+const CLAIM = /^(?:[A-Za-z0-9._-]+:\s*)?(type|length|hem)\s*:\s*(.+)$/i;
+const UNCLAIMED = /^(not recorded|as in the photos?)\b/i;
+const COLOUR_WORD = /\b(red|orange|rust|yellow|gold(en)?|green|blue|navy|indigo|purple|violet|pink|peach|maroon|brown|beige|cream|white|black|gr[ae]y|silver|colou?r|print(ed)?|floral|check(ed)?|stripe[ds]?|embroider(ed|y))\b/i;
+
+/**
+ * The prompt sent with a try-on: the seller's garment type and length claims
+ * from the garment note and nothing else, or null when neither was claimed
+ * (then no prompt is sent). A claim that names a colour or print is dropped.
+ */
+export function tryOnPrompt(garmentNote: string): string | null {
+  const got: { type?: string; length?: string } = {};
+  for (const part of garmentNote.split(/[;\r\n]/)) {
+    const m = CLAIM.exec(part.trim());
+    if (!m) continue;
+    const key = m[1]!.toLowerCase() === "type" ? "type" : "length";
+    const value = m[2]!.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+    if (!value || UNCLAIMED.test(value) || COLOUR_WORD.test(value) || got[key]) continue;
+    got[key] = value;
+  }
+  const lines = [
+    ...(got.type ? [`Garment type: ${got.type}.`] : []),
+    ...(got.length ? [`Garment length: ${got.length}. Keep the garment's full length; do not shorten it.`] : []),
+  ];
+  return lines.length > 0 ? lines.join(" ") : null;
+}
+
 // PNG chunks kept when stripping an output: the image and its colour, nothing else.
 const PNG_KEEP = new Set(["IHDR", "PLTE", "IDAT", "IEND", "tRNS", "gAMA", "cHRM", "sRGB", "iCCP", "sBIT"]);
 
@@ -263,7 +300,15 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
       if (spent + estimate > SPEND_CAP_USD + 1e-9) return fallback(req, "spend_cap", `spent ${spent.toFixed(3)} + ${estimate.toFixed(3)} would pass the ${SPEND_CAP_USD.toFixed(2)} USD cap`);
 
       const dataUri = (bytes: Uint8Array, ext: "jpg" | "png") => `data:image/${ext === "jpg" ? "jpeg" : "png"};base64,${Buffer.from(bytes).toString("base64")}`;
-      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: [dataUri(garment, "png")], seed } });
+      const prompt = tryOnPrompt(req.garmentNote ?? "");
+      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: [dataUri(garment, "png")], seed, ...(prompt ? { prompt } : {}) } });
+      // The same fields as the body, images by hash: what was sent, and nothing that was not.
+      const sent = {
+        person_image: { sha256: sha256Hex(model.bytes), model_image_id: model.id },
+        garment_images: [{ sha256: sha256Hex(garment), what: "garment_cutout" }],
+        seed,
+        ...(prompt ? { prompt } : {}),
+      };
       const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
       const attempt = async (): Promise<{ bytes: Uint8Array; ext: "jpg" | "png"; prediction: Record<string, unknown> }> => {
@@ -320,14 +365,14 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
         return {
           bytes: got.bytes,
           ext: got.ext,
+          promptNotSent: true,
           record: {
             method: "generative",
             generative: true,
             model_version: typeof p.version === "string" ? p.version : null,
             prediction_id: id,
-            input_hashes: { garment_cutout: sha256Hex(garment), model_image: sha256Hex(model.bytes) },
+            input: sent,
             model_image_id: model.id,
-            seed,
             cost_usd: null,
             cost_estimated_usd: estimate,
             attempts: i + 1,

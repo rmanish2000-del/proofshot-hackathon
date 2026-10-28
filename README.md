@@ -289,22 +289,35 @@ committed.
   within recorded bounds. Not AI-generated. UNVERIFIED for camera." When
   white balance is skipped (a coloured garment), the receipt note and the
   shop panel say "Lighting only: no colour correction was applied".
-- `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`,
-  built and tested offline only; **no live call has been made**): an AI
-  preview by Pruna p-image-try-on on Replicate (third-party, non-Meta). It
-  sends the SAM 3.1 garment cut-out (seller pixels only, no garment prompt) and
+- `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`):
+  an AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta).
+  **One live call so far** (14dad54, `data/jobs/live-kurta-02-tryon`, n=1):
+  the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
+  length and drew shorts below it; the verifier flagged the hem as a mismatch
+  (0.98) and the fidelity check found the garment shrank in frame (area
+  0.212). The gate caught an AI model changing the garment, and nothing was
+  released. Why (NR4b): the cut-out was the whole kurta, but the synthetic
+  model wears a hip-length T-shirt over leggings and no prompt was sent, so
+  the try-on replaced only the T-shirt. Since NR4b the request carries a
+  prompt with the garment type and length the seller claimed (`Type:`,
+  `Length:` or `hem:` in the garment note), never colour or print, and none
+  when neither is claimed. That fix has not been run live yet. It
+  sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
   (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
-  `REPLICATE_MODEL_IMAGE` picks another). The token is read from `REPLICATE_API_TOKEN` only. Meta did
+  `REPLICATE_MODEL_IMAGE` picks another). The render entry's `input` records
+  exactly the fields sent (images by sha256, seed, and the prompt when one was
+  sent) and carries no pipeline `prompt`. The token is read from `REPLICATE_API_TOKEN` only. Meta did
   not draw the image: SAM 3.1 (cut-out and fidelity masks), Muse Spark (the
   verifier) and the ProofShot gate decide what is released, with thresholds
   unchanged. The receipt says `generative: true` and "AI preview: look only".
   No token, no model image, no mask, a spend ledger past 5 USD
   (`%LOCALAPPDATA%\ProofShot\replicate-ledger.json`, outside the repo), or two
   failed or timed-out attempts (120 s each) fall back to composite v2, and the
-  render entry then names the composite with `fallback_reason`. Pruna and
-  Replicate data and output terms, India availability, and the exact API
-  input schema are UNVERIFIED.
+  render entry then names the composite with `fallback_reason`. The input
+  fields sent were checked against the model's API schema before the live call
+  (Grok, 14dad54). Pruna and Replicate data and output terms and India
+  availability are UNVERIFIED.
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
   and again before each request (`src/render.ts`).
