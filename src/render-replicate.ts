@@ -17,7 +17,8 @@
 // The request body is person_image, garment_images, seed and, when the seller
 // claimed a garment type or length, prompt (the API schema Grok read 28 Oct
 // 22:25 also has reference_pose, turbo, preserve_input_size, output_format and
-// output_quality, which are not sent). The render entry's `input` records
+// output_quality; of these only preserve_input_size can be sent, see
+// tryOnOptions). The render entry's `input` records
 // exactly the fields sent, images by hash, and the pipeline's own prompt is
 // left off the entry because it is never sent (NR4b).
 //
@@ -277,16 +278,15 @@ export function stripImageMetadata(bytes: Uint8Array): { bytes: Uint8Array; ext:
 }
 
 /**
- * Pruna's preserve_input_size and reference_pose (NR4d), each sent only when its
- * env var is exactly "true" or "false" (REPLICATE_PRESERVE_INPUT_SIZE,
- * REPLICATE_REFERENCE_POSE); anything else sends nothing. Booleans per the
- * names in the schema Grok read on 28 Oct 22:25; the types are not confirmed.
+ * Pruna's preserve_input_size (NR4d), sent only when REPLICATE_PRESERVE_INPUT_SIZE
+ * is exactly "true" or "false"; anything else sends nothing. The schema Grok read
+ * live on 28 Oct 23:35 types it as a boolean, default true, so only "false"
+ * changes the result. reference_pose is never sent (NR4f): the same schema types
+ * it as a nullable image input, not a boolean, and a pose image is out of scope.
  */
-export function tryOnOptions(env: Readonly<Record<string, string | undefined>>): { preserve_input_size?: boolean; reference_pose?: boolean } {
-  const flag = (v: string | undefined) => (v?.trim() === "true" ? true : v?.trim() === "false" ? false : undefined);
-  const preserve = flag(env.REPLICATE_PRESERVE_INPUT_SIZE);
-  const pose = flag(env.REPLICATE_REFERENCE_POSE);
-  return { ...(preserve !== undefined ? { preserve_input_size: preserve } : {}), ...(pose !== undefined ? { reference_pose: pose } : {}) };
+export function tryOnOptions(env: Readonly<Record<string, string | undefined>>): { preserve_input_size?: boolean } {
+  const v = env.REPLICATE_PRESERVE_INPUT_SIZE?.trim();
+  return v === "true" ? { preserve_input_size: true } : v === "false" ? { preserve_input_size: false } : {};
 }
 
 export interface ReplicateTryOnOptions {

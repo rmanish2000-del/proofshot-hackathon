@@ -386,9 +386,10 @@ outfit goes. When the seller's length claim reaches further ("below the knee"
 is calf), the render falls back to composite v2 with `fallback_reason:
 "model_too_short"` before any paid call. With no `model.json`, or a length
 claim naming no known place, the guard does not apply. `preserve_input_size`
-and `reference_pose` are sent, and recorded in the render entry's `input`, only
-when `REPLICATE_PRESERVE_INPUT_SIZE` / `REPLICATE_REFERENCE_POSE` is exactly
-`true` or `false`. With `REPLICATE_GARMENT_CONTEXT=front`, the whole front
+(boolean, Pruna's default true) is sent, and recorded in the render entry's
+`input`, only when `REPLICATE_PRESERVE_INPUT_SIZE` is exactly `true` or
+`false`. `reference_pose` is never sent *(NR4f, 28 Oct)*: Pruna's schema types
+it as a nullable image input, not a boolean, and a pose image is out of scope. With `REPLICATE_GARMENT_CONTEXT=front`, the whole front
 photo (metadata stripped) goes as a second `garment_images` entry, recorded
 as `what: "front_photo"` with its sha256 and priced as two garment images.
 
