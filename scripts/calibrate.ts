@@ -94,9 +94,12 @@ const cases: CalibrationCase[] = labelledPairs(photos).map((pair) => ({
   sourceMask: maskOf(pair.source),
   renderMask: maskOf(pair.render),
 }));
-const scores = scoreCalibration(cases, scaledCandidates(loadThresholds(), factors));
+// No verifier has judged these pairs, so the gate would refuse every one as not
+// verified; the CLI scores the fidelity check alone and says so.
+const scores = scoreCalibration(cases, scaledCandidates(loadThresholds(), factors), { scope: "fidelity" });
 
 console.log(`calibration over ${root}: ${photos.length} photos in ${new Set(photos.map((p) => p.garment)).size} garments, ${cases.length} ordered pairs`);
+console.log("scope: FIDELITY ONLY (no verifier findings): not a gate decision; the gate refuses a pair with no findings");
 console.log(maskMode === "whole-frame" ? "masks: WHOLE FRAME (background included): a baseline, not the SPEC §10 measure" : `masks: SAM, from evidence logs for ${masks.size} of ${photos.length} photos`);
 for (const p of photos) if (maskMode === "sam") console.log(`  ${p.garment}/${p.name}: ${maskFrom.get(p.sha256) ?? "no SAM log, no mask"}`);
 console.log("candidate  same  diff  false_match  false_refuse  review_same  review_diff  unmeasured");
@@ -106,7 +109,7 @@ for (const s of scores) {
 if (outFile) {
   writeFileSync(
     outFile,
-    `${JSON.stringify({ root, masks: maskMode, factors, photos: photos.map((p) => ({ garment: p.garment, name: p.name, sha256: p.sha256, mask_log: maskFrom.get(p.sha256) ?? null })), scores }, null, 2)}\n`,
+    `${JSON.stringify({ root, masks: maskMode, scope: "fidelity", factors, photos: photos.map((p) => ({ garment: p.garment, name: p.name, sha256: p.sha256, mask_log: maskFrom.get(p.sha256) ?? null })), scores }, null, 2)}\n`,
   );
   console.log(`written: ${outFile}`);
 }

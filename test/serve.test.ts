@@ -254,6 +254,16 @@ test("a segmenter that throws refuses the job before any render; a verifier that
   assert.equal(sb.result!.image, `/jobs/${b}/${b}-r0.jpg`);
 });
 
+test("N1: a verifier that answers with no findings refuses as not verified in serve, and the result cannot be published", async () => {
+  const ver = server(providers({}, { verifier: { identity: { provider: "x", model: "y", base: "z" }, verify: async () => ({ raw: { findings: undefined } }) } }), "nofind");
+  const id = ver.srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }])).job_id;
+  await ver.srv.settled(id);
+  const s = ver.srv.status(id)!;
+  assert.equal(s.result!.decision, "REFUSE");
+  assert.ok(s.result!.reasons.length > 0 && s.result!.reasons.every((t) => /no finding/.test(t)), s.result!.reasons.join(" | "));
+  assert.throws(() => ver.srv.publish(id), /was REFUSE, not RELEASE/);
+});
+
 test("a photo that is not a JPEG is refused at intake: no pipeline, no receipt, the board says why", async () => {
   const { srv, jobs } = server(providers(), "png");
   const { job_id } = srv.submit(upload([{ name: "front.jpg", bytes: Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0]) }]));

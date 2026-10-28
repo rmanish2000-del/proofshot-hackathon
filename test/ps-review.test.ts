@@ -5,7 +5,8 @@
 // fidelity REFUSE could be talked out of a decision by a verifier that says
 // "match".
 //
-// These are additive. No product behaviour is changed by this file.
+// These are additive. No product behaviour is changed by this file. (The
+// no-findings case was RELEASE here until N1 made it fail closed.)
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -111,18 +112,22 @@ test("an unmeasured case is REVIEW and is never counted as a pass, however permi
   assert.equal(score.unmeasured, score.same + score.different);
 });
 
-test("an empty findings array is not the same as no findings, and it fails closed", () => {
+test("no findings and an empty findings array both fail closed: the gate refuses an unverified garment", () => {
   const image = rgb(8, 8, [120, 120, 120]);
   const mask = fullMask(image);
   const base = { id: "empty-findings", label: "same" as const, source: image, render: image, sourceMask: mask, renderMask: mask };
 
   const withoutFindings = scoreCalibration([base], config)[0];
+  const withUndefined = scoreCalibration([{ ...base, findings: undefined }], config)[0];
   const withEmptyArray = scoreCalibration([{ ...base, findings: [] }], config)[0];
 
-  assert.equal(withoutFindings?.cases[0]?.decision, "RELEASE");
-  // `[]` is truthy, so it reaches the gate, which refuses an unverified garment.
+  // N1 (Grok 28 Oct 11:16): this was RELEASE (fail open) when ee9e7e6 pinned it.
+  assert.equal(withoutFindings?.cases[0]?.decision, "REFUSE");
+  assert.equal(withUndefined?.cases[0]?.decision, "REFUSE");
   assert.equal(withEmptyArray?.cases[0]?.decision, "REFUSE");
   assert.equal(withEmptyArray?.false_refuse, 1);
+  // Fidelity alone must be asked for by name.
+  assert.equal(scoreCalibration([base], config, { scope: "fidelity" })[0]?.cases[0]?.decision, "RELEASE");
 });
 
 test("a one-pixel pair yields either a measurement or an honest refusal, never NaN", () => {
@@ -140,6 +145,7 @@ test("a one-pixel pair yields either a measurement or an honest refusal, never N
       },
     ],
     config,
+    { scope: "fidelity" },
   );
   assert.ok(score);
   const result = score.cases[0];
@@ -180,4 +186,5 @@ test("the same input scores identically twice: the scorer is deterministic", () 
     { id: "one", label: "same" as const, source, render, sourceMask: fullMask(source), renderMask: fullMask(render) },
   ];
   assert.deepEqual(scoreCalibration(cases, config), scoreCalibration(cases, config));
+  assert.deepEqual(scoreCalibration(cases, config, { scope: "fidelity" }), scoreCalibration(cases, config, { scope: "fidelity" }));
 });

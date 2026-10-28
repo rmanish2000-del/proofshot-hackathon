@@ -24,9 +24,11 @@ const cases: CalibrationCase[] = [
 ];
 
 const base = loadThresholds();
+// These cases carry no findings, so the threshold tests score fidelity alone.
+const FIDELITY = { scope: "fidelity" } as const;
 
 test("config thresholds: an identical pair releases, a far colour refuses, a missing mask is counted unmeasured, not as an error", () => {
-  const [score] = scoreCalibration(cases, [{ name: "config", thresholds: base }]);
+  const [score] = scoreCalibration(cases, [{ name: "config", thresholds: base }], FIDELITY);
   const by = Object.fromEntries(score!.cases.map((c) => [c.id, c]));
   assert.equal(by["same-exact"]!.decision, "RELEASE");
   assert.equal(by["different-red"]!.decision, "REFUSE");
@@ -35,7 +37,7 @@ test("config thresholds: an identical pair releases, a far colour refuses, a mis
 });
 
 test("looser thresholds release the different pair (a false match); stricter ones refuse the shifted same pair (a false refuse)", () => {
-  const scores = scoreCalibration(cases, scaledCandidates(base, [0.001, 1, 1000]));
+  const scores = scoreCalibration(cases, scaledCandidates(base, [0.001, 1, 1000]), FIDELITY);
   assert.deepEqual(scores.map((s) => s.name), ["x0.001", "x1", "x1000"]);
   const [strict, , loose] = scores;
   assert.equal(loose!.false_match, 1, "x1000: the red render releases");
@@ -63,6 +65,23 @@ test("scaled candidates keep area, cap texture at 1, and reject bad input", () =
   for (const f of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) assert.throws(() => scaledCandidates(base, [f]), /positive finite/);
   assert.throws(() => scoreCalibration([cases[0]!, cases[0]!], []), /appears twice/);
   assert.throws(() => scoreCalibration([{ ...cases[0]!, label: "maybe" as "same" }], []), /not same or different/);
+  assert.throws(() => scoreCalibration(cases, [], { scope: "release" as "gate" }), /say gate or fidelity/);
+});
+
+test("N1: a case with absent or undefined findings fails closed at the gate (REFUSE not_verified), whatever fidelity says", () => {
+  const [score] = scoreCalibration(
+    [pair("absent", "same", grey, grey), pair("undefined", "different", grey, grey, { findings: undefined }), pair("empty", "same", grey, grey, { findings: [] })],
+    [{ name: "config", thresholds: base }],
+  );
+  assert.deepEqual(score!.cases.map((c) => [c.id, c.fidelity, c.decision]), [
+    ["absent", "RELEASE", "REFUSE"],
+    ["undefined", "RELEASE", "REFUSE"],
+    ["empty", "RELEASE", "REFUSE"],
+  ]);
+  assert.equal(score!.false_match, 0, "a different pair with no findings is never released");
+  // Fidelity alone is an explicit choice, and it still reports the fidelity decision.
+  const [alone] = scoreCalibration([pair("absent", "same", grey, grey)], [{ name: "config", thresholds: base }], FIDELITY);
+  assert.equal(alone!.cases[0]!.decision, "RELEASE");
 });
 
 test("labelledPairs: every ordered pair of two different photos, same when both come from one garment dir, different otherwise (Grok 10:48)", () => {
@@ -97,6 +116,7 @@ test("wholeFrameMask covers every pixel, so the pairs score end to end; a case w
       pair("no-mask", "different", grey, solid(10, 200, 10), { renderMask: null }),
     ],
     scaledCandidates(loadThresholds(), [1]),
+    FIDELITY,
   );
   assert.deepEqual(score!.cases.map((c) => [c.id, c.decision, c.measured]), [["whole", "RELEASE", true], ["no-mask", "REVIEW", false]]);
   assert.equal(score!.false_match, 0);
