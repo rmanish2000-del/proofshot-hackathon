@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self'; img-src 'self' blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+<title>ProofShot: seller upload</title>
+<style>
+  :root { --ink: #1a1a1a; --muted: #5d6a79; --line: #e3e3e0; --ok: #1d6b3a; --okbg: #e6f4ea; --warn: #7a4b00; --warnbg: #fff4e0; --bad: #8a2c2c; --badbg: #fde8e8; --accent: #1f4e9e; }
+  * { box-sizing: border-box; }
+  body { font: 17px/1.5 system-ui, sans-serif; margin: 0; color: var(--ink); background: #fafaf8; }
+  header { padding: 0.9rem 1rem; border-bottom: 1px solid var(--line); background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  header h1 { font-size: 1.1rem; margin: 0; }
+  main { padding: 1rem; max-width: 36rem; margin: 0 auto; }
+  p.lead { color: var(--muted); font-size: 0.95rem; margin: 0 0 1rem; }
+  #mode { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem; }
+  #mode.fixture { background: var(--warnbg); color: var(--warn); }
+  #mode.live { background: var(--okbg); color: var(--ok); }
+  #mode.off { background: var(--badbg); color: var(--bad); }
+  #mode:empty { display: none; }
+  #mode details { margin-top: 0.4rem; } #mode summary { cursor: pointer; } #mode dl { margin: 0.3rem 0 0; font-size: 0.82rem; } #mode dt { font-weight: 600; } #mode dd { margin: 0 0 0.3rem; }
+  label { display: block; font-weight: 600; margin: 0.9rem 0 0.3rem; }
+  input[type=text] { width: 100%; font: inherit; padding: 0.7rem 0.8rem; border: 1px solid var(--line); border-radius: 8px; }
+  .drop { border: 2px dashed #b9c2cc; border-radius: 12px; padding: 1.4rem 1rem; text-align: center; color: var(--muted); background: #fff; cursor: pointer; min-height: 7rem; display: flex; align-items: center; justify-content: center; }
+  .drop.over { border-color: var(--accent); background: #eef3fb; }
+  .drop input { display: none; }
+  .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.6rem; }
+  .thumbs figure { margin: 0; position: relative; }
+  .thumbs img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: #eee; }
+  .thumbs figcaption { font-size: 0.75rem; color: var(--muted); overflow-wrap: anywhere; }
+  .thumbs button { position: absolute; top: 0.25rem; right: 0.25rem; border: 0; border-radius: 999px; width: 1.7rem; height: 1.7rem; background: rgba(0,0,0,0.6); color: #fff; font: inherit; cursor: pointer; }
+  button.primary { width: 100%; margin-top: 1rem; padding: 0.9rem; font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 10px; cursor: pointer; }
+  button.primary:disabled { background: #9fb0c8; cursor: default; }
+  button.lang { font: inherit; font-size: 0.9rem; padding: 0.35rem 0.7rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; }
+  .error { color: var(--bad); background: var(--badbg); padding: 0.6rem 0.8rem; border-radius: 8px; margin-top: 0.8rem; font-size: 0.9rem; }
+  .error:empty { display: none; }
+  ol.steps { list-style: none; padding: 0; margin: 1rem 0 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+  ol.steps li { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.6rem; padding: 0.7rem 0.9rem; border-top: 1px solid var(--line); }
+  ol.steps li:first-child { border-top: 0; }
+  .dot { width: 1.3rem; height: 1.3rem; border-radius: 999px; background: #e3e3e0; margin-top: 0.15rem; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #fff; }
+  .pending .dot { background: #e3e3e0; } .running .dot { background: var(--accent); animation: pulse 1s infinite alternate; } .done .dot { background: var(--ok); } .done .dot::before { content: "✓"; } .failed .dot { background: var(--bad); } .failed .dot::before { content: "!"; } .skipped .dot { background: #b9c2cc; } .skipped .dot::before { content: "–"; }
+  @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+  .step-name { font-weight: 600; } .step-state { color: var(--muted); font-size: 0.85rem; } .step-detail { color: var(--muted); font-size: 0.8rem; overflow-wrap: anywhere; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+  .card img { display: block; width: 100%; max-height: 70vh; object-fit: contain; background: #eee; }
+  .card .body { padding: 1rem; }
+  .badge { display: inline-block; font-weight: 700; border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.95rem; }
+  .badge.RELEASE { background: var(--okbg); color: var(--ok); } .badge.REVIEW { background: var(--warnbg); color: var(--warn); } .badge.REFUSE { background: var(--badbg); color: var(--bad); }
+  .tag { display: inline-block; font-size: 0.75rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--warnbg); color: var(--warn); margin-left: 0.4rem; }
+  .card h2 { font-size: 1rem; margin: 0.9rem 0 0.3rem; }
+  .card ul { margin: 0; padding-left: 1.2rem; font-size: 0.92rem; }
+  .card .links { margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; font-size: 0.95rem; }
+  .card .hash { font-family: ui-monospace, monospace; font-size: 0.75rem; color: var(--muted); overflow-wrap: anywhere; margin-top: 0.6rem; }
+  .published { margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: var(--okbg); color: var(--ok); border-radius: 8px; font-size: 0.92rem; }
+  .again { margin-top: 1rem; background: none; border: 0; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2rem 1rem; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1 data-t="title"></h1>
+  <button type="button" class="lang" id="lang"></button>
+</header>
+<main>
+  <p class="lead" data-t="lead"></p>
+  <div id="mode" role="status"></div>
+
+  <form id="form">
+    <label for="note" data-t="noteLabel"></label>
+    <input type="text" id="note" maxlength="300" autocomplete="off">
+    <label data-t="photosLabel"></label>
+    <div class="drop" id="drop" tabindex="0" role="button">
+      <span data-t="drop"></span>
+      <input type="file" id="file" accept="image/jpeg,.jpg,.jpeg" multiple>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="error" id="error" role="alert"></div>
+    <button type="submit" class="primary" id="start" data-t="start"></button>
+  </form>
+
+  <section id="progress" hidden>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section id="result" hidden></section>
+</main>
+<footer>ProofShot · <span data-t="footer"></span></footer>
+
+<script>
+"use strict";
+(() => {
+  const STRINGS = {
+    en: {
+      title: "ProofShot: seller upload",
+      lead: "Drop up to 3 photos of one garment (front, back, a close-up). The pipeline strips the metadata, segments the garment, renders, checks the render against your photos and decides. Nothing reaches the shop unless the gate says RELEASE.",
+      noteLabel: "What is the garment? (type and colour)",
+      notePlaceholder: "e.g. cotton kurta, rust orange",
+      photosLabel: "Photos",
+      drop: "Tap to choose photos, or drop them here (JPEG, up to 3)",
+      start: "Check and render",
+      running: "Running…",
+      remove: "Remove",
+      footer: "the receipt is a hash chain; this page decides nothing",
+      modeOff: "The server is not running. Start it with: npm run serve",
+      modeFixture: "Fixture mode: no model key is set. The metadata strip, the receipt and the gate are real; the render is your own front photo, and the findings are recorded, not judged by a model. The receipt says so.",
+      modeLive: "Live mode: the providers below ran for real.",
+      modeDetails: "Which provider ran each step",
+      steps: { exif: "Strip metadata (EXIF, GPS, device)", segment: "Segment the garment", render: "Render", verify: "Verify against your photos", gate: "Gate decision" },
+      states: { pending: "waiting", running: "running", done: "done", failed: "failed", skipped: "did not run" },
+      badge: { RELEASE: "RELEASE: can be published", REVIEW: "REVIEW: a person must look first", REFUSE: "REFUSE: not released" },
+      reasons: "Why",
+      noReasons: "No rule fired: every attribute matched at or above its floor.",
+      standIn: "your own photo, stands in for the render",
+      fixtureTag: "fixture job",
+      viewReceipt: "View receipt",
+      downloadReceipt: "Download receipt.jsonl",
+      publish: "Publish to shop",
+      published: "Published. The shop re-checks the receipt before it shows the badge.",
+      openShop: "Open the shop",
+      failed: "The job did not reach the gate",
+      again: "Check another garment",
+      errNoPhotos: "Choose at least one photo.",
+      errTooMany: "Up to 3 photos.",
+      errNotJpeg: "Only JPEG photos (the metadata strip is written for JPEG).",
+      errNoNote: "Say what the garment is.",
+      errServer: "The server did not answer. Is npm run serve running?",
+    },
+    hi: {
+      title: "ProofShot: विक्रेता अपलोड",
+      lead: "एक कपड़े की अधिकतम 3 तस्वीरें डालें (सामने, पीछे, क़रीब से)। पाइपलाइन मेटाडेटा हटाती है, कपड़े को सेगमेंट करती है, रेंडर करती है, रेंडर को आपकी तस्वीरों से मिलाती है और फ़ैसला करती है। गेट RELEASE कहे बिना कुछ भी दुकान तक नहीं पहुँचता।",
+      noteLabel: "कपड़ा क्या है? (प्रकार और रंग)",
+      notePlaceholder: "जैसे: सूती कुर्ता, ईंट जैसा नारंगी",
+      photosLabel: "तस्वीरें",
+      drop: "तस्वीरें चुनने के लिए टैप करें, या यहाँ छोड़ें (JPEG, अधिकतम 3)",
+      start: "जाँचें और रेंडर करें",
+      running: "चल रहा है…",
+      remove: "हटाएँ",
+      footer: "रसीद एक हैश चेन है; यह पेज कोई फ़ैसला नहीं करता",
+      modeOff: "सर्वर चल नहीं रहा। इसे शुरू करें: npm run serve",
+      modeFixture: "फ़िक्स्चर मोड: कोई मॉडल कुंजी सेट नहीं है। मेटाडेटा हटाना, रसीद और गेट असली हैं; रेंडर आपकी ही सामने की तस्वीर है, और निष्कर्ष दर्ज किए गए हैं, किसी मॉडल ने नहीं जाँचे। रसीद में यही लिखा है।",
+      modeLive: "लाइव मोड: नीचे दिए प्रोवाइडर सच में चले।",
+      modeDetails: "हर चरण में कौन सा प्रोवाइडर चला",
+      steps: { exif: "मेटाडेटा हटाना (EXIF, GPS, डिवाइस)", segment: "कपड़े को सेगमेंट करना", render: "रेंडर", verify: "आपकी तस्वीरों से मिलान", gate: "गेट का फ़ैसला" },
+      states: { pending: "प्रतीक्षा", running: "चल रहा है", done: "हो गया", failed: "विफल", skipped: "नहीं चला" },
+      badge: { RELEASE: "RELEASE: प्रकाशित किया जा सकता है", REVIEW: "REVIEW: पहले किसी व्यक्ति को देखना होगा", REFUSE: "REFUSE: जारी नहीं" },
+      reasons: "कारण",
+      noReasons: "कोई नियम नहीं लगा: हर गुण अपनी न्यूनतम सीमा पर या उससे ऊपर मिला।",
+      standIn: "आपकी ही तस्वीर, रेंडर की जगह",
+      fixtureTag: "फ़िक्स्चर जॉब",
+      viewReceipt: "रसीद देखें",
+      downloadReceipt: "receipt.jsonl डाउनलोड करें",
+      publish: "दुकान में प्रकाशित करें",
+      published: "प्रकाशित। बैज दिखाने से पहले दुकान रसीद को फिर जाँचती है।",
+      openShop: "दुकान खोलें",
+      failed: "जॉब गेट तक नहीं पहुँचा",
+      again: "दूसरा कपड़ा जाँचें",
+      errNoPhotos: "कम से कम एक तस्वीर चुनें।",
+      errTooMany: "अधिकतम 3 तस्वीरें।",
+      errNotJpeg: "केवल JPEG तस्वीरें (मेटाडेटा हटाना JPEG के लिए लिखा गया है)।",
+      errNoNote: "बताएँ कि कपड़ा क्या है।",
+      errServer: "सर्वर ने जवाब नहीं दिया। क्या npm run serve चल रहा है?",
+    },
+  };
+  const MAX_PHOTOS = 3;
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  let lang = localStorage.getItem("proofshot-lang") === "hi" ? "hi" : "en";
+  const T = () => STRINGS[lang];
+  /** The photos chosen, in order: { file, url }. */
+  let photos = [];
+  let mode = null;
+  let current = null; // { job_id, status }
+  let timer = null;
+
+  function applyLanguage() {
+    document.documentElement.lang = lang;
+    for (const node of document.querySelectorAll("[data-t]")) node.textContent = T()[node.dataset.t];
+    $("lang").textContent = lang === "en" ? "हिन्दी" : "English";
+    $("note").placeholder = T().notePlaceholder;
+    paintMode();
+    if (current) paintJob(current.status);
+  }
+
+  $("lang").addEventListener("click", () => {
+    lang = lang === "en" ? "hi" : "en";
+    localStorage.setItem("proofshot-lang", lang);
+    applyLanguage();
+  });
+
+  // ---- mode ---------------------------------------------------------------
+  async function loadMode() {
+    try {
+      const res = await fetch("api/mode", { cache: "no-store" });
+      if (!res.ok) throw new Error(String(res.status));
+      mode = await res.json();
+    } catch {
+      mode = { off: true };
+    }
+    paintMode();
+  }
+
+  function paintMode() {
+    const box = $("mode");
+    box.replaceChildren();
+    box.className = "";
+    if (!mode) return;
+    if (mode.off) { box.className = "off"; box.textContent = T().modeOff; return; }
+    box.className = mode.fixture ? "fixture" : "live";
+    box.append(el("span", null, mode.fixture ? T().modeFixture : T().modeLive));
+    const details = el("details");
+    details.append(el("summary", null, T().modeDetails));
+    const dl = el("dl");
+    for (const step of ["segment", "render", "verify", "fidelity"]) {
+      dl.append(el("dt", null, T().steps[step] || step));
+      dl.append(el("dd", null, mode.labels[step]));
+    }
+    details.append(dl);
+    box.append(details);
+  }
+
+  // ---- photos --------------------------------------------------------------
+  const drop = $("drop");
+  const fileInput = $("file");
+  drop.addEventListener("click", () => fileInput.click());
+  drop.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); fileInput.click(); } });
+  for (const type of ["dragenter", "dragover"]) drop.addEventListener(type, (ev) => { ev.preventDefault(); drop.classList.add("over"); });
+  for (const type of ["dragleave", "drop"]) drop.addEventListener(type, (ev) => { ev.preventDefault(); drop.classList.remove("over"); });
+  drop.addEventListener("drop", (ev) => addFiles(ev.dataTransfer ? ev.dataTransfer.files : []));
+  fileInput.addEventListener("change", () => { addFiles(fileInput.files); fileInput.value = ""; });
+
+  function isJpeg(file) {
+    return file.type === "image/jpeg" || /\.jpe?g$/i.test(file.name);
+  }
+
+  function addFiles(list) {
+    setError("");
+    for (const file of Array.from(list || [])) {
+      if (!isJpeg(file)) { setError(T().errNotJpeg); continue; }
+      if (photos.length >= MAX_PHOTOS) { setError(T().errTooMany); break; }
+      photos.push({ file, url: URL.createObjectURL(file) });
+    }
+    paintThumbs();
+  }
+
+  function paintThumbs() {
+    const box = $("thumbs");
+    box.replaceChildren();
+    photos.forEach((p, i) => {
+      const fig = el("figure");
+      const img = el("img");
+      img.src = p.url;
+      img.alt = p.file.name;
+      fig.append(img, el("figcaption", null, p.file.name));
+      const rm = el("button", null, "×");
+      rm.type = "button";
+      rm.title = T().remove;
+      rm.setAttribute("aria-label", T().remove);
+      rm.addEventListener("click", () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); paintThumbs(); });
+      fig.append(rm);
+      box.append(fig);
+    });
+  }
+
+  function setError(text) { $("error").textContent = text; }
+
+  // ---- submit --------------------------------------------------------------
+  $("form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    setError("");
+    const note = $("note").value.trim();
+    if (!note) return setError(T().errNoNote);
+    if (photos.length === 0) return setError(T().errNoPhotos);
+    $("start").disabled = true;
+    $("start").textContent = T().running;
+    try {
+      const files = await Promise.all(photos.map(async (p) => ({ name: safeName(p.file.name), base64: await toBase64(p.file) })));
+      const res = await fetch("api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ garment_note: note, files }) });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || String(res.status));
+      current = { job_id: body.job_id, status: null };
+      $("form").hidden = true;
+      $("progress").hidden = false;
+      poll();
+    } catch (err) {
+      setError(err && err.message ? err.message : T().errServer);
+      $("start").disabled = false;
+      $("start").textContent = T().start;
+    }
+  });
+
+  /** A name the server accepts: letters, digits, dot, dash, underscore, space; ends in .jpg. */
+  function safeName(name) {
+    const base = name.replace(/\.jpe?g$/i, "").replace(/[^A-Za-z0-9._ -]/g, "-").replace(/^[^A-Za-z0-9]+/, "").slice(0, 60) || "photo";
+    return `${base}.jpg`;
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).replace(/^data:[^,]*,/, ""));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ---- progress ------------------------------------------------------------
+  async function poll() {
+    if (!current) return;
+    try {
+      const res = await fetch(`api/jobs/${encodeURIComponent(current.job_id)}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(String(res.status));
+      current.status = await res.json();
+    } catch {
+      current.status = current.status || { steps: [], status: "running" };
+    }
+    paintJob(current.status);
+    if (current.status.status === "running") timer = setTimeout(poll, 400);
+  }
+
+  function paintJob(status) {
+    if (!status) return;
+    const list = $("steps");
+    list.replaceChildren();
+    for (const step of status.steps || []) {
+      const li = el("li", step.state);
+      li.append(el("span", "dot"));
+      const text = el("div");
+      text.append(el("div", "step-name", T().steps[step.name] || step.name));
+      text.append(el("div", "step-state", T().states[step.state] || step.state));
+      if (step.detail) text.append(el("div", "step-detail", step.detail));
+      li.append(text);
+      list.append(li);
+    }
+    if (status.status !== "running") paintResult(status);
+  }
+
+  // ---- result card -----------------------------------------------------------
+  function paintResult(status) {
+    const box = $("result");
+    box.replaceChildren();
+    box.hidden = false;
+    const card = el("article", "card");
+    const body = el("div", "body");
+    const result = status.result;
+    if (status.status === "failed" || !result) {
+      body.append(el("span", "badge REFUSE", T().failed));
+      body.append(el("h2", null, T().reasons));
+      const ul = el("ul");
+      ul.append(el("li", null, status.error || "unknown"));
+      body.append(ul);
+    } else {
+      if (result.image) {
+        const img = el("img");
+        img.src = result.image;
+        img.alt = $("note").value;
+        card.append(img);
+      }
+      const line = el("div");
+      body.append(line);
+      line.append(el("span", `badge ${result.decision}`, T().badge[result.decision] || result.decision));
+      if (status.mode && status.mode.fixture) line.append(el("span", "tag", T().fixtureTag));
+      if (status.mode && /^stand-in/.test(status.mode.labels.render) && result.image) line.append(el("span", "tag", T().standIn));
+      body.append(el("h2", null, T().reasons));
+      const ul = el("ul");
+      if (result.reasons.length === 0) ul.append(el("li", null, T().noReasons));
+      for (const r of result.reasons) ul.append(el("li", null, r));
+      body.append(ul);
+      const links = el("div", "links");
+      if (result.verify) {
+        const a = el("a", null, T().viewReceipt);
+        a.href = result.verify;
+        a.target = "_blank";
+        a.rel = "noopener";
+        links.append(a);
+      }
+      const dl = el("a", null, T().downloadReceipt);
+      dl.href = result.receipt;
+      dl.setAttribute("download", `${status.job_id}-receipt.jsonl`);
+      links.append(dl);
+      body.append(links);
+      if (result.image_sha256) body.append(el("div", "hash", `sha256 ${result.image_sha256}`));
+      body.append(el("div", "hash", `head ${result.head}`));
+      // Publish exists only on RELEASE: the server refuses anything else too, this is the only place the button is made.
+      if (result.decision === "RELEASE") body.append(publishControl(status));
+    }
+    const again = el("button", "again", T().again);
+    again.type = "button";
+    again.addEventListener("click", reset);
+    body.append(again);
+    card.append(body);
+    box.append(card);
+  }
+
+  function publishControl(status) {
+    const wrap = el("div");
+    if (status.published) {
+      const note = el("div", "published", `${T().published} `);
+      const a = el("a", null, T().openShop);
+      a.href = `shop.html#job=${encodeURIComponent(status.job_id)}&render=${encodeURIComponent(status.result.render_id)}`;
+      note.append(a);
+      wrap.append(note);
+      return wrap;
+    }
+    const btn = el("button", "primary", T().publish);
+    btn.type = "button";
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        const res = await fetch(`api/jobs/${encodeURIComponent(status.job_id)}/publish`, { method: "POST" });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error || String(res.status));
+        current.status = { ...status, published: body.rows };
+        paintResult(current.status);
+      } catch (err) {
+        btn.disabled = false;
+        wrap.append(el("div", "error", err && err.message ? err.message : T().errServer));
+      }
+    });
+    wrap.append(btn);
+    return wrap;
+  }
+
+  function reset() {
+    if (timer) clearTimeout(timer);
+    current = null;
+    for (const p of photos) URL.revokeObjectURL(p.url);
+    photos = [];
+    paintThumbs();
+    $("note").value = "";
+    $("result").hidden = true;
+    $("result").replaceChildren();
+    $("progress").hidden = true;
+    $("form").hidden = false;
+    $("start").disabled = false;
+    $("start").textContent = T().start;
+  }
+
+  applyLanguage();
+  loadMode();
+})();
+</script>
+</body>
+</html>

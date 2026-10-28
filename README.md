@@ -121,6 +121,34 @@ Pre-existing (rebuilt from the spec earlier in this repo, not part of this
 feature): the gate, the receipt chain, the verify-page core (`src/core.js`
 checks) and the intake.
 
+## Seller upload (built during the hackathon)
+
+What a seller does (SPEC §12). `npm run serve` starts a local server on
+`http://127.0.0.1:8787/` that serves `web/` and runs the real pipeline. The
+page `web/upload.html` is one screen, phone first, Hindi/English toggle, no
+login: drop up to three JPEGs of one garment, say what it is, and watch the
+steps (strip metadata, segment, render, verify, gate) go green one by one as
+the providers actually return. Then one card: the image, the RELEASE / REVIEW /
+REFUSE badge, the gate's reasons in words, "View receipt" (opens `verify.html`
+with the image hash prefilled) and a receipt download. **Publish to shop** is
+there only on RELEASE; the server refuses anything else, and a publish is a
+shop build, so the job is listed only if its receipt verifies.
+
+With no model key set the page says **fixture mode**: the metadata strip, the
+receipt chain and the gate are real; the render is the stand-in (the seller's
+own front photo, tagged as such) and the findings are recorded as matching, not
+judged by a model. The receipt says `fixture` too. The segmenter becomes SAM 3.1
+only once `MODEL_SEGMENT`, `MODEL_API_KEY` and the mask parser are all present;
+the live verifier is not wired yet (P6). Every step's provider is listed under
+"Which provider ran each step" on the page and in the `npm run serve` output.
+Jobs go to `data/jobs/<upload-id>/` (the stripped photos under `sources/`), so
+run it on a copy of the repo you do not mind committing from, or pass
+`--jobs <dir> --shop <dir>`.
+
+New in this feature: `src/serve.ts`, `scripts/serve.ts`, `web/upload.html`,
+`test/serve.test.ts` (the three gate states, a failing segmenter and verifier,
+a non-JPEG upload, the HTTP surface, the page's CSP and strings), SPEC §12.
+
 ## Providers
 
 Only environment variable names are listed here. Values are never printed or
@@ -168,7 +196,7 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 140 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 08:40 IST, tree of c03b1c0 plus this change |
+| Test suite green | 148 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 09:05 IST, tree of 4c5df28 plus this change |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
@@ -176,6 +204,7 @@ renderer takes an injected transport.
 | SAM 3.1 segmentation in the gate | **not wired**: the adapter (`src/sam.ts`) and transport (`src/sam-meta.ts`) are tested against fixtures; the mask token is logged but not decoded, because `@meta-sam/parser` is not installed, and no pipeline job has run through SAM | tests plus the one call log above |
 | Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
 | Verify page in a real browser | **not checked** | tested in Node against the same core |
+| Seller upload page in a real browser | **not checked** | the server, the API, the gate states and the page's text are tested in Node (`test/serve.test.ts`); no browser has loaded `upload.html` yet |
 | Public repo | private until the 3 Nov secret scan and Manish's click | |
 
 ## Built during the event
