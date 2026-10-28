@@ -2,38 +2,48 @@
 
 Status: v3, moved here from `handoff/DEMO_DRAFT.md` in `proofshot (coordination)` on
 27 Oct 2026 23:10 IST for #25 (Grok's review of DeepSeek draft e6ae, fixes 1-8 applied).
-Updated to what this repository holds at commit 4aa4738. Anything not yet true or not
+"What exists today" and the shot list updated to master after c4feb75 (28 Oct, N14). Anything not yet true or not
 yet known is `[TBD]`; a `[TBD]` is never read out or shown on screen.
 
 Length at or under 2:48 (168 s). Screen recording only, burned-in captions. Voice:
 Manish's own (an AI voice is UNVERIFIED against the rules). Word cap per beat =
 seconds x 2.5 (150 wpm).
 
-## What exists today (27 Oct 2026, 4aa4738), so the script claims nothing else
+## What exists today (28 Oct 2026, master after c4feb75), so the script claims nothing else
+
+Every row is something README.md already states; the commit is where it landed.
 
 | Thing the video could show | State | Where |
 |---|---|---|
-| Gate, receipt chain, verify page, intake, shop preview | built, tested | `npm test`: 120 pass, 0 fail, read in this session; CI run [40549673953](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40549673953) reported green by Grok, not re-read here |
-| Shop preview rows | 3: `fixture-shirt-01` (synthetic image), `kurta-01`, `kurta-02` (the owner's own front photo stands in for the render; nothing generated, no person) | `web/shop.html`, `web/shop/catalog.json`, SPEC §11 |
-| A generated on-model image | **none**: no render transport exists (SPEC §8) | — |
-| Replay of a recorded run (`demo:replay`) | **not rebuilt** (SPEC §7); assigned 27 Oct 23:00 | — |
-| Live Muse Spark Open call on Baseten | first call HTTP 200, `content` null, model use **UNVERIFIED** | `evidence/`, #16 |
-| SAM 3.1 segmentation | **not built**; the fidelity check exists in code but no checker decodes SAM masks in the pipeline yet | SPEC §10 |
-| First commit of this repository | `4aa99f9` (checked with `git rev-list --max-parents=0 HEAD`) | — |
-| `LICENSE` | **none** in this repository | — |
-| `PREEXISTING_VS_HACKATHON.md` | lives in `proofshot (coordination)`; this repo's README has "Built during the event" | README |
+| Gate, receipt chain, verify page, intake | built, tested; `npm test` 214 pass, 0 fail on c4feb75 (read 28 Oct 18:26 IST); CI run [40687065062](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40687065062) on 6ae5c28 reported green by Grok, not re-read here | `npm test` |
+| Gate fails closed | absent or undefined verifier findings are `REFUSE not_verified` (56def45); a verifier answer cut off twice at max_tokens is `REFUSE verifier_truncated` (8d0b72b) | SPEC §2, §4 |
+| Live Muse Spark Open verifier on Baseten | text call with content "ready" (ba9bb08); image calls with 9 per-attribute findings (fc31a99); call logs with the key replaced and images as size and hash | `evidence/verifier-*.json`, `docs/API-NOTES.md` |
+| Live SAM 3.1 segmentation (`api.meta.ai`) | one logged call (4c5df28); live jobs `live-kurta-01-sam-2` (189f87c) and `live-kurta-02-sam` (1e05d38) with logged SAM calls; their render is the stand-in, so a RELEASE is **photo-vs-itself**: it shows the measured path runs, not accuracy | `data/jobs/`, `evidence/sam-*.json` |
+| Deliberate mismatch | `live-kurta-01-mismatch` (9a765b4): kurta-02's front photo as kurta-01's render, REFUSE `hard_mismatch` on colour. One job (n=1), not an accuracy figure | `demo/recordings/live-kurta-01-mismatch` |
+| Composite render | SAM-cut garment from the seller's front photo placed on the code-drawn `mannequin-01` template (6beed3a, 6ae5c28); `generative: false`, no image model, no person. `live-kurta-02-composite` RELEASE, `live-kurta-01-composite` REFUSE (answer cut off at 4096, re-run pending) (0e12a5e) | `data/jobs/live-kurta-0*-composite` |
+| A generated on-model image | **none**: no generative render transport exists (SPEC §8) | — |
+| Calibration | fidelity only, two garments, 20 of 20 pairs measured, per-metric values (d836ec3); a small sample, **not** a calibrated false-match rate; thresholds unchanged | `evidence/calibration-sam-20261028-1515.json` |
+| Replay of a recorded run (`demo:replay`) | built (bd28f78): canned `refuse`, `review`, `release`, plus `live-kurta-01-2` and `live-kurta-01-mismatch` recorded from live jobs | `demo/recordings/` |
+| Shopper preview | `fixture-shirt-01` (synthetic), `kurta-01`, `kurta-02` (owner's photo stands in for the render, 4aa4738) and the committed live jobs; stand-in cards tagged "owner's photo, stands in for render", composite cards "Composite: your garment photo on a mannequin. Not AI-generated." | `web/shop.html`, SPEC §11 |
+| Seller upload page | built (00df7ae), local only (`npm run serve`); **not checked in a real browser** yet | `web/upload.html`, SPEC §12 |
+| Judge quickstart | `npm ci`, `npm test`, `npm run serve`, `demo:replay` (448e081, 9e08ca3) | README |
+| First commit of this repository | `4aa99f9` | — |
+| `LICENSE` | MIT | `LICENSE` |
+| Hosted service, public deploy | **none** | — |
 
-Claims rule from the #23 audit (PS-C1): the video must not say any Meta model was used
-until a call log with non-null model content is committed under `evidence/`.
+Claims rule from the #23 audit (PS-C1): name a model only with its call log in the
+receipt on screen. Muse Spark Open and SAM 3.1 now have committed logs with content
+(`evidence/`); no other model does.
 
 ## Rules for record day
 
 1. Name a model on screen or in the voiceover only if its call log is in the receipt
-   being shown. Expected: SAM 3.1 after #22, Muse Spark Open via Baseten after #16.
+   being shown. SAM 3.1 and Muse Spark Open via Baseten have logs in the live jobs'
+   receipts and `evidence/`; a canned recording has none, so no model is named over it.
    No log: cut the model from the video. Never an `UNVERIFIED` tag on screen.
 2. Never name Muse Image, anywhere.
 3. No price clause unless a sourced cost per image exists (fix 6).
-4. Licence on the end slide only if `LICENSE` exists in this repository (none today).
+4. Licence on the end slide only if `LICENSE` exists in this repository (MIT today).
 5. Gate input fields shown in beat 5 are read from SPEC §2 of this repository on
    record day. Today: `attribute`, `verdict`, `confidence` per finding, plus the
    fidelity result (`decision`, `reasons`) as a second input that can only make the
@@ -51,9 +61,9 @@ until a call log with non-null model content is committed under `evidence/`.
 | 3 | 0:22-0:48 | Terminal: [TBD: `npm run demo:replay` once SPEC §7 is rebuilt here], the "Replay of a recorded run" label visible, receipt entries scrolling | This is a replay of a recorded run, and the screen says so. [TBD: one sentence naming only the models with a call log in this receipt, at most 15 words; today there is none, so the sentence is cut] Every check is written into the receipt, and each entry is chained to the one before it. | 30 + [TBD, at most 15] / 65 | Replay of a recorded run. Each check chained into the receipt. | Meta tooling 25%, Demo 25% |
 | 4 | 0:48-1:18 | Wi-Fi icon switched off, then `web/verify.html` opened from disk: `receipt.jsonl` and the image dropped in, VALID | Wi-Fi is off. A buyer drops the receipt and the image onto the verify page. The page recomputes every hash in the browser, with no server and no account. The chain holds and the image is the released one: VALID. | 40 / 75 | Offline. Every hash checked in the browser. VALID. | Technical depth 20%, Demo 25% |
 | 5 | 1:18-1:41 | Edit one byte of the receipt in a text editor, drop it again: TAMPERED, with the entry number and reason the page prints. Then the gate input, one line per attribute | Now change one byte of the receipt. The page says TAMPERED and names the entry that broke. The gate itself only ever sees three fields per attribute: attribute, verdict and confidence. No prompt or model note can reach the decision. | 40 / 57 | One byte changed: TAMPERED. The gate sees attribute, verdict, confidence. Nothing else. | Technical depth 20% |
-| 6 | 1:41-2:06 | Original garment beside a recoloured render, the garment mask, the colour mismatch, REFUSE [TBD: needs the fidelity checker wired into the pipeline with real masks] | Here the generator changed the garment's colour. [TBD if a SAM 3.1 call log is in this receipt: "SAM 3.1 cuts out the garment,"; otherwise: "The garment is cut out,"] the fidelity check finds the colour changed, and the gate refuses it. A wrong image cannot ship. | 30 / 62 | Colour changed. REFUSE. | Meta tooling 25%, Impact 30% |
+| 6 | 1:41-2:06 | The seller's kurta beside a different kurta offered as its image (S9), the colour mismatch, REFUSE | Here the image to publish shows a different kurta. [TBD if a SAM 3.1 call log is in this receipt: "SAM 3.1 cuts out the garment,"; otherwise: "The garment is cut out,"] the fidelity check finds the colour changed, and the gate refuses it. A wrong image cannot ship. | 30 / 62 | Colour changed. REFUSE. | Meta tooling 25%, Impact 30% |
 | 7 | 2:06-2:31 | A render with different buttons, gate result REVIEW, then the three outcomes side by side [TBD: a recorded REVIEW job] | Not every difference is a refusal. Here the buttons changed, a soft attribute, so the gate sends the image to a person for REVIEW instead of to the shop. RELEASE, REVIEW, REFUSE: every outcome lands in the receipt. | 38 / 62 | Small difference: a person decides. RELEASE / REVIEW / REFUSE. | Technical depth 20% |
-| 8 | 2:31-2:48 | End slide: name, one line, `github.com/rmanish2000-del/proofshot-hackathon` [licence line only if `LICENSE` exists; none today] | ProofShot. A wrong image cannot ship. The code written this week is at github dot com slash rmanish2000-del slash proofshot-hackathon. | 20 / 42 | github.com/rmanish2000-del/proofshot-hackathon | Demo 25% |
+| 8 | 2:31-2:48 | End slide: name, one line, `github.com/rmanish2000-del/proofshot-hackathon` [licence line: MIT, `LICENSE` exists] | ProofShot. A wrong image cannot ship. The code written this week is at github dot com slash rmanish2000-del slash proofshot-hackathon. | 20 / 42 | github.com/rmanish2000-del/proofshot-hackathon | Demo 25% |
 
 Beat 3 (0:22) and beat 4 (0:48) replace the draft's two VALID beats with one (fix 4);
 beat 7 uses the freed time for REVIEW so all three outcomes appear. Beat 5 drops the
@@ -71,14 +81,14 @@ recording (checklist).
 |---|---|---|---|
 | S1 | 1 | Title card with the opening line | slide |
 | S2 | 2 | Three phone photos of one garment | `data/garments/kurta-01` (owner's own garment, no person, metadata stripped by intake) |
-| S3 | 2 | [TBD: on-model renders from a live run] or the shop grid with three badges | `web/shop.html` served from `web/` (`npm run shop` first) |
-| S4 | 3 | Terminal running the replay, label visible | [TBD: SPEC §7 rebuilt here] |
+| S3 | 2 | The shop grid with badges, every card captioned by its tag (no generated on-model image exists) | `web/shop.html` served from `web/` (`npm run shop` first) |
+| S4 | 3 | Terminal running the replay, label visible | `npm run demo:replay -- demo/recordings/live-kurta-01-2 out/replay` |
 | S5 | 4 | System tray showing Wi-Fi off | OS |
 | S6 | 4, 5 | Verify page: VALID, then TAMPERED with the entry number | `web/verify.html` opened from disk; receipt and image from `web/shop/kurta-01/` |
 | S7 | 5 | Text editor changing one byte of the receipt file | any editor, on a copy |
-| S8 | 5 | Gate input printed for one job | [TBD: command in this repo; today the `verifier` entry of the receipt shows the findings] |
-| S9 | 6 | Original vs recoloured render, mask, REFUSE | [TBD: fixture or recording in this repo] |
-| S10 | 7 | Buttons-changed render, REVIEW | [TBD: recording in this repo] |
+| S8 | 5 | Gate input printed for one job | [TBD: no command prints it; the `verifier` entry of the receipt shows the findings] |
+| S9 | 6 | Seller's photos of kurta-01 beside a different kurta (kurta-02's front photo) as the image to publish, REFUSE `hard_mismatch` on colour. Not a recoloured render: none exists | `demo/recordings/live-kurta-01-mismatch` |
+| S10 | 7 | A soft mismatch, REVIEW | `demo/recordings/review` (canned: synthetic findings, no model named) |
 | S11 | 8 | End slide | slide |
 
 ## Recording checklist
