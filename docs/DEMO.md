@@ -39,7 +39,8 @@ until a call log with non-null model content is committed under `evidence/`.
    fidelity result (`decision`, `reasons`) as a second input that can only make the
    decision worse.
 6. Any image of a garment that is the owner's photo is captioned as such on screen:
-   "owner's photo, stands in for the render, nothing generated".
+   the shop card's tag "owner's photo, stands in for render" (from the receipt's
+   `stand-in` render entry) and the panel's "nothing was generated".
 
 ## Timecode table
 
@@ -85,7 +86,7 @@ recording (checklist).
 - [ ] Opening line copied verbatim from `PREEXISTING_VS_HACKATHON.md` (proofshot, coordination).
 - [ ] Every model named has its call log in the receipt on screen; none named otherwise. No Meta model is said to have been used until `evidence/` holds a call with non-null content.
 - [ ] No Muse Image anywhere, no `UNVERIFIED` on screen, no price without a source.
-- [ ] Every owner's-photo card on screen carries "owner's photo, stands in for the render, nothing generated".
+- [ ] Every owner's-photo card on screen carries the tag "owner's photo, stands in for render", and its panel says "nothing was generated".
 - [ ] Gate fields in beat 5 match SPEC §2 of this repository.
 - [ ] The verify page really shows the broken entry for TAMPERED (check before recording).
 - [ ] Wi-Fi off before beat 4 and visibly so.

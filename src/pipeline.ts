@@ -63,7 +63,8 @@ export interface Segmenter {
 }
 
 export interface Renderer {
-  readonly provider: "meta" | "openai-images" | "fal" | "fixture";
+  /** `stand-in` generates nothing: it returns the owner's own photo (SPEC §8). */
+  readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in";
   readonly model: string;
   render(req: { scene: string; prompt: string; sources: readonly SourceImage[] }): Promise<{ bytes: Uint8Array; ext: string }>;
 }

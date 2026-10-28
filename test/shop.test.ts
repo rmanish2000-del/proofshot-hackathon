@@ -10,7 +10,8 @@ import { shaFromFragment } from "../src/core.js";
 import { CORE_PATH, SHOP_PATH, inlineCore, pageWithCore } from "../src/page.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
-import { recordedClock } from "../src/receipt.ts";
+import { Receipt, recordedClock } from "../src/receipt.ts";
+import type { EntryKind } from "../src/receipt.ts";
 import { CATALOG_FILE, FIXTURE_JOB_ID, GARMENTS_DIR, buildShop, garmentDirs, garmentNoteFrom, rowsForJob, writeFixtureJob, writeGarmentPreviewJob, writeGarmentPreviewJobs } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
@@ -66,6 +67,7 @@ test("each row's image_sha256 is the sha256 of the copied file, and the receipt 
   assert.equal(row.render_id, "released-r0");
   assert.equal(row.scene, "studio");
   assert.equal(row.provenance, "fixture");
+  assert.deepEqual([row.render_provider, row.render_model], ["fixture", "fixture-render"], "the row says who rendered, from the render entry");
   assert.equal(row.approved_by_human, false);
   assert.match(row.gate_reason, /^RELEASE/);
   assert.equal(row.image, "shop/released/released-r0.png");
@@ -123,6 +125,7 @@ test("the fixture job is byte-identical on every run, and the committed copy and
   assert.deepEqual(built.problems, []);
   assert.ok(built.rows.some((r) => r.job_id === FIXTURE_JOB_ID && r.render_id === `${FIXTURE_JOB_ID}-r0`), "studio releases");
   assert.ok(!built.rows.some((r) => r.render_id === `${FIXTURE_JOB_ID}-r1`), "street is refused on colour and gets no row");
+  assert.equal(built.rows.find((r) => r.job_id === FIXTURE_JOB_ID)!.render_provider, "fixture", "the synthetic fixture is not labelled as the owner's photo");
   const committed = JSON.parse(readFileSync(join(ROOT, "web", "shop", CATALOG_FILE), "utf8")) as { rows: unknown[] };
   assert.deepEqual(committed.rows, built.rows, "web/shop/catalog.json is stale: run npm run shop");
   for (const row of built.rows) {
@@ -155,6 +158,7 @@ test("garment preview jobs: sources are the intake photos, the image is the fron
     assert.equal(row.provenance, "fixture");
     assert.equal(row.image, `shop/${garment}/${garment}-r0.jpg`);
     assert.match(row.garment_note, /stands in for the render/);
+    assert.deepEqual([row.render_provider, row.render_model], ["stand-in", "owner-photo"], `${garment}: the render entry names the stand-in, so the card gets its label`);
     const front = [...intake.files].sort((x, y) => x.name.localeCompare(y.name))[0]!;
     assert.equal(row.image_sha256, front.sha256, `${garment}: the released image is the front photo, unchanged`);
     const jobEntry = JSON.parse(receipt(a).split("\n")[0]!) as { payload: { source_images: { name: string; sha256: string }[] } };
@@ -189,6 +193,26 @@ test("web/shop.html carries the current core.js, and loads nothing from outside 
   // The badge text appears once, in the one place that paints a verified item.
   assert.equal(page.split("Verified by ProofShot").length - 1, 1);
   assert.match(page, /verify\.html#sha=/);
+  // Every stand-in card carries the label, decided from the row's render_provider, in the one place that paints cards.
+  assert.match(page, /row\.render_provider === "stand-in"\) tags\.append\(el\("span", "tag standin", "owner's photo, stands in for render"\)\)/);
+  assert.equal(page.split("owner's photo, stands in for render").length - 1, 2, "once on the card, once in the panel");
+});
+
+test("a release whose render entry is missing or unnamed gets no row", async () => {
+  const jobs = tmp("jobs");
+  const dir = await job(jobs, "unnamed");
+  const path = join(dir, RECEIPT_FILE);
+  // Rewrite the chain with the render entry's provider dropped: the receipt still verifies, but says not who rendered.
+  const entries = JSON.parse(`[${readFileSync(path, "utf8").trim().split("\n").join(",")}]`) as { kind: EntryKind; payload: Record<string, unknown> }[];
+  const rewritten = tmp("jobs");
+  mkdirSync(join(rewritten, "unnamed"));
+  const receipt = new Receipt({ path: join(rewritten, "unnamed", RECEIPT_FILE), clock: recordedClock(Array(10).fill("2026-10-27T09:00:00.000Z")) });
+  for (const e of entries) {
+    const { provider: _dropped, ...rest } = e.payload;
+    receipt.append(e.kind, e.kind === "render" ? rest : e.payload);
+  }
+  copyFileSync(join(dir, "unnamed-r0.png"), join(rewritten, "unnamed", "unnamed-r0.png"));
+  assert.throws(() => rowsForJob(join(rewritten, "unnamed"), "unnamed"), /render entry for unnamed-r0 is missing or lacks provider or model/);
 });
 
 test("#sha prefill parses the fragment and lower-cases it; anything else is null", () => {

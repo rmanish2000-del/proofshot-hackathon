@@ -337,6 +337,20 @@ The pipeline also checks every renderer's model before calling it, so an
 injected renderer naming Muse Image is refused per scene as `render_failed`
 (§3) and never called. The HTTP request for each provider is not rebuilt yet.
 
+The `stand-in` provider *(event, 28 Oct)*, `standInRenderer()` in
+`src/render.ts`: a `Renderer` that generates nothing. It returns the job's
+first source image byte for byte as the "render" of every scene, with the
+file extension read from the bytes (`jpg` or `png`), and the receipt's render
+entry says `provider: "stand-in", model: "owner-photo"`, so a reader of the
+record can tell the image was never rendered. A job with no source, or a first
+source that is not a JPEG or PNG, throws `StandInError`, recorded as
+`render_failed` (§3). `RENDER_PROVIDER=stand-in` selects it from the
+environment with no transport call; a `MODEL_RENDER` other than `owner-photo`
+is refused (`RenderConfigError`), since the receipt would otherwise claim a
+model that generated nothing. It exists so a real pipeline job (live verifier,
+real receipt) can run while no render transport exists, with the stand-in
+named on the record and on every card that shows its image (§11).
+
 ## 9. The verify page's image check
 
 Given a record and an image's sha256, in this order:
@@ -449,8 +463,10 @@ it shows what the record already says, after checking the record itself.
   verifies**. `REVIEW` and `REFUSE` never produce a row; a job with no release
   is simply absent. Each row carries `job_id`, `render_id`, `scene`,
   `image_sha256`, the chain `head`, the receipt path, the image path,
-  `garment_note`, `provenance` (`fixture` or `live`), `approved_by_human` and
-  the gate's reason text for that render.
+  `garment_note`, `provenance` (`fixture` or `live`), `render_provider` and
+  `render_model` (the render entry's, as the record says them; a release whose
+  render entry is missing or unnamed gets no row), `approved_by_human` and the
+  gate's reason text for that render.
 - Fail closed: a receipt that does not parse or verify, a release whose image
   is missing or whose bytes hash to something else, or a job entry missing its
   fields, yields **no row for that job** and the build exits non-zero. The
@@ -467,13 +483,20 @@ it shows what the record already says, after checking the record itself.
   writes a fixture job `data/jobs/<garment>/` with a recorded clock. Its
   `source_images` are every intake photo with the hashes `intake.json`
   records (a photo whose bytes no longer match is refused, no job is written);
-  its one scene `studio` "renders" to the garment's own front photo, unchanged
-  and as a `.jpg`; the recorded findings all match, so the gate releases. No
-  image is generated and no person is in any photo. `provenance` is `fixture`
-  and the `garment_note` says the owner's photo stands in for the render. These
-  rows exist so judges can see real garments go through the receipt, the
-  verification and the badge; they are not renders and are never labelled as
-  such.
+  its one scene `studio` is "rendered" by the `stand-in` provider (§8), which
+  returns the garment's own front photo unchanged, as a `.jpg`, and puts
+  `stand-in` / `owner-photo` on the render entry; the recorded findings all
+  match, so the gate releases. No image is generated and no person is in any
+  photo. `provenance` is `fixture` and the `garment_note` says the owner's
+  photo stands in for the render. These rows exist so judges can see real
+  garments go through the receipt, the verification and the badge; they are
+  not renders and are never labelled as such.
+- The card label *(event, 28 Oct)*: every card and product view whose row has
+  `render_provider: "stand-in"` carries the tag **owner's photo, stands in for
+  render**, and its panel's `render` line says "owner's photo, stands in for
+  render: nothing was generated". The page decides this from the catalog row,
+  which the build read from the receipt's render entry, never from the note's
+  wording. Any other row's panel names the render entry's provider and model.
 - `web/shop.html` is plain HTML, CSS and JavaScript with no framework and no
   external resource; it fetches only its own `shop/` files. It inlines
   `src/core.js` between the same marker lines as the verify page (`npm run
