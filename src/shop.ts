@@ -302,8 +302,12 @@ export function garmentDirs(garmentsRoot: string): string[] {
 /** "kurta (women's), rust / orange" from the Type and Main colour lines of note.txt; the folder name when they are blank. */
 export function garmentNoteFrom(noteText: string, garment: string): string {
   const field = (label: string): string | null => {
-    const m = new RegExp(`^${label}:\\s*(.+?)\\s*$`, "m").exec(noteText);
-    return m && m[1] && !/^not recorded|^as in the photos/i.test(m[1]) ? m[1] : null;
+    // Horizontal whitespace only: a blank `Type:` line must stay blank, not capture the next line
+    // (found by the PS-1 edge tests: "Type:   \nMain colour: rust" used to yield "Main colour: rust").
+    const m = new RegExp(`^${label}:[^\\S\\r\\n]*(.+?)[^\\S\\r\\n]*$`, "m").exec(noteText);
+    // A value that is only spaces is blank, and the sentinel lines mean "nothing recorded".
+    const value = (m?.[1] ?? "").trim();
+    return value && !/^not recorded|^as in the photos/i.test(value) ? value : null;
   };
   const parts = [field("Type"), field("Main colour")].filter((p): p is string => p !== null);
   return parts.length > 0 ? parts.join(", ") : garment;
