@@ -13,7 +13,7 @@ import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import {
   AI_PREVIEW_LABEL, DEFAULT_MODEL_IMAGE, MODELS_DIR, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
-  estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnPrompt,
+  GARMENT_MARGIN, estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnOptions, tryOnPrompt,
 } from "../src/render-replicate.ts";
 import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
 import { loadRecording, recordJob, replayJob } from "../src/replay.ts";
@@ -294,12 +294,36 @@ test("NR4 6: a recoloured lookalike from the try-on is REFUSED by the fidelity g
   assert.equal(result.renders[0]!.decision, "REFUSE");
 });
 
-test("NR4: the garment cut-out is the masked box of seller pixels, white outside; no mask gives none", () => {
+test("NR4/NR4d: the garment cut-out is the whole masked box of seller pixels with a white margin on every side; no mask gives none", () => {
   const png = decodePng(garmentCutout(sources, segments)!);
-  assert.deepEqual([png.width, png.height], [48, 64]);
-  assert.deepEqual([...png.data.subarray(0, 3)], [200, 30, 40]);
+  const m = Math.round(GARMENT_MARGIN * 64);
+  assert.deepEqual([png.width, png.height], [48 + 2 * m, 64 + 2 * m]);
+  const px = (x: number, y: number) => [...png.data.subarray((y * png.width + x) * 3, (y * png.width + x) * 3 + 3)];
+  assert.deepEqual(px(m, m), [200, 30, 40], "the mask box starts after the margin");
+  const row = (y: number) => Array.from({ length: png.width }, (_, x) => px(x, y).join()).filter((c) => c !== "255,255,255").length;
+  assert.ok(row(m + 63) > 0 && row(m + 64) === 0, "the last mask row (the hem) is sent, not cropped, and the margin starts below it");
+  // Every row and column of the margin is white, so no garment edge touches the image edge.
+  for (let x = 0; x < png.width; x++) for (const y of [0, m - 1, png.height - m, png.height - 1]) assert.deepEqual(px(x, y), [255, 255, 255]);
+  for (let y = 0; y < png.height; y++) for (const x of [0, m - 1, png.width - m, png.width - 1]) assert.deepEqual(px(x, y), [255, 255, 255]);
   assert.equal(garmentCutout(sources, []), null);
   assert.equal(stripImageMetadata(Buffer.from("GIF89a")), null);
+});
+
+test("NR4d: preserve_input_size and reference_pose are sent only when their env var is true or false, and the record's input matches the body", async () => {
+  assert.deepEqual(tryOnOptions({}), {});
+  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "yes", REPLICATE_REFERENCE_POSE: "" }), {});
+  assert.deepEqual(tryOnOptions({ REPLICATE_PRESERVE_INPUT_SIZE: "true", REPLICATE_REFERENCE_POSE: "false" }), { preserve_input_size: true, reference_pose: false });
+
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const { renderer } = base({ env: { REPLICATE_API_TOKEN: TOKEN, REPLICATE_PRESERVE_INPUT_SIZE: "true", REPLICATE_REFERENCE_POSE: "true" }, fetch });
+  const out = await renderer.render(req);
+  const body = JSON.parse(calls.find((c) => c.url === REPLICATE_PREDICTIONS_URL)!.body!) as { input: Record<string, unknown> };
+  assert.equal(body.input.preserve_input_size, true);
+  assert.equal(body.input.reference_pose, true);
+  const input = out.record!.input as Record<string, unknown>;
+  assert.deepEqual(Object.keys(input).sort(), Object.keys(body.input).sort());
+  assert.equal(input.preserve_input_size, true);
+  assert.equal(input.reference_pose, true);
 });
 
 test("NR4: PROOFSHOT_RENDER selects the try-on in providersFromEnv, with a label naming Replicate", () => {

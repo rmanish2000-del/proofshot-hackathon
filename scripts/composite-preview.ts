@@ -7,6 +7,8 @@
 // and the parameters. `v2` runs composite v2 (SPEC-composite-v2); a template id
 // runs v1 on that template. A v2 quality REVIEW writes no image and prints the
 // reason and every check (exit 3). A preview, not a job: nothing goes on a receipt.
+// `tryon-garment` writes, instead, exactly the garment image the Replicate
+// try-on sends (garmentCutout, NR4d) and prints its size and the mask box.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
@@ -15,14 +17,15 @@ import { loadTemplate } from "../src/composite.ts";
 import { CompositeQualityReview, V2_PARAMS } from "../src/composite-v2.ts";
 import { DEFAULT_TEMPLATE, TEMPLATES_DIR, compositeRenderer, compositeV2Renderer } from "../src/render.ts";
 import { decodeRgb } from "../src/image.ts";
-import { encodeRgbPng } from "../src/png.ts";
+import { decodePng, encodeRgbPng } from "../src/png.ts";
+import { garmentCutout } from "../src/render-replicate.ts";
 import type { RgbImage } from "../src/png.ts";
 import { decodeSegments } from "../src/sam-parser.ts";
 import { sha256Hex } from "../src/util.ts";
 
 const [logPath, photoPath, outPath, which = DEFAULT_TEMPLATE, beforeAfterPath] = process.argv.slice(2);
 if (!logPath || !photoPath || !outPath) {
-  console.error("usage: npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id> | v2 | v2-debug] [<before-after.png>]");
+  console.error("usage: npm run composite:preview -- <evidence/sam-*.json> <photo> <out.png> [<template id> | v2 | v2-debug | tryon-garment] [<before-after.png>]");
   process.exit(2);
 }
 const log = JSON.parse(readFileSync(logPath, "utf8")) as { output_text: string; prompt?: string; image: { sha256: string } };
@@ -39,6 +42,19 @@ const segments = (await decodeSegments(log.output_text, front, log.prompt ?? "ku
   score: s.score,
   mask: new Uint8Array(Buffer.from(s.mask, "base64")),
 }));
+if (which === "tryon-garment") {
+  const garment = garmentCutout([front], segments);
+  if (!garment) {
+    console.error("no usable mask: the try-on would fall back with no_garment_mask");
+    process.exit(3);
+  }
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, garment);
+  const png = decodePng(garment);
+  const photo = decodeRgb(bytes);
+  console.log(`${outPath}: sha256 ${sha256Hex(garment)}, ${png.width}x${png.height} (photo ${photo.width}x${photo.height}); box ${JSON.stringify(segments.map((s) => s.box))}`);
+  process.exit(0);
+}
 // `v2-debug` switches the quality checks off to look at the pixels of a photo that
 // would REVIEW. Debug only: never a product shot, never on a receipt or in the shop.
 const debug = { ...V2_PARAMS, clip_max: 1, shadow_max: Infinity, max_corr_de: Infinity, frag_max: Infinity };

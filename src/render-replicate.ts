@@ -136,10 +136,15 @@ export function loadModelImage(modelsDir: string, id: string): ModelImage | { re
   return { missing: `${id}/image.(jpg|png) or model.(jpg|png) is missing` };
 }
 
+/** White margin around the cut-out, as a share of its longer side, so no edge of the garment (the hem) touches the image edge (NR4d). */
+export const GARMENT_MARGIN = 0.06;
+
 /**
  * The garment cut-out sent to the model: the front photo's pixels inside its
- * best SAM mask, cropped to the mask's box, white outside the mask. Seller
- * pixels only. Null when there is no usable mask.
+ * best SAM mask, cropped to the mask's box plus a white GARMENT_MARGIN on every
+ * side, white outside the mask. Seller pixels only. Null when there is no usable mask.
+ * NR4d: on kurta-02 (evidence/sam-2026-10-28T17-36-59-141Z.json) the mask runs
+ * the full length, hem included (`npm run composite:preview -- <log> <photo> <out> tryon-garment`).
  */
 export function garmentCutout(sources: readonly SourceImage[], segments: readonly Segment[]): Uint8Array | null {
   const pick = frontMaskSegment(sources, segments);
@@ -164,15 +169,17 @@ export function garmentCutout(sources: readonly SourceImage[], segments: readonl
   }
   if (x1 < 0) return null;
   const w = x1 - x0 + 1, h = y1 - y0 + 1;
-  const out = new Uint8Array(w * h * 3).fill(255);
+  const m = Math.max(1, Math.round(GARMENT_MARGIN * Math.max(w, h)));
+  const W = w + 2 * m, H = h + 2 * m;
+  const out = new Uint8Array(W * H * 3).fill(255);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = (y + y0) * src.width + (x + x0);
       if (!mask.data[i]) continue;
-      out.set(src.data.subarray(i * 3, i * 3 + 3), (y * w + x) * 3);
+      out.set(src.data.subarray(i * 3, i * 3 + 3), ((y + m) * W + (x + m)) * 3);
     }
   }
-  return encodeRgbPng(w, h, out);
+  return encodeRgbPng(W, H, out);
 }
 
 // Seller claim keys the try-on prompt may use (Grok 28 Oct 22:30): type and length, never colour or print.
@@ -226,6 +233,19 @@ export function stripImageMetadata(bytes: Uint8Array): { bytes: Uint8Array; ext:
     at += p.length;
   }
   return { bytes: out, ext };
+}
+
+/**
+ * Pruna's preserve_input_size and reference_pose (NR4d), each sent only when its
+ * env var is exactly "true" or "false" (REPLICATE_PRESERVE_INPUT_SIZE,
+ * REPLICATE_REFERENCE_POSE); anything else sends nothing. Booleans per the
+ * names in the schema Grok read on 28 Oct 22:25; the types are not confirmed.
+ */
+export function tryOnOptions(env: Readonly<Record<string, string | undefined>>): { preserve_input_size?: boolean; reference_pose?: boolean } {
+  const flag = (v: string | undefined) => (v?.trim() === "true" ? true : v?.trim() === "false" ? false : undefined);
+  const preserve = flag(env.REPLICATE_PRESERVE_INPUT_SIZE);
+  const pose = flag(env.REPLICATE_REFERENCE_POSE);
+  return { ...(preserve !== undefined ? { preserve_input_size: preserve } : {}), ...(pose !== undefined ? { reference_pose: pose } : {}) };
 }
 
 export interface ReplicateTryOnOptions {
@@ -301,13 +321,15 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
 
       const dataUri = (bytes: Uint8Array, ext: "jpg" | "png") => `data:image/${ext === "jpg" ? "jpeg" : "png"};base64,${Buffer.from(bytes).toString("base64")}`;
       const prompt = tryOnPrompt(req.garmentNote ?? "");
-      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: [dataUri(garment, "png")], seed, ...(prompt ? { prompt } : {}) } });
+      const options = tryOnOptions(opts.env);
+      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: [dataUri(garment, "png")], seed, ...(prompt ? { prompt } : {}), ...options } });
       // The same fields as the body, images by hash: what was sent, and nothing that was not.
       const sent = {
         person_image: { sha256: sha256Hex(model.bytes), model_image_id: model.id },
         garment_images: [{ sha256: sha256Hex(garment), what: "garment_cutout" }],
         seed,
         ...(prompt ? { prompt } : {}),
+        ...options,
       };
       const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
