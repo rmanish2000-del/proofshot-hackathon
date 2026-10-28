@@ -143,8 +143,8 @@ check is the masked one of SPEC §10, and the run is live; until a segmenter
 runs there is no mask, so fidelity is REVIEW and the gate can say REVIEW at
 best. The segmenter becomes SAM 3.1 once `MODEL_SEGMENT` and `MODEL_API_KEY`
 are set (the masks are decoded by `@meta-sam/parser`, see Dependencies); with
-masks the fidelity check reaches the images, and a JPEG is still unmeasured
-because this build decodes only PNG. Every step's provider is listed under
+masks the fidelity check decodes the images (JPEG through jpeg-js, PNG in
+house) and measures them. Every step's provider is listed under
 "Which provider ran each step" on the page and in the `npm run serve` output.
 Jobs go to `data/jobs/upload-<stamp>/` (the stripped photos under `sources/`);
 `.gitignore` covers `data/jobs/upload-*/`, so a seller's photos are never
@@ -206,11 +206,13 @@ renderer takes an injected transport.
 
 ## Dependencies and datasets
 
-- Runtime: one package, `@meta-sam/parser` 0.1.0 (Meta's streaming parser
-  for SAM 3 segmentation tokens, pinned exactly, no runtime dependencies of
+- Runtime: two packages, pinned exactly. `@meta-sam/parser` 0.1.0 (Meta's
+  streaming parser for SAM 3 segmentation tokens, no runtime dependencies of
   its own; glue in `src/sam-parser.ts`). Its licence is the **SAM License**
   (`node_modules/@meta-sam/parser/LICENSE`, not MIT): read it before
-  redistributing anything built on it. Everything else uses only Node's
+  redistributing anything built on it. `jpeg-js` 0.4.4 (BSD-3-Clause), used
+  only to decode JPEG photos and renders for the fidelity check
+  (`src/image.ts`). Everything else uses only Node's
   standard library (`node:crypto`, `node:fs`, `node:zlib` for PNG masks,
   `node:test`).
 - Development: `typescript`, `@types/node`.
