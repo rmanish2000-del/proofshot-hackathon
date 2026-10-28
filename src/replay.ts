@@ -69,6 +69,8 @@ export interface RecordedSteps {
   /** Set when the job was refused before any render. Only segment_failed can be replayed. */
   readonly refused: { readonly rule: "segment_failed"; readonly reason: string } | null;
   readonly segments: readonly { readonly label: string; readonly box: readonly [number, number, number, number]; readonly score: number; readonly mask_sha256: string | null }[] | null;
+  /** The segments entry's `segmenter` claim, when the recorded segmenter made one. */
+  readonly segmenter?: { readonly provider: string; readonly model: string } | null;
   /** null when no scene reached a render entry. */
   readonly renderer: { readonly provider: Renderer["provider"]; readonly model: string } | null;
   readonly verifier: { readonly provider: string; readonly model: string; readonly base: string };
@@ -172,6 +174,7 @@ export function recordJob(opts: RecordOptions): Manifest {
   const segEntry = entries.find((e) => e.kind === "segments");
   const segments = segEntry ? (payloadOf(segEntry).segments as RecordedSteps["segments"]) : null;
   if (!refused && !segments) refuse("the receipt has no segments entry and no job refusal");
+  const segmenterClaim = segEntry && isObject(payloadOf(segEntry).segmenter) ? (payloadOf(segEntry).segmenter as RecordedSteps["segmenter"]) : null;
 
   const writes: { rel: string; bytes: Uint8Array }[] = opts.sources.map((s) => ({ rel: `${SOURCES_DIR}/${s.name}`, bytes: s.bytes }));
   const recordedScenes: RecordedScene[] = [];
@@ -229,6 +232,7 @@ export function recordJob(opts: RecordOptions): Manifest {
     timestamps: entries.map((e) => e.at),
     refused,
     segments,
+    segmenter: segmenterClaim,
     renderer,
     verifier: verifier ?? { provider: "none", model: "none", base: "none" },
     scenes: recordedScenes,
@@ -340,6 +344,7 @@ export function replayProviders(rec: Recording): Providers {
   let next = 0;
   return {
     segmenter: {
+      ...(steps.segmenter ? { identity: { provider: steps.segmenter.provider, model: steps.segmenter.model } } : {}),
       segment: async () => {
         if (steps.refused) throwRecorded(steps.refused.reason);
         return (steps.segments ?? []).map((s): Segment => ({

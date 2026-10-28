@@ -115,7 +115,7 @@ Entry kinds, in the order a job writes them (`render` → `verifier` →
 | Kind | Payload fields |
 |---|---|
 | `job` | `job_id`, `garment_note`, `provenance` (`live` / `fixture` / `replay`), on a replay also `mode: "replay"` and `recorded_from`, `scenes`, `source_images` (`[{name, sha256}]`), `garment_id`, `prior_records` |
-| `segments` | `count`, `segments` (`[{label, box, score, mask_sha256 \| null}]`) |
+| `segments` | `count`, `segments` (`[{label, box, score, mask_sha256 \| null}]`), and `segmenter` (`{provider, model}`) when the segmenter made a model claim *(event, #18)*: a fixture segmenter makes none and the field is absent, so a fixture receipt claims no model |
 | `render` | `render_id`, `sha256` (the image), `model`, `provider` (`meta` / `openai-images` / `fal` / `fixture`), `prompt` |
 | `verifier` | `render_id`, `findings` (the parsed array, notes included), `verifier: {provider, model, base}`, and `usage` when the provider reported it (`prompt_tokens`, `completion_tokens`, `cached_tokens`, `images[{bytes, width, height}]`) |
 | `fidelity` *(event)* | `render_id`, `decision`, `metrics` (`{delta_e, hist, texture, area}`, a non-finite value as `null`; or `null` when nothing was measured), `reasons`, and `error` (`<name>: <message>`) when the check threw or answered outside the three decisions, in which case `decision` is `REFUSE` |
@@ -416,6 +416,22 @@ UNCALIBRATED). No model judges anything.
   `fidelity` entry between `verifier` and `gate` (§3), and the gate takes it as
   an input (§2). The pipeline calls an injected checker; a checker that decodes
   the SAM mask PNGs and calls `checkFidelity` is not wired in yet.
+- The segmenter *(event, #18)*, `src/sam.ts`: `samSegmenter({model, transport,
+  prompt?})` is the pipeline's `Segmenter` behind an injected transport that
+  does the HTTP request, so the adapter reads no key. It asks once per source
+  image, in order, with the model id and the prompt (default "the garment"),
+  and accepts per image `{segments: [{label, box: [x, y, w, h] 0..1, score
+  0..1, mask: base64 PNG | null}]}`, a JSON string of it included. Box and
+  score are clamped to 0..1; any other departure from that shape throws
+  `SegmentProtocolError`, which the pipeline records as `segment_failed` (§3),
+  never as "no garment found". Each segment's label is `<image name>/<label>`
+  so the receipt says which photo a mask belongs to. The segments entry then
+  carries `segmenter: {provider: "meta", model}` (§3). A blank model id, or
+  one naming Muse Image, is refused before any request; `segmenterFromEnv`
+  reads `MODEL_SEGMENT` (no default: the id on a receipt is a claim, not a
+  guess) and `SEGMENT_PROMPT`. The request body and endpoint of Meta's SAM
+  3.1 API are not in this document, so the HTTP transport is not rebuilt
+  yet, and nothing in the README claims a SAM run until one is logged.
 
 ## 11. Shopper preview *(event)*
 

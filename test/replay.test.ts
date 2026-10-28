@@ -59,6 +59,8 @@ function providers(verifier?: Partial<Verifier>): Providers {
   });
   return {
     ...p,
+    // A segmenter with a model claim, so the recorded segments entry carries one and the replay repeats it.
+    segmenter: { identity: { provider: "meta", model: "sam-test-model" }, segment: p.segmenter.segment },
     verifier: {
       identity: { provider: "fixture", model: "fixture-verifier", base: "https://verifier.example.test/v1" },
       verify: async (req) => ({ ...(await p.verifier.verify(req)), ...(req.scene === "a" ? { usage: { prompt_tokens: 12, completion_tokens: 3 } } : {}) }),
@@ -100,8 +102,10 @@ test("recording a job and replaying it reproduces every entry after the job entr
   assert.deepEqual(replay.renders.map((x) => [x.decision, x.cited?.rule]), r.renders.map((x) => [x.decision, x.cited?.rule]));
   // The replayed images are the recorded ones, byte for byte.
   assert.equal(sha256Hex(readFileSync(join(replay.dir, "job-1-r0.png"))), sha256Hex("render of a"));
-  // The mask was known only by its hash, and the segments entry still matches.
-  assert.equal((replayed[1]!.payload as { segments: { mask_sha256: string }[] }).segments[0]!.mask_sha256, sha256Hex(new Uint8Array([0, 255, 255, 0])));
+  // The mask was known only by its hash, and the segments entry still matches, model claim included.
+  const segments = replayed[1]!.payload as { segmenter: unknown; segments: { mask_sha256: string }[] };
+  assert.equal(segments.segments[0]!.mask_sha256, sha256Hex(new Uint8Array([0, 255, 255, 0])));
+  assert.deepEqual(segments.segmenter, { provider: "meta", model: "sam-test-model" });
 });
 
 test("two replays of one recording are byte-identical", async () => {
