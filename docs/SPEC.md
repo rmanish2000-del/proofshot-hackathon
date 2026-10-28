@@ -376,6 +376,20 @@ model that generated nothing. It exists so a real pipeline job (live verifier,
 real receipt) can run while no render transport exists, with the stand-in
 named on the record and on every card that shows its image (§11).
 
+The Replicate try-on *(event, 28 Oct, NR4d/NR4e)*, `src/render-replicate.ts`
+(`PROOFSHOT_RENDER=replicate-pruna-tryon`): the garment image sent is the
+front photo's pixels inside the SAM mask, cropped to the mask box plus a white
+margin of 6 % of its longer side, white outside the mask. Each model folder
+`data/models/<id>/` may hold `model.json` `{ "covers": "<reach>" }`, reach
+one of waist < hip < thigh < knee < calf < ankle: how far down the model's own
+outfit goes. When the seller's length claim reaches further ("below the knee"
+is calf), the render falls back to composite v2 with `fallback_reason:
+"model_too_short"` before any paid call. With no `model.json`, or a length
+claim naming no known place, the guard does not apply. `preserve_input_size`
+and `reference_pose` are sent, and recorded in the render entry's `input`, only
+when `REPLICATE_PRESERVE_INPUT_SIZE` / `REPLICATE_REFERENCE_POSE` is exactly
+`true` or `false`.
+
 The file stand-in *(event, 28 Oct)*, `fileRenderer(label, bytes)` in
 `src/render.ts`, used by `npm run job:live -- --render <image>`: like the
 stand-in it generates nothing and its provider is `stand-in`, but it returns

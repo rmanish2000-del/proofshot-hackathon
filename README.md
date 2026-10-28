@@ -291,8 +291,8 @@ committed.
   shop panel say "Lighting only: no colour correction was applied".
 - `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`):
   an AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta).
-  **Three live calls so far (n=3), none released; the gate caught every
-  one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
+  **Five live calls so far (n=5): one REVIEW, four REFUSE, none released;
+  the gate caught every one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
   length and drew shorts below it; the verifier flagged the hem as a mismatch
   (0.98) and the fidelity check found the garment shrank in frame (area
   0.212). The gate caught an AI model changing the garment, and nothing was
@@ -308,13 +308,24 @@ committed.
   three-quarter. On both, the verifier timed out at 180 s, so the gate
   refused them as not verified (fail closed). Since NR4c a verifier request
   that times out is sent once more with a 360 s timeout, and the receipt lists
-  both attempts. It
+  both attempts. On a second model image, `synthetic-02` (an AI-generated
+  fictional adult in an ankle-length slip, so the lower body is free; 04d9cd0),
+  both kurtas still came back short (4427c81, `live-kurta-02-tryon-s02` and
+  `live-kurta-01-tryon-s02`, both **REFUSE** on fidelity, area 0.210 and
+  0.183). This time the verifier answered and flagged the hem as a mismatch on
+  both. The garment image sent is the whole kurta, hem included (NR4d,
+  `evidence/tryon-sent/`); since NR4d it has a white margin. Since NR4e each
+  model folder declares how far down the model's own outfit reaches
+  (`model.json` `covers`: synthetic-01 `hip`, synthetic-02 `ankle`). A garment
+  claimed longer than that falls back to composite v2 with `fallback_reason`
+  `model_too_short` before any paid call. It
   sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
   (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
   `REPLICATE_MODEL_IMAGE` picks another). The render entry's `input` records
-  exactly the fields sent (images by sha256, seed, and the prompt when one was
-  sent) and carries no pipeline `prompt`. The token is read from `REPLICATE_API_TOKEN` only. Meta did
+  exactly the fields sent (images by sha256, seed, the prompt when one was
+  sent, and `preserve_input_size` / `reference_pose` only when
+  `REPLICATE_PRESERVE_INPUT_SIZE` / `REPLICATE_REFERENCE_POSE` is `true` or `false`) and carries no pipeline `prompt`. The token is read from `REPLICATE_API_TOKEN` only. Meta did
   not draw the image: SAM 3.1 (cut-out and fidelity masks), Muse Spark (the
   verifier) and the ProofShot gate decide what is released, with thresholds
   unchanged. The receipt says `generative: true` and "AI preview: look only".
