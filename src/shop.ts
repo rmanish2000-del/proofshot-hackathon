@@ -39,6 +39,8 @@ export interface CatalogRow {
    */
   readonly render_provider: string;
   readonly render_model: string;
+  /** NR3d: the render entry's own note (composite v2: what was adjusted), present only when the receipt has one. */
+  readonly render_note?: string;
   readonly approved_by_human: boolean;
   /** What the gate said about this render, in words. */
   readonly gate_reason: string;
@@ -132,6 +134,7 @@ export function rowsForJob(jobDir: string, jobId: string): CatalogRow[] {
       provenance,
       render_provider,
       render_model,
+      ...(str(render.note) !== null ? { render_note: str(render.note)! } : {}),
       approved_by_human: release.approved_by_human === true,
       gate_reason: gateReason(gate),
     });

@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 
-import { CompositeQualityReview, QUALITY_REASONS, V2_PARAMS, backNeckInsert, cleanMask, compositeV2, correctGarment, garmentChroma, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
+import { CompositeQualityReview, QUALITY_REASONS, V2_CORRECTION_NOTE, V2_LIGHTING_ONLY_NOTE, V2_PARAMS, backNeckInsert, cleanMask, compositeV2, correctGarment, garmentChroma, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
 import type { V2Params } from "../src/composite-v2.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import type { FidelityChecker, Segment, SourceImage, Verifier } from "../src/pipeline.ts";
@@ -13,6 +13,7 @@ import type { Mask, RgbImage } from "../src/png.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt, recordedClock, verifyChain } from "../src/receipt.ts";
 import { RenderConfigError, compositeV2Renderer, rendererFromEnv } from "../src/render.ts";
+import { rowsForJob } from "../src/shop.ts";
 import type { RenderTransport } from "../src/render.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
@@ -246,6 +247,44 @@ test("a composite-v2 job: receipt says composite-v2, generative false, every par
   assert.match(String(render.note), /bounded, recorded amounts/);
   assert.equal(render.sha256, sha256Hex(readFileSync(join(r.dir, "v2-r0.png"))));
   assert.equal(r.renders[0]!.decision, "RELEASE");
+});
+
+test("NR3d: with WB skipped the receipt and the shop row say lighting only; with WB applied they keep the WB note", async () => {
+  // The golden kurta in a coloured cloth (C* well over wb_max_chroma), so WB is skipped.
+  const coloured = photo(640, 1000, (x, y) => {
+    if (!kurtaShape(x, y, true)) return null;
+    const stripe = (x >> 4) & 1 ? 22 : 0;
+    const tex = (x * 7 + y * 13) % 11;
+    return [150 + stripe + tex, 50 + stripe + tex, 70 + stripe + tex] as const;
+  });
+  const fidelity: FidelityChecker = { check: async () => ({ decision: "RELEASE", metrics: null, reasons: [] }) };
+  const run = async (fixture: { img: RgbImage; mask: Mask }, jobId: string) => {
+    const { sources, segments } = jobFor(fixture);
+    const providers = { ...fixtureProviders({ renders: () => Buffer.from("never"), findings: allMatch, segments }), renderer: compositeV2Renderer(), fidelity };
+    const out = mkdtempSync(join(tmpdir(), "composite-v2-nr3d-"));
+    const r = await runJob({ jobId, garmentNote: "kurta", scenes: ["studio"], sources }, { outRoot: out, providers, provenance: "fixture" });
+    assert.equal(r.renders[0]!.decision, "RELEASE");
+    const render = parseReceipt(readFileSync(join(r.dir, RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+    const colour = (render.composite as { params: { colour: { wb_applied: boolean; note: string } } }).params.colour;
+    return { render, colour, rows: rowsForJob(r.dir, jobId) };
+  };
+
+  const skipped = await run(coloured, "nr3d-coloured");
+  assert.equal(skipped.colour.wb_applied, false);
+  assert.equal(skipped.colour.note, V2_LIGHTING_ONLY_NOTE);
+  assert.equal(skipped.render.note, V2_LIGHTING_ONLY_NOTE);
+  assert.match(String(skipped.render.note), /^Lighting only: no colour correction was applied/);
+  assert.doesNotMatch(String(skipped.render.note), /white balance were adjusted/);
+  assert.equal(skipped.rows[0]!.render_note, V2_LIGHTING_ONLY_NOTE);
+
+  const applied = await run(golden, "nr3d-grey");
+  assert.equal(applied.colour.wb_applied, true);
+  assert.equal(applied.render.note, V2_CORRECTION_NOTE);
+  assert.equal(applied.rows[0]!.render_note, V2_CORRECTION_NOTE);
+
+  // The shop panel shows the row's own note for composite-v2.
+  const page = readFileSync(new URL("../web/shop.html", import.meta.url), "utf8");
+  assert.match(page, /framed on a studio backdrop by deterministic code\. " \+ \(row\.render_note \|\|/);
 });
 
 test("each quality pre-check gives REVIEW with its exact reason, every check on the receipt, and no image", async () => {

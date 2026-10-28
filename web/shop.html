@@ -369,7 +369,7 @@ async function verifyRecord(receiptText, image, subtle) {
     add("image sha256", row.image_sha256);
     add("gate", row.gate_reason, true);
     add("render", row.render_provider === "stand-in" ? "owner's photo, stands in for render: nothing was generated"
-      : row.render_provider === "composite" && row.render_model === "composite-v2" ? "composite / composite-v2: the seller's own garment pixels, cut out by SAM 3.1, framed on a studio backdrop by deterministic code. Lighting and white balance were adjusted by bounded, recorded amounts (max ±8% per colour channel, shadow gain 0.80 to 1.35). Fidelity checks compare against the seller's original photo. No image model generated this picture."
+      : row.render_provider === "composite" && row.render_model === "composite-v2" ? "composite / composite-v2: the seller's own garment pixels, cut out by SAM 3.1, framed on a studio backdrop by deterministic code. " + (row.render_note || "Lighting and white balance were adjusted by bounded, recorded amounts (max ±8% per colour channel, shadow gain 0.80 to 1.35). Fidelity checks compare against the seller's original photo.") + " No image model generated this picture."
       : row.render_provider === "composite" ? `composite / ${row.render_model}: the seller's own garment pixels, cut out by SAM 3.1, placed on a template by deterministic code. No image model generated this picture.`
       : `${row.render_provider} / ${row.render_model}`, true);
     add("released by", row.approved_by_human ? "a named approver" : "unattended (no human approved it)", true);
