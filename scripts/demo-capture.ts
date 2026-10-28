@@ -1,25 +1,41 @@
-// npm run demo:capture [-- --out out/demo --hold 3]
+// npm run demo:capture [-- --out out/demo]
 //
-// DEMO1 (Grok 29 Oct 00:30): records the docs/DEMO.md shots a headless browser
-// can see, as numbered PNG frames at 360 and 1280 px under the gitignored
-// out/demo/, plus out/demo/demo.mp4 (each frame held --hold seconds) when
-// ffmpeg is on PATH. It starts the local server itself on a free port, reading
-// the committed data/jobs and a replay of demo/recordings/review: no upload,
-// no publish, no live or paid call, no key read. Shots it cannot capture
-// (slides, terminal, OS tray, text editor) are listed with the reason in
-// out/demo/shots.json and printed at the end.
+// DEMO1 (Grok 29 Oct 00:30), DEMO1b (00:45): records every docs/DEMO.md shot as
+// numbered PNG frames at 360 and 1280 px under the gitignored out/demo/. App
+// shots come from the local server it starts on a free port (committed
+// data/jobs, plus replays of committed recordings); title cards, the replay's
+// terminal lines and the tampered byte are pages it writes to out/demo/pages/
+// from committed files. No upload, no publish, no live or paid call, no key
+// read. out/demo/shots.json gives each shot's seconds (the total stays under
+// MAX_TOTAL_SECONDS) and out/demo/frames.txt is an ffmpeg concat list of the
+// 1280 px frames with those durations; the video is assembled elsewhere, so
+// nothing here runs ffmpeg.
 //
 // The browser is Edge or Chrome (PROOFSHOT_BROWSER names another), driven
 // over the DevTools protocol with Node's own WebSocket: no new dependency.
 
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { DEMO_SHOTS, REPLAYED_RECORDINGS, VIEWPORTS, browserCandidates, tamperOneByte, type CapturedFrame, type ShotAction } from "../src/demo-capture.ts";
-import { loadRecording, replayJob } from "../src/replay.ts";
+import {
+  DEMO_SHOTS,
+  REPLAYED_RECORDINGS,
+  VIEWPORTS,
+  browserCandidates,
+  bytesHtml,
+  cardHtml,
+  concatList,
+  replayLogLines,
+  tamperOneByte,
+  terminalHtml,
+  type CapturedFrame,
+  type ShotAction,
+} from "../src/demo-capture.ts";
+import type { JobResult } from "../src/pipeline.ts";
+import { loadRecording, replayJob, type Recording } from "../src/replay.ts";
 import { UploadServer, providersFromEnv } from "../src/serve.ts";
 
 const args = process.argv.slice(2);
@@ -29,7 +45,6 @@ const option = (name: string, fallback: string): string => {
 };
 const root = fileURLToPath(new URL("..", import.meta.url));
 const outDir = join(root, option("--out", "out/demo"));
-const hold = Number(option("--hold", "3"));
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 const browser = browserCandidates(process.env, process.platform).find((p) => existsSync(p));
@@ -43,11 +58,34 @@ mkdirSync(outDir, { recursive: true });
 
 // The replayed recordings get their own scratch jobs root, so data/jobs is only read.
 const replayRoot = join(outDir, "replay-jobs");
-const replayIds = new Map<string, string>();
+const replays = new Map<string, { rec: Recording; result: JobResult; id: string }>();
 for (const name of REPLAYED_RECORDINGS) {
-  const r = await replayJob(loadRecording(join(root, "demo/recordings", name)), { outRoot: replayRoot });
-  replayIds.set(name, r.dir.split(/[\\/]/).pop()!);
+  const rec = loadRecording(join(root, "demo/recordings", name));
+  const result = await replayJob(rec, { outRoot: replayRoot });
+  replays.set(name, { rec, result, id: result.dir.split(/[\\/]/).pop()! });
 }
+
+// The pages the capture writes itself, from committed files only.
+const pagesDir = join(outDir, "pages");
+mkdirSync(pagesDir, { recursive: true });
+const pageHtml = (f: CapturedFrame): string => {
+  const page = f.page!;
+  if (page.kind === "card") return cardHtml(page);
+  if (page.kind === "bytes") return bytesHtml(f.path, readFileSync(join(root, f.path), "utf8"), page.show);
+  const r = replays.get(page.recording);
+  if (!r) throw new Error(`recording ${page.recording} was not replayed`);
+  const lines = replayLogLines({
+    recording: r.rec.manifest.name,
+    recordedJob: r.rec.manifest.recorded_from.job_id,
+    recordedHead: r.rec.manifest.recorded_from.head,
+    dir: relative(root, r.result.dir).split("\\").join("/"),
+    head: r.result.head,
+    refused: r.result.refused,
+    renders: r.result.renders,
+    receipt: readFileSync(join(r.result.dir, "receipt.jsonl"), "utf8"),
+  });
+  return terminalHtml("Replay of a recorded run", lines);
+};
 
 // Fixture providers only: the capture never runs a job, and must not read a key.
 const providers = providersFromEnv({});
@@ -127,7 +165,12 @@ const filled = (sel: string) => `!!document.querySelector(${JSON.stringify(sel)}
 
 const urlOf = (f: CapturedFrame): string => {
   if (f.from === "disk") return pathToFileURL(join(root, f.path)).href;
-  const path = f.path.replace(/@([A-Za-z0-9._-]+)/, (_, name: string) => encodeURIComponent(replayIds.get(name) ?? name));
+  if (f.from === "page") {
+    const file = join(pagesDir, `${f.name}.html`);
+    writeFileSync(file, pageHtml(f));
+    return pathToFileURL(file).href;
+  }
+  const path = f.path.replace(/@([A-Za-z0-9._-]+)/, (_, name: string) => encodeURIComponent(replays.get(name)?.id ?? name));
   return servers[f.from].base + path;
 };
 
@@ -156,10 +199,10 @@ const runAction = async (a: ShotAction): Promise<void> => {
   return waitFor(filled("#result"), "the verify result");
 };
 
-const report: { id: string; beat: number; frames: string[]; skip?: string; error?: string }[] = [];
-const pngs: string[] = [];
+const report: { id: string; beat: number; seconds: number; frames: string[]; skip?: string; error?: string }[] = [];
+const pngs: { file: string; seconds: number }[] = [];
 for (const shot of DEMO_SHOTS) {
-  const row: (typeof report)[number] = { id: shot.id, beat: shot.beat, frames: [] };
+  const row: (typeof report)[number] = { id: shot.id, beat: shot.beat, seconds: shot.seconds, frames: [] };
   report.push(row);
   if (shot.skip) row.skip = shot.skip;
   for (const frame of shot.frames) {
@@ -174,7 +217,7 @@ for (const shot of DEMO_SHOTS) {
         const shotPng = await cdp("Page.captureScreenshot", { format: "png" });
         writeFileSync(join(outDir, file), Buffer.from(shotPng.data, "base64"));
         row.frames.push(file);
-        if (vp.label === "1280") pngs.push(file);
+        if (vp.label === "1280") pngs.push({ file, seconds: shot.seconds / shot.frames.length });
       } catch (err) {
         row.error = `${file}: ${err instanceof Error ? err.message : String(err)}`;
       }
@@ -189,20 +232,16 @@ await Promise.race([exited, sleep(5000).then(() => proc.kill())]);
 ws.close();
 for (const s of Object.values(servers)) s.server.close();
 
-// The short video: the 1280 px frames in shot order, each held `hold` seconds, if ffmpeg exists.
-let video = "not made: ffmpeg is not on PATH";
-if (pngs.length && spawnSync("ffmpeg", ["-version"], { stdio: "ignore" }).status === 0) {
-  const list = pngs.map((f) => `file '${f}'\nduration ${hold}`).join("\n") + `\nfile '${pngs[pngs.length - 1]}'\n`;
-  writeFileSync(join(outDir, "frames.txt"), list);
-  const r = spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "frames.txt", "-vf", "scale=1280:-2,format=yuv420p", "-r", "25", "demo.mp4"], { cwd: outDir, stdio: "inherit" });
-  video = r.status === 0 ? "out/demo/demo.mp4" : `ffmpeg failed (exit ${r.status})`;
-}
-writeFileSync(join(outDir, "shots.json"), JSON.stringify({ browser: browser.split(/[\\/]/).pop(), video, shots: report }, null, 2) + "\n");
+// The video is assembled elsewhere from this list: the 1280 px frames in shot order with their seconds.
+writeFileSync(join(outDir, "frames.txt"), concatList(pngs));
+const total = report.reduce((n, r) => n + r.seconds, 0);
+const video = "not made here: assemble out/demo/frames.txt (ffmpeg -f concat)";
+writeFileSync(join(outDir, "shots.json"), JSON.stringify({ browser: browser.split(/[\\/]/).pop(), video, total_seconds: total, shots: report }, null, 2) + "\n");
 rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 
 for (const r of report) {
   const what = r.error ? `ERROR ${r.error}` : r.frames.length ? r.frames.join(", ") : `skipped: ${r.skip}`;
-  console.log(`${r.id} (beat ${r.beat}): ${what}`);
+  console.log(`${r.id} (beat ${r.beat}, ${r.seconds} s): ${what}`);
 }
-console.log(`video: ${video}`);
+console.log(`total: ${total} s; video: ${video}`);
 process.exit(report.some((r) => r.error) ? 1 : 0);
