@@ -16,3 +16,10 @@ export function auditTiff(tiff: Buffer): GuardReport;
 export function auditPng(bytes: Buffer): GuardReport;
 export function stripJpeg(bytes: Buffer): Buffer;
 export function auditFile(path: string): FileReport;
+
+/** Folders whose images the repository publishes (PS-2). */
+export const SOURCE_FOLDERS: string[];
+export const DERIVED_FOLDERS: string[];
+export const ALLOWED_FOLDERS: string[];
+/** True when the image sits in a folder the repository publishes. */
+export function pathAllowed(path: string): boolean;
