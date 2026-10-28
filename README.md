@@ -196,7 +196,7 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 148 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 09:05 IST, tree of 4c5df28 plus this change |
+| Test suite green | 148 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 08:50 IST, tree of 4c5df28 plus this change |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
