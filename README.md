@@ -158,6 +158,14 @@ gate saw no findings) and `live-kurta-01-2` (REVIEW: all nine findings
 `match` at 0.96 or above, fidelity unmeasured because no mask exists); the
 second is recorded as `demo/recordings/live-kurta-01-2`.
 
+`--render <image>` makes that file stand in for the render (still nothing
+generated; the render entry's model is `file:<path>`). One deliberate-mismatch
+live job is committed: `live-kurta-01-mismatch`, kurta-01's three photos as
+sources and kurta-02's front photo as the render. The gate said **REFUSE**
+(`hard_mismatch`: color mismatch at 0.99; print_pattern mismatch at 0.98 also
+hard; sleeve_length and hem soft mismatches). That is one job (n=1), not an
+accuracy figure.
+
 New in this feature: `src/serve.ts`, `scripts/serve.ts`, `web/upload.html`,
 `test/serve.test.ts` (the three gate states, a failing segmenter and verifier,
 a non-JPEG upload, the HTTP surface, the page's CSP and strings), SPEC §12.
@@ -222,7 +230,8 @@ renderer takes an injected transport.
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
 | Live verifier call with images (4 JPEGs, 715×1600) | 2 calls, both HTTP 200: the first cut off at max_tokens 1500 (finish_reason length, 1338 reasoning tokens), the second complete at 4096 (finish_reason stop, 1808 completion tokens, 9 findings all `match`) | `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `evidence/verifier-2026-10-28T03-59-30-015Z.json` (key placeholder, images as size and hash) |
 | Live pipeline job through the verifier | 2 jobs on kurta-01, stand-in render, no segmenter: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer), `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask); both receipts verify | `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `demo/recordings/live-kurta-01-2/` |
-| Verifier accuracy | **not measured**: the only live comparisons are a photo against itself (the stand-in), so a `match` on every attribute shows the call works, not that the model catches a mismatch | the two live jobs above |
+| Deliberate-mismatch live job | 1 job (n=1): kurta-01 sources, kurta-02 front as the render (`--render`), no segmenter: REFUSE (`hard_mismatch`, color mismatch at 0.99) | `data/jobs/live-kurta-01-mismatch/`, `evidence/verifier-2026-10-28T04-25-58-791Z.json` |
+| Verifier accuracy | **not measured**: two live comparisons are a photo against itself (the stand-in) and one is a single deliberate mismatch that was refused; that shows the model can catch one obvious mismatch, not how often it does | the three live jobs above |
 | Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
 | SAM 3.1 masks decoded | yes, in tests: `@meta-sam/parser` 0.1.0 turns the logged answer into one box (27,169 to 651,1408 of 715×1600, confidence 0.957) and one full-frame mask whose garment pixels all fall inside that box | `test/sam-parser.test.ts` against `evidence/sam-2026-10-28T03-04-30-778Z.json` and the committed photo |
 | SAM 3.1 segmentation in the gate | **wired, not yet run live in a job**: `providersFromEnv` builds the SAM segmenter from `MODEL_SEGMENT` + `MODEL_API_KEY` with the parser glue as default, and the fidelity check takes its masks; no pipeline job has run through SAM live yet, and with JPEG photos fidelity stays REVIEW (no JPEG decoder) | tests in `test/sam-parser.test.ts` and `test/serve.test.ts` |
