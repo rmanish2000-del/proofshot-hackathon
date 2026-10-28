@@ -7,7 +7,8 @@
 // No garment pixel is invented. The only synthetic pixels are the backdrop, the
 // shadow, the neck insert and the alpha feather at the mask edge; small enclosed
 // mask holes are filled with the photo's own pixels at those positions.
-// Lighting and white balance change by bounded amounts that the receipt records.
+// Lighting and white balance change by bounded amounts that the receipt records;
+// white balance only on near-neutral garments (gray-world assumes a grey subject).
 //
 // A photo the composite cannot make look right (cut off, too small, harsh sun,
 // clipped, a fragmented mask, a correction too large) throws
@@ -48,6 +49,8 @@ export const V2_PARAMS = Object.freeze({
   flatten_strength: 0.7,
   wb_min: 0.92,
   wb_max: 1.08,
+  // NR3b: WB only on near-neutral garments. Measured C*: kurta-01 42.6, kurta-02 12.3, the grey test fixture about 2.5.
+  wb_max_chroma: 8,
   max_corr_de: 6,
   // §6 shading
   sh_dy: 0.015,
@@ -418,18 +421,40 @@ export function wbGains(rgb: Float64Array, m: Uint8Array, p: V2Params = V2_PARAM
   return n === 0 ? [1, 1, 1] : [gain(sr), gain(sg), gain(sb)];
 }
 
+/** Mean Lab chroma C* = sqrt(a*² + b*²) over the garment pixels of the photo. */
+export function garmentChroma(src: RgbImage, m: Mask): number {
+  let sum = 0, n = 0;
+  for (let i = 0; i < m.data.length; i++) {
+    if (!m.data[i]) continue;
+    const [, a, b] = srgbToLab(src.data[i * 3]!, src.data[i * 3 + 1]!, src.data[i * 3 + 2]!);
+    sum += Math.sqrt(a * a + b * b);
+    n++;
+  }
+  return n > 0 ? sum / n : 0;
+}
+
 export interface Correction {
   /** The photo with only the garment pixels corrected. */
   readonly image: RgbImage;
   readonly wb_gains: readonly [number, number, number];
+  readonly wb_applied: boolean;
+  readonly wb_reason: string;
+  readonly garment_chroma: number;
   readonly gain_applied: readonly [number, number];
+  /** Over everything applied: the flatten, and WB when it was applied. */
   readonly correction_delta_e: number;
 }
 
-/** §5: illumination flattening (bounded gain, same on R, G, B) then bounded gray-world WB, on garment pixels only. */
+/**
+ * §5: illumination flattening (bounded gain, same on R, G, B) then bounded
+ * gray-world WB, on garment pixels only. Gray-world assumes a grey subject, so
+ * WB is skipped when the garment's mean chroma C* is above wb_max_chroma (NR3b).
+ */
 export function correctGarment(src: RgbImage, m: Mask, L: Float64Array, p: V2Params = V2_PARAMS): Correction {
   const { width: w, height: h } = src;
   const n = w * h;
+  const chroma = round4(garmentChroma(src, m));
+  const wbApplied = chroma <= p.wb_max_chroma;
   let sumL = 0, count = 0;
   for (let i = 0; i < n; i++) {
     if (!m.data[i]) continue;
@@ -447,7 +472,7 @@ export function correctGarment(src: RgbImage, m: Mask, L: Float64Array, p: V2Par
     if (g2 > gmax) gmax = g2;
     for (let c = 0; c < 3; c++) flat[i * 3 + c] = src.data[i * 3 + c]! * g2;
   }
-  const wb = wbGains(flat, m.data, p);
+  const wb: [number, number, number] = wbApplied ? wbGains(flat, m.data, p) : [1, 1, 1];
   const out = new Uint8Array(src.data);
   let de = 0;
   for (let i = 0; i < n; i++) {
@@ -460,6 +485,11 @@ export function correctGarment(src: RgbImage, m: Mask, L: Float64Array, p: V2Par
   return {
     image: { width: w, height: h, data: out },
     wb_gains: [round4(wb[0]), round4(wb[1]), round4(wb[2])],
+    wb_applied: wbApplied,
+    wb_reason: wbApplied
+      ? `garment chroma C* ${chroma} <= ${p.wb_max_chroma}: near-neutral, gray-world WB applied`
+      : `garment chroma C* ${chroma} > ${p.wb_max_chroma}: coloured garment, gray-world WB skipped`,
+    garment_chroma: chroma,
     gain_applied: count > 0 ? [round4(gmin), round4(gmax)] : [1, 1],
     correction_delta_e: round4(count > 0 ? de / count : 0),
   };
@@ -643,7 +673,7 @@ export function compositeV2(src: RgbImage, mask: Mask, p: V2Params = V2_PARAMS):
   // §5
   const corr = correctGarment(src, m, L, p);
   const shadowAfter = round4(shadowScore(illumination(corr.image, m, illumR), m));
-  const colour = { wb_gains: corr.wb_gains, gain_applied: corr.gain_applied, correction_delta_e: corr.correction_delta_e, shadow_score_after: shadowAfter, note: V2_CORRECTION_NOTE };
+  const colour = { wb_applied: corr.wb_applied, wb_reason: corr.wb_reason, garment_chroma: corr.garment_chroma, wb_max_chroma: p.wb_max_chroma, wb_gains: corr.wb_gains, gain_applied: corr.gain_applied, correction_delta_e: corr.correction_delta_e, shadow_score_after: shadowAfter, note: V2_CORRECTION_NOTE };
   if (corr.correction_delta_e > p.max_corr_de) throw new CompositeQualityReview("correction", { ...base, colour });
 
   // §4 ghost assembly at source scale: garment + neck insert, feathered inward.

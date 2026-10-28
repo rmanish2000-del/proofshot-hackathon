@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 
-import { CompositeQualityReview, QUALITY_REASONS, V2_PARAMS, cleanMask, compositeV2, correctGarment, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
+import { CompositeQualityReview, QUALITY_REASONS, V2_PARAMS, cleanMask, compositeV2, correctGarment, garmentChroma, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
 import type { V2Params } from "../src/composite-v2.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import type { FidelityChecker, Segment, SourceImage, Verifier } from "../src/pipeline.ts";
@@ -55,8 +55,8 @@ function kurta(opts: { notch?: boolean; band?: number } = {}): { img: RgbImage; 
     const tex = (x * 7 + y * 13) % 11;
     const d = x + y * 0.5 - 600;
     const f = band > 0 && d > 0 && d < 160 ? 1 - band : 1;
-    // Near-grey on purpose: gray-world WB on a coloured garment (maroon 150,40,60 or beige 140,118,104)
-    // clamps at ±8% and the correction ΔE comes out about 8 > 6, which is the "correction too large" REVIEW.
+    // Near-grey on purpose (C* about 2.5, under wb_max_chroma), so the golden image covers gray-world WB.
+    // On a coloured garment WB is skipped (NR3b); the NR3b test covers that path.
     return [Math.round((128 + stripe + tex) * f), Math.round((125 + stripe + tex) * f), Math.round((121 + stripe + tex) * f)] as const;
   });
 }
@@ -158,6 +158,35 @@ test("flattening lowers the shadow score, and WB and lighting gains never leave 
   assert.ok(shadowScore(illumination(golden.img, golden.mask, 108), golden.mask) > 0);
 });
 
+test("NR3b: WB is skipped on a coloured garment and applied on a near-grey one; correction ΔE counts WB when applied; the choice is recorded", () => {
+  const solid = (rgb: readonly [number, number, number]) => photo(64, 80, (x, y) => (x > 8 && y > 8 && x < 56 && y < 72 ? ([rgb[0] + ((x * 7 + y * 13) % 5), rgb[1], rgb[2]] as const) : null));
+  const maroon = solid([150, 40, 60]);
+  const cast = solid([122, 125, 130]);
+  const run = (f: { img: RgbImage; mask: Mask }, p: V2Params = V2_PARAMS) => correctGarment(f.img, f.mask, illumination(f.img, f.mask, 4), p);
+
+  const skipped = run(maroon);
+  assert.ok(garmentChroma(maroon.img, maroon.mask) > V2_PARAMS.wb_max_chroma);
+  assert.equal(skipped.wb_applied, false);
+  assert.deepEqual(skipped.wb_gains, [1, 1, 1]);
+  assert.match(skipped.wb_reason, /coloured garment, gray-world WB skipped/);
+  // An evenly lit solid needs almost no flatten either, so with WB skipped almost nothing changes.
+  assert.ok(skipped.correction_delta_e < 1, `ΔE ${skipped.correction_delta_e}`);
+
+  const applied = run(cast);
+  assert.ok(applied.garment_chroma <= V2_PARAMS.wb_max_chroma, `C* ${applied.garment_chroma}`);
+  assert.equal(applied.wb_applied, true);
+  assert.notDeepEqual(applied.wb_gains, [1, 1, 1]);
+  assert.match(applied.wb_reason, /near-neutral, gray-world WB applied/);
+  const without = run(cast, { ...V2_PARAMS, wb_max_chroma: -1 });
+  assert.equal(without.wb_applied, false);
+  assert.ok(applied.correction_delta_e > without.correction_delta_e, `WB is in the measure: ${applied.correction_delta_e} > ${without.correction_delta_e}`);
+
+  const colour = runs[0]!.params.colour as Record<string, unknown>;
+  assert.equal(colour.wb_applied, true, "the grey golden fixture gets WB");
+  for (const key of ["wb_applied", "wb_reason", "garment_chroma", "wb_max_chroma", "wb_gains", "correction_delta_e"]) assert.ok(key in colour, `colour.${key} is recorded`);
+  assert.equal(colour.wb_max_chroma, 8);
+});
+
 test("a composite-v2 job: receipt says composite-v2, generative false, every parameter; verifier and fidelity get the original photo bytes", async () => {
   const { sources, segments } = jobFor(golden);
   const seen: string[] = [];
@@ -187,6 +216,7 @@ test("a composite-v2 job: receipt says composite-v2, generative false, every par
   const params = (render.composite as { params: Record<string, unknown> }).params;
   for (const key of Object.keys(V2_PARAMS)) assert.ok(key in params, `param ${key} is on the receipt`);
   for (const key of ["mask_cleanup", "quality", "colour", "insert", "rotation", "crop_box", "scale", "placed_box"]) assert.ok(key in params, `measured ${key} is on the receipt`);
+  for (const key of ["wb_applied", "wb_reason", "garment_chroma", "wb_max_chroma"]) assert.ok(key in (params.colour as object), `colour.${key} is on the receipt`);
   assert.match(String(render.note), /bounded, recorded amounts/);
   assert.equal(render.sha256, sha256Hex(readFileSync(join(r.dir, "v2-r0.png"))));
   assert.equal(r.renders[0]!.decision, "RELEASE");
