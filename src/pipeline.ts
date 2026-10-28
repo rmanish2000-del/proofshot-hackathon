@@ -77,6 +77,13 @@ export interface RenderedImage {
    * greyscale PNG. The fidelity check uses it instead of segmenting the render.
    */
   readonly renderMask?: Uint8Array;
+  /**
+   * The renderer that actually made this image, when it is not the one asked:
+   * a generative provider that fell back to the composite (NR4). The render
+   * entry's provider and model are then these, so the receipt never names a
+   * model that drew nothing.
+   */
+  readonly madeBy?: { readonly provider: Renderer["provider"]; readonly model: string };
 }
 
 export interface Renderer {
@@ -84,8 +91,9 @@ export interface Renderer {
    * `stand-in` generates nothing: it returns the owner's own photo (SPEC §8).
    * `composite` generates nothing either: it places the seller's garment pixels
    * on a template by deterministic code (SPEC-render-fix).
+   * `replicate-pruna-tryon` is generative: Pruna p-image-try-on on Replicate (NR4).
    */
-  readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in" | "composite";
+  readonly provider: "meta" | "openai-images" | "fal" | "fixture" | "stand-in" | "composite" | "replicate-pruna-tryon";
   readonly model: string;
   /** `segments` is the job's segmentation, which runs before any render (runJob always passes it); most renderers ignore it. */
   render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[] }): Promise<RenderedImage>;
@@ -275,7 +283,7 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     const image_sha256 = sha256Hex(image.bytes);
     writeFileSync(join(dir, `${render_id}.${image.ext}`), image.bytes);
     // The renderer's own fields follow the fixed ones and can never replace them.
-    const fixed = { render_id, sha256: image_sha256, model: renderer.model, provider: renderer.provider, prompt };
+    const fixed = { render_id, sha256: image_sha256, model: image.madeBy?.model ?? renderer.model, provider: image.madeBy?.provider ?? renderer.provider, prompt };
     const extra = Object.fromEntries(Object.entries(image.record ?? {}).filter(([k]) => !(k in fixed)));
     receipt.append("render", { ...fixed, ...extra });
 

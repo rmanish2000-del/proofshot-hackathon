@@ -11,7 +11,10 @@
 // BASETEN_API_KEY. The renderer is the stand-in (the owner's front photo), or
 // with RENDER_PROVIDER=composite (NR1) the seller's garment cut out by the SAM
 // mask and placed on the RENDER_TEMPLATE template (default mannequin-01), no
-// image model; with no mask the composite refuses (render_failed). The
+// image model; with no mask the composite refuses (render_failed). With
+// PROOFSHOT_RENDER=replicate-pruna-tryon (NR4) the render is an AI try-on by
+// Pruna on Replicate, read from REPLICATE_API_TOKEN, falling back to composite
+// v2 with the reason on the receipt. The
 // segmenter is whatever MODEL_SEGMENT, MODEL_API_KEY and the mask parser
 // allow; without them no segment exists and the fidelity check is REVIEW with
 // no metrics, so the gate's answer is REVIEW at best (SPEC §10 is not weakened
@@ -59,6 +62,7 @@ const providers = providersFromEnv(process.env, {
   sam: { fetch: (url, init) => fetch(url, init), onCall: (log) => samLogs.push(writeSamLog("evidence", log)) },
   verifierFetch: (url, init) => fetch(url, init),
   onVerifierCall: (log) => logs.push(writeVerifierLog("evidence", log)),
+  replicate: { fetch: (url, init) => fetch(url, init) },
 });
 if (providers.mode.fixture) {
   console.error(`the verifier is not live (${providers.mode.labels.verify}): no job run. Set BASETEN_API_KEY in this process.`);

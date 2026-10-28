@@ -31,7 +31,9 @@ import { fixtureProviders, runJob } from "./pipeline.ts";
 import type { FidelityChecker, Provenance, Providers, Renderer, Segment, Segmenter, SourceImage, Verifier } from "./pipeline.ts";
 import { RECEIPT_FILE } from "./prior.ts";
 import type { Clock } from "./receipt.ts";
-import { rendererFromEnv } from "./render.ts";
+import { compositeV2Renderer, rendererFromEnv } from "./render.ts";
+import { REPLICATE_PROVIDER, defaultLedgerPath, fileLedger, replicateTryOnRenderer } from "./render-replicate.ts";
+import type { Ledger, ReplicateFetch } from "./render-replicate.ts";
 import { segmenterFromEnv } from "./sam.ts";
 import type { SamTransport } from "./sam.ts";
 import { metaSamTransportFromEnv } from "./sam-meta.ts";
@@ -149,6 +151,12 @@ export interface ProvidersFromEnvOptions {
   readonly verifierFetch?: VerifierFetch;
   /** Receives the redacted log of every live verifier call. */
   readonly onVerifierCall?: (log: VerifierCallLog) => void;
+  /**
+   * For PROOFSHOT_RENDER=replicate-pruna-tryon (NR4): the fetch it calls
+   * Replicate with, and overrides for the spend ledger (default
+   * %LOCALAPPDATA%\ProofShot\replicate-ledger.json) and data/models/.
+   */
+  readonly replicate?: { readonly fetch: ReplicateFetch; readonly ledger?: Ledger | null; readonly modelsDir?: string };
 }
 
 /**
@@ -182,14 +190,26 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     labels.segment = `fixture: MODEL_SEGMENT is set but ${(env.MODEL_API_KEY ?? "").trim() === "" ? "MODEL_API_KEY is not" : "no fetch was given to providersFromEnv"}, so no segmenter ran`;
   }
 
-  const renderer: Renderer = rendererFromEnv({ ...env, RENDER_PROVIDER: (env.RENDER_PROVIDER ?? "").trim() || "stand-in" }, async ({ provider }) => {
-    throw new Error(`no HTTP render transport for ${provider} exists in this build`);
-  });
+  // PROOFSHOT_RENDER (NR4) wins over RENDER_PROVIDER; only it or RENDER_PROVIDER selects the Replicate try-on.
+  const renderName = (env.PROOFSHOT_RENDER ?? "").trim() || (env.RENDER_PROVIDER ?? "").trim() || "stand-in";
+  const renderer: Renderer = renderName === REPLICATE_PROVIDER
+    ? replicateTryOnRenderer({
+        env,
+        fetch: opts.replicate?.fetch ?? null,
+        fallback: compositeV2Renderer(),
+        ledger: opts.replicate?.ledger !== undefined ? opts.replicate.ledger : ((path) => (path ? fileLedger(path) : null))(defaultLedgerPath(env)),
+        ...(opts.replicate?.modelsDir ? { modelsDir: opts.replicate.modelsDir } : {}),
+      })
+    : rendererFromEnv({ ...env, RENDER_PROVIDER: renderName }, async ({ provider }) => {
+        throw new Error(`no HTTP render transport for ${provider} exists in this build`);
+      });
   labels.render = renderer.provider === "stand-in"
     ? "stand-in: the seller's own front photo, nothing generated"
     : renderer.provider === "composite"
       ? `composite / ${renderer.model}: the seller's garment pixels, cut out by the SAM mask, placed on a template by deterministic code; no image model, and no mask means REFUSE`
-      : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
+      : renderer.provider === REPLICATE_PROVIDER
+        ? `${renderer.provider} / ${renderer.model}: AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta); falls back to composite v2 with the reason on the receipt`
+        : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
 
   let verifier: Verifier = fixtureVerifier();
   let fidelity: FidelityChecker = base.fidelity;
