@@ -36,6 +36,7 @@ import { segmenterFromEnv } from "./sam.ts";
 import type { SamTransport } from "./sam.ts";
 import { metaSamTransportFromEnv } from "./sam-meta.ts";
 import type { FetchLike, MaskParser } from "./sam-meta.ts";
+import { metaSamParser } from "./sam-parser.ts";
 import { buildShop } from "./shop.ts";
 import type { CatalogRow } from "./shop.ts";
 import { ATTRIBUTES } from "./types.ts";
@@ -136,8 +137,8 @@ export function fixtureVerifier(): Verifier {
 }
 
 export interface ProvidersFromEnvOptions {
-  /** Needed for a live segmenter: the fetch and the @meta-sam/parser glue. Without them the segmenter is a fixture. */
-  readonly sam?: { readonly fetch: FetchLike; readonly parse: MaskParser };
+  /** Needed for a live segmenter: the fetch it calls api.meta.ai with. The parser defaults to the @meta-sam/parser glue. */
+  readonly sam?: { readonly fetch: FetchLike; readonly parse?: MaskParser };
   /** Overrides MODEL_API_KEY-based wiring in tests. */
   readonly samTransport?: SamTransport;
   /** Needed for the live verifier (P6): the fetch it calls Baseten with. Without it the verifier is a fixture even with a key. */
@@ -161,7 +162,7 @@ export interface ProvidersFromEnvOptions {
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>, opts: ProvidersFromEnvOptions = {}): ServeProviders {
   const base = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: [] }) });
   const labels: Record<"segment" | "render" | "verify" | "fidelity", string> = {
-    segment: "fixture: no segmenter ran (the SAM 3.1 transport is built, the mask parser is not installed)",
+    segment: "fixture: no segmenter ran (MODEL_SEGMENT is not set)",
     render: "",
     verify: "fixture: findings recorded as all matching; no model judged the image",
     fidelity: "fixture: not measured",
@@ -169,12 +170,12 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
 
   let segmenter: Segmenter = base.segmenter;
   const wantsSam = (env.MODEL_SEGMENT ?? "").trim() !== "";
-  const transport = opts.samTransport ?? (opts.sam && (env.MODEL_API_KEY ?? "").trim() !== "" ? metaSamTransportFromEnv(env, opts.sam.fetch, opts.sam.parse) : null);
+  const transport = opts.samTransport ?? (opts.sam && (env.MODEL_API_KEY ?? "").trim() !== "" ? metaSamTransportFromEnv(env, opts.sam.fetch, opts.sam.parse ?? metaSamParser()) : null);
   if (wantsSam && transport) {
     segmenter = segmenterFromEnv(env, transport);
     labels.segment = `${segmenter.identity!.provider} / ${segmenter.identity!.model}`;
   } else if (wantsSam) {
-    labels.segment = `fixture: MODEL_SEGMENT is set but ${(env.MODEL_API_KEY ?? "").trim() === "" ? "MODEL_API_KEY is not" : "no mask parser is installed"}, so no segmenter ran`;
+    labels.segment = `fixture: MODEL_SEGMENT is set but ${(env.MODEL_API_KEY ?? "").trim() === "" ? "MODEL_API_KEY is not" : "no fetch was given to providersFromEnv"}, so no segmenter ran`;
   }
 
   const renderer: Renderer = rendererFromEnv({ ...env, RENDER_PROVIDER: (env.RENDER_PROVIDER ?? "").trim() || "stand-in" }, async ({ provider }) => {

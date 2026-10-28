@@ -474,9 +474,26 @@ UNCALIBRATED). No model judges anything.
   empty body or a non-2xx status throws (the status only, never the body or
   the key) and the pipeline records `segment_failed`. Joined text with no
   `<|mask` token is **no match**: `{segments: []}`, not an error. Text with a
-  mask token goes to the injected `parse` (the glue around `@meta-sam/parser`
-  >= 0.0.13, which is not installed in this tree yet), whose answer
-  `parseSegments` checks as above. `MODEL_SEGMENT` must be exactly
+  mask token goes to the injected `parse` with the prompt, whose answer
+  `parseSegments` checks as above.
+- The parser glue *(event, #18, Grok 28 Oct 09:00)*, `src/sam-parser.ts`
+  `metaSamParser()`: feeds the joined text to `@meta-sam/parser` 0.1.0
+  (Meta, SAM License, pinned exactly, no runtime dependencies of its own) as a
+  one-delta stream and reads its records. One segment per mask record,
+  labelled with the prompt; the box record of the same object (half-open
+  pixels) becomes `[x, y, w, h]` in 0..1 of the frame, the frame being the
+  image's own header (JPEG SOF or PNG IHDR) or, failing that, the box token's
+  `w`/`h`; the score is the mask's confidence, else the box's; the one-bit
+  raster, which has its own resolution and covers the mask's bounds, is
+  stretched into them by nearest neighbour inside a full-frame 8-bit greyscale
+  PNG (white where garment, `encodeGreyPng` in `src/png.ts`), which is what
+  the receipt hashes as `mask_sha256` and the fidelity check decodes. A parser
+  diagnostic of severity error, an outcome other than completed, a mask
+  without any confidence, bounds outside the frame, an unreadable frame size
+  or a raster that does not decode throws `SegmentProtocolError`
+  (`segment_failed`), never "no garment". Tested against the one logged live
+  answer: box 27,169 to 651,1408 of 715×1600, raster 516×1024, confidence
+  0.957. `MODEL_SEGMENT` must be exactly
   `meta/sam-3.1 (api.meta.ai)` for this transport; any other id is refused
   before a request, so the receipt's claim and the request never drift. The
   fal fallback (`fal-ai/sam-3-1/image`) sits behind the same `SamTransport`
@@ -568,9 +585,10 @@ server, which read it from the receipt.
   the job's `sources/` folder, is 404.
 - Providers come from the environment (`providersFromEnv`): the renderer from
   `RENDER_PROVIDER`, defaulting to `stand-in` (§8) since no render transport
-  exists; the segmenter is SAM 3.1 (§10) only when `MODEL_SEGMENT`,
-  `MODEL_API_KEY` and a mask parser are all present, else a fixture that finds
-  nothing and claims no model; the verifier is Muse Spark Open on Baseten (§4,
+  exists; the segmenter is SAM 3.1 (§10, the `@meta-sam/parser` glue is the
+  default parser) only when `MODEL_SEGMENT` and `MODEL_API_KEY` are set and
+  the caller gave a fetch, else a fixture that finds nothing and claims no
+  model; the verifier is Muse Spark Open on Baseten (§4,
   *P6*) when `BASETEN_API_KEY` is set and the caller gave a fetch, and then
   the fidelity check is the masked one of §10 (`maskedFidelityChecker`),
   which is REVIEW with no metrics while no mask exists. Each step is labelled

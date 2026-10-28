@@ -86,8 +86,10 @@ test("providersFromEnv: fixture mode with no key, stand-in render by default, la
 
   const noKey = providersFromEnv({ MODEL_SEGMENT: "meta/sam-3.1 (api.meta.ai)" });
   assert.match(noKey.mode.labels.segment, /MODEL_API_KEY is not/);
-  const noParser = providersFromEnv({ MODEL_SEGMENT: "meta/sam-3.1 (api.meta.ai)", MODEL_API_KEY: "set-in-the-test-only" });
-  assert.match(noParser.mode.labels.segment, /no mask parser is installed/);
+  const noFetch = providersFromEnv({ MODEL_SEGMENT: "meta/sam-3.1 (api.meta.ai)", MODEL_API_KEY: "set-in-the-test-only" });
+  assert.match(noFetch.mode.labels.segment, /no fetch was given/);
+  const withFetch = providersFromEnv({ MODEL_SEGMENT: "meta/sam-3.1 (api.meta.ai)", MODEL_API_KEY: "set-in-the-test-only" }, { sam: { fetch: async () => ({ ok: true, status: 200, text: async () => "" }) } });
+  assert.deepEqual(withFetch.providers.segmenter.identity, { provider: "meta", model: "meta/sam-3.1 (api.meta.ai)" }, "the @meta-sam/parser glue is the default parser");
 
   const live = providersFromEnv({ MODEL_SEGMENT: "meta/sam-3.1 (api.meta.ai)" }, { samTransport: async () => ({ segments: [] }) });
   assert.deepEqual(live.providers.segmenter.identity, { provider: "meta", model: "meta/sam-3.1 (api.meta.ai)" });

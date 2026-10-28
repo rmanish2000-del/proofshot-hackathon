@@ -78,11 +78,15 @@ What the one call shows:
   `response.output_text.delta`, then the `done` and `completed` events and
   `data: [DONE]`. The whole mask arrived in a single delta.
 - The text starts with `<0f>0` and then the box and mask tokens. The box token
-  carries `w=715;h=1600`, which reads as the frame the pixel coordinates refer
-  to (the intake record does not store the image size, so this is not checked
-  against the file), with one confidence repeated on both tokens. The mask `data` field begins
-  `1024,516,` then a run-length-looking string; `@meta-sam/parser` is not
-  installed here, so it is logged and not decoded.
+  carries `w=715;h=1600`, the frame the pixel coordinates refer to: the JPEG's
+  own frame header says 715×1600 too (`test/sam-parser.test.ts`). One
+  confidence is repeated on both tokens.
+- Decoded with `@meta-sam/parser` 0.1.0 (`src/sam-parser.ts`, test against
+  this log): the box record is half-open, left 27, top 169, right 651, bottom
+  1408; the mask raster is 516×1024 (the `1024,516,` prefix of `data`), its
+  own resolution, and covers those bounds, so the glue stretches it into the
+  624×1239 box by nearest neighbour before writing the full-frame PNG. The
+  garment pixels fill a sensible share of the box and none fall outside it.
 - `usage` reports `images_processed: 1` and zero input, output and total tokens.
   Cost is not in the response and no rate card was read, so no figure is written.
 - Latency is one sample and is not a benchmark.
