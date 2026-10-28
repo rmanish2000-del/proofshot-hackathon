@@ -29,6 +29,33 @@ What the two calls show:
 Cost: not logged. Baseten's response carries no price field, and no rate card
 was read during these runs, so no cost figure is written here.
 
+## Meta Model API, SAM 3.1 (`sam-3.1`)
+
+Endpoint: `POST https://api.meta.ai/v1/responses` (Responses API, `stream: true`,
+`metadata: {mask_encoding: "one_bit", include_confidence: "true"}`). The log
+leaves out every header and replaces the image data URL with its byte count and
+sha256 (`scripts/sam-call.ts`).
+
+| Log | prompt | image | HTTP | latency | output |
+|---|---|---|---|---|---|
+| `evidence/sam-2026-10-28T03-04-30-778Z.json` | `kurta` | `data/garments/kurta-01/1-front.jpg`, 258218 bytes, sha256 `12c00767…` | 200 | 3412 ms | one `<\|box;x1=27;y1=169;x2=650;y2=1407;w=715;h=1600;c=0.957\|>` and one `<\|mask;x=0;y=0;c=0.957;data=1024,516,…\|>` token |
+
+What the one call shows:
+
+- The stream is server-sent events: `response.created`, `response.in_progress`,
+  `response.output_item.added`, `response.content_part.added`, one
+  `response.output_text.delta`, then the `done` and `completed` events and
+  `data: [DONE]`. The whole mask arrived in a single delta.
+- The text starts with `<0f>0` and then the box and mask tokens. The box token
+  carries `w=715;h=1600`, which reads as the frame the pixel coordinates refer
+  to (the intake record does not store the image size, so this is not checked
+  against the file), with one confidence repeated on both tokens. The mask `data` field begins
+  `1024,516,` then a run-length-looking string; `@meta-sam/parser` is not
+  installed here, so it is logged and not decoded.
+- `usage` reports `images_processed: 1` and zero input, output and total tokens.
+  Cost is not in the response and no rate card was read, so no figure is written.
+- Latency is one sample and is not a benchmark.
+
 ## Meta Model API (Muse Wonder)
 
 No real call has been made from this repository. Nothing to report.
