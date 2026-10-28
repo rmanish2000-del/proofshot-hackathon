@@ -4,11 +4,15 @@
 // A case is one source photo and one candidate render with their masks, and a
 // label: `same` (the render shows the source's garment) or `different` (another
 // garment). For each candidate thresholds set every case is checked with
-// checkFidelity, and, when the case carries verifier findings, the gate's
-// decide() on top. A `different` case that comes out RELEASE is a false match;
-// a `same` case that comes out REFUSE is a false refuse. REVIEW is neither and is
-// counted on its own, as is a case fidelity could not measure (metrics null).
-// Nothing here reads files or calls a model.
+// checkFidelity, then the gate's decide() on top with the case's verifier
+// findings. A case with no findings (absent or undefined) has nothing verified
+// and fails closed: the gate refuses it as not_verified, the same as a verifier
+// that failed (N1, Grok 28 Oct 11:16). Scoring the fidelity check alone, as the
+// CLI does over photos no verifier has seen, is an explicit option
+// (`scope: "fidelity"`), never the default. A `different` case that comes out
+// RELEASE is a false match; a `same` case that comes out REFUSE is a false
+// refuse. REVIEW is neither and is counted on its own, as is a case fidelity
+// could not measure (metrics null). Nothing here reads files or calls a model.
 
 import { checkFidelity } from "./fidelity.ts";
 import type { Thresholds } from "./fidelity.ts";
@@ -25,8 +29,17 @@ export interface CalibrationCase {
   readonly render: RgbImage;
   readonly sourceMask: Mask | null | undefined;
   readonly renderMask: Mask | null | undefined;
-  /** The verifier's findings for this pair; absent scores fidelity alone. */
+  /** The verifier's findings for this pair; absent means nothing was verified, so the gate refuses it. */
   readonly findings?: readonly DecisionInput[];
+}
+
+export interface ScoreOptions {
+  /**
+   * `gate` (default): the gate's decision, findings plus fidelity. `fidelity`:
+   * the fidelity decision alone, findings ignored; for tuning thresholds on
+   * photos no verifier has judged, and never a release decision.
+   */
+  readonly scope?: "gate" | "fidelity";
 }
 
 export interface Candidate {
@@ -38,7 +51,7 @@ export interface CaseResult {
   readonly id: string;
   readonly label: CalibrationLabel;
   readonly fidelity: Decision;
-  /** The gate's decision when the case has findings, else the fidelity decision. */
+  /** The gate's decision (REFUSE when the case has no findings), or the fidelity decision under scope `fidelity`. */
   readonly decision: Decision;
   readonly measured: boolean;
 }
@@ -57,7 +70,9 @@ export interface CandidateScore {
   readonly cases: readonly CaseResult[];
 }
 
-export function scoreCalibration(cases: readonly CalibrationCase[], candidates: readonly Candidate[]): CandidateScore[] {
+export function scoreCalibration(cases: readonly CalibrationCase[], candidates: readonly Candidate[], options: ScoreOptions = {}): CandidateScore[] {
+  const scope = options.scope ?? "gate";
+  if (scope !== "gate" && scope !== "fidelity") throw new Error(`calibration: scope ${JSON.stringify(scope)}, say gate or fidelity`);
   const ids = new Set<string>();
   for (const c of cases) {
     if (ids.has(c.id)) throw new Error(`calibration: case id ${JSON.stringify(c.id)} appears twice`);
@@ -67,7 +82,8 @@ export function scoreCalibration(cases: readonly CalibrationCase[], candidates: 
   return candidates.map(({ name, thresholds }) => {
     const results = cases.map((c): CaseResult => {
       const fid = checkFidelity(c, thresholds);
-      const decision = c.findings ? decide(c.findings, { decision: fid.decision, reasons: fid.reasons }).decision : fid.decision;
+      // No findings goes to the gate as none at all, which refuses it as not verified.
+      const decision = scope === "fidelity" ? fid.decision : decide(c.findings ?? [], { decision: fid.decision, reasons: fid.reasons }).decision;
       return { id: c.id, label: c.label, fidelity: fid.decision, decision, measured: fid.metrics !== null };
     });
     const count = (label: CalibrationLabel, decision: Decision) => results.filter((r) => r.label === label && r.decision === decision).length;

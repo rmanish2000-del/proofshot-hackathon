@@ -522,8 +522,13 @@ UNCALIBRATED). No model judges anything.
 Calibration scorer *(event, 28 Oct)*, `scoreCalibration(cases, candidates)` in
 `src/calibrate.ts`: each case is a source image, a render, their masks and a
 label, `same` or `different`, plus optional verifier findings. For each
-candidate thresholds set it runs `checkFidelity`, and the gate's `decide` on
-top when the case has findings, and counts false matches (`different`
+candidate thresholds set it runs `checkFidelity` and the gate's `decide` on
+top. A case with no findings (absent or `undefined`) goes to the gate as an
+empty list and is refused as `not_verified`, the same as a failed verifier: it
+fails closed *(event, 28 Oct, N1; until then it took the fidelity decision
+alone and could RELEASE)*. Scoring fidelity alone is an explicit option,
+`{ scope: "fidelity" }`, which `npm run calibrate` uses because no verifier has
+judged its pairs, and prints as not a gate decision. It counts false matches (`different`
 released), false refuses (`same` refused), REVIEW per label and unmeasured
 cases. `scaledCandidates(base, factors)` multiplies the delta_e and hist
 limits by each factor and divides the texture limits (capped at 1); area
