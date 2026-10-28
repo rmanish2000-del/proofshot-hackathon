@@ -238,6 +238,27 @@ export function claimedReach(garmentNote: string): Reach | null {
 }
 
 /**
+ * NR6 (Grok 29 Oct 00:15): a garment claimed to reach the calf ("below the
+ * knee") or further is long. Seven live try-ons up to cf3c1d5 shortened every
+ * long kurta, so a long garment gets the deterministic composite by default and
+ * reaches the try-on only when TRYON_LONG_ENV is "1" or "true".
+ */
+export const LONG_FROM: Reach = "calf";
+export const TRYON_LONG_ENV = "PROOFSHOT_TRYON_LONG";
+
+/** Whether the seller's length claim makes the garment long (NR6). */
+export function isLongGarment(garmentNote: string): boolean {
+  const reach = claimedReach(garmentNote);
+  return reach !== null && REACH.indexOf(reach) >= REACH.indexOf(LONG_FROM);
+}
+
+/** Whether the environment asks for the try-on on a long garment (NR6). */
+export function tryOnLongRequested(env: Readonly<Record<string, string | undefined>>): boolean {
+  const v = (env[TRYON_LONG_ENV] ?? "").trim().toLowerCase();
+  return v === "1" || v === "true";
+}
+
+/**
  * How far down the model's own outfit reaches: data/models/<id>/model.json
  * `{ "covers": "<reach>" }`. Null when the file is missing or says something else.
  * The try-on keeps the model's outfit silhouette (9b3b226, 4427c81), so a garment
@@ -340,6 +361,23 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
     provider: REPLICATE_PROVIDER,
     model: REPLICATE_MODEL,
     render: async (req) => {
+      // NR6: a long garment goes to the composite before anything else, unless the try-on was asked for.
+      const long = isLongGarment(req.garmentNote ?? "");
+      if (long && !tryOnLongRequested(opts.env)) {
+        const out = await opts.fallback.render(req);
+        return {
+          ...out,
+          madeBy: { provider: opts.fallback.provider, model: opts.fallback.model },
+          record: {
+            ...(out.record ?? {}),
+            generative: false,
+            render_choice: opts.fallback.provider,
+            render_choice_reason: "long_garment_default",
+            render_choice_detail: `the garment is claimed to reach the ${claimedReach(req.garmentNote ?? "")}; long garments get the deterministic composite unless ${TRYON_LONG_ENV}=1 asks for the try-on`,
+          },
+        };
+      }
+      const choice = long ? { render_choice: "tryon", render_choice_reason: "long_garment_tryon_requested" } : {};
       const token = (opts.env.REPLICATE_API_TOKEN ?? "").trim();
       // Nothing that leaves this function may contain the token.
       const clean = (s: string) => (token ? s.split(token).join("[REDACTED]") : s);
@@ -449,6 +487,7 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
             cost_estimated_usd: estimate,
             attempts: i + 1,
             label: AI_PREVIEW_LABEL,
+            ...choice,
           },
         };
       }

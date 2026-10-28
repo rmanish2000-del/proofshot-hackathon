@@ -13,7 +13,7 @@ import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import {
   AI_PREVIEW_LABEL, DEFAULT_MODEL_IMAGE, MODELS_DIR, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
-  GARMENT_MARGIN, claimedReach, estimateCostUsd, modelCovers, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnOptions, tryOnPrompt,
+  GARMENT_MARGIN, TRYON_LONG_ENV, claimedReach, estimateCostUsd, isLongGarment, tryOnLongRequested, modelCovers, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnOptions, tryOnPrompt,
 } from "../src/render-replicate.ts";
 import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
 import { loadRecording, recordJob, replayJob } from "../src/replay.ts";
@@ -223,7 +223,8 @@ test("NR4b: with a length claim the prompt is sent, recorded in input, and the p
   const note = "kurta-02: Type: kurta (women's); Main colour: peach; Length: below the knee";
   const want = tryOnPrompt(note)!;
   const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
-  const { renderer } = base({ fetch });
+  // A below-the-knee claim is long, so the try-on runs only on request (NR6).
+  const { renderer } = base({ env: { REPLICATE_API_TOKEN: TOKEN, [TRYON_LONG_ENV]: "1" }, fetch });
   const outRoot = mkdtempSync(join(tmpdir(), "ps-nr4b-"));
   const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95 })) }) });
   await runJob({ jobId: "nr4b", garmentNote: note, scenes: ["studio"], sources }, { outRoot, providers: { ...fx, segmenter: { segment: async () => segments }, renderer }, provenance: "fixture" });
@@ -342,9 +343,11 @@ test("NR4e: a garment claimed longer than the model's own outfit falls back with
   assert.equal(modelCovers(dir, DEFAULT_MODEL_IMAGE), null, "no model.json: unknown, the guard does not apply");
   writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "model.json"), JSON.stringify({ covers: "hip" }));
   const long = { ...req, garmentNote: "Type: kurta; Length: long, below the knee" };
+  // The try-on is asked for on the long garment (NR6), so the model_too_short guard is what stops it.
+  const asked = { REPLICATE_API_TOKEN: TOKEN, [TRYON_LONG_ENV]: "1" };
 
   const short = fakeReplicate(sources[0]!.bytes);
-  const a = base({ fetch: short.fetch, modelsDir: dir });
+  const a = base({ env: asked, fetch: short.fetch, modelsDir: dir });
   const out = await a.renderer.render(long);
   assert.equal(short.calls.length, 0, "no paid call");
   assert.equal(a.fallback.calls, 1);
@@ -361,7 +364,7 @@ test("NR4e: a garment claimed longer than the model's own outfit falls back with
   }
   writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "model.json"), JSON.stringify({ covers: "ankle" }));
   const ankle = fakeReplicate(sources[0]!.bytes);
-  const c = base({ fetch: ankle.fetch, modelsDir: dir });
+  const c = base({ env: asked, fetch: ankle.fetch, modelsDir: dir });
   await c.renderer.render(long);
   assert.equal(c.fallback.calls, 0);
   assert.ok(ankle.calls.length > 0);
@@ -385,6 +388,53 @@ test("option B: REPLICATE_GARMENT_CONTEXT=front sends the stripped front photo a
   const one = await run({ REPLICATE_GARMENT_CONTEXT: "yes" });
   assert.equal(one.body.input.garment_images.length, 1);
   assert.equal(one.record.cost_estimated_usd, estimateCostUsd(1));
+});
+
+test("NR6: a long garment with no flag never reaches the try-on transport; the receipt says why the composite was chosen", async () => {
+  assert.equal(isLongGarment("Type: kurta; Length: long, below the knee (as photographed)"), true);
+  assert.equal(isLongGarment("Length: ankle length"), true);
+  assert.equal(isLongGarment("Length: knee"), false);
+  assert.equal(isLongGarment("Type: kurta"), false);
+  assert.equal(tryOnLongRequested({ [TRYON_LONG_ENV]: "1" }), true);
+  assert.equal(tryOnLongRequested({ [TRYON_LONG_ENV]: "TRUE" }), true);
+  assert.equal(tryOnLongRequested({ [TRYON_LONG_ENV]: "yes" }), false);
+  assert.equal(tryOnLongRequested({}), false);
+
+  const note = "kurta-01: Type: kurta; Length: long, below the knee (as photographed)";
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const { fallback, ledger, renderer } = base({ fetch });
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr6-"));
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95 })) }) });
+  await runJob({ jobId: "nr6", garmentNote: note, scenes: ["studio"], sources }, { outRoot, providers: { ...fx, segmenter: { segment: async () => segments }, renderer }, provenance: "fixture" });
+  assert.equal(calls.length, 0, "no request reaches Replicate");
+  assert.equal(ledger.entries.length, 0);
+  assert.equal(fallback.calls, 1);
+  const render = parseReceipt(readFileSync(join(outRoot, "nr6", RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.deepEqual([render.provider, render.model], ["composite", "composite-v2"]);
+  assert.equal(render.generative, false);
+  assert.equal(render.render_choice, "composite");
+  assert.equal(render.render_choice_reason, "long_garment_default");
+  assert.match(String(render.render_choice_detail), /calf.*PROOFSHOT_TRYON_LONG=1/);
+  assert.equal("fallback_reason" in render, false, "a choice, not a failure");
+});
+
+test("NR6: with the flag a long garment goes to the try-on, labelled AI preview, and the gate still judges it", async () => {
+  const note = "kurta-01: Type: kurta; Length: long, below the knee (as photographed)";
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const { fallback, renderer } = base({ env: { REPLICATE_API_TOKEN: TOKEN, [TRYON_LONG_ENV]: "1" }, fetch });
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr6-flag-"));
+  // The verifier finds a colour mismatch, so the gate must refuse the try-on.
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: attribute === "color" ? "mismatch" : "match", confidence: 0.95 })) }) });
+  const result = await runJob({ jobId: "nr6-flag", garmentNote: note, scenes: ["studio"], sources }, { outRoot, providers: { ...fx, segmenter: { segment: async () => segments }, renderer }, provenance: "fixture" });
+  assert.ok(calls.some((c) => c.url === REPLICATE_PREDICTIONS_URL), "the try-on transport was called");
+  assert.equal(fallback.calls, 0);
+  const entries = parseReceipt(readFileSync(join(outRoot, "nr6-flag", RECEIPT_FILE), "utf8"));
+  const render = entries.find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.equal(render.provider, REPLICATE_PROVIDER);
+  assert.equal(render.label, AI_PREVIEW_LABEL);
+  assert.equal(render.render_choice, "tryon");
+  assert.equal(render.render_choice_reason, "long_garment_tryon_requested");
+  assert.equal(result.renders[0]!.decision, "REFUSE", "the gate judged the try-on and refused the colour mismatch");
 });
 
 test("NR4: PROOFSHOT_RENDER selects the try-on in providersFromEnv, with a label naming Replicate", () => {

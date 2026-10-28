@@ -385,7 +385,14 @@ one of waist < hip < thigh < knee < calf < ankle: how far down the model's own
 outfit goes. When the seller's length claim reaches further ("below the knee"
 is calf), the render falls back to composite v2 with `fallback_reason:
 "model_too_short"` before any paid call. With no `model.json`, or a length
-claim naming no known place, the guard does not apply. `preserve_input_size`
+claim naming no known place, the guard does not apply. *(NR6, 29 Oct)* A garment
+claimed to reach the calf or further is long: before the token or any other
+check it gets composite v2, with `render_choice: "composite"` and
+`render_choice_reason: "long_garment_default"` on the render entry (no
+`fallback_reason`: a choice, not a failure), unless `PROOFSHOT_TRYON_LONG` is
+`1` or `true`; then the try-on runs, labelled "AI preview: look only", with
+`render_choice: "tryon"`, `render_choice_reason:
+"long_garment_tryon_requested"`, and the gate judges it as any render. `preserve_input_size`
 (boolean, Pruna's default true) is sent, and recorded in the render entry's
 `input`, only when `REPLICATE_PRESERVE_INPUT_SIZE` is exactly `true` or
 `false`. `reference_pose` is never sent *(NR4f, 28 Oct)*: Pruna's schema types
