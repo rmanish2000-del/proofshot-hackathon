@@ -1,0 +1,252 @@
+import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { test } from "node:test";
+
+import { checkFidelity, loadThresholds, maskedFidelityChecker } from "../src/fidelity.ts";
+import { fixtureProviders, runJob } from "../src/pipeline.ts";
+import type { RenderedImage, Renderer, Segment, SourceImage } from "../src/pipeline.ts";
+import { decodePng, encodeGreyPng, encodeRgbPng } from "../src/png.ts";
+import type { RgbImage } from "../src/png.ts";
+import { RECEIPT_FILE } from "../src/prior.ts";
+import { parseReceipt } from "../src/receipt.ts";
+import {
+  AI_PREVIEW_LABEL, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
+  estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata,
+} from "../src/render-replicate.ts";
+import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
+import { providersFromEnv } from "../src/serve.ts";
+import { ATTRIBUTES } from "../src/types.ts";
+
+// Low-entropy fake, never a real token.
+const TOKEN = "r8_test-token-not-real"; // gitleaks:allow
+
+// A striped garment on grey: the source photo, its full-garment mask, and a recoloured lookalike.
+function garment(recolour = false): RgbImage {
+  const w = 64, h = 80, data = new Uint8Array(w * h * 3);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 3;
+      const inside = x >= 8 && x < 56 && y >= 8 && y < 72;
+      const stripe = (x >> 3) & 1;
+      const c = !inside ? [128, 128, 128] : recolour ? (stripe ? [30, 160, 40] : [20, 90, 30]) : (stripe ? [200, 30, 40] : [120, 20, 30]);
+      data.set(c, i);
+    }
+  }
+  return { width: w, height: h, data };
+}
+const maskBytes = (img: RgbImage): Uint8Array => {
+  const m = new Uint8Array(img.width * img.height);
+  for (let y = 8; y < 72; y++) for (let x = 8; x < 56; x++) m[y * img.width + x] = 255;
+  return encodeGreyPng(img.width, img.height, m);
+};
+const SOURCE = garment();
+const sources: SourceImage[] = [{ name: "1-front.png", bytes: encodeRgbPng(SOURCE.width, SOURCE.height, SOURCE.data) }];
+const segments: Segment[] = [{ label: "1-front.png/kurta", box: [0, 0, 1, 1], score: 0.95, mask: maskBytes(SOURCE) }];
+const req = { scene: "studio", prompt: "p", sources, segments };
+
+/** A fallback that stands for composite v2 and records that it ran. */
+function fakeComposite(): Renderer & { calls: number } {
+  const r = {
+    provider: "composite" as const,
+    model: "composite-v2",
+    calls: 0,
+    render: async (): Promise<RenderedImage> => {
+      r.calls++;
+      return { bytes: sources[0]!.bytes, ext: "png", record: { method: "composite-v2", generative: false } };
+    },
+  };
+  return r;
+}
+
+function memoryLedger(entries: LedgerEntry[] = []): Ledger & { entries: LedgerEntry[] } {
+  return { entries, read: () => entries, append: (e) => void entries.push(e) };
+}
+
+function modelsDir(opts: { image?: boolean; licence?: boolean } = {}): string {
+  const dir = mkdtempSync(join(tmpdir(), "ps-models-"));
+  mkdirSync(join(dir, "model-01"));
+  if (opts.image ?? true) writeFileSync(join(dir, "model-01", "image.png"), encodeRgbPng(4, 4, new Uint8Array(48).fill(200)));
+  if (opts.licence ?? true) writeFileSync(join(dir, "model-01", "LICENSE.md"), "synthetic, not a real person\n");
+  return dir;
+}
+
+const json = (status: number, body: unknown): ReplicateResponse => ({ ok: status < 300, status, json: async () => body, arrayBuffer: async () => new ArrayBuffer(0) });
+const file = (bytes: Uint8Array): ReplicateResponse => ({ ok: true, status: 200, json: async () => ({}), arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer });
+
+/** A Replicate that creates, answers one poll with processing, then succeeded, then serves `output`. */
+function fakeReplicate(output: Uint8Array) {
+  const calls: { url: string; method: string; headers: Record<string, string>; body?: string }[] = [];
+  const fetch: ReplicateFetch = async (url, init) => {
+    calls.push({ url, method: init.method, headers: init.headers, ...(init.body ? { body: init.body } : {}) });
+    if (url === REPLICATE_PREDICTIONS_URL) return json(201, { id: "pred-1", version: "v-abc", status: "starting", urls: { get: "https://api.replicate.com/v1/predictions/pred-1" } });
+    if (url.endsWith("/pred-1")) {
+      const n = calls.filter((c) => c.url.endsWith("/pred-1")).length;
+      return json(200, n === 1 ? { id: "pred-1", status: "processing", urls: { get: url } } : { id: "pred-1", version: "v-abc", status: "succeeded", output: ["https://replicate.delivery/out.png"] });
+    }
+    if (url === "https://replicate.delivery/out.png") return file(output);
+    throw new Error(`unexpected ${url}`);
+  };
+  return { calls, fetch };
+}
+
+const base = (over: Partial<Parameters<typeof replicateTryOnRenderer>[0]> = {}) => {
+  const fallback = fakeComposite();
+  const ledger = memoryLedger();
+  const opts = { env: { REPLICATE_API_TOKEN: TOKEN }, fetch: null, fallback, ledger, modelsDir: modelsDir(), sleep: async () => {}, ...over };
+  return { fallback, ledger, renderer: replicateTryOnRenderer(opts) };
+};
+
+test("NR4 1: no REPLICATE_API_TOKEN falls back to the composite with no_api_token, and no request is sent", async () => {
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const { fallback, renderer } = base({ env: {}, fetch });
+  assert.deepEqual([renderer.provider, renderer.model], [REPLICATE_PROVIDER, REPLICATE_MODEL]);
+  const out = await renderer.render(req);
+  assert.equal(calls.length, 0);
+  assert.equal(fallback.calls, 1);
+  assert.deepEqual(out.madeBy, { provider: "composite", model: "composite-v2" });
+  assert.equal(out.record?.generative, false);
+  assert.equal(out.record?.fallback_reason, "no_api_token");
+  assert.equal(out.record?.method, "composite-v2");
+});
+
+test("NR4 2: a missing model image or LICENSE.md falls back with no_model_image", async () => {
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  for (const dir of [modelsDir({ image: false }), modelsDir({ licence: false })]) {
+    const { renderer } = base({ fetch, modelsDir: dir });
+    const out = await renderer.render(req);
+    assert.equal(out.record?.fallback_reason, "no_model_image");
+  }
+  assert.equal(calls.length, 0);
+  assert.ok("missing" in loadModelImage(modelsDir(), "../model-01"));
+});
+
+test("NR4 3: two timed-out attempts fall back with replicate_timeout and the reason, never silently", async () => {
+  let posts = 0;
+  const fetch: ReplicateFetch = async () => {
+    posts++;
+    throw Object.assign(new Error("The operation was aborted due to timeout"), { name: "TimeoutError" });
+  };
+  const { fallback, ledger, renderer } = base({ fetch });
+  const out = await renderer.render(req);
+  assert.equal(posts, 2);
+  assert.equal(fallback.calls, 1);
+  assert.equal(out.record?.fallback_reason, "replicate_timeout");
+  assert.match(String(out.record?.fallback_detail), /no answer within 120000 ms; no answer within 120000 ms/);
+  assert.equal(ledger.entries.length, 0);
+
+  // A prediction that never finishes times out on the clock too.
+  let t = 0;
+  const slow: ReplicateFetch = async (url) => json(200, { id: "p", status: "processing", urls: { get: `${url}/p` } });
+  const r2 = base({ fetch: slow, now: () => t, sleep: async (ms) => void (t += ms), timeoutMs: 10_000 });
+  const out2 = await r2.renderer.render(req);
+  assert.equal(out2.record?.fallback_reason, "replicate_timeout");
+});
+
+test("NR4 4: a mocked success carries every receipt field, strips metadata, logs the spend, and the token appears nowhere", async () => {
+  // The output PNG carries a tEXt chunk that must not survive.
+  const plain = encodeRgbPng(SOURCE.width, SOURCE.height, SOURCE.data);
+  const text = Buffer.from([0, 0, 0, 5, ...Buffer.from("tEXtsecrt"), 0, 0, 0, 0]);
+  const tagged = Buffer.concat([plain.subarray(0, 33), text, plain.subarray(33)]);
+  const { fetch, calls } = fakeReplicate(tagged);
+  const { ledger, renderer, fallback } = base({ fetch });
+  const out = await renderer.render(req);
+
+  assert.equal(fallback.calls, 0);
+  assert.equal(out.madeBy, undefined);
+  assert.deepEqual(Buffer.from(out.bytes), Buffer.from(plain));
+  const r = out.record!;
+  assert.equal(r.generative, true);
+  assert.equal(r.model_version, "v-abc");
+  assert.equal(r.prediction_id, "pred-1");
+  assert.equal(r.model_image_id, "model-01");
+  assert.equal(r.seed, 1);
+  assert.equal(r.cost_usd, null);
+  assert.equal(r.cost_estimated_usd, 0.015);
+  assert.equal(r.label, AI_PREVIEW_LABEL);
+  assert.match(String((r.input_hashes as Record<string, string>).garment_cutout), /^[0-9a-f]{64}$/);
+  assert.match(String((r.input_hashes as Record<string, string>).model_image), /^[0-9a-f]{64}$/);
+  assert.deepEqual(ledger.entries.map((e) => [e.prediction_id, e.cost_usd, e.estimated]), [["pred-1", 0.015, true]]);
+
+  // The token goes in the Authorization header and nowhere else.
+  assert.ok(calls.every((c) => c.headers.Authorization === `Bearer ${TOKEN}`));
+  const body = JSON.parse(calls[0]!.body!);
+  assert.deepEqual(Object.keys(body.input).sort(), ["garment_images", "person_image", "seed"]);
+  assert.ok(!JSON.stringify(out.record).includes(TOKEN));
+  assert.ok(!calls.some((c) => (c.body ?? "").includes(TOKEN)));
+
+  // Through the pipeline: the receipt names the try-on and holds no token.
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr4-"));
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95 })) }) });
+  const again = base({ fetch: fakeReplicate(tagged).fetch });
+  await runJob({ jobId: "nr4-ok", garmentNote: "red stripes", scenes: ["studio"], sources }, { outRoot, providers: { ...fx, segmenter: { segment: async () => segments }, renderer: again.renderer }, provenance: "fixture" });
+  const receipt = readFileSync(join(outRoot, "nr4-ok", RECEIPT_FILE), "utf8");
+  assert.ok(!receipt.includes(TOKEN));
+  const render = parseReceipt(receipt).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.deepEqual([render.provider, render.model, render.generative, render.label], [REPLICATE_PROVIDER, REPLICATE_MODEL, true, AI_PREVIEW_LABEL]);
+});
+
+test("NR4 4b: a fallback render entry names the composite, not the try-on model", async () => {
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr4-"));
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: [] }) });
+  const { renderer } = base({ env: {} });
+  await runJob({ jobId: "nr4-fb", garmentNote: "n", scenes: ["studio"], sources }, { outRoot, providers: { ...fx, renderer }, provenance: "fixture" });
+  const render = parseReceipt(readFileSync(join(outRoot, "nr4-fb", RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.deepEqual([render.provider, render.model, render.generative, render.fallback_from, render.fallback_reason], ["composite", "composite-v2", false, REPLICATE_PROVIDER, "no_api_token"]);
+});
+
+test("NR4 5: a ledger at 4.99 USD plus a 0.015 estimate refuses with spend_cap; an unreadable ledger refuses too", async () => {
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const near = memoryLedger([{ at: "2026-10-28T00:00:00.000Z", prediction_id: "old", cost_usd: 4.99, estimated: false }]);
+  const out = await base({ fetch, ledger: near }).renderer.render(req);
+  assert.equal(out.record?.fallback_reason, "spend_cap");
+  assert.equal(estimateCostUsd(1) + 4.99 > SPEND_CAP_USD, true);
+
+  const dir = mkdtempSync(join(tmpdir(), "ps-ledger-"));
+  writeFileSync(join(dir, "bad.json"), "not json");
+  const bad = await base({ fetch, ledger: fileLedger(join(dir, "bad.json")) }).renderer.render(req);
+  assert.equal(bad.record?.fallback_reason, "spend_cap");
+  const none = await base({ fetch, ledger: null }).renderer.render(req);
+  assert.equal(none.record?.fallback_reason, "spend_cap");
+  assert.equal(calls.length, 0);
+
+  const good = fileLedger(join(dir, "sub", "ledger.json"));
+  good.append({ at: "t", prediction_id: "a", cost_usd: 0.015, estimated: true });
+  assert.deepEqual(good.read().map((e) => e.cost_usd), [0.015]);
+});
+
+test("NR4 6: a recoloured lookalike from the try-on is REFUSED by the fidelity gate", async () => {
+  const fake = garment(true);
+  const t = loadThresholds();
+  const direct = checkFidelity({ source: SOURCE, render: fake, sourceMask: { width: 64, height: 80, data: decodePng(maskBytes(SOURCE)).data.map((v) => (v ? 1 : 0)) }, renderMask: { width: 64, height: 80, data: decodePng(maskBytes(fake)).data.map((v) => (v ? 1 : 0)) } }, t);
+  assert.equal(direct.decision, "REFUSE");
+
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr4-"));
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95 })) }) });
+  const { renderer } = base({ fetch: fakeReplicate(encodeRgbPng(fake.width, fake.height, fake.data)).fetch });
+  // SAM on the output: the garment region of the render.
+  const renderSegmenter = { segment: async () => [{ label: "render/kurta", box: [0, 0, 1, 1] as [number, number, number, number], score: 0.9, mask: maskBytes(fake) }] };
+  const result = await runJob({ jobId: "nr4-lookalike", garmentNote: "red stripes", scenes: ["studio"], sources }, {
+    outRoot,
+    providers: { ...fx, segmenter: { segment: async () => segments }, renderer, fidelity: maskedFidelityChecker({ segmenter: renderSegmenter }) },
+    provenance: "fixture",
+  });
+  assert.equal(result.renders[0]!.decision, "REFUSE");
+});
+
+test("NR4: the garment cut-out is the masked box of seller pixels, white outside; no mask gives none", () => {
+  const png = decodePng(garmentCutout(sources, segments)!);
+  assert.deepEqual([png.width, png.height], [48, 64]);
+  assert.deepEqual([...png.data.subarray(0, 3)], [200, 30, 40]);
+  assert.equal(garmentCutout(sources, []), null);
+  assert.equal(stripImageMetadata(Buffer.from("GIF89a")), null);
+});
+
+test("NR4: PROOFSHOT_RENDER selects the try-on in providersFromEnv, with a label naming Replicate", () => {
+  const p = providersFromEnv({ PROOFSHOT_RENDER: REPLICATE_PROVIDER }, { replicate: { fetch: fakeReplicate(new Uint8Array(0)).fetch, ledger: memoryLedger() } });
+  assert.equal(p.providers.renderer.provider, REPLICATE_PROVIDER);
+  assert.match(p.mode.labels.render, /Pruna p-image-try-on on Replicate \(third-party, non-Meta\)/);
+  assert.equal(providersFromEnv({ PROOFSHOT_RENDER: "composite" }).providers.renderer.provider, "composite");
+  assert.equal(providersFromEnv({}).providers.renderer.provider, "stand-in");
+});

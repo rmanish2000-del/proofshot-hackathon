@@ -269,6 +269,21 @@ committed.
   model `composite-v2`, the default) uses no template; its cards say
   "Composite: your garment photo on a studio backdrop, lighting adjusted
   within recorded bounds. Not AI-generated. UNVERIFIED for camera."
+- `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`,
+  built and tested offline only; **no live call has been made**): an AI
+  preview by Pruna p-image-try-on on Replicate (third-party, non-Meta). It
+  sends the SAM 3.1 garment cut-out (seller pixels only, no garment prompt) and
+  a synthetic model image from `data/models/<id>/` with its `LICENSE.md`; none
+  is committed yet. The token is read from `REPLICATE_API_TOKEN` only. Meta did
+  not draw the image: SAM 3.1 (cut-out and fidelity masks), Muse Spark (the
+  verifier) and the ProofShot gate decide what is released, with thresholds
+  unchanged. The receipt says `generative: true` and "AI preview: look only".
+  No token, no model image, no mask, a spend ledger past 5 USD
+  (`%LOCALAPPDATA%\ProofShot\replicate-ledger.json`, outside the repo), or two
+  failed or timed-out attempts (120 s each) fall back to composite v2, and the
+  render entry then names the composite with `fallback_reason`. Pruna and
+  Replicate data and output terms, India availability, and the exact API
+  input schema are UNVERIFIED.
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
   and again before each request (`src/render.ts`).
@@ -293,8 +308,8 @@ kurta-01 composite answer was cut off too (4055 reasoning tokens,
 8192 and retries once at 16384 when the answer stops at the limit; a second
 cut-off answer is a REFUSE (`verifier_truncated`), never a pass.
 
-The HTTP transports for the three render providers are not written yet. The
-renderer takes an injected transport.
+The HTTP transports for `openai-images`, `fal` and `meta` are not written yet.
+The renderer takes an injected transport.
 
 ## Dependencies and datasets
 
