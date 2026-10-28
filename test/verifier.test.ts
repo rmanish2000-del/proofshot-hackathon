@@ -25,7 +25,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const KEY = "test-key-0123456789abcdef";
+const KEY = "fake-key-aaaaaaaaaaaaaaaa"; // gitleaks:allow (low-entropy test fixture, not a key)
 const env = { BASETEN_API_KEY: KEY };
 
 // A tiny baseline JPEG: SOI, SOF0 (8-bit, 4 x 3, one component), one scan, EOI.
