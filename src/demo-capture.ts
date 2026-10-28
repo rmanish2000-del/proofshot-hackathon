@@ -64,8 +64,16 @@ export const DEMO_SHOTS: readonly Shot[] = [
     id: "S1",
     beat: 1,
     seconds: 5,
-    // Beat 1's opening line is still [TBD] in DEMO.md, and a [TBD] is never shown, so the card has the name only.
-    frames: [{ name: "S01-title", from: "page", path: "docs/DEMO.md", actions: [], page: { kind: "card", title: "ProofShot", lines: [] } }],
+    // DEMO1f: the card shows beat 1's voiceover line from DEMO.md, one sentence per line.
+    frames: [
+      {
+        name: "S01-title",
+        from: "page",
+        path: "docs/DEMO.md",
+        actions: [],
+        page: { kind: "card", title: "ProofShot", lines: ["A wrong image can sink a seller.", "ProofShot proves what was checked."] },
+      },
+    ],
   },
   {
     id: "S2",
