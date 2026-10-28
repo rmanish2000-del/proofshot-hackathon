@@ -275,8 +275,9 @@ committed.
   built and tested offline only; **no live call has been made**): an AI
   preview by Pruna p-image-try-on on Replicate (third-party, non-Meta). It
   sends the SAM 3.1 garment cut-out (seller pixels only, no garment prompt) and
-  a synthetic model image from `data/models/<id>/` with its `LICENSE.md`; none
-  is committed yet. The token is read from `REPLICATE_API_TOKEN` only. Meta did
+  a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
+  (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
+  `REPLICATE_MODEL_IMAGE` picks another). The token is read from `REPLICATE_API_TOKEN` only. Meta did
   not draw the image: SAM 3.1 (cut-out and fidelity masks), Muse Spark (the
   verifier) and the ProofShot gate decide what is released, with thresholds
   unchanged. The receipt says `generative: true` and "AI preview: look only".

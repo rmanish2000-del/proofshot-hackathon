@@ -40,6 +40,8 @@ export const ATTEMPT_TIMEOUT_MS = 120_000;
 export const ATTEMPTS = 2;
 export const POLL_MS = 2_000;
 export const DEFAULT_SEED = 1;
+/** The committed synthetic model image (Grok 3e852fd, AI-generated, LICENSE.md beside it). */
+export const DEFAULT_MODEL_IMAGE = "synthetic-01";
 /** The repo's data/models/ folder, one sub-folder per synthetic model image. */
 export const MODELS_DIR = fileURLToPath(new URL("../data/models/", import.meta.url));
 
@@ -105,7 +107,7 @@ export interface ModelImage {
 }
 
 /**
- * data/models/<id>/image.(jpg|png) and its LICENSE.md (source, licence,
+ * data/models/<id>/image.(jpg|png) or model.(jpg|png) (synthetic-01, 3e852fd) and its LICENSE.md (source, licence,
  * release, "synthetic, not a real person"). Null with the reason when either is
  * missing, the image is not a JPEG or PNG, or a JPEG still carries metadata.
  */
@@ -113,7 +115,7 @@ export function loadModelImage(modelsDir: string, id: string): ModelImage | { re
   if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(id)) return { missing: `${JSON.stringify(id)} is not a model image id` };
   const dir = join(modelsDir, id);
   if (!existsSync(join(dir, "LICENSE.md"))) return { missing: `${id}/LICENSE.md is missing` };
-  for (const name of ["image.jpg", "image.png"]) {
+  for (const name of ["image.jpg", "image.png", "model.jpg", "model.png"]) {
     const path = join(dir, name);
     if (!existsSync(path)) continue;
     const bytes = new Uint8Array(readFileSync(path));
@@ -122,7 +124,7 @@ export function loadModelImage(modelsDir: string, id: string): ModelImage | { re
     if (ext === "jpg" && stripJpegMetadata(bytes).length !== bytes.length) return { missing: `${id}/${name} still carries metadata` };
     return { id, bytes, ext };
   }
-  return { missing: `${id}/image.jpg or image.png is missing` };
+  return { missing: `${id}/image.(jpg|png) or model.(jpg|png) is missing` };
 }
 
 /**
@@ -198,7 +200,7 @@ export interface ReplicateTryOnOptions {
   /** Null when there is no ledger path: every render falls back with spend_cap. */
   readonly ledger: Ledger | null;
   readonly modelsDir?: string;
-  /** REPLICATE_MODEL_IMAGE names it when unset; default "model-01". */
+  /** REPLICATE_MODEL_IMAGE names it when unset; default DEFAULT_MODEL_IMAGE. */
   readonly modelImageId?: string;
   readonly seed?: number;
   readonly timeoutMs?: number;
@@ -225,7 +227,7 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
   const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const timeoutMs = opts.timeoutMs ?? ATTEMPT_TIMEOUT_MS;
   const seed = opts.seed ?? DEFAULT_SEED;
-  const modelImageId = opts.modelImageId ?? ((opts.env.REPLICATE_MODEL_IMAGE ?? "").trim() || "model-01");
+  const modelImageId = opts.modelImageId ?? ((opts.env.REPLICATE_MODEL_IMAGE ?? "").trim() || DEFAULT_MODEL_IMAGE);
 
   const fallback = async (req: Parameters<Renderer["render"]>[0], reason: FallbackReason, detail: string): Promise<RenderedImage> => {
     const out = await opts.fallback.render(req);

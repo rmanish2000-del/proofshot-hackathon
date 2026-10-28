@@ -12,7 +12,7 @@ import type { RgbImage } from "../src/png.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import {
-  AI_PREVIEW_LABEL, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
+  AI_PREVIEW_LABEL, DEFAULT_MODEL_IMAGE, MODELS_DIR, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
   estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata,
 } from "../src/render-replicate.ts";
 import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
@@ -66,9 +66,9 @@ function memoryLedger(entries: LedgerEntry[] = []): Ledger & { entries: LedgerEn
 
 function modelsDir(opts: { image?: boolean; licence?: boolean } = {}): string {
   const dir = mkdtempSync(join(tmpdir(), "ps-models-"));
-  mkdirSync(join(dir, "model-01"));
-  if (opts.image ?? true) writeFileSync(join(dir, "model-01", "image.png"), encodeRgbPng(4, 4, new Uint8Array(48).fill(200)));
-  if (opts.licence ?? true) writeFileSync(join(dir, "model-01", "LICENSE.md"), "synthetic, not a real person\n");
+  mkdirSync(join(dir, DEFAULT_MODEL_IMAGE));
+  if (opts.image ?? true) writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "image.png"), encodeRgbPng(4, 4, new Uint8Array(48).fill(200)));
+  if (opts.licence ?? true) writeFileSync(join(dir, DEFAULT_MODEL_IMAGE, "LICENSE.md"), "synthetic, not a real person\n");
   return dir;
 }
 
@@ -119,7 +119,11 @@ test("NR4 2: a missing model image or LICENSE.md falls back with no_model_image"
     assert.equal(out.record?.fallback_reason, "no_model_image");
   }
   assert.equal(calls.length, 0);
-  assert.ok("missing" in loadModelImage(modelsDir(), "../model-01"));
+  assert.ok("missing" in loadModelImage(modelsDir(), `../${DEFAULT_MODEL_IMAGE}`));
+  // The committed synthetic-01 (3e852fd: model.png + LICENSE.md) loads as the default.
+  const committed = loadModelImage(MODELS_DIR, DEFAULT_MODEL_IMAGE);
+  assert.ok(!("missing" in committed), JSON.stringify("missing" in committed ? committed : null));
+  assert.deepEqual([committed.id, committed.ext], [DEFAULT_MODEL_IMAGE, "png"]);
 });
 
 test("NR4 3: two timed-out attempts fall back with replicate_timeout and the reason, never silently", async () => {
@@ -160,7 +164,7 @@ test("NR4 4: a mocked success carries every receipt field, strips metadata, logs
   assert.equal(r.generative, true);
   assert.equal(r.model_version, "v-abc");
   assert.equal(r.prediction_id, "pred-1");
-  assert.equal(r.model_image_id, "model-01");
+  assert.equal(r.model_image_id, DEFAULT_MODEL_IMAGE);
   assert.equal(r.seed, 1);
   assert.equal(r.cost_usd, null);
   assert.equal(r.cost_estimated_usd, 0.015);
