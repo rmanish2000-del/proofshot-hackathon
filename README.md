@@ -268,7 +268,9 @@ committed.
   a mannequin. Not AI-generated." `composite` v2 (`src/composite-v2.ts`,
   model `composite-v2`, the default) uses no template; its cards say
   "Composite: your garment photo on a studio backdrop, lighting adjusted
-  within recorded bounds. Not AI-generated. UNVERIFIED for camera."
+  within recorded bounds. Not AI-generated. UNVERIFIED for camera." When
+  white balance is skipped (a coloured garment), the receipt note and the
+  shop panel say "Lighting only: no colour correction was applied".
 - `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`,
   built and tested offline only; **no live call has been made**): an AI
   preview by Pruna p-image-try-on on Replicate (third-party, non-Meta). It

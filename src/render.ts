@@ -208,7 +208,8 @@ export function compositeV2Renderer(params: V2Params = V2_PARAMS): Renderer {
           generative: false,
           mask: { source: front.name, segment_index: pick.index, sam_score: pick.segment.score },
           composite: { params: out.params },
-          note: V2_CORRECTION_NOTE,
+          // NR3d: "lighting only" when WB was skipped, so the receipt never claims a colour correction that did not happen.
+          note: (out.params.colour as { note?: string } | undefined)?.note ?? V2_CORRECTION_NOTE,
           camera_use: "UNVERIFIED for camera",
         },
       };

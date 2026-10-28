@@ -90,6 +90,9 @@ export type V2Params = { readonly [K in keyof typeof V2_PARAMS]: (typeof V2_PARA
 /** The honesty note for the receipt, the shop card and the README (§5). */
 export const V2_CORRECTION_NOTE =
   "Lighting and white balance were adjusted by bounded, recorded amounts (max ±8% per colour channel, shadow gain 0.80 to 1.35). Fidelity checks compare against the seller's original photo.";
+/** NR3d: the note when white balance was skipped (a coloured garment), so no colour correction was applied. */
+export const V2_LIGHTING_ONLY_NOTE =
+  "Lighting only: no colour correction was applied (white balance skipped on a coloured garment). Lighting was adjusted by bounded, recorded amounts (shadow gain 0.80 to 1.35). Fidelity checks compare against the seller's original photo.";
 
 /** The §7 reasons, word for word, each with the capture-guide step that fixes it (docs/CAPTURE.md). */
 export const QUALITY_REASONS = Object.freeze({
@@ -704,7 +707,7 @@ export function compositeV2(src: RgbImage, mask: Mask, p: V2Params = V2_PARAMS):
   // §5
   const corr = correctGarment(src, m, L, p);
   const shadowAfter = round4(shadowScore(illumination(corr.image, m, illumR), m));
-  const colour = { wb_applied: corr.wb_applied, wb_reason: corr.wb_reason, garment_chroma: corr.garment_chroma, wb_max_chroma: p.wb_max_chroma, wb_gains: corr.wb_gains, gain_applied: corr.gain_applied, correction_delta_e: corr.correction_delta_e, shadow_score_after: shadowAfter, note: V2_CORRECTION_NOTE };
+  const colour = { wb_applied: corr.wb_applied, wb_reason: corr.wb_reason, garment_chroma: corr.garment_chroma, wb_max_chroma: p.wb_max_chroma, wb_gains: corr.wb_gains, gain_applied: corr.gain_applied, correction_delta_e: corr.correction_delta_e, shadow_score_after: shadowAfter, note: corr.wb_applied ? V2_CORRECTION_NOTE : V2_LIGHTING_ONLY_NOTE };
   if (corr.correction_delta_e > p.max_corr_de) throw new CompositeQualityReview("correction", { ...base, colour });
 
   // §4 ghost assembly at source scale: garment + neck insert, feathered inward.
