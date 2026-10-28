@@ -100,7 +100,7 @@ test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode
 test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md, timed like frames.txt, ending at the total", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
-  assert.ok(voice.get(4)!.startsWith("Wi-Fi is off."), "beat 4 voiceover");
+  assert.ok(voice.get(4)!.startsWith("A buyer drops the receipt"), "beat 4 voiceover");
   const narration = shotNarration(DEMO_SHOTS, voice);
   const narrated = DEMO_SHOTS.filter((s) => narration.get(s.id));
   assert.ok(narrated.length > 0);
@@ -188,6 +188,35 @@ test("DEMO1g: the DEMO.md beat table has no [TBD], its timecodes are the cumulat
   }
   assert.equal(at, DEMO_SHOTS.reduce((n, s) => n + s.seconds, 0), "last timecode is the shots.json total");
   assert.equal(at, 101, "1:41");
+});
+
+test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the Words cell is the real count, and beats 4, 5 and 7 carry Grok's lines", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  const voice = narrationFromDemoMd(md);
+  const beats = beatSecondsFromDemoMd(md);
+  const table = md.split("## Timecode table")[1]!.split("\n## ")[0]!;
+  const rows = table.split("\n").filter((l) => /^\|\s*\d+\s*\|/.test(l));
+  assert.equal(rows.length, 8);
+  for (const row of rows) {
+    const beat = Number(/^\|\s*(\d+)/.exec(row)![1]);
+    const words = voice.get(beat)!.split(/\s+/).filter(Boolean).length;
+    const cap = Math.floor(beats.get(beat)! * 2.5);
+    assert.ok(words <= cap, `beat ${beat}: ${words} words, cap ${cap}`);
+    assert.match(row, new RegExp(`\\| ${words} / ${cap} \\|`), `beat ${beat}: Words cell says ${words} / ${cap}`);
+  }
+  assert.equal(
+    voice.get(4),
+    "A buyer drops the receipt and the image onto the verify page. The page recomputes every hash in the browser, with no server and no account. The chain holds and the image is the released one: VALID.",
+  );
+  assert.equal(
+    voice.get(5),
+    "Now change one byte of the receipt. The page says TAMPERED and names the entry that broke. The gate decides from recorded checks alone: here REVIEW, because no mask was stored.",
+  );
+  assert.equal(
+    voice.get(7),
+    "Not every difference is a refusal. Here the hem changed, a soft attribute, so the gate sends it to a person for REVIEW. Every outcome lands in the receipt.",
+  );
+  assert.ok(!table.includes("wait on Grok"), "no open note under the table");
 });
 
 test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
