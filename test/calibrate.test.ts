@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { scaledCandidates, scoreCalibration } from "../src/calibrate.ts";
+import { labelledPairs, scaledCandidates, scoreCalibration, wholeFrameMask } from "../src/calibrate.ts";
 import type { CalibrationCase } from "../src/calibrate.ts";
 import { loadThresholds } from "../src/fidelity.ts";
 import { ATTRIBUTES } from "../src/types.ts";
@@ -63,4 +63,42 @@ test("scaled candidates keep area, cap texture at 1, and reject bad input", () =
   for (const f of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) assert.throws(() => scaledCandidates(base, [f]), /positive finite/);
   assert.throws(() => scoreCalibration([cases[0]!, cases[0]!], []), /appears twice/);
   assert.throws(() => scoreCalibration([{ ...cases[0]!, label: "maybe" as "same" }], []), /not same or different/);
+});
+
+test("labelledPairs: every ordered pair of two different photos, same when both come from one garment dir, different otherwise (Grok 10:48)", () => {
+  const photos = [
+    { garment: "kurta-01", name: "1-front.jpg" },
+    { garment: "kurta-01", name: "3-back.jpg" },
+    { garment: "kurta-02", name: "1-front.jpg" },
+  ];
+  const pairs = labelledPairs(photos);
+  assert.equal(pairs.length, 6, "3 photos give 3 x 2 ordered pairs, no photo against itself");
+  assert.deepEqual(pairs.map((p) => [p.id, p.label]), [
+    ["kurta-01/1-front.jpg -> kurta-01/3-back.jpg", "same"],
+    ["kurta-01/1-front.jpg -> kurta-02/1-front.jpg", "different"],
+    ["kurta-01/3-back.jpg -> kurta-01/1-front.jpg", "same"],
+    ["kurta-01/3-back.jpg -> kurta-02/1-front.jpg", "different"],
+    ["kurta-02/1-front.jpg -> kurta-01/1-front.jpg", "different"],
+    ["kurta-02/1-front.jpg -> kurta-01/3-back.jpg", "different"],
+  ]);
+  assert.equal(pairs[0]!.source, photos[0]);
+  assert.equal(pairs[0]!.render, photos[1]);
+  // The same file name in two garments is still two photos, and different.
+  assert.equal(new Set(pairs.map((p) => p.id)).size, pairs.length);
+  assert.deepEqual(labelledPairs([photos[0]!]), []);
+});
+
+test("wholeFrameMask covers every pixel, so the pairs score end to end; a case with no mask stays unmeasured", () => {
+  const m = wholeFrameMask(grey);
+  assert.deepEqual([m.width, m.height, m.data.length, m.data.every((v) => v === 1)], [W, H, W * H, true]);
+  const [score] = scoreCalibration(
+    [
+      pair("whole", "same", grey, solid(128, 128, 128), { sourceMask: m, renderMask: wholeFrameMask(grey) }),
+      pair("no-mask", "different", grey, solid(10, 200, 10), { renderMask: null }),
+    ],
+    scaledCandidates(loadThresholds(), [1]),
+  );
+  assert.deepEqual(score!.cases.map((c) => [c.id, c.decision, c.measured]), [["whole", "RELEASE", true], ["no-mask", "REVIEW", false]]);
+  assert.equal(score!.false_match, 0);
+  assert.equal(score!.unmeasured, 1);
 });
