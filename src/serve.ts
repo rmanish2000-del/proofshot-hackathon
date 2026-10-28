@@ -34,7 +34,7 @@ import { RECEIPT_FILE } from "./prior.ts";
 import { parseReceipt, verifyChain } from "./receipt.ts";
 import type { Clock } from "./receipt.ts";
 import { compositeV2Renderer, rendererFromEnv } from "./render.ts";
-import { REPLICATE_PROVIDER, defaultLedgerPath, fileLedger, replicateTryOnRenderer } from "./render-replicate.ts";
+import { REPLICATE_PROVIDER, TRYON_LONG_ENV, defaultLedgerPath, fileLedger, replicateTryOnRenderer } from "./render-replicate.ts";
 import type { Ledger, ReplicateFetch } from "./render-replicate.ts";
 import { segmenterFromEnv } from "./sam.ts";
 import type { SamTransport } from "./sam.ts";
@@ -211,7 +211,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     : renderer.provider === "composite"
       ? `composite / ${renderer.model}: the seller's garment pixels, cut out by the SAM mask, placed on a template by deterministic code; no image model, and no mask means REFUSE`
       : renderer.provider === REPLICATE_PROVIDER
-        ? `${renderer.provider} / ${renderer.model}: AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta); falls back to composite v2 with the reason on the receipt`
+        ? `${renderer.provider} / ${renderer.model}: AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta); falls back to composite v2 with the reason on the receipt; long garments (calf or longer) get composite v2 unless ${TRYON_LONG_ENV}=1`
         : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
 
   let verifier: Verifier = fixtureVerifier();

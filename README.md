@@ -331,7 +331,10 @@ committed.
   model folder declares how far down the model's own outfit reaches
   (`model.json` `covers`: synthetic-01 `hip`, synthetic-02 `ankle`). A garment
   claimed longer than that falls back to composite v2 with `fallback_reason`
-  `model_too_short` before any paid call. It
+  `model_too_short` before any paid call. Since NR6 this is enforced in code,
+  not only a demo choice: a garment claimed to reach the calf or further gets
+  composite v2 (`render_choice_reason: long_garment_default` on the receipt)
+  and reaches the try-on only with `PROOFSHOT_TRYON_LONG=1`. It
   sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
   (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
