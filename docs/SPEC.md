@@ -509,6 +509,18 @@ UNCALIBRATED). No model judges anything.
   fal fallback (`fal-ai/sam-3-1/image`) sits behind the same `SamTransport`
   type and is not written.
 
+Calibration scorer *(event, 28 Oct)*, `scoreCalibration(cases, candidates)` in
+`src/calibrate.ts`: each case is a source image, a render, their masks and a
+label, `same` or `different`, plus optional verifier findings. For each
+candidate thresholds set it runs `checkFidelity`, and the gate's `decide` on
+top when the case has findings, and counts false matches (`different`
+released), false refuses (`same` refused), REVIEW per label and unmeasured
+cases. `scaledCandidates(base, factors)` multiplies the delta_e and hist
+limits by each factor and divides the texture limits (capped at 1); area
+stays. Tests use synthetic images only. Running it on `data/garments/*` waits
+on JPEG decoding inside the fidelity check and on SAM masks for those photos;
+until then the thresholds stay UNCALIBRATED.
+
 ## 11. Shopper preview *(event)*
 
 What a buyer sees: a static product page that is **only a reader of
