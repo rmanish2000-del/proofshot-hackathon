@@ -291,8 +291,8 @@ committed.
   shop panel say "Lighting only: no colour correction was applied".
 - `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`):
   an AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta).
-  **One live call so far** (14dad54, `data/jobs/live-kurta-02-tryon`, n=1):
-  the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
+  **Three live calls so far (n=3), none released; the gate caught every
+  one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
   length and drew shorts below it; the verifier flagged the hem as a mismatch
   (0.98) and the fidelity check found the garment shrank in frame (area
   0.212). The gate caught an AI model changing the garment, and nothing was
@@ -301,7 +301,14 @@ committed.
   the try-on replaced only the T-shirt. Since NR4b the request carries a
   prompt with the garment type and length the seller claimed (`Type:`,
   `Length:` or `hem:` in the garment note), never colour or print, and none
-  when neither is claimed. That fix has not been run live yet. It
+  when neither is claimed. That fix did not keep the length (9b3b226,
+  `live-kurta-02-tryon-2` and `live-kurta-01-tryon`, both **REFUSE**): both
+  outputs are still hip-length tunics over the model's leggings (fidelity area
+  0.212 and 0.206, below 0.400), and kurta-01's full sleeves came back
+  three-quarter. On both, the verifier timed out at 180 s, so the gate
+  refused them as not verified (fail closed). Since NR4c a verifier request
+  that times out is sent once more with a 360 s timeout, and the receipt lists
+  both attempts. It
   sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
   (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
