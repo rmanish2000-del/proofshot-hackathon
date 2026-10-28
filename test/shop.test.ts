@@ -196,6 +196,9 @@ test("web/shop.html carries the current core.js, and loads nothing from outside 
   // Every stand-in card carries the label, decided from the row's render_provider, in the one place that paints cards.
   assert.match(page, /row\.render_provider === "stand-in"\) tags\.append\(el\("span", "tag standin", "owner's photo, stands in for render"\)\)/);
   assert.equal(page.split("owner's photo, stands in for render").length - 1, 2, "once on the card, once in the panel");
+  // A composite card says what it is (SPEC-render-fix §3), from the same field.
+  assert.match(page, /row\.render_provider === "composite"\) tags\.append\(el\("span", "tag composite", "Composite: your garment photo on a mannequin\. Not AI-generated\."\)\)/);
+  assert.match(page, /No image model generated this picture\./);
 });
 
 test("a release whose render entry is missing or unnamed gets no row", async () => {

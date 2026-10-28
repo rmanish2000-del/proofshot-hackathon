@@ -8,8 +8,11 @@
 // One real pipeline job (P6): the garment's intake photos go through the
 // providers the environment names (src/serve.ts providersFromEnv), which must
 // include the live verifier, Muse Spark Open on Baseten, read from
-// BASETEN_API_KEY. The renderer is the stand-in (the owner's front photo) and
-// the segmenter is whatever MODEL_SEGMENT, MODEL_API_KEY and the mask parser
+// BASETEN_API_KEY. The renderer is the stand-in (the owner's front photo), or
+// with RENDER_PROVIDER=composite (NR1) the seller's garment cut out by the SAM
+// mask and placed on the RENDER_TEMPLATE template (default mannequin-01), no
+// image model; with no mask the composite refuses (render_failed). The
+// segmenter is whatever MODEL_SEGMENT, MODEL_API_KEY and the mask parser
 // allow; without them no segment exists and the fidelity check is REVIEW with
 // no metrics, so the gate's answer is REVIEW at best (SPEC §10 is not weakened
 // for this). The receipt lands in <jobs root>/<job id>/ and the verifier call's
