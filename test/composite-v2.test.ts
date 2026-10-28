@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 
-import { CompositeQualityReview, QUALITY_REASONS, V2_PARAMS, cleanMask, compositeV2, correctGarment, garmentChroma, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
+import { CompositeQualityReview, QUALITY_REASONS, V2_PARAMS, backNeckInsert, cleanMask, compositeV2, correctGarment, garmentChroma, illumination, neckRegion, shadowScore, wbGains } from "../src/composite-v2.ts";
 import type { V2Params } from "../src/composite-v2.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import type { FidelityChecker, Segment, SourceImage, Verifier } from "../src/pipeline.ts";
@@ -89,8 +89,8 @@ test("composite v2 is deterministic: two runs give one PNG, pinned by golden has
   assert.deepEqual([runs[0]!.image.width, runs[0]!.image.height], [1200, 1600]);
   assert.deepEqual(chunks(runs[0]!.png), ["IHDR", "IDAT", "IEND"], "no EXIF or text chunks");
   // Golden values: the pixels (independent of the deflate build) and the PNG bytes (node 22's zlib, as in CI).
-  assert.equal(sha256Hex(runs[0]!.image.data), "7cfc56930bbadaa3a04bf9bd356c0b8f49480a688dda4cad6ce1c6f60d7e0e42");
-  assert.equal(sha256Hex(runs[0]!.png), "4d7636d1b7abd9b7ffce1f2522899a1b7ae08e7f0bde9e320b769045b19054b0");
+  assert.equal(sha256Hex(runs[0]!.image.data), "782ab7497ff1e6dff42e05f848304447bf379250ee3c18fcdaa09dc399afd1d5");
+  assert.equal(sha256Hex(runs[0]!.png), "4928fcc7df817f16b8676a2fc2154fdcc84d03fc455a0254aee0e7942e970810");
 });
 
 test("ghost: outside the dilated garment every output pixel is backdrop or shadow (neutral grey), no form and no photo background", () => {
@@ -134,6 +134,32 @@ test("the neck insert lies only inside the detected neck region: off the garment
   const insert = runs[0]!.params.insert as { present: boolean; colour: number[] };
   assert.equal(insert.present, true);
   assert.equal(neckRegion(cleanMask(kurta({ notch: false }).mask).mask), null, "no notch, no insert");
+});
+
+test("NR3c: the back-neck insert has a curved top edge, lowest at the centre, inside the opening, never a flat block", () => {
+  const cleaned = cleanMask(golden.mask);
+  const neck = neckRegion(cleaned.mask)!;
+  const w = cleaned.mask.width;
+  const back = backNeckInsert(neck, w);
+  const nb = neck.bbox;
+  // The arc's row: at the opening's top at both ends, insert_back_depth of its height lower at the centre.
+  const mid = back.top[Math.floor((nb.x1 - nb.x0) / 2)]!;
+  assert.ok(Math.abs(mid - (nb.y0 + V2_PARAMS.insert_back_depth * (nb.y1 - nb.y0))) < 1, `centre ${mid}`);
+  assert.ok(back.top[0]! - nb.y0 < mid - nb.y0, "the sides sit higher than the centre");
+  // Each insert column starts at its first region row on or under the arc, so its top edge follows the curve.
+  const firstRow = (x: number) => {
+    for (let y = nb.y0; y < nb.y1; y++) if (back.mask[y * w + x]) return y;
+    return -1;
+  };
+  const cx = Math.floor((nb.x0 + nb.x1) / 2);
+  assert.ok(firstRow(cx) >= Math.ceil(mid), "nothing above the arc at the centre");
+  const tops = new Set<number>();
+  for (let x = nb.x0; x < nb.x1; x++) if (firstRow(x) >= 0) tops.add(firstRow(x));
+  assert.ok(tops.size > 3, "the top edge is not one flat row");
+  for (let i = 0; i < back.mask.length; i++) if (back.mask[i]) assert.equal(neck.region[i], 1, "the insert stays inside the opening");
+  assert.ok(back.px > 0 && back.px < neck.px, "part of the opening shows the backdrop above the back collar");
+  const insert = runs[0]!.params.insert as { shape: string; px: number; opening_px: number };
+  assert.deepEqual([insert.shape, insert.px, insert.opening_px], ["curved-back", back.px, neck.px]);
 });
 
 test("flattening lowers the shadow score, and WB and lighting gains never leave their bounds (50 seeded fixtures)", () => {
