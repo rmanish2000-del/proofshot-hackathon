@@ -443,9 +443,30 @@ UNCALIBRATED). No model judges anything.
   carries `segmenter: {provider: "meta", model}` (§3). A blank model id, or
   one naming Muse Image, is refused before any request; `segmenterFromEnv`
   reads `MODEL_SEGMENT` (no default: the id on a receipt is a claim, not a
-  guess) and `SEGMENT_PROMPT`. The request body and endpoint of Meta's SAM
-  3.1 API are not in this document, so the HTTP transport is not rebuilt
-  yet, and nothing in the README claims a SAM run until one is logged.
+  guess) and `SEGMENT_PROMPT`. Nothing in the README claims a SAM run until
+  one is logged.
+- The Meta Model API transport *(event, #18, Grok 28 Oct 08:15)*,
+  `src/sam-meta.ts`: `metaSamTransport({fetch, apiKey, parse})` is the
+  `SamTransport` for Meta's hosted SAM 3.1. One request per image: `POST
+  https://api.meta.ai/v1/responses`, Responses-API body with `model:
+  "sam-3.1"`, `stream: true`, one `input_text` (the noun phrase) and one
+  `input_image` data URL (`image/jpeg` or `image/png` from the bytes; anything
+  else is refused before the request), `metadata: {mask_encoding: "one_bit",
+  include_confidence: "true"}`; the key from `MODEL_API_KEY` goes into the
+  Authorization header and nowhere else. The answer is a server-sent event
+  stream; the `delta` of every `response.output_text.delta` event is joined in
+  order (a plain JSON body's `output_text`, or its `output_text` content parts,
+  is accepted too). A `response.failed` or `error` event, a non-JSON event, an
+  empty body or a non-2xx status throws (the status only, never the body or
+  the key) and the pipeline records `segment_failed`. Joined text with no
+  `<|mask` token is **no match**: `{segments: []}`, not an error. Text with a
+  mask token goes to the injected `parse` (the glue around `@meta-sam/parser`
+  >= 0.0.13, which is not installed in this tree yet), whose answer
+  `parseSegments` checks as above. `MODEL_SEGMENT` must be exactly
+  `meta/sam-3.1 (api.meta.ai)` for this transport; any other id is refused
+  before a request, so the receipt's claim and the request never drift. The
+  fal fallback (`fal-ai/sam-3-1/image`) sits behind the same `SamTransport`
+  type and is not written.
 
 ## 11. Shopper preview *(event)*
 
