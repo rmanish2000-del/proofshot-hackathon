@@ -22,6 +22,7 @@
   .note { font-size: 0.9rem; margin: 0 0 0.4rem; overflow-wrap: anywhere; }
   .tag { display: inline-block; font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 999px; background: #eee; color: var(--muted); margin-right: 0.3rem; margin-bottom: 0.2rem; }
   .tag.standin { background: var(--warnbg); color: #7a4b00; }
+  .tag.composite { background: #e8eef8; color: #24426e; }
   .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: var(--ok); background: var(--okbg); border: 1px solid #bfe0c9; border-radius: 999px; padding: 0.2rem 0.6rem; cursor: pointer; font-family: inherit; }
   .badge::before { content: "✓"; }
   .unverified { font-size: 0.8rem; color: #8a2c2c; background: var(--badbg); border-radius: 999px; padding: 0.2rem 0.6rem; display: inline-block; }
@@ -333,6 +334,8 @@ async function verifyRecord(receiptText, image, subtle) {
     // The label comes from the receipt's render entry, not from the note: the
     // stand-in renderer returned the owner's own photo and generated nothing.
     if (row.render_provider === "stand-in") tags.append(el("span", "tag standin", "owner's photo, stands in for render"));
+    // A composite is the seller's own garment pixels placed on a template by code: no image model.
+    if (row.render_provider === "composite") tags.append(el("span", "tag composite", "Composite: your garment photo on a mannequin. Not AI-generated."));
     body.append(tags);
     const status = el("div");
     status.append(mark(item));
@@ -362,7 +365,9 @@ async function verifyRecord(receiptText, image, subtle) {
     add("render_id", row.render_id);
     add("image sha256", row.image_sha256);
     add("gate", row.gate_reason, true);
-    add("render", row.render_provider === "stand-in" ? "owner's photo, stands in for render: nothing was generated" : `${row.render_provider} / ${row.render_model}`, true);
+    add("render", row.render_provider === "stand-in" ? "owner's photo, stands in for render: nothing was generated"
+      : row.render_provider === "composite" ? `composite / ${row.render_model}: the seller's own garment pixels, cut out by SAM 3.1, placed on a template by deterministic code. No image model generated this picture.`
+      : `${row.render_provider} / ${row.render_model}`, true);
     add("released by", row.approved_by_human ? "a named approver" : "unattended (no human approved it)", true);
     add("provenance", row.provenance === "fixture" ? "fixture job, not a live render" : row.provenance, true);
     inner.append(dl);
