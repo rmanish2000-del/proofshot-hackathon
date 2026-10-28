@@ -1,0 +1,12 @@
+{
+  "name": "refuse",
+  "recorded_from": {
+    "job_id": "demo-refuse",
+    "head": "e21b38060121d81e4d93da4286e1c4c1eca4aa0ce19b599e99573ef3144aa4d6"
+  },
+  "files": {
+    "renders/demo-refuse-r0.png": "dc74e681585b00e9aa7456bc0bc05cf2b03bec4fb4ce82061150517ab2ee802e",
+    "sources/front.png": "5c4bb882814154ce4c71777ac8bba19dcbd504fb1c688ca6bcf5c713fadd4260",
+    "steps.json": "2ea489da9d16dfd246b43043d4bf46c4a274e8efa05ad3e4d18a78946bf20de1"
+  }
+}

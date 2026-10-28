@@ -1,0 +1,145 @@
+{
+  "job": {
+    "job_id": "demo-review",
+    "garment_note": "indigo cotton kurta, side slits (fixture: synthetic images, no garment was photographed)",
+    "scenes": [
+      "studio"
+    ],
+    "approver": "unattended",
+    "source_images": [
+      {
+        "name": "front.png",
+        "sha256": "5c4bb882814154ce4c71777ac8bba19dcbd504fb1c688ca6bcf5c713fadd4260"
+      }
+    ]
+  },
+  "timestamps": [
+    "2026-10-28T02:30:00.000Z",
+    "2026-10-28T02:30:01.000Z",
+    "2026-10-28T02:30:02.000Z",
+    "2026-10-28T02:30:03.000Z",
+    "2026-10-28T02:30:04.000Z",
+    "2026-10-28T02:30:05.000Z"
+  ],
+  "refused": null,
+  "segments": [],
+  "renderer": {
+    "provider": "fixture",
+    "model": "fixture-render"
+  },
+  "verifier": {
+    "provider": "fixture",
+    "model": "fixture-verifier",
+    "base": "fixture"
+  },
+  "scenes": [
+    {
+      "scene": "studio",
+      "render_id": "demo-review-r0",
+      "render": {
+        "file": "demo-review-r0.png",
+        "sha256": "dc74e681585b00e9aa7456bc0bc05cf2b03bec4fb4ce82061150517ab2ee802e"
+      },
+      "render_error": null,
+      "verifier": {
+        "findings": [
+          {
+            "attribute": "color",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "print_pattern",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "logo_text",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "collar",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "sleeve_length",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "hem",
+            "verdict": "mismatch",
+            "confidence": 0.95,
+            "note": "a soft attribute mismatched: the side slits disappeared",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "pocket_count",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "buttons",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          },
+          {
+            "attribute": "fabric_texture",
+            "verdict": "match",
+            "confidence": 0.95,
+            "note": "matches the source",
+            "evidence": {
+              "source_bbox": null,
+              "render_bbox": null
+            }
+          }
+        ]
+      },
+      "fidelity": {
+        "decision": "RELEASE",
+        "metrics": null,
+        "reasons": []
+      }
+    }
+  ]
+}
