@@ -73,6 +73,14 @@ verification page with the image hash filled in. You can also download the
 receipt from the card and check it on `web/verify.html` opened from disk. In
 fixture mode the receipt's job entry says provenance `fixture`.
 
+Demo frames (DEMO1): `npm run demo:capture` starts its own local server on a
+free port, opens the `docs/DEMO.md` shots in headless Edge or Chrome
+(`PROOFSHOT_BROWSER` names another) from the committed receipts, and writes
+numbered PNG frames at 360 and 1280 px to the gitignored `out/demo/`, with
+`out/demo/shots.json` listing each shot and why any was skipped (slides,
+terminal, OS tray, text editor). It makes `out/demo/demo.mp4` only when
+`ffmpeg` is on PATH. No upload, no publish, no live call, no key read.
+
 6. Optional: keep generated jobs out of tracked folders:
 
 ```bash
