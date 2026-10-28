@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -226,6 +226,25 @@ test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S5 i
   const s5 = md.split("\n").find((l) => /^\|\s*S5\s*\|/.test(l))!;
   assert.match(s5, /receipt bytes around the byte that will change/);
   assert.ok(md.includes("- [ ] verify.html opened from disk (file:// URL visible), no server running."));
+});
+
+test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload page was browser-checked, no pinned test count or commit, S4 is the log page", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  for (const stale of ["no generative render transport", "not checked in a real browser", "214", "c4feb75", "generated on-model image exists"]) {
+    assert.ok(!md.includes(stale), `no "${stale}" in DEMO.md`);
+  }
+  const s4 = md.split("\n").find((l) => /^\|\s*S4\s*\|/.test(l))!;
+  assert.match(s4, /replay log page/);
+  assert.ok(!/terminal/i.test(s4), "S4 is not a terminal");
+  const gen = md.split("\n").find((l) => l.startsWith("| A generated on-model image"))!;
+  assert.match(gen, /no generated image has been released/);
+  // The call count is read from the committed receipts, never typed from memory.
+  const jobs = join(root, "data/jobs");
+  const tryons = readdirSync(jobs).filter((d) => {
+    const p = join(jobs, d, "receipt.jsonl");
+    return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
+  });
+  assert.match(gen, new RegExp(`the ${tryons.length} live try-on calls committed so far \\(${tryons.length} receipts`));
 });
 
 test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
