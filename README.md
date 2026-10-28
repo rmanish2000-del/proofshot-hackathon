@@ -133,6 +133,13 @@ committed.
   (`meta-models/muse-spark-open-1026`) on Baseten. `MODEL_VERIFIER` overrides
   the model id (`src/baseten.ts`).
 
+**Built with Muse Spark Open.** The verifier calls `meta-models/muse-spark-open-1026`
+on Baseten. Two real calls are logged under `evidence/` with the key redacted;
+tokens, latency and finish reasons are in `docs/API-NOTES.md`. The model
+reasons before it answers (`reasoning_content`), so `scripts/baseten-call.ts`
+sends `max_tokens: 1024`; at 64 the answer was cut off (`finish_reason: "length"`,
+content null).
+
 The HTTP transports for the three render providers are not written yet. The
 renderer takes an injected transport.
 
@@ -151,10 +158,10 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 113 tests pass, 0 fail | `npm test`, run on 27 Oct 2026 at 18:14 IST, commit 5a898a4 |
+| Test suite green | 120 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 06:25 IST, tree of 6ce271f plus this change |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
-| Live Muse Spark Open call on Baseten | **UNVERIFIED** | no call log is committed under `evidence/` yet |
+| Live Muse Spark Open call on Baseten | 2 calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
 | Real SAM 3.1 segmentation | **not built** | the segmenter is an injected provider; tests use fixtures |
 | Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
 | Verify page in a real browser | **not checked** | tested in Node against the same core |
