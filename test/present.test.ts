@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { fixtureProviders } from "../src/pipeline.ts";
-import { GATE_LABEL, presentJob, renderBadge, sourceLabels, tamperedCopy } from "../src/present.ts";
+import { FIDELITY_NOT_RUN, GATE_LABEL, presentJob, renderBadge, sourceLabels, tamperedCopy } from "../src/present.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { Receipt, parseReceipt, verifyChain } from "../src/receipt.ts";
 import { REPLICATE_PROVIDER } from "../src/render-replicate.ts";
@@ -101,6 +101,27 @@ test("NR5b: kurta-01 shows three labelled inputs, both fronts kept with their ow
   assert.deepEqual(sourceLabels(["front.png", "x.jpg", "2-side.jpg"]), ["Front", "Photo 2", "Side"]);
   const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
   assert.match(page, /el\("strong", \{ text: s\.label \}\)/, "judge.html captions each input with its label");
+});
+
+test("DEMO1e: a job that stored no mask says fidelity was not run, in plain words; the receipt text and the gate decision are unchanged", () => {
+  const entries = load("live-kurta-01-mismatch");
+  const view = presentJob(entries);
+  const r = view.renders[0]!;
+  assert.equal(r.decision, "REFUSE");
+  assert.equal(r.cited!.rule, "hard_mismatch");
+  assert.equal(r.cited!.plain, null);
+  const fid = r.reasons.find((x) => x.rule === "fidelity")!;
+  assert.equal(fid.plain, FIDELITY_NOT_RUN);
+  assert.equal(fid.reason, "fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg", "receipt text kept");
+  assert.ok(r.reasons.filter((x) => x.rule !== "fidelity").every((x) => x.plain === null));
+  // A job whose segments entry has masks keeps the receipt's fidelity text as it is.
+  for (const v of readdirSync(JOBS).map((job) => presentJob(load(job)))) {
+    for (const x of v.renders.flatMap((rv) => rv.reasons)) {
+      if (x.plain !== null) assert.ok(v.job_id && ["live-kurta-01", "live-kurta-01-2", "live-kurta-01-mismatch"].includes(v.job_id), `${v.job_id}: plain only on jobs with no stored mask`);
+    }
+  }
+  const page = readFileSync(join(ROOT, "web", "judge.html"), "utf8");
+  assert.match(page, /x\.plain \? \{ text: x\.plain, title: `receipt text: \$\{x\.reason\}` \}/, "judge.html shows the plain line, receipt text in the tooltip");
 });
 
 test("present: across every committed job, a model name appears only when its receipt entry exists", () => {

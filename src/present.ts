@@ -37,7 +37,15 @@ export interface ReasonView {
   readonly render_bbox: readonly number[] | null;
   /** True for the composite quality pre-check (SPEC composite v2), shown as its own reason. */
   readonly quality_precheck: boolean;
+  /**
+   * Plain wording the page shows instead of `reason`, or null to show `reason`.
+   * Set only on a fidelity reason whose fidelity entry measured nothing because
+   * the job stored no mask (DEMO1e); `reason` keeps the receipt's text.
+   */
+  readonly plain: string | null;
 }
+
+export const FIDELITY_NOT_RUN = "fidelity not run on this job: no mask was stored";
 
 export interface RenderView {
   readonly render_id: string;
@@ -136,7 +144,21 @@ export function renderBadge(payload: unknown): Badge {
   return { kind: "none", label: "Render method not recorded", tooltip: "The render entry does not say how the image was made, so nothing is claimed." };
 }
 
-function reasonView(raw: unknown, findings: readonly Obj[]): ReasonView {
+/**
+ * True when the fidelity entry measured nothing because no mask was stored: no
+ * metrics, a "mask is missing" reason, and a segments entry with no mask bytes.
+ * Jobs recorded before SAM was wired (live-kurta-01, -2, -mismatch) are such jobs.
+ */
+function noMaskStored(fidelity: ReceiptEntry | undefined, segments: ReceiptEntry | undefined): boolean {
+  const fp = obj(fidelity?.payload);
+  if (!fidelity || fp.metrics) return false;
+  const reasons = Array.isArray(fp.reasons) ? fp.reasons : [];
+  if (!reasons.some((x) => typeof x === "string" && /mask is missing/.test(x))) return false;
+  const segs = Array.isArray(obj(segments?.payload).segments) ? (obj(segments?.payload).segments as unknown[]) : [];
+  return !segs.some((s) => str(obj(s).mask_sha256) !== null);
+}
+
+function reasonView(raw: unknown, findings: readonly Obj[], noMask = false): ReasonView {
   const r = obj(raw);
   const attribute = str(r.attribute);
   const finding = attribute ? findings.find((f) => f.attribute === attribute) : undefined;
@@ -151,6 +173,7 @@ function reasonView(raw: unknown, findings: readonly Obj[]): ReasonView {
     source_bbox: box(evidence.source_bbox),
     render_bbox: box(evidence.render_bbox),
     quality_precheck: r.rule === "render_quality",
+    plain: noMask && r.rule === "fidelity" ? FIDELITY_NOT_RUN : null,
   };
 }
 
@@ -230,11 +253,12 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
     const findings = (Array.isArray(obj(verifier?.payload).findings) ? (obj(verifier?.payload).findings as unknown[]) : []).map(obj);
     const decision = gp.decision === "RELEASE" || gp.decision === "REVIEW" || gp.decision === "REFUSE" ? gp.decision : null;
     const badge = renderBadge(render ? rp : undefined);
+    const noMask = noMaskStored(forRender("fidelity", id), segments);
     return {
       render_id: id,
       decision,
-      cited: gp.cited ? reasonView(gp.cited, findings) : null,
-      reasons: (Array.isArray(gp.reasons) ? gp.reasons : []).map((r) => reasonView(r, findings)),
+      cited: gp.cited ? reasonView(gp.cited, findings, noMask) : null,
+      reasons: (Array.isArray(gp.reasons) ? gp.reasons : []).map((r) => reasonView(r, findings, noMask)),
       badge,
       image_sha256: str(rp.sha256),
       provider: str(rp.provider),

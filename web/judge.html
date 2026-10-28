@@ -301,7 +301,8 @@ function drawRender(r) {
       x.severity ? `${x.severity} attribute` : null,
       `rule ${x.rule}`,
     ].filter(Boolean).join(" · ");
-    ul.append(el("li", { class: x.severity ?? "" }, el("strong", { text: parts }), el("div", { text: x.reason })));
+    // DEMO1e: plain wording when the job stored no mask; the receipt's own text stays in the tooltip.
+    ul.append(el("li", { class: x.severity ?? "" }, el("strong", { text: parts }), el("div", x.plain ? { text: x.plain, title: `receipt text: ${x.reason}` } : { text: x.reason })));
   }
 }
 
