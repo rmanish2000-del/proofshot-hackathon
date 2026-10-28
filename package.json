@@ -19,7 +19,8 @@
     "job:live": "node --experimental-strip-types scripts/live-job.ts",
     "demo:replay": "node --experimental-strip-types scripts/replay.ts",
     "demo:record": "node --experimental-strip-types scripts/record.ts",
-    "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts"
+    "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts",
+    "guard:assets": "node scripts/asset-guard.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
