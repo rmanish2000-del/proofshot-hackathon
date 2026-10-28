@@ -692,9 +692,16 @@ server, which read it from the receipt.
   "Return only JSON matching this schema, no prose"; one `user` message whose
   content parts are, in order, a text part naming each image ("source 1:
   <name>" … "render") followed by its `image_url` data URL (`detail: auto`),
-  then the instruction text last. `temperature: 0`, `max_tokens: 4096` (the
-  model reasons before it answers; 1500 cut the first live answer off), no
-  `response_format` (no JSON mode on Baseten). The message content is the
+  then the instruction text last. `temperature: 0`, `max_tokens: 8192` (the
+  model reasons before it answers; 1500 cut the first live answer off, 4096
+  cut off the kurta-01 composite), no `response_format` (no JSON mode on
+  Baseten). An answer with `finish_reason: "length"` is cut off and is never
+  read: the request is sent once more at `max_tokens: 16384`; if that answer
+  is cut off too, the verifier throws `VerifierTruncatedError` and the gate
+  refuses the render with `cited.rule: "verifier_truncated"` (ahead of the
+  `not_verified` reasons). After a retry, `usage.attempts` lists each attempt
+  (`max_tokens`, `finish_reason`, completion and reasoning tokens), on a pass
+  and on a refusal, and a replay repeats it. The message content is the
   raw value, after code fences and prose around the first JSON object are
   dropped; `parseFindings` (§4) still checks it strictly, so prose, a cut-off
   answer, null content, a non-JSON body, a network error or a non-2xx status

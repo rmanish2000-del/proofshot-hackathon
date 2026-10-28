@@ -5,7 +5,8 @@
 // message that is the §4 schema verbatim plus the rule "return only JSON", then
 // one user message whose content parts name each image ("source 1: <name>",
 // ... "render") before its data URL, with the instruction last. temperature 0,
-// max_tokens 4096 (the model reasons before it answers), no response_format
+// max_tokens 8192 (the model reasons before it answers; one retry at 16384 when
+// the answer is cut off, NR2), no response_format
 // (Muse Spark Open on Baseten has no JSON mode). The answer's message content is
 // returned raw for src/schema.ts parseFindings, after one defensive step: code
 // fences and prose around the first JSON object are dropped. Anything that is
@@ -20,19 +21,21 @@
 // decode only), so the photos go as they are (Baseten allows 10 MB per image, 100 MiB a body).
 
 import { BASETEN_BASE, BASETEN_MODEL, BasetenConfigError, KEY_PLACEHOLDER } from "./baseten.ts";
-import type { SourceImage, Verifier, VerifierUsage } from "./pipeline.ts";
+import type { SourceImage, Verifier, VerifierAttempt, VerifierUsage } from "./pipeline.ts";
 import { imageExt, refuseMuseImage } from "./render.ts";
 import { FINDINGS_SCHEMA, VerifierProtocolError } from "./schema.ts";
 import { sha256Hex } from "./util.ts";
 
 export const VERIFIER_PROVIDER = "baseten";
 /**
- * 4096, not the 1500 first tried: on the first live job
- * (evidence/verifier-2026-10-28T03-55-00-289Z.json) the model spent 1338
- * reasoning tokens before the answer and the 9 findings were cut off at 1500
- * (finish_reason "length"), which the gate refused as not verified.
+ * 8192. 1500 cut the first live answer off (evidence/verifier-2026-10-28T03-55-00-289Z.json,
+ * 1338 reasoning tokens first), and 4096 cut off the composite render of
+ * kurta-01 (evidence/verifier-2026-10-28T12-30-54-012Z.json: 4055 reasoning
+ * tokens, the JSON cut off, finish_reason "length").
  */
-export const VERIFIER_MAX_TOKENS = 4096;
+export const VERIFIER_MAX_TOKENS = 8192;
+/** The one retry after a finish_reason "length" answer asks for this many. */
+export const VERIFIER_RETRY_MAX_TOKENS = 16384;
 export const VERIFIER_TIMEOUT_MS = 180_000;
 /** Baseten's per-image limit; a larger image is refused before the request. */
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -54,6 +57,21 @@ export const VERIFIER_FINAL_INSTRUCTION =
 
 export class VerifierTransportError extends Error {
   override name = "VerifierTransportError";
+}
+
+/**
+ * The answer stopped at max_tokens (finish_reason "length") on the first call
+ * and on the retry. A cut-off answer is never read as findings; the pipeline
+ * records the job's gate as `verifier_truncated` and refuses (SPEC §4). The
+ * usage carries both attempts so the receipt shows what was tried.
+ */
+export class VerifierTruncatedError extends Error {
+  override name = "VerifierTruncatedError";
+  readonly usage: VerifierUsage;
+  constructor(message: string, usage: VerifierUsage) {
+    super(message);
+    this.usage = usage;
+  }
 }
 
 export type ContentPart =
@@ -89,6 +107,7 @@ export interface BasetenVerifierOptions {
   /** Receives the redacted log of every call, before the result or error is returned. */
   readonly onCall?: (log: VerifierCallLog) => void;
   readonly maxTokens?: number;
+  readonly retryMaxTokens?: number;
   readonly timeoutMs?: number;
   readonly now?: () => number;
 }
@@ -195,9 +214,12 @@ function errorText(err: unknown): string {
  * The Verifier. A blank key, or a model id naming Muse Image, is refused when
  * the verifier is built. Per render: one request; a network error, a non-2xx
  * status (reported by number only), a body that is not JSON, or no message
- * content throws, after the redacted log went to `onCall`. On success the raw
- * value is the message content with fences and prose around the JSON object
- * dropped; parseFindings decides whether it is the schema.
+ * content throws, after the redacted log went to `onCall`. An answer with
+ * finish_reason "length" is cut off and is never read: the request is sent once
+ * more at the retry limit, and a second "length" throws VerifierTruncatedError.
+ * After a retry the usage lists both attempts (limit, finish_reason, tokens).
+ * On success the raw value is the message content with fences and prose around
+ * the JSON object dropped; parseFindings decides whether it is the schema.
  */
 export function basetenVerifier(opts: BasetenVerifierOptions): Verifier {
   const key = (opts.env.BASETEN_API_KEY ?? "").trim();
@@ -207,59 +229,103 @@ export function basetenVerifier(opts: BasetenVerifierOptions): Verifier {
   const url = `${BASETEN_BASE}/chat/completions`;
   const now = opts.now ?? Date.now;
   const maxTokens = opts.maxTokens ?? VERIFIER_MAX_TOKENS;
+  const retryMaxTokens = opts.retryMaxTokens ?? VERIFIER_RETRY_MAX_TOKENS;
 
   return {
     identity: { provider: VERIFIER_PROVIDER, model, base: BASETEN_BASE },
     verify: async (req) => {
       const messages = verifierMessages(req);
-      const body = { model, messages, max_tokens: maxTokens, temperature: 0 };
-      const started = now();
-      let response: VerifierCallLog["response"] = null;
-      let error: string | null = null;
-      let text = "";
-      try {
-        const res = await opts.fetch(url, {
-          method: "POST",
-          headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
-          body: JSON.stringify(body),
-          signal: AbortSignal.timeout(opts.timeoutMs ?? VERIFIER_TIMEOUT_MS),
-        });
-        text = await res.text();
-        response = { status: res.status, body: parseOrText(text) };
-        if (res.status < 200 || res.status > 299) error = `VerifierTransportError: Baseten answered HTTP ${res.status}`;
-      } catch (e) {
-        error = errorText(e);
-      }
-      const finished = now();
       const images = [...req.sources.map((s) => s.bytes), req.render].map((b) => ({ bytes: b.length, ...(imageSize(b) ?? { width: 0, height: 0 }) }));
+      const send = (limit: number) => call({ opts, key, model, url, now, messages, maxTokens: limit, renderId: req.renderId });
 
-      const log: VerifierCallLog = {
-        provider: VERIFIER_PROVIDER,
-        model,
-        url,
-        render_id: req.renderId,
-        started_at: new Date(started).toISOString(),
-        finished_at: new Date(finished).toISOString(),
-        latency_ms: finished - started,
-        request: { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${KEY_PLACEHOLDER}` }, body: { ...body, messages: redactImages(messages) } },
-        response,
-        error,
-        note: "the auth header is a placeholder; every image data URL is replaced by its byte count and sha256; the key's value is replaced wherever it appears",
-      };
-      opts.onCall?.(scrub(log, key));
-
-      if (error) throw new VerifierTransportError(error.replace(/^VerifierTransportError: /, ""));
-      const content = messageContent(response!.body);
-      const usage = usageOf(response!.body, images);
-      return { raw: extractJsonObject(content), ...(usage ? { usage } : {}) };
+      const first = await send(maxTokens);
+      if (finishReason(first) !== "length") {
+        const usage = usageOf(first, images);
+        return { raw: extractJsonObject(messageContent(first)), ...(usage ? { usage } : {}) };
+      }
+      const retry = await send(retryMaxTokens);
+      const usage: VerifierUsage = { ...usageOf(retry, images), attempts: [attemptOf(first, maxTokens), attemptOf(retry, retryMaxTokens)] };
+      if (finishReason(retry) === "length") {
+        throw new VerifierTruncatedError(`the answer was cut off at max_tokens ${maxTokens} and again at ${retryMaxTokens} (finish_reason length)`, usage);
+      }
+      return { raw: extractJsonObject(messageContent(retry)), usage };
     },
+  };
+}
+
+/** One request: the redacted log goes to `onCall`, then the parsed body is returned or the error thrown. */
+async function call(a: {
+  opts: BasetenVerifierOptions;
+  key: string;
+  model: string;
+  url: string;
+  now: () => number;
+  messages: VerifierMessage[];
+  maxTokens: number;
+  renderId: string;
+}): Promise<unknown> {
+  const { opts, key, model, url, now, messages } = a;
+  const body = { model, messages, max_tokens: a.maxTokens, temperature: 0 };
+  const started = now();
+  let response: VerifierCallLog["response"] = null;
+  let error: string | null = null;
+  try {
+    const res = await opts.fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(opts.timeoutMs ?? VERIFIER_TIMEOUT_MS),
+    });
+    response = { status: res.status, body: parseOrText(await res.text()) };
+    if (res.status < 200 || res.status > 299) error = `VerifierTransportError: Baseten answered HTTP ${res.status}`;
+  } catch (e) {
+    error = errorText(e);
+  }
+  const finished = now();
+
+  const log: VerifierCallLog = {
+    provider: VERIFIER_PROVIDER,
+    model,
+    url,
+    render_id: a.renderId,
+    started_at: new Date(started).toISOString(),
+    finished_at: new Date(finished).toISOString(),
+    latency_ms: finished - started,
+    request: { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${KEY_PLACEHOLDER}` }, body: { ...body, messages: redactImages(messages) } },
+    response,
+    error,
+    note: "the auth header is a placeholder; every image data URL is replaced by its byte count and sha256; the key's value is replaced wherever it appears",
+  };
+  opts.onCall?.(scrub(log, key));
+
+  if (error) throw new VerifierTransportError(error.replace(/^VerifierTransportError: /, ""));
+  if (typeof response!.body !== "object" || response!.body === null) throw new VerifierProtocolError("verifier output: the response body is not JSON");
+  return response!.body;
+}
+
+/** choices[0].finish_reason, or null when the body has none. */
+function finishReason(body: unknown): string | null {
+  const r = (body as { choices?: { finish_reason?: unknown }[] }).choices?.[0]?.finish_reason;
+  return typeof r === "string" ? r : null;
+}
+
+/** What the receipt keeps of one attempt: the limit asked for, how it ended, and the token counts. */
+function attemptOf(body: unknown, maxTokens: number): VerifierAttempt {
+  const u = (body as { usage?: { completion_tokens?: unknown; completion_tokens_details?: { reasoning_tokens?: unknown } } }).usage;
+  const n = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+  const completion = n(u?.completion_tokens);
+  const reasoning = n(u?.completion_tokens_details?.reasoning_tokens);
+  return {
+    max_tokens: maxTokens,
+    finish_reason: finishReason(body),
+    ...(completion !== undefined ? { completion_tokens: completion } : {}),
+    ...(reasoning !== undefined ? { reasoning_tokens: reasoning } : {}),
   };
 }
 
 /** choices[0].message.content as a non-blank string, else a VerifierProtocolError. */
 function messageContent(body: unknown): string {
   const o = body as { choices?: { message?: { content?: unknown } }[] } | null;
-  if (typeof body !== "object" || body === null) throw new VerifierProtocolError("verifier output: the response body is not JSON");
   const content = o?.choices?.[0]?.message?.content;
   if (typeof content !== "string" || content.trim() === "") throw new VerifierProtocolError("verifier output: no message content");
   return content;

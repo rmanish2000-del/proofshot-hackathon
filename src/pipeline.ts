@@ -91,11 +91,21 @@ export interface Renderer {
   render(req: { scene: string; prompt: string; sources: readonly SourceImage[]; segments?: readonly Segment[] }): Promise<RenderedImage>;
 }
 
+/** One verifier request when the first answer was cut off: the limit asked for and how it ended. */
+export interface VerifierAttempt {
+  readonly max_tokens: number;
+  readonly finish_reason: string | null;
+  readonly completion_tokens?: number;
+  readonly reasoning_tokens?: number;
+}
+
 export interface VerifierUsage {
   readonly prompt_tokens?: number;
   readonly completion_tokens?: number;
   readonly cached_tokens?: number;
   readonly images?: readonly { bytes: number; width: number; height: number }[];
+  /** Present only after a retry: every attempt in order, the last one is the answer used (or refused). */
+  readonly attempts?: readonly VerifierAttempt[];
 }
 
 export interface Verifier {
@@ -152,7 +162,8 @@ export interface StepRefusal {
   readonly attribute: null;
   readonly verdict: null;
   readonly confidence: null;
-  readonly rule: "prior_records_unreadable" | "segment_failed" | "render_failed";
+  /** `verifier_truncated` is per scene: the verifier's answer stopped at max_tokens twice (SPEC §4). */
+  readonly rule: "prior_records_unreadable" | "segment_failed" | "render_failed" | "verifier_truncated";
   readonly reason: string;
 }
 
@@ -259,12 +270,17 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     let findings: Finding[] = [];
     let error: string | undefined;
     let usage: VerifierUsage | undefined;
+    let truncated = false;
     try {
       const out = await verifier.verify({ sources: job.sources, render: image.bytes, renderId: render_id, scene });
       usage = out.usage;
       findings = parseFindings(out.raw);
     } catch (err) {
       error = errorText(err);
+      // Matched by name, not class, so a replayed recording refuses the same way.
+      truncated = err instanceof Error && err.name === "VerifierTruncatedError";
+      const thrownUsage = (err as { usage?: VerifierUsage } | null)?.usage;
+      if (typeof thrownUsage === "object" && thrownUsage !== null) usage = thrownUsage;
     }
     receipt.append("verifier", { render_id, findings, verifier: { ...verifier.identity }, usage, error });
 
@@ -278,7 +294,10 @@ export async function runJob(job: JobInput, opts: RunOptions): Promise<JobResult
     });
     receipt.append("fidelity", { render_id, ...fidelity });
 
-    const gate = decide(findings, fidelity);
+    const decided = decide(findings, fidelity);
+    // A cut-off verifier answer refuses under its own name, ahead of the not_verified reasons it causes.
+    const cut = truncated ? stepRefusal("verifier_truncated", error!) : null;
+    const gate = cut ? { decision: "REFUSE" as const, cited: cut, reasons: [cut, ...decided.reasons] } : decided;
     receipt.append("gate", { render_id, decision: gate.decision, cited: gate.cited, reasons: gate.reasons });
     if (gate.decision === "RELEASE") {
       receipt.append("release", { render_id, image_sha256, approver, approved_by_human: approver !== "unattended" });

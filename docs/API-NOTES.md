@@ -59,6 +59,12 @@ What the two calls show:
   are evidence on the receipt, not gate input, so neither changes a decision.
 - The render was the first photo itself, so `match` everywhere is the right
   answer and says nothing about mismatch detection.
+- 4096 is not always enough either: `evidence/verifier-2026-10-28T12-30-54-012Z.json`
+  (the kurta-01 composite render) stopped at `length` with 4096 completion
+  tokens, 4055 of them reasoning, 7354 prompt tokens (768 cached), and the
+  JSON cut off inside the first finding. Since NR2 the verifier sends 8192, retries once at
+  16384 on `length`, and refuses as `verifier_truncated` when the retry is cut
+  off too (SPEC §4).
 
 ## Meta Model API, SAM 3.1 (`sam-3.1`)
 

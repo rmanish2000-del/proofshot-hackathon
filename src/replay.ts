@@ -324,11 +324,15 @@ function checkSteps(v: unknown): RecordedSteps {
   return steps;
 }
 
-/** Throws an Error whose `<name>: <message>` text is the recorded one, so the pipeline writes it again. */
-function throwRecorded(text: string): never {
+/**
+ * Throws an Error whose `<name>: <message>` text is the recorded one, so the
+ * pipeline writes it again; recorded usage (a cut-off verifier's attempts) rides on it.
+ */
+function throwRecorded(text: string, usage?: VerifierUsage): never {
   const i = text.indexOf(": ");
-  const err = new Error(i < 0 ? text : text.slice(i + 2));
+  const err = new Error(i < 0 ? text : text.slice(i + 2)) as Error & { usage?: VerifierUsage };
   err.name = i < 0 ? "Error" : text.slice(0, i);
+  if (usage !== undefined) err.usage = usage;
   throw err;
 }
 
@@ -366,7 +370,7 @@ export function replayProviders(rec: Recording): Providers {
       identity: { ...steps.verifier },
       verify: async ({ renderId }) => {
         const v = sceneOf(renderId).verifier ?? refuse(`the recording has no verifier answer for ${renderId}`);
-        if (v.error !== undefined) throwRecorded(v.error);
+        if (v.error !== undefined) throwRecorded(v.error, v.usage);
         return { raw: { findings: v.findings }, ...(v.usage !== undefined ? { usage: v.usage } : {}) };
       },
     },

@@ -8,10 +8,13 @@ import { MuseImageRefused, standInRenderer } from "../src/render.ts";
 import { FINDINGS_SCHEMA, VerifierProtocolError, parseFindings } from "../src/schema.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
+import { loadRecording, recordJob, replayJob } from "../src/replay.ts";
 import {
   MAX_IMAGE_BYTES,
   VERIFIER_MAX_TOKENS,
+  VERIFIER_RETRY_MAX_TOKENS,
   VerifierTransportError,
+  VerifierTruncatedError,
   basetenVerifier,
   extractJsonObject,
   imageSize,
@@ -80,7 +83,7 @@ test("the system prompt is the §4 schema verbatim plus the one-JSON rule; the u
   assert.throws(() => verifierMessages({ sources: Array(8).fill({ name: "a.jpg", bytes: JPEG }), render: JPEG }), /image limit/);
 });
 
-test("one call: Baseten chat completions, bearer key, temperature 0, max_tokens 4096, no response_format; the raw answer is the content and usage is read", async () => {
+test("one call: Baseten chat completions, bearer key, temperature 0, max_tokens 8192, no response_format; the raw answer is the content and usage is read", async () => {
   const { calls, fetch } = recording(200, answer(JSON.stringify(findings), { prompt_tokens: 886, completion_tokens: 300, prompt_tokens_details: { cached_tokens: 128 } }));
   const logs: VerifierCallLog[] = [];
   const v = basetenVerifier({ env, fetch, onCall: (l) => logs.push(l), now: (() => { const t = [1_000, 3_500]; return () => t.shift()!; })() });
@@ -94,7 +97,7 @@ test("one call: Baseten chat completions, bearer key, temperature 0, max_tokens 
   assert.equal(body.model, BASETEN_MODEL);
   assert.equal(body.temperature, 0);
   assert.equal(body.max_tokens, VERIFIER_MAX_TOKENS);
-  assert.equal(VERIFIER_MAX_TOKENS, 4096, "1500 cut the first live answer off: evidence/verifier-2026-10-28T03-55-00-289Z.json");
+  assert.equal(VERIFIER_MAX_TOKENS, 8192, "4096 cut the kurta-01 composite answer off: evidence/verifier-2026-10-28T12-30-54-012Z.json");
   assert.equal("response_format" in body, false, "Muse Spark Open on Baseten has no JSON mode");
   assert.deepEqual(body.messages, verifierMessages(req));
 
@@ -185,4 +188,82 @@ test("in the pipeline: a live verifier's findings reach the gate, its identity a
   const refused = await runJob({ jobId: "live-bad", garmentNote: "kurta", scenes: ["studio"], sources }, { outRoot: out, providers: providers(bad.fetch), provenance: "live" });
   assert.equal(refused.renders[0]!.decision, "REFUSE");
   assert.equal(refused.renders[0]!.cited!.rule, "not_verified");
+});
+
+// NR2: the shape of the cut-off answer in evidence/verifier-2026-10-28T12-30-54-012Z.json.
+const choice = (content: string, finish_reason: string, completion: number, reasoning: number) =>
+  JSON.stringify({
+    choices: [{ message: { role: "assistant", content, reasoning_content: "thinking" }, finish_reason }],
+    usage: { prompt_tokens: 7354, completion_tokens: completion, completion_tokens_details: { reasoning_tokens: reasoning } },
+  });
+const CUT = choice('{"findings":[{"attribute":"color","verdict":"match","confidence":0.9', "length", 8192, 8150);
+const FULL = choice(JSON.stringify(findings), "stop", 9000, 8100);
+
+function answers(...bodies: string[]) {
+  const calls: { body: Record<string, unknown> }[] = [];
+  const fetch: VerifierFetch = async (_url, init) => {
+    calls.push({ body: JSON.parse(init.body) as Record<string, unknown> });
+    const body = bodies[calls.length - 1] ?? bodies[bodies.length - 1]!;
+    return { status: 200, text: async () => body };
+  };
+  return { calls, fetch };
+}
+
+test("finish_reason stop: one call, no retry, no attempts on the usage", async () => {
+  const { calls, fetch } = answers(choice(JSON.stringify(findings), "stop", 1810, 1700));
+  const out = await basetenVerifier({ env, fetch }).verify(req);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0]!.body.max_tokens, VERIFIER_MAX_TOKENS);
+  assert.equal(parseFindings(out.raw).length, ATTRIBUTES.length);
+  assert.equal(out.usage?.attempts, undefined);
+});
+
+test("finish_reason length: the cut-off answer is never read; one retry at the higher limit, and both attempts are on the usage", async () => {
+  const { calls, fetch } = answers(CUT, FULL);
+  const logs: VerifierCallLog[] = [];
+  const out = await basetenVerifier({ env, fetch, onCall: (l) => logs.push(l) }).verify(req);
+  assert.deepEqual(calls.map((c) => c.body.max_tokens), [VERIFIER_MAX_TOKENS, VERIFIER_RETRY_MAX_TOKENS]);
+  assert.equal(VERIFIER_RETRY_MAX_TOKENS, 16384);
+  assert.equal(logs.length, 2, "each attempt is logged");
+  assert.equal(out.raw, JSON.stringify(findings), "the answer used is the retry's");
+  assert.deepEqual(out.usage?.attempts, [
+    { max_tokens: VERIFIER_MAX_TOKENS, finish_reason: "length", completion_tokens: 8192, reasoning_tokens: 8150 },
+    { max_tokens: VERIFIER_RETRY_MAX_TOKENS, finish_reason: "stop", completion_tokens: 9000, reasoning_tokens: 8100 },
+  ]);
+  assert.equal(out.usage?.completion_tokens, 9000);
+});
+
+test("finish_reason length twice: VerifierTruncatedError, and in the pipeline the gate refuses as verifier_truncated with both attempts on the receipt", async () => {
+  const { calls, fetch } = answers(CUT, CUT);
+  await assert.rejects(basetenVerifier({ env, fetch }).verify(req), VerifierTruncatedError);
+  assert.equal(calls.length, 2, "one retry, not more");
+
+  const out = mkdtempSync(join(tmpdir(), "verifier-cut-"));
+  const sources = [{ name: "1-front.jpg", bytes: JPEG }];
+  const providers = {
+    segmenter: { segment: async () => [] },
+    renderer: standInRenderer(),
+    verifier: basetenVerifier({ env, fetch: answers(CUT, CUT).fetch }),
+    fidelity: { check: async () => ({ decision: "RELEASE" as const, metrics: null, reasons: [] }) },
+  };
+  const r = await runJob({ jobId: "live-cut", garmentNote: "kurta", scenes: ["studio"], sources }, { outRoot: out, providers, provenance: "live" });
+  assert.equal(r.renders[0]!.decision, "REFUSE");
+  assert.equal(r.renders[0]!.cited!.rule, "verifier_truncated");
+  const entries = parseReceipt(readFileSync(join(r.dir, "receipt.jsonl"), "utf8"));
+  const v = entries.find((e) => e.kind === "verifier")!.payload as { findings: unknown[]; usage: { attempts: { finish_reason: string }[] }; error: string };
+  assert.deepEqual(v.findings, [], "a cut-off answer gives no findings");
+  assert.deepEqual(v.usage.attempts.map((a) => a.finish_reason), ["length", "length"]);
+  assert.match(v.error, /^VerifierTruncatedError: .*8192.*16384/);
+  const gate = entries.find((e) => e.kind === "gate")!.payload as { reasons: { rule: string }[] };
+  assert.equal(gate.reasons[0]!.rule, "verifier_truncated");
+  assert.ok(gate.reasons.slice(1).every((x) => x.rule === "not_verified"));
+  assert.equal(entries.some((e) => e.kind === "release"), false);
+
+  // Recorded and replayed, the refusal and both attempts come back as they were.
+  const to = join(mkdtempSync(join(tmpdir(), "verifier-rec-")), "cut");
+  recordJob({ jobDir: r.dir, sources, to });
+  const replay = await replayJob(loadRecording(to), { outRoot: mkdtempSync(join(tmpdir(), "verifier-replay-")) });
+  assert.equal(replay.renders[0]!.cited!.rule, "verifier_truncated");
+  const replayed = parseReceipt(readFileSync(join(replay.dir, "receipt.jsonl"), "utf8"));
+  assert.deepEqual(replayed.slice(1).map((e) => e.payload), entries.slice(1).map((e) => e.payload));
 });
