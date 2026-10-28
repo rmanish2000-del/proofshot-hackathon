@@ -13,11 +13,13 @@ import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import {
   AI_PREVIEW_LABEL, DEFAULT_MODEL_IMAGE, MODELS_DIR, REPLICATE_MODEL, REPLICATE_PREDICTIONS_URL, REPLICATE_PROVIDER, SPEND_CAP_USD,
-  estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata,
+  estimateCostUsd, fileLedger, garmentCutout, loadModelImage, replicateTryOnRenderer, stripImageMetadata, tryOnPrompt,
 } from "../src/render-replicate.ts";
 import type { Ledger, LedgerEntry, ReplicateFetch, ReplicateResponse } from "../src/render-replicate.ts";
+import { loadRecording, recordJob, replayJob } from "../src/replay.ts";
 import { providersFromEnv } from "../src/serve.ts";
 import { ATTRIBUTES } from "../src/types.ts";
+import { sha256Hex } from "../src/util.ts";
 
 // Low-entropy fake, never a real token.
 const TOKEN = "r8_test-token-not-real"; // gitleaks:allow
@@ -165,18 +167,25 @@ test("NR4 4: a mocked success carries every receipt field, strips metadata, logs
   assert.equal(r.model_version, "v-abc");
   assert.equal(r.prediction_id, "pred-1");
   assert.equal(r.model_image_id, DEFAULT_MODEL_IMAGE);
-  assert.equal(r.seed, 1);
   assert.equal(r.cost_usd, null);
   assert.equal(r.cost_estimated_usd, 0.015);
   assert.equal(r.label, AI_PREVIEW_LABEL);
-  assert.match(String((r.input_hashes as Record<string, string>).garment_cutout), /^[0-9a-f]{64}$/);
-  assert.match(String((r.input_hashes as Record<string, string>).model_image), /^[0-9a-f]{64}$/);
   assert.deepEqual(ledger.entries.map((e) => [e.prediction_id, e.cost_usd, e.estimated]), [["pred-1", 0.015, true]]);
 
   // The token goes in the Authorization header and nowhere else.
   assert.ok(calls.every((c) => c.headers.Authorization === `Bearer ${TOKEN}`));
   const body = JSON.parse(calls[0]!.body!);
+  // req carries no garment note, so no type or length was claimed and no prompt is sent.
   assert.deepEqual(Object.keys(body.input).sort(), ["garment_images", "person_image", "seed"]);
+  assert.equal(out.promptNotSent, true);
+  // NR4b: the record's input has exactly the fields sent, each image by the hash of the bytes sent.
+  const input = r.input as { person_image: { sha256: string; model_image_id: string }; garment_images: { sha256: string }[]; seed: number };
+  assert.deepEqual(Object.keys(input).sort(), Object.keys(body.input).sort());
+  const sentHash = (uri: string) => sha256Hex(Buffer.from(uri.slice(uri.indexOf(",") + 1), "base64"));
+  assert.equal(input.person_image.sha256, sentHash(body.input.person_image));
+  assert.equal(input.person_image.model_image_id, DEFAULT_MODEL_IMAGE);
+  assert.deepEqual(input.garment_images.map((g) => g.sha256), body.input.garment_images.map(sentHash));
+  assert.equal(input.seed, body.input.seed);
   assert.ok(!JSON.stringify(out.record).includes(TOKEN));
   assert.ok(!calls.some((c) => (c.body ?? "").includes(TOKEN)));
 
@@ -189,6 +198,52 @@ test("NR4 4: a mocked success carries every receipt field, strips metadata, logs
   assert.ok(!receipt.includes(TOKEN));
   const render = parseReceipt(receipt).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
   assert.deepEqual([render.provider, render.model, render.generative, render.label], [REPLICATE_PROVIDER, REPLICATE_MODEL, true, AI_PREVIEW_LABEL]);
+  // "red stripes" claims no type or length: no prompt was sent, so the entry has none, at the top or in input.
+  assert.equal("prompt" in render, false);
+  assert.equal("prompt" in (render.input as Record<string, unknown>), false);
+});
+
+test("NR4b: the try-on prompt states only the seller's type and length claims, never colour or print", () => {
+  const kurta02 = "kurta-02: Type: kurta (women's); Fabric and weave: not recorded; Main colour: peach; Print or motif (what, where, size): as in the photos; not recorded in words; Collar and cuffs: as in the photos";
+  assert.equal(tryOnPrompt(kurta02), "Garment type: kurta (women's).");
+  assert.equal(
+    tryOnPrompt(`${kurta02}; Length: below the knee, mid-calf`),
+    "Garment type: kurta (women's). Garment length: below the knee, mid-calf. Keep the garment's full length; do not shorten it.",
+  );
+  // The upload page's claims: the free-text type is not keyed, hem is the length claim; sleeve length is not the garment's length.
+  assert.equal(tryOnPrompt("long kurta; color: peach; sleeve_length: 3/4; hem: ankle length"), "Garment length: ankle length. Keep the garment's full length; do not shorten it.");
+  assert.equal(tryOnPrompt("Sleeve length: elbow"), null);
+  // A claim that names a colour or print is dropped whole; unrecorded values are not claims.
+  assert.equal(tryOnPrompt("Type: peach kurta; Length: not recorded"), null);
+  assert.equal(tryOnPrompt("Type: embroidered kurta; Length: knee"), "Garment length: knee. Keep the garment's full length; do not shorten it.");
+  assert.equal(tryOnPrompt(""), null);
+});
+
+test("NR4b: with a length claim the prompt is sent, recorded in input, and the pipeline's prompt is not on the entry; record + replay keep it", async () => {
+  const note = "kurta-02: Type: kurta (women's); Main colour: peach; Length: below the knee";
+  const want = tryOnPrompt(note)!;
+  const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+  const { renderer } = base({ fetch });
+  const outRoot = mkdtempSync(join(tmpdir(), "ps-nr4b-"));
+  const fx = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95 })) }) });
+  await runJob({ jobId: "nr4b", garmentNote: note, scenes: ["studio"], sources }, { outRoot, providers: { ...fx, segmenter: { segment: async () => segments }, renderer }, provenance: "fixture" });
+
+  const body = JSON.parse(calls[0]!.body!);
+  assert.equal(body.input.prompt, want);
+  assert.doesNotMatch(body.input.prompt, /peach/);
+  const render = parseReceipt(readFileSync(join(outRoot, "nr4b", RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload as Record<string, unknown>;
+  assert.equal("prompt" in render, false, "the pipeline prompt was never sent, so it is not recorded");
+  const input = render.input as Record<string, unknown>;
+  assert.deepEqual(Object.keys(input).sort(), Object.keys(body.input).sort());
+  assert.equal(input.prompt, want);
+
+  // A recording of the job replays to the same render entry, still with no pipeline prompt.
+  const recDir = join(outRoot, "rec-nr4b");
+  recordJob({ jobDir: join(outRoot, "nr4b"), sources, to: recDir });
+  const replayRoot = mkdtempSync(join(tmpdir(), "ps-nr4b-replay-"));
+  await replayJob(loadRecording(recDir), { outRoot: replayRoot });
+  const replayed = parseReceipt(readFileSync(join(replayRoot, "nr4b", RECEIPT_FILE), "utf8")).find((e) => e.kind === "render")!.payload;
+  assert.deepEqual(replayed, render);
 });
 
 test("NR4 4b: a fallback render entry names the composite, not the try-on model", async () => {
