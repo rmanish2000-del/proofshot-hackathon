@@ -365,6 +365,26 @@ test("NR4e: a garment claimed longer than the model's own outfit falls back with
   assert.ok(ankle.calls.length > 0);
 });
 
+test("option B: REPLICATE_GARMENT_CONTEXT=front sends the stripped front photo as a second garment image, both hashed on the record, priced as two; unset sends the cut-out only", async () => {
+  const sentHash = (uri: string) => sha256Hex(Buffer.from(uri.slice(uri.indexOf(",") + 1), "base64"));
+  const run = async (env: Record<string, string>) => {
+    const { fetch, calls } = fakeReplicate(sources[0]!.bytes);
+    const out = await base({ env: { REPLICATE_API_TOKEN: TOKEN, ...env }, fetch }).renderer.render(req);
+    const body = JSON.parse(calls.find((c) => c.url === REPLICATE_PREDICTIONS_URL)!.body!) as { input: { garment_images: string[] } };
+    return { body, record: out.record as { input: { garment_images: { sha256: string; what: string }[] }; cost_estimated_usd: number } };
+  };
+  const two = await run({ REPLICATE_GARMENT_CONTEXT: "front" });
+  assert.equal(two.body.input.garment_images.length, 2);
+  assert.deepEqual(two.record.input.garment_images.map((g) => g.what), ["garment_cutout", "front_photo"]);
+  assert.deepEqual(two.record.input.garment_images.map((g) => g.sha256), two.body.input.garment_images.map(sentHash));
+  assert.equal(two.record.input.garment_images[1]!.sha256, sha256Hex(stripImageMetadata(sources[0]!.bytes)!.bytes));
+  assert.equal(two.record.cost_estimated_usd, estimateCostUsd(2));
+
+  const one = await run({ REPLICATE_GARMENT_CONTEXT: "yes" });
+  assert.equal(one.body.input.garment_images.length, 1);
+  assert.equal(one.record.cost_estimated_usd, estimateCostUsd(1));
+});
+
 test("NR4: PROOFSHOT_RENDER selects the try-on in providersFromEnv, with a label naming Replicate", () => {
   const p = providersFromEnv({ PROOFSHOT_RENDER: REPLICATE_PROVIDER }, { replicate: { fetch: fakeReplicate(new Uint8Array(0)).fetch, ledger: memoryLedger() } });
   assert.equal(p.providers.renderer.provider, REPLICATE_PROVIDER);
