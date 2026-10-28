@@ -1,0 +1,72 @@
+{
+  "provider": "baseten",
+  "model": "meta-models/muse-spark-open-1026",
+  "url": "https://inference.baseten.co/v1/chat/completions",
+  "render_id": "live-kurta-02-tryon-2-r0",
+  "started_at": "2026-10-28T17:08:14.529Z",
+  "finished_at": "2026-10-28T17:11:14.597Z",
+  "latency_ms": 180068,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "Bearer [BASETEN_API_KEY]"
+    },
+    "body": {
+      "model": "meta-models/muse-spark-open-1026",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You check garment fidelity. You see the seller's photos of one garment and one image to be published. Compare only the garment: colour, pattern, print, embroidery, neckline, sleeves, length, buttons, visible text. Ignore the model, pose, background and photo quality. Reply with exactly one JSON object that matches this schema and nothing else. A bbox is [x, y, w, h], each 0..1 of the image, or null when the attribute has no place in the image. If the garment is not clearly visible in an image, say so in the finding's note and give the verdict \"uncertain\" rather than guessing.\n\nSchema:\n{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\n    \"findings\"\n  ],\n  \"properties\": {\n    \"findings\": {\n      \"type\": \"array\",\n      \"minItems\": 9,\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"required\": [\n          \"attribute\",\n          \"verdict\",\n          \"confidence\",\n          \"note\",\n          \"evidence\"\n        ],\n        \"properties\": {\n          \"attribute\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"color\",\n              \"print_pattern\",\n              \"logo_text\",\n              \"collar\",\n              \"sleeve_length\",\n              \"hem\",\n              \"pocket_count\",\n              \"buttons\",\n              \"fabric_texture\"\n            ]\n          },\n          \"verdict\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"match\",\n              \"mismatch\",\n              \"uncertain\"\n            ]\n          },\n          \"confidence\": {\n            \"type\": \"number\",\n            \"minimum\": 0,\n            \"maximum\": 1\n          },\n          \"note\": {\n            \"type\": \"string\"\n          },\n          \"evidence\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"source_bbox\",\n              \"render_bbox\"\n            ],\n            \"properties\": {\n              \"source_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              },\n              \"render_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nReturn only JSON matching this schema, no prose."
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "source 1: 1-front.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[219384 bytes, sha256 9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "source 2: 2-back.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[268636 bytes, sha256 869eb3e4cea72edf01b35884b8c80a1b976d9a65502c91f994104b4e256b2183, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "render: the image to be published"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[151440 bytes, sha256 bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Compare the garment in the render (the last image) with the garment in the seller's photos. One finding per attribute: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture. Return only JSON matching the schema, no prose."
+            }
+          ]
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": null,
+  "error": "TimeoutError: The operation was aborted due to timeout",
+  "note": "the auth header is a placeholder; every image data URL is replaced by its byte count and sha256; the key's value is replaced wherever it appears"
+}
