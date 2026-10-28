@@ -138,7 +138,7 @@ committed.
   (`src/sam-meta.ts`, `POST https://api.meta.ai/v1/responses`, request model
   `sam-3.1`). `MODEL_SEGMENT` must be `meta/sam-3.1 (api.meta.ai)` for that
   transport; `SEGMENT_PROMPT` overrides the noun phrase (default "the
-  garment"). No live SAM call has been made yet.
+  garment"). One live call is logged (see the table below).
 - `BASETEN_API_KEY`: the verifier call to Muse Spark Open
   (`meta-models/muse-spark-open-1026`) on Baseten. `MODEL_VERIFIER` overrides
   the model id (`src/baseten.ts`).
@@ -168,11 +168,12 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 120 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 06:25 IST, tree of 6ce271f plus this change |
+| Test suite green | 140 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 08:40 IST, tree of c03b1c0 plus this change |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
-| Real SAM 3.1 segmentation | **not run**: adapter (`src/sam.ts`) and Meta Model API transport (`src/sam-meta.ts`) are built and tested against fixtures with an injected fetch; no live call has been made, and the mask-token parser (`@meta-sam/parser`) is not installed | tests only; no `evidence/` file for SAM |
+| Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
+| SAM 3.1 segmentation in the gate | **not wired**: the adapter (`src/sam.ts`) and transport (`src/sam-meta.ts`) are tested against fixtures; the mask token is logged but not decoded, because `@meta-sam/parser` is not installed, and no pipeline job has run through SAM | tests plus the one call log above |
 | Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
 | Verify page in a real browser | **not checked** | tested in Node against the same core |
 | Public repo | private until the 3 Nov secret scan and Manish's click | |
