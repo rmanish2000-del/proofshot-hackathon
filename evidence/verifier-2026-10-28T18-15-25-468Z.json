@@ -1,0 +1,117 @@
+{
+  "provider": "baseten",
+  "model": "meta-models/muse-spark-open-1026",
+  "url": "https://inference.baseten.co/v1/chat/completions",
+  "render_id": "live-kurta-01-tryon-reverify-r0",
+  "started_at": "2026-10-28T18:15:25.468Z",
+  "finished_at": "2026-10-28T18:18:15.013Z",
+  "latency_ms": 169545,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "Bearer [BASETEN_API_KEY]"
+    },
+    "body": {
+      "model": "meta-models/muse-spark-open-1026",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You check garment fidelity. You see the seller's photos of one garment and one image to be published. Compare only the garment: colour, pattern, print, embroidery, neckline, sleeves, length, buttons, visible text. Ignore the model, pose, background and photo quality. Reply with exactly one JSON object that matches this schema and nothing else. A bbox is [x, y, w, h], each 0..1 of the image, or null when the attribute has no place in the image. If the garment is not clearly visible in an image, say so in the finding's note and give the verdict \"uncertain\" rather than guessing.\n\nSchema:\n{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\n    \"findings\"\n  ],\n  \"properties\": {\n    \"findings\": {\n      \"type\": \"array\",\n      \"minItems\": 9,\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"required\": [\n          \"attribute\",\n          \"verdict\",\n          \"confidence\",\n          \"note\",\n          \"evidence\"\n        ],\n        \"properties\": {\n          \"attribute\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"color\",\n              \"print_pattern\",\n              \"logo_text\",\n              \"collar\",\n              \"sleeve_length\",\n              \"hem\",\n              \"pocket_count\",\n              \"buttons\",\n              \"fabric_texture\"\n            ]\n          },\n          \"verdict\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"match\",\n              \"mismatch\",\n              \"uncertain\"\n            ]\n          },\n          \"confidence\": {\n            \"type\": \"number\",\n            \"minimum\": 0,\n            \"maximum\": 1\n          },\n          \"note\": {\n            \"type\": \"string\"\n          },\n          \"evidence\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"source_bbox\",\n              \"render_bbox\"\n            ],\n            \"properties\": {\n              \"source_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              },\n              \"render_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nReturn only JSON matching this schema, no prose."
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "source 1: 1-front.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[258218 bytes, sha256 12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "source 2: 2-front-2.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[272342 bytes, sha256 cff9d34d3591041cf96058ebf3fad76d02f1771f8f2f8ae91199756af160a948, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "source 3: 3-back.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[273698 bytes, sha256 e6191d25128b7659b870aee0b203d8f1395a93ff00effa6b5f40cb9291cf2d4c, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "render: the image to be published"
+            },
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpeg;base64,[162599 bytes, sha256 782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33, left out of the log]",
+                "detail": "auto"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Compare the garment in the render (the last image) with the garment in the seller's photos. One finding per attribute: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture. Return only JSON matching the schema, no prose."
+            }
+          ]
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-59db0aa3b56343089a548006a61b56ec",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "content": "{\"findings\":[{\"attribute\":\"color\",\"verdict\":\"match\",\"confidence\":0.92,\"note\":\"Both garments are burnt-orange/rust orange; slight lighting variation does not change base color.\",\"evidence\":{\"source_bbox\":[0.03,0.11,0.95,0.85],\"render_bbox\":[0.29,0.23,0.42,0.35]}},{\"attribute\":\"print_pattern\",\"verdict\":\"match\",\"confidence\":0.96,\"note\":\"Large U-shaped gold zari embroidery on chest with same floral motifs and border, plus matching gold lace on sleeve cuffs and hem present in both.\",\"evidence\":{\"source_bbox\":[0.3,0.13,0.46,0.32],\"render_bbox\":[0.41,0.24,0.18,0.17]}},{\"attribute\":\"logo_text\",\"verdict\":\"match\",\"confidence\":0.99,\"note\":\"No logo or visible text on garment in seller photos or render; absence matches.\",\"evidence\":{\"source_bbox\":null,\"render_bbox\":null}},{\"attribute\":\"collar\",\"verdict\":\"match\",\"confidence\":0.97,\"note\":\"Round scoop neckline with gold embroidered border in both; no collar structure added or removed.\",\"evidence\":{\"source_bbox\":[0.31,0.11,0.45,0.08],\"render_bbox\":[0.42,0.23,0.17,0.06]}},{\"attribute\":\"sleeve_length\",\"verdict\":\"mismatch\",\"confidence\":0.94,\"note\":\"Seller garment has full-length sleeves to wrist with lace cuff; render shows 3/4 sleeves ending mid-forearm, significantly shorter.\",\"evidence\":{\"source_bbox\":[0.03,0.15,0.18,0.4],\"render_bbox\":[0.29,0.25,0.12,0.24]}},{\"attribute\":\"hem\",\"verdict\":\"mismatch\",\"confidence\":0.98,\"note\":\"Seller garment is long knee-length kurta with scalloped lace hem and side slits; render is short hip-length tunic with straight lace hem, length reduced by ~40%.\",\"evidence\":{\"source_bbox\":[0.05,0.82,0.78,0.1],\"render_bbox\":[0.36,0.54,0.29,0.03]}},{\"attribute\":\"pocket_count\",\"verdict\":\"match\",\"confidence\":0.99,\"note\":\"No pockets visible on front or back in seller photos and none in render.\",\"evidence\":{\"source_bbox\":null,\"render_bbox\":null}},{\"attribute\":\"buttons\",\"verdict\":\"match\",\"confidence\":0.99,\"note\":\"No buttons, snaps or closures visible on front placket in either; plain embroidered placket matches.\",\"evidence\":{\"source_bbox\":null,\"render_bbox\":null}},{\"attribute\":\"fabric_texture\",\"verdict\":\"match\",\"confidence\":0.88,\"note\":\"Lightweight cotton/cotton-blend with slight slub and wrinkle texture and subtle sheen appears consistent in both.\",\"evidence\":{\"source_bbox\":[0.03,0.11,0.95,0.85],\"render_bbox\":[0.29,0.23,0.42,0.35]}}]}",
+            "role": "assistant",
+            "reasoning_content": "We need to compare garment fidelity. Seller photos show orange kurta with gold embroidery on chest, sleeve cuffs, hem. Render shows same but length? Let's analyze attributes:\n\n- color: seller photos show burnt orange / rust orange. Render shows similar orange, maybe slightly lighter but essentially match. Need verdict match. Confidence high 0.95.\n\n- print_pattern: The embroidery pattern on chest: U-shaped gold embroidery with floral motifs. Render matches. Also sleeve cuff lace. So match.\n\n- logo_text: No logo text visible in either. So match? Or uncertain? Attribute logo_text: if no logo in both, then match (absence matches). Need to note no visible text/logo in either. Verdict match.\n\n- collar: Collar is round neckline with embroidered border. Both have round neckline. Match.\n\n- sleeve_length: Seller photos show 3/4 sleeves? Actually long sleeves to wrist? Let's see: source 1: sleeves go to wrist, with lace cuff. Source 3 back also shows 3/4? In source 1, sleeve length appears full length (wrist). In render, sleeve length is 3/4 (below elbow, above wrist). Wait render shows sleeves ending mid-forearm, about 3/4 length. Seller's garment sleeves are longer, reaching wrist. So mismatch. Need to check: In source images, the kurta is hanging, sleeves appear long, reaching near hem? Actually source 1: sleeves are long, cuff at wrist level. Render: sleeves are shorter, ending above wrist, about 3/4. So mismatch.\n\nBut could be due to model wearing? However garment in render appears shorter sleeve. So verdict mismatch.\n\n- hem: Hem: seller's garment is long kurta, knee-length or below, with scalloped lace hem. Render shows short tunic, hip-length, with same lace but length drastically shorter. So hem length mismatch. Also shape: seller has curved hem with side slits? Render has straight hem. So mismatch.\n\n- pocket_count: No pockets visible in either. So match (0 pockets).\n\n- buttons: No buttons visible in either. The front has a placket but no buttons? Seller photos show no buttons, just embroidery. Render also no buttons. So match.\n\n- fabric_texture: Fabric appears cotton/silk with slight sheen, wrinkled texture. Render appears similar cotton texture. Match.\n\nNeed to provide JSON with 9 findings in order? Enum order given: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture. Must include all 9.\n\nNeed bboxes: [x,y,w,h] 0..1. Provide approximate.\n\nFor each attribute, provide source_bbox and render_bbox.\n\nWe need to estimate bboxes:\n\n- color: whole garment. Source bbox approx [0.03,0.11,0.96,0.85] ? Let's approximate. Render bbox [0.29,0.24,0.42,0.34] ? Actually garment in render from shoulders to hem. Let's define.\n\nBetter to give reasonable bboxes.\n\nWe must ensure JSON valid.\n\nConfidence values: 0-1.\n\nNotes: brief.\n\nWe must ignore model, pose, background.\n\nProvide verdicts:\n\n- color: match\n- print_pattern: match\n- logo_text: match (no logo in both)\n- collar: match\n- sleeve_length: mismatch (source long sleeve to wrist, render 3/4)\n- hem: mismatch (source long knee-length kurta, render short hip-length tunic)\n- pocket_count: match (no pockets)\n- buttons: match (no buttons)\n- fabric_texture: match\n\nCheck hem vs length: hem attribute likely refers to hem style/length. The garment length difference is major. So mismatch.\n\nProvide evidence bboxes:\n\nFor color: source_bbox covering garment, render_bbox covering garment.\n\nFor print_pattern: chest embroidery bbox. Source: [0.30,0.13,0.45,0.32] Render: [0.41,0.24,0.18,0.17]\n\nFor logo_text: null for both? But schema allows null when attribute has no place. Since no logo, we could set null. Or we could set null. Better set null for both.\n\nFor collar: neckline bbox. Source: [0.31,0.11,0.45,0.08] Render: [0.42,0.23,0.17,0.06]\n\nFor sleeve_length: sleeve bbox. Source: [0.03,0.15,0.18,0.40] and render: [0.29,0.25,0.12,0.24] Need one bbox per image. Provide one sleeve.\n\nFor hem: bottom hem bbox. Source: [0.05,0.82,0.78,0.10] Render: [0.36,0.54,0.29,0.03]\n\nFor pocket_count: null (no pockets)\n\nFor buttons: null (no buttons) or placket area. But better null.\n\nFor fabric_texture: whole garment.\n\nNeed to ensure JSON structure exactly.\n\nProvide confidence: high for matches, maybe 0.9-0.98, mismatches 0.95.\n\nLet's craft final JSON.\n\nNeed to ensure minItems 9, we have 9.\n\nProvide note strings.\n\nMake sure verdict enum correct.\n\nReturn only JSON.\n\n"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "created": 1793211328,
+      "model": "meta-models/muse-spark-open-1026",
+      "object": "chat.completion",
+      "usage": {
+        "prompt_tokens": 6760,
+        "completion_tokens": 1833,
+        "total_tokens": 8593,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 6656
+        },
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 1281,
+          "audio_tokens": 0,
+          "reasoning_tokens": 1142,
+          "rejected_prediction_tokens": 2583
+        }
+      }
+    }
+  },
+  "error": null,
+  "note": "the auth header is a placeholder; every image data URL is replaced by its byte count and sha256; the key's value is replaced wherever it appears"
+}
