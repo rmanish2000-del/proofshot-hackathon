@@ -275,8 +275,11 @@ on Baseten. Four real calls are logged under `evidence/` with the key redacted
 and the images replaced by their size and hash; tokens, latency and finish
 reasons are in `docs/API-NOTES.md`. The model reasons before it answers
 (`reasoning_content`): at `max_tokens` 64 a one-word answer was cut off, and at
-1500 the nine findings were (1338 reasoning tokens first), so the verifier
-sends 4096.
+1500 the nine findings were (1338 reasoning tokens first). At 4096 the
+kurta-01 composite answer was cut off too (4055 reasoning tokens,
+`evidence/verifier-2026-10-28T12-30-54-012Z.json`), so the verifier now sends
+8192 and retries once at 16384 when the answer stops at the limit; a second
+cut-off answer is a REFUSE (`verifier_truncated`), never a pass.
 
 The HTTP transports for the three render providers are not written yet. The
 renderer takes an injected transport.
