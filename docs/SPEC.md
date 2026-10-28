@@ -386,7 +386,8 @@ outfit goes. When the seller's length claim reaches further ("below the knee"
 is calf), the render falls back to composite v2 with `fallback_reason:
 "model_too_short"` before any paid call. With no `model.json`, or a length
 claim naming no known place, the guard does not apply. *(NR6, 29 Oct)* A garment
-claimed to reach the calf or further is long: before the token or any other
+claimed to reach the knee or further is long (NR6b: knee, since most kurtas
+are knee length): before the token or any other
 check it gets composite v2, with `render_choice: "composite"` and
 `render_choice_reason: "long_garment_default"` on the render entry (no
 `fallback_reason`: a choice, not a failure), unless `PROOFSHOT_TRYON_LONG` is
