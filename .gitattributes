@@ -1,3 +1,8 @@
+# Every text file is LF in the repo and on checkout. A file saved as CRLF on
+# Windows (src/shop.ts in 2859cde) made later merges conflict across the whole
+# file, so git normalises them all.
+* text=auto eol=lf
+
 # The tests compare these committed fixtures byte for byte with a fresh build
 # (test/shop.test.ts), so they stay LF on every checkout: a Windows clone with
 # core.autocrlf=true would otherwise turn them into CRLF and fail that test.
