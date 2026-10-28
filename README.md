@@ -137,13 +137,24 @@ shop build, so the job is listed only if its receipt verifies.
 With no model key set the page says **fixture mode**: the metadata strip, the
 receipt chain and the gate are real; the render is the stand-in (the seller's
 own front photo, tagged as such) and the findings are recorded as matching, not
-judged by a model. The receipt says `fixture` too. The segmenter becomes SAM 3.1
-only once `MODEL_SEGMENT`, `MODEL_API_KEY` and the mask parser are all present;
-the live verifier is not wired yet (P6). Every step's provider is listed under
+judged by a model. The receipt says `fixture` too. With `BASETEN_API_KEY` set
+the verifier is Muse Spark Open on Baseten (`src/verifier.ts`), the fidelity
+check is the masked one of SPEC §10, and the run is live; until a segmenter
+runs there is no mask, so fidelity is REVIEW and the gate can say REVIEW at
+best. The segmenter becomes SAM 3.1 only once `MODEL_SEGMENT`, `MODEL_API_KEY`
+and the mask parser are all present. Every step's provider is listed under
 "Which provider ran each step" on the page and in the `npm run serve` output.
-Jobs go to `data/jobs/<upload-id>/` (the stripped photos under `sources/`), so
-run it on a copy of the repo you do not mind committing from, or pass
-`--jobs <dir> --shop <dir>`.
+Jobs go to `data/jobs/upload-<stamp>/` (the stripped photos under `sources/`);
+`.gitignore` covers `data/jobs/upload-*/`, so a seller's photos are never
+committed by a sync. Pass `--jobs <dir> --shop <dir>` for a scratch run.
+
+`npm run job:live` (`scripts/live-job.ts`) runs the same pipeline on a
+garment's intake photos from the command line, and refuses to start unless the
+verifier is live. Two live jobs are committed under `data/jobs/`:
+`live-kurta-01` (REFUSE: the model's answer was cut off at 1500 tokens, so the
+gate saw no findings) and `live-kurta-01-2` (REVIEW: all nine findings
+`match` at 0.96 or above, fidelity unmeasured because no mask exists); the
+second is recorded as `demo/recordings/live-kurta-01-2`.
 
 New in this feature: `src/serve.ts`, `scripts/serve.ts`, `web/upload.html`,
 `test/serve.test.ts` (the three gate states, a failing segmenter and verifier,
@@ -168,15 +179,17 @@ committed.
   transport; `SEGMENT_PROMPT` overrides the noun phrase (default "the
   garment"). One live call is logged (see the table below).
 - `BASETEN_API_KEY`: the verifier call to Muse Spark Open
-  (`meta-models/muse-spark-open-1026`) on Baseten. `MODEL_VERIFIER` overrides
-  the model id (`src/baseten.ts`).
+  (`meta-models/muse-spark-open-1026`) on Baseten (`src/verifier.ts`, one
+  chat completion per render with the photos as `image_url` parts).
+  `MODEL_VERIFIER` overrides the model id.
 
 **Built with Muse Spark Open.** The verifier calls `meta-models/muse-spark-open-1026`
-on Baseten. Two real calls are logged under `evidence/` with the key redacted;
-tokens, latency and finish reasons are in `docs/API-NOTES.md`. The model
-reasons before it answers (`reasoning_content`), so `scripts/baseten-call.ts`
-sends `max_tokens: 1024`; at 64 the answer was cut off (`finish_reason: "length"`,
-content null).
+on Baseten. Four real calls are logged under `evidence/` with the key redacted
+and the images replaced by their size and hash; tokens, latency and finish
+reasons are in `docs/API-NOTES.md`. The model reasons before it answers
+(`reasoning_content`): at `max_tokens` 64 a one-word answer was cut off, and at
+1500 the nine findings were (1338 reasoning tokens first), so the verifier
+sends 4096.
 
 The HTTP transports for the three render providers are not written yet. The
 renderer takes an injected transport.
@@ -196,10 +209,13 @@ renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 148 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 08:50 IST, tree of 4c5df28 plus this change |
+| Test suite green | 162 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 09:30 IST, tree of 256dcc5 plus this change |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | reported, not re-read for this README | [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
-| Live Muse Spark Open call on Baseten | 2 calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
+| Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
+| Live verifier call with images (4 JPEGs, 715×1600) | 2 calls, both HTTP 200: the first cut off at max_tokens 1500 (finish_reason length, 1338 reasoning tokens), the second complete at 4096 (finish_reason stop, 1808 completion tokens, 9 findings all `match`) | `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `evidence/verifier-2026-10-28T03-59-30-015Z.json` (key placeholder, images as size and hash) |
+| Live pipeline job through the verifier | 2 jobs on kurta-01, stand-in render, no segmenter: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer), `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask); both receipts verify | `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `demo/recordings/live-kurta-01-2/` |
+| Verifier accuracy | **not measured**: the only live comparisons are a photo against itself (the stand-in), so a `match` on every attribute shows the call works, not that the model catches a mismatch | the two live jobs above |
 | Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
 | SAM 3.1 segmentation in the gate | **not wired**: the adapter (`src/sam.ts`) and transport (`src/sam-meta.ts`) are tested against fixtures; the mask token is logged but not decoded, because `@meta-sam/parser` is not installed, and no pipeline job has run through SAM | tests plus the one call log above |
 | Fidelity thresholds | **uncalibrated** | `config/fidelity.json` holds starting values |
