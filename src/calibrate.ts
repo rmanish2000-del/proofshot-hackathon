@@ -15,7 +15,7 @@
 // could not measure (metrics null). Nothing here reads files or calls a model.
 
 import { checkFidelity } from "./fidelity.ts";
-import type { Thresholds } from "./fidelity.ts";
+import type { Metrics, Thresholds } from "./fidelity.ts";
 import { decide } from "./gate.ts";
 import type { Mask, RgbImage } from "./png.ts";
 import type { Decision, DecisionInput } from "./types.ts";
@@ -54,6 +54,8 @@ export interface CaseResult {
   /** The gate's decision (REFUSE when the case has no findings), or the fidelity decision under scope `fidelity`. */
   readonly decision: Decision;
   readonly measured: boolean;
+  /** The fidelity check's raw values for the pair (N10); null when unmeasured. They do not depend on the thresholds. */
+  readonly metrics: Metrics | null;
 }
 
 export interface CandidateScore {
@@ -84,7 +86,7 @@ export function scoreCalibration(cases: readonly CalibrationCase[], candidates: 
       const fid = checkFidelity(c, thresholds);
       // No findings goes to the gate as none at all, which refuses it as not verified.
       const decision = scope === "fidelity" ? fid.decision : decide(c.findings ?? [], { decision: fid.decision, reasons: fid.reasons }).decision;
-      return { id: c.id, label: c.label, fidelity: fid.decision, decision, measured: fid.metrics !== null };
+      return { id: c.id, label: c.label, fidelity: fid.decision, decision, measured: fid.metrics !== null, metrics: fid.metrics };
     });
     const count = (label: CalibrationLabel, decision: Decision) => results.filter((r) => r.label === label && r.decision === decision).length;
     return {
@@ -98,6 +100,19 @@ export function scoreCalibration(cases: readonly CalibrationCase[], candidates: 
       unmeasured: results.filter((r) => !r.measured).length,
       cases: results,
     };
+  });
+}
+
+/**
+ * One line per pair with its label and the four fidelity values (N10, Grok 28
+ * Oct 15:05), or `unmeasured` when fidelity could not measure it. Values only:
+ * no decision and no threshold, so the lines read the same for every candidate.
+ */
+export function pairMetricLines(cases: readonly CaseResult[]): string[] {
+  const n = (v: number) => (Number.isFinite(v) ? v.toFixed(3) : String(v));
+  return cases.map((c) => {
+    const values = c.metrics ? `delta_e ${n(c.metrics.delta_e)}  hist ${n(c.metrics.hist)}  texture ${n(c.metrics.texture)}  area ${n(c.metrics.area)}` : "unmeasured";
+    return `${c.label.padEnd(9)}  ${c.id}: ${values}`;
   });
 }
 

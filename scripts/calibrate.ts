@@ -17,7 +17,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { labelledPairs, scaledCandidates, scoreCalibration, wholeFrameMask } from "../src/calibrate.ts";
+import { labelledPairs, pairMetricLines, scaledCandidates, scoreCalibration, wholeFrameMask } from "../src/calibrate.ts";
 import type { CalibrationCase, GarmentPhoto } from "../src/calibrate.ts";
 import { loadThresholds } from "../src/fidelity.ts";
 import { decodeRgb } from "../src/image.ts";
@@ -106,10 +106,15 @@ console.log("candidate  same  diff  false_match  false_refuse  review_same  revi
 for (const s of scores) {
   console.log(`${s.name.padEnd(9)}  ${String(s.same).padStart(4)}  ${String(s.different).padStart(4)}  ${String(s.false_match).padStart(11)}  ${String(s.false_refuse).padStart(12)}  ${String(s.review_same).padStart(11)}  ${String(s.review_different).padStart(11)}  ${String(s.unmeasured).padStart(10)}`);
 }
+// N10: the raw values per pair. They do not depend on the thresholds, so the
+// first candidate's cases carry them for all.
+const pairs = scores[0]?.cases ?? [];
+console.log("per-pair fidelity values (fidelity only, no threshold applied):");
+for (const line of pairMetricLines(pairs)) console.log(`  ${line}`);
 if (outFile) {
   writeFileSync(
     outFile,
-    `${JSON.stringify({ root, masks: maskMode, scope: "fidelity", factors, photos: photos.map((p) => ({ garment: p.garment, name: p.name, sha256: p.sha256, mask_log: maskFrom.get(p.sha256) ?? null })), scores }, null, 2)}\n`,
+    `${JSON.stringify({ root, masks: maskMode, scope: "fidelity", factors, photos: photos.map((p) => ({ garment: p.garment, name: p.name, sha256: p.sha256, mask_log: maskFrom.get(p.sha256) ?? null })), pairs: pairs.map((c) => ({ id: c.id, label: c.label, metrics: c.metrics })), scores }, null, 2)}\n`,
   );
   console.log(`written: ${outFile}`);
 }
