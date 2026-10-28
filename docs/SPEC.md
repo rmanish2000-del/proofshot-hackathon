@@ -388,7 +388,9 @@ is calf), the render falls back to composite v2 with `fallback_reason:
 claim naming no known place, the guard does not apply. `preserve_input_size`
 and `reference_pose` are sent, and recorded in the render entry's `input`, only
 when `REPLICATE_PRESERVE_INPUT_SIZE` / `REPLICATE_REFERENCE_POSE` is exactly
-`true` or `false`.
+`true` or `false`. With `REPLICATE_GARMENT_CONTEXT=front`, the whole front
+photo (metadata stripped) goes as a second `garment_images` entry, recorded
+as `what: "front_photo"` with its sha256 and priced as two garment images.
 
 The file stand-in *(event, 28 Oct)*, `fileRenderer(label, bytes)` in
 `src/render.ts`, used by `npm run job:live -- --render <image>`: like the

@@ -355,8 +355,11 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
       }
       const garment = garmentCutout(req.sources, req.segments ?? []);
       if (!garment) return fallback(req, "no_garment_mask", "no usable SAM mask on the front photo");
+      // Grok's option B (23:36): REPLICATE_GARMENT_CONTEXT=front also sends the whole front photo, metadata stripped, so the length is seen in context.
+      const front = (opts.env.REPLICATE_GARMENT_CONTEXT ?? "").trim() === "front" && req.sources[0] ? stripImageMetadata(req.sources[0].bytes) : null;
+      const garments = [{ bytes: garment, ext: "png" as const, what: "garment_cutout" }, ...(front ? [{ ...front, what: "front_photo" }] : [])];
 
-      const estimate = estimateCostUsd(1);
+      const estimate = estimateCostUsd(garments.length);
       let spent: number;
       try {
         if (!opts.ledger) throw new Error("no ledger path (LOCALAPPDATA is not set)");
@@ -369,11 +372,11 @@ export function replicateTryOnRenderer(opts: ReplicateTryOnOptions): Renderer {
       const dataUri = (bytes: Uint8Array, ext: "jpg" | "png") => `data:image/${ext === "jpg" ? "jpeg" : "png"};base64,${Buffer.from(bytes).toString("base64")}`;
       const prompt = tryOnPrompt(req.garmentNote ?? "");
       const options = tryOnOptions(opts.env);
-      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: [dataUri(garment, "png")], seed, ...(prompt ? { prompt } : {}), ...options } });
+      const body = JSON.stringify({ input: { person_image: dataUri(model.bytes, model.ext), garment_images: garments.map((g) => dataUri(g.bytes, g.ext)), seed, ...(prompt ? { prompt } : {}), ...options } });
       // The same fields as the body, images by hash: what was sent, and nothing that was not.
       const sent = {
         person_image: { sha256: sha256Hex(model.bytes), model_image_id: model.id },
-        garment_images: [{ sha256: sha256Hex(garment), what: "garment_cutout" }],
+        garment_images: garments.map((g) => ({ sha256: sha256Hex(g.bytes), what: g.what })),
         seed,
         ...(prompt ? { prompt } : {}),
         ...options,
