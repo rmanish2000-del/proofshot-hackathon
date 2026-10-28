@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "page": "node --experimental-strip-types scripts/page.ts",
     "call:baseten": "node --experimental-strip-types scripts/baseten-call.ts",
+    "call:sam": "node --experimental-strip-types scripts/sam-call.ts",
     "intake": "node --experimental-strip-types scripts/intake.ts",
     "shop": "node --experimental-strip-types scripts/shop-build.ts",
     "demo:replay": "node --experimental-strip-types scripts/replay.ts",
