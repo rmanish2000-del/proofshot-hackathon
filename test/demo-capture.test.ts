@@ -219,6 +219,15 @@ test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the
   assert.ok(!table.includes("wait on Grok"), "no open note under the table");
 });
 
+test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S5 is the receipt bytes, the checklist asks for verify.html from disk", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  assert.ok(!/wi-?fi/i.test(md), "no Wi-Fi in DEMO.md");
+  assert.ok(!/offline/i.test(md), "no offline claim in DEMO.md");
+  const s5 = md.split("\n").find((l) => /^\|\s*S5\s*\|/.test(l))!;
+  assert.match(s5, /receipt bytes around the byte that will change/);
+  assert.ok(md.includes("- [ ] verify.html opened from disk (file:// URL visible), no server running."));
+});
+
 test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
   const receipt = readFileSync(join(root, "data/jobs/live-kurta-01-2/receipt.jsonl"), "utf8");
   const lines = replayLogLines({
