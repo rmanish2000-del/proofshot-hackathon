@@ -159,6 +159,15 @@ The kind type also names `approval`; no current code writes it.
     `cited.rule: "render_failed"` and the reason `<name>: <message>` (no
     `render`, `verifier` or `fidelity` entry, no image), and the job goes on to
     the next scene.
+  - If the composite v2 renderer's quality pre-check fails *(event, NR3,
+    SPEC-composite-v2 §7)*, it throws `CompositeQualityReview` and that scene
+    gets one `gate` entry with `decision: "REVIEW"`, `cited.rule:
+    "render_quality"`, the reason `CompositeQualityReview: <reason>`, and a
+    `quality` object with every check, value and threshold. As with
+    `render_failed` there is no `render`, `verifier` or `fidelity` entry and
+    no image, so nothing can be released or shown in the shop. It is the one
+    pipeline rule that is REVIEW, not REFUSE. A replay reproduces the decision
+    and reason, not the `quality` object.
   - Every scene a job attempts ends with a `gate` entry. Each of these
     pipeline refusals has `attribute`, `verdict` and `confidence` null, is
     listed alone in `reasons`, and counts as a refusal in later prior records.
