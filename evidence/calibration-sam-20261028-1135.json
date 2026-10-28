@@ -1,0 +1,806 @@
+{
+  "root": "data/garments",
+  "masks": "sam",
+  "scope": "fidelity",
+  "factors": [
+    0.5,
+    0.75,
+    1,
+    1.5,
+    2
+  ],
+  "photos": [
+    {
+      "garment": "kurta-01",
+      "name": "1-front.jpg",
+      "sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "mask_log": "sam-2026-10-28T03-04-30-778Z.json"
+    },
+    {
+      "garment": "kurta-01",
+      "name": "2-front-2.jpg",
+      "sha256": "cff9d34d3591041cf96058ebf3fad76d02f1771f8f2f8ae91199756af160a948",
+      "mask_log": "sam-2026-10-28T05-41-44-984Z.json"
+    },
+    {
+      "garment": "kurta-01",
+      "name": "3-back.jpg",
+      "sha256": "e6191d25128b7659b870aee0b203d8f1395a93ff00effa6b5f40cb9291cf2d4c",
+      "mask_log": "sam-2026-10-28T05-41-47-435Z.json"
+    },
+    {
+      "garment": "kurta-02",
+      "name": "1-front.jpg",
+      "sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "mask_log": null
+    },
+    {
+      "garment": "kurta-02",
+      "name": "2-back.jpg",
+      "sha256": "869eb3e4cea72edf01b35884b8c80a1b976d9a65502c91f994104b4e256b2183",
+      "mask_log": null
+    }
+  ],
+  "scores": [
+    {
+      "name": "x0.5",
+      "same": 8,
+      "different": 12,
+      "false_match": 0,
+      "false_refuse": 6,
+      "review_same": 2,
+      "review_different": 12,
+      "unmeasured": 14,
+      "cases": [
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-02/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        }
+      ]
+    },
+    {
+      "name": "x0.75",
+      "same": 8,
+      "different": 12,
+      "false_match": 0,
+      "false_refuse": 4,
+      "review_same": 4,
+      "review_different": 12,
+      "unmeasured": 14,
+      "cases": [
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-02/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        }
+      ]
+    },
+    {
+      "name": "x1",
+      "same": 8,
+      "different": 12,
+      "false_match": 0,
+      "false_refuse": 4,
+      "review_same": 2,
+      "review_different": 12,
+      "unmeasured": 14,
+      "cases": [
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-02/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        }
+      ]
+    },
+    {
+      "name": "x1.5",
+      "same": 8,
+      "different": 12,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 2,
+      "review_different": 12,
+      "unmeasured": 14,
+      "cases": [
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-02/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        }
+      ]
+    },
+    {
+      "name": "x2",
+      "same": 8,
+      "different": 12,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 2,
+      "review_different": 12,
+      "unmeasured": 14,
+      "cases": [
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-01/3-back.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/2-front-2.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/1-front.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-01/3-back.jpg -> kurta-02/2-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/1-front.jpg -> kurta-02/2-back.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/1-front.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/2-front-2.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-01/3-back.jpg",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        },
+        {
+          "id": "kurta-02/2-back.jpg -> kurta-02/1-front.jpg",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false
+        }
+      ]
+    }
+  ]
+}
