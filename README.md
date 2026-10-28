@@ -23,6 +23,83 @@ npm run call:baseten         # one live Muse Spark Open call, logged to evidence
 `npm run call:baseten` is the only command that uses the network, and it needs
 `BASETEN_API_KEY` set.
 
+## Judge quickstart
+
+No API keys are needed. Without keys the run is **fixture mode**; the page and
+receipt are labelled as such. The render step shows the owner's photo as a
+stand-in; nothing is generated.
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Run the tests:
+
+```bash
+npm test
+```
+
+3. Start the local server:
+
+```bash
+npm run serve
+```
+
+Then open `http://127.0.0.1:8787/` (the URL `npm run serve` prints). You should
+see the seller upload page with the five-step board: metadata, segment, render,
+verify, gate. Each result card shows a RELEASE, REVIEW or REFUSE badge, reasons,
+and a **View receipt** link. The seller upload page is local only
+(`npm run serve`) and visually UNVERIFIED. Each image ships with a hash-chained
+receipt; a deterministic code gate decides RELEASE/REVIEW/REFUSE.
+
+4. Replay the canned examples (no network, no key; output goes to the
+   gitignored `out/`):
+
+```bash
+npm run demo:replay -- demo/recordings/refuse out/replay
+npm run demo:replay -- demo/recordings/review out/replay
+npm run demo:replay -- demo/recordings/release out/replay
+```
+
+They end in REFUSE (hard_mismatch), REVIEW (soft_mismatch) and RELEASE. The
+recordings in `demo/recordings` are `refuse`, `review` and `release` (canned),
+plus `live-kurta-01-2` and `live-kurta-01-mismatch` (recorded from live jobs).
+
+5. Verify a receipt: click **View receipt** on a result card that has an image.
+It opens `http://127.0.0.1:8787/verify.html#sha=<image sha256>`, the receipt
+verification page with the image hash filled in. You can also download the
+receipt from the card and check it on `web/verify.html` opened from disk. In
+fixture mode the receipt's job entry says provenance `fixture`.
+
+6. Optional: keep generated jobs out of tracked folders:
+
+```bash
+npm run serve -- --jobs out/ui-jobs --shop out/ui-shop
+```
+
+### Live jobs and calibration (28 Oct 13:50 IST)
+
+- Live VERIFIER: Muse Spark Open on Baseten (`meta-models/muse-spark-open-1026`), one chat completion per render, per-attribute findings.
+- Live SEGMENTER: SAM 3.1 on `api.meta.ai`; every SAM call in `job:live` writes a redacted call log.
+- JPEG decode is wired, so fidelity is measured on JPEG.
+- The render is still a stand-in returning the owner front photo, tagged "owner's photo, stands in for render"; nothing is generated, so a RELEASE on it is photo-vs-itself and proves the measured path runs, NOT accuracy.
+- Verifier accuracy NOT MEASURED.
+- Absent or undefined verifier findings fail closed as `REFUSE not_verified`, the same as a verifier that failed.
+- Live jobs on `kurta-01`: `REFUSE not_verified` (first answer cut off), `REVIEW` (no mask), `REFUSE mismatch` (kurta-02 front as the render, colour hard mismatch, n=1), `live-kurta-01-sam` (3 segments 0.957/0.949/0.973, gate `REVIEW`, fidelity could not decode JPEG then), and `live-kurta-01-sam-2` (4 logged SAM calls, verifier matched, fidelity measured, gate `RELEASE`).
+- Live job `live-kurta-02-sam` on `kurta-02`: 3 logged SAM 3.1 calls and 1 logged verifier call, gate `RELEASE`, but the render is the stand-in kurta-02 front photo so it is photo-vs-itself and proves the measured path, not accuracy.
+- Calibration (fidelity only, not a gate decision) has SAM masks for 5 of 5 photos of two garments and measured 20 of 20 photo pairs, including the different-garment pairs: at the current thresholds 0 false matches and 6 of 8 same-garment pairs refused; at 1.5x looser 0 false matches, 0 false refusals, 2 same-garment pairs sent to review. Only two garments, so this is a small sample, not a calibrated false-match rate; thresholds are unchanged.
+- No public deploy.
+
+### Optional: live providers
+
+You do not need these for the quickstart. Without them, every provider is a
+fixture and the run is fixture mode.
+
+- Live verifier: Muse Spark Open on Baseten: set env var `BASETEN_API_KEY` (do not put a key value here).
+- Live SAM 3.1 segmentation: SAM 3.1 on `api.meta.ai`: set env vars `MODEL_API_KEY` and `MODEL_SEGMENT` (do not put key values here).
+
 ## How the gate decides
 
 `decide()` in `src/gate.ts` returns **RELEASE**, **REVIEW** or **REFUSE**. Its
