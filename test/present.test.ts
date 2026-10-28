@@ -1,0 +1,137 @@
+import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { createServer } from "node:http";
+import type { Server } from "node:http";
+import { join } from "node:path";
+import { test } from "node:test";
+import { fileURLToPath } from "node:url";
+
+import { fixtureProviders } from "../src/pipeline.ts";
+import { GATE_LABEL, presentJob, renderBadge, tamperedCopy } from "../src/present.ts";
+import { RECEIPT_FILE } from "../src/prior.ts";
+import { Receipt, parseReceipt, verifyChain } from "../src/receipt.ts";
+import { REPLICATE_PROVIDER } from "../src/render-replicate.ts";
+import { UploadServer } from "../src/serve.ts";
+import type { ReceiptListing } from "../src/serve.ts";
+import { sha256Hex } from "../src/util.ts";
+
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const JOBS = join(ROOT, "data", "jobs");
+const load = (job: string) => parseReceipt(readFileSync(join(JOBS, job, RECEIPT_FILE), "utf8"));
+
+test("present: a live composite RELEASE names SAM 3.1, Muse Spark Open and the gate from their entries, badge Not AI-generated", () => {
+  const view = presentJob(load("live-kurta-01-composite-r2"));
+  assert.equal(view.chain.ok, true);
+  const r = view.renders[0]!;
+  assert.equal(r.decision, "RELEASE");
+  assert.equal(r.badge.kind, "not-ai");
+  assert.equal(r.badge.label, "Not AI-generated");
+  assert.match(r.badge.tooltip, /mannequin\. No pixels generated/);
+  assert.equal(r.released, true);
+  assert.deepEqual(view.pipeline.map((n) => n.status), ["done", "done", "done", "done", "done", "done"]);
+  assert.ok(view.components.some((c) => c.startsWith("SAM 3.1")));
+  assert.ok(view.components.some((c) => c.startsWith("Muse Spark Open via Baseten")));
+  assert.ok(view.components.includes(GATE_LABEL));
+  assert.ok(!JSON.stringify(view).includes("Pruna"));
+  assert.equal(view.cards.length, 7);
+  assert.equal(view.cards[1]!.prev, view.cards[0]!.hash);
+});
+
+test("present: the v2 quality pre-check REVIEW shows render and verifier as UNVERIFIED and names no verifier model", () => {
+  const view = presentJob(load("live-kurta-02-composite-v2"));
+  const r = view.renders[0]!;
+  assert.equal(r.decision, "REVIEW");
+  assert.equal(r.badge.kind, "none");
+  assert.equal(r.cited?.quality_precheck, true);
+  assert.match(r.cited!.reason, /over- or under-exposed/);
+  const status = Object.fromEntries(view.pipeline.map((n) => [n.key, n.status]));
+  assert.deepEqual(status, { upload: "done", segment: "done", render: "UNVERIFIED", verify: "UNVERIFIED", gate: "done", receipt: "done" });
+  assert.ok(!JSON.stringify(view).includes("Muse Spark"));
+});
+
+test("present: a fixture REFUSE cites the hard colour mismatch with its severity; no segmenter means segmentation UNVERIFIED", () => {
+  const view = presentJob(load("fixture-shirt-01"));
+  const refused = view.renders.find((r) => r.decision === "REFUSE")!;
+  assert.equal(refused.cited?.attribute, "color");
+  assert.equal(refused.cited?.severity, "hard");
+  assert.equal(refused.cited?.rule, "hard_mismatch");
+  assert.equal(refused.badge.kind, "fixture");
+  assert.equal(view.pipeline.find((n) => n.key === "segment")!.status, "UNVERIFIED");
+  assert.ok(!view.components.some((c) => /SAM|Muse Spark|Pruna/.test(c)));
+});
+
+test("present: across every committed job, a model name appears only when its receipt entry exists", () => {
+  for (const job of readdirSync(JOBS)) {
+    const entries = load(job);
+    const text = JSON.stringify(presentJob(entries));
+    const has = (kind: string, re: RegExp) => entries.some((e) => e.kind === kind && re.test(JSON.stringify(e.payload)));
+    assert.equal(text.includes("SAM 3.1"), has("segments", /"segmenter":\{[^}]*sam-3\.1/i), `${job}: SAM 3.1`);
+    assert.equal(text.includes("Muse Spark"), has("verifier", /"verifier":\{[^}]*muse-spark/i), `${job}: Muse Spark`);
+    assert.equal(text.includes("Pruna"), has("render", /"generative":true/) && has("render", new RegExp(REPLICATE_PROVIDER)), `${job}: Pruna`);
+  }
+});
+
+test("present: a try-on render entry gives the AI-generated badge, the Pruna component and the model image id", () => {
+  const receipt = new Receipt({ clock: (() => { let n = 0; return () => `2026-10-28T16:00:0${n++}.000Z`; })() });
+  receipt.append("job", { job_id: "t", provenance: "live", source_images: [{ name: "front.jpg", sha256: "a".repeat(64) }] });
+  receipt.append("render", { render_id: "t-r0", sha256: "b".repeat(64), provider: REPLICATE_PROVIDER, model: "prunaai/p-image-try-on", method: "generative", generative: true, model_image_id: "synthetic-01" });
+  receipt.append("gate", { render_id: "t-r0", decision: "REVIEW", cited: { attribute: "color", verdict: "uncertain", confidence: 0.5, rule: "low_confidence", reason: "color: uncertain at 0.50" }, reasons: [] });
+  const view = presentJob(receipt.entries);
+  const r = view.renders[0]!;
+  assert.equal(r.badge.kind, "ai-generated");
+  assert.equal(r.badge.label, "AI-generated model");
+  assert.match(r.badge.tooltip, /not a real person/);
+  assert.equal(r.model_image_id, "synthetic-01");
+  assert.ok(view.components.some((c) => c.startsWith("Pruna P-Image-Try-On via Replicate")));
+  // A composite fallback from the try-on is not generative and gets the green badge.
+  assert.equal(renderBadge({ provider: "composite", model: "composite-v2", method: "composite", generative: false, fallback_from: REPLICATE_PROVIDER }).kind, "not-ai");
+  assert.equal(renderBadge({ provider: "x", model: "y" }).kind, "none");
+});
+
+test("present: tamperedCopy changes one byte and the chain breaks at that entry; the original still verifies", () => {
+  const text = readFileSync(join(JOBS, "live-kurta-01-composite-r2", RECEIPT_FILE), "utf8");
+  const copy = tamperedCopy(text);
+  assert.equal(copy.text.length, text.length);
+  assert.equal([...copy.text].filter((c, i) => c !== text[i]).length, 1);
+  const check = verifyChain(parseReceipt(copy.text));
+  assert.equal(check.ok, false);
+  assert.equal(!check.ok && check.index, copy.index);
+  assert.equal(verifyChain(parseReceipt(text)).ok, true);
+});
+
+test("present: serve lists receipts, verifies, runs the tamper demo without writing, and serves sources only by recorded hash", async () => {
+  const providers = { providers: fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: [] }) }), mode: { provenance: "fixture" as const, fixture: true, labels: { segment: "", render: "", verify: "", fidelity: "" } } };
+  const srv = new UploadServer({ webDir: join(ROOT, "web"), jobsRoot: JOBS, shopDir: join(ROOT, "out", "present-shop-unused"), garmentsDir: join(ROOT, "data", "garments"), providers });
+  const http: Server = createServer((req, res) => void srv.handler(req, res));
+  await new Promise<void>((resolve) => http.listen(0, "127.0.0.1", resolve));
+  const url = (path: string) => `http://127.0.0.1:${(http.address() as { port: number }).port}${path}`;
+  const before = readFileSync(join(JOBS, "live-kurta-01-composite-r2", RECEIPT_FILE));
+  try {
+    const list = await (await fetch(url("/api/receipts"))).json() as ReceiptListing;
+    assert.ok(list.jobs.length > 0 && list.jobs.length <= 20);
+    assert.ok(list.counts.RELEASE > 0 && list.counts.REVIEW > 0 && list.counts.REFUSE > 0);
+
+    const view = await (await fetch(url("/api/receipts/live-kurta-01-composite-r2"))).json() as { images: Record<string, string>; renders: { badge: { label: string } }[] };
+    assert.equal(view.renders[0]!.badge.label, "Not AI-generated");
+    assert.equal(view.images["live-kurta-01-composite-r2-r0"], "/jobs/live-kurta-01-composite-r2/live-kurta-01-composite-r2-r0.png");
+
+    const ok = await (await fetch(url("/api/receipts/live-kurta-01-composite-r2/verify"), { method: "POST" })).json() as { ok: boolean; length: number };
+    assert.deepEqual([ok.ok, ok.length], [true, 7]);
+    const bad = await (await fetch(url("/api/receipts/live-kurta-01-composite-r2/tamper"), { method: "POST" })).json() as { tampered_entry: number; result: { ok: boolean; index: number } };
+    assert.equal(bad.result.ok, false);
+    assert.equal(bad.result.index, bad.tampered_entry);
+    assert.deepEqual(readFileSync(join(JOBS, "live-kurta-01-composite-r2", RECEIPT_FILE)), before);
+
+    const photo = await fetch(url("/api/receipts/live-kurta-01-composite-r2/source/0"));
+    assert.equal(photo.status, 200);
+    assert.equal(sha256Hex(new Uint8Array(await photo.arrayBuffer())), "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe");
+    // The fixture job's source is a recorded hash with no file under data/garments.
+    assert.equal((await fetch(url("/api/receipts/fixture-shirt-01/source/0"))).status, 404);
+    assert.equal((await fetch(url("/api/receipts/live-kurta-01-composite-r2/source/9"))).status, 404);
+    assert.equal((await fetch(url("/api/receipts/nope"))).status, 404);
+    assert.equal((await fetch(url("/api/receipts/live-kurta-01-composite-r2/verify"))).status, 405);
+    assert.equal((await fetch(url("/judge"))).status, 200);
+  } finally {
+    http.close();
+  }
+});

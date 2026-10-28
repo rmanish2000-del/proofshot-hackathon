@@ -38,6 +38,7 @@ const server = new UploadServer({
   webDir: option("--web", `${root}web`),
   jobsRoot: option("--jobs", `${root}data/jobs`),
   shopDir: option("--shop", `${root}web/shop`),
+  garmentsDir: option("--garments", `${root}data/garments`),
   providers,
 });
 

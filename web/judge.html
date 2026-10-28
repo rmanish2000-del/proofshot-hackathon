@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProofShot: judge view</title>
+<!--
+  NR5 (SPEC-ui-presentation): the judge view, served by npm run serve at /judge.
+  Everything shown comes from /api/receipts/<job>, which reads the job's receipt
+  (src/present.ts). A component or model is named only when its receipt entry
+  exists; a step with no entry says UNVERIFIED. No external resource is loaded.
+-->
+<style>
+  :root {
+    --bg: #f6f6f4; --card: #fff; --ink: #1d1d1b; --muted: #555; --line: #d6d6d2;
+    --release: #1b6e2f; --release-bg: #e3f3e7; --review: #7a4b00; --review-bg: #fdf0d5;
+    --refuse: #a3161b; --refuse-bg: #fbe3e3; --ai: #7a4b00; --ai-bg: #fdf0d5; --notai: #1b6e2f; --notai-bg: #e3f3e7;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.5; }
+  header, main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-direction: column; gap: 8px; }
+  h1 { font-size: 1.25rem; margin: 0; }
+  h2 { font-size: 1.05rem; margin: 0 0 8px; }
+  a { color: #1a4f8b; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  select, button { font: inherit; min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); }
+  button { cursor: pointer; }
+  button:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #1a4f8b; outline-offset: 2px; }
+  .count { padding: 4px 8px; border-radius: 8px; font-weight: 600; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  .RELEASE { color: var(--release); background: var(--release-bg); }
+  .REVIEW { color: var(--review); background: var(--review-bg); }
+  .REFUSE { color: var(--refuse); background: var(--refuse-bg); }
+  .chip { display: inline-flex; gap: 8px; align-items: center; font-size: 1.5rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; }
+  .badge { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; padding: 4px 8px; border-radius: 8px; border: 1px solid currentColor; }
+  .badge.ai-generated { color: var(--ai); background: var(--ai-bg); }
+  .badge.not-ai { color: var(--notai); background: var(--notai-bg); }
+  .badge.fixture, .badge.none { color: var(--muted); background: #eee; }
+  /* Pipeline: vertical on mobile, horizontal from 768px. */
+  .pipeline { display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0; margin: 0; }
+  .node { border: 1px solid var(--line); border-radius: 8px; padding: 8px; min-height: 44px; }
+  .node a { text-decoration: none; color: inherit; display: block; }
+  .node .st { font-weight: 700; }
+  .node.UNVERIFIED { border-style: dashed; background: #fafafa; }
+  .node.UNVERIFIED .st { color: var(--refuse); }
+  .side { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .sources { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .sources figure { flex: 0 0 85%; scroll-snap-align: start; margin: 0; }
+  figure { margin: 0; }
+  figcaption { font-size: .85rem; color: var(--muted); word-break: break-all; }
+  .frame { position: relative; display: inline-block; max-width: 100%; }
+  .frame img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 4px; background: #eee; }
+  .bbox { position: absolute; border: 2px dashed var(--refuse); pointer-events: none; }
+  .bbox span { position: absolute; top: -1.4em; left: 0; font-size: .75rem; background: var(--card); color: var(--refuse); padding: 0 4px; white-space: nowrap; }
+  .hide-boxes .bbox { display: none; }
+  .missing { padding: 24px; border: 1px dashed var(--line); border-radius: 4px; color: var(--muted); }
+  ul.reasons { padding-left: 0; list-style: none; }
+  ul.reasons li { border-left: 4px solid var(--line); padding: 4px 8px; margin: 8px 0; }
+  ul.reasons li.hard { border-left-color: var(--refuse); }
+  ul.reasons li.soft { border-left-color: var(--review); }
+  ol.timeline { list-style: none; padding: 0; margin: 0; }
+  ol.timeline li { border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 0 0 8px; position: relative; }
+  ol.timeline li:target { outline: 3px solid #1a4f8b; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .85rem; }
+  .result-line { font-weight: 600; margin-top: 8px; }
+  .ok { color: var(--release); } .bad { color: var(--refuse); }
+  @media (min-width: 768px) {
+    header { flex-direction: row; justify-content: space-between; align-items: center; }
+    .pipeline { flex-direction: row; }
+    .pipeline .node { flex: 1 1 0; }
+    .side { grid-template-columns: 1fr 1fr; }
+    .sources { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); overflow: visible; }
+  }
+  @media (min-width: 1200px) { header, main { padding: 24px; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>ProofShot: judge view</h1>
+    <div class="muted">Read from each job's hash-chained receipt. <a href="https://github.com/rmanish2000-del/proofshot-hackathon">Repository</a> · <a href="/">Seller upload</a> · <a href="/verify.html">Verify page</a></div>
+  </div>
+  <div class="row">
+    <label for="job">Job</label>
+    <select id="job" aria-label="Job (last 20)"></select>
+    <span id="counts" class="row" aria-label="Decisions in the last 20 jobs"></span>
+  </div>
+</header>
+<main>
+  <p id="error" class="bad" hidden></p>
+
+  <section aria-labelledby="h-pipe">
+    <h2 id="h-pipe">Pipeline for this job</h2>
+    <p class="muted" id="provenance"></p>
+    <ol class="pipeline" id="pipeline"></ol>
+  </section>
+
+  <section aria-labelledby="h-result">
+    <h2 id="h-result">Input vs result</h2>
+    <div class="row" id="render-pick-row" hidden><label for="render-pick">Render</label><select id="render-pick"></select></div>
+    <div class="side">
+      <div>
+        <h3 class="muted">Seller photos (input)</h3>
+        <div class="sources" id="sources"></div>
+      </div>
+      <div>
+        <h3 class="muted">Result</h3>
+        <div id="badge-row" class="row"></div>
+        <p class="muted" id="badge-tip"></p>
+        <div id="result"></div>
+        <p id="licence" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-gate">
+    <h2 id="h-gate">Gate decision</h2>
+    <div id="chip"></div>
+    <p><strong>Deterministic gate (rules, no model).</strong> Any doubt ends in REVIEW or REFUSE, never RELEASE.</p>
+    <div class="row"><label><input type="checkbox" id="boxes" checked> Show evidence boxes on the photos</label></div>
+    <ul class="reasons" id="reasons"></ul>
+  </section>
+
+  <section aria-labelledby="h-receipt">
+    <h2 id="h-receipt">Receipt</h2>
+    <div class="row">
+      <button id="verify" type="button">Verify chain</button>
+      <a id="download" download="receipt.jsonl"><button type="button" tabindex="-1">Download receipt JSON</button></a>
+      <button id="tamper" type="button">Tamper demo (one byte flipped in a copy)</button>
+    </div>
+    <p class="result-line" id="verify-out" role="status"></p>
+    <p class="result-line" id="tamper-out" role="status"></p>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+};
+const ICON = { RELEASE: "✓", REVIEW: "!", REFUSE: "✕" };
+const ist = (iso) => {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return iso;
+  const d = new Date(t + 330 * 60000);
+  return d.toISOString().replace("T", " ").replace(/\.\d+Z$/, "") + " IST";
+};
+const params = new URLSearchParams(location.search);
+let view = null;
+let jobId = null;
+
+async function getJson(url, init) {
+  const res = await fetch(url, init);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || res.status);
+  return body;
+}
+
+async function loadList() {
+  const list = await getJson("/api/receipts");
+  const sel = $("job");
+  sel.textContent = "";
+  for (const j of list.jobs) sel.append(el("option", { value: j.job_id, text: `${j.job_id} (${j.decision ?? "no gate"})` }));
+  const counts = $("counts");
+  counts.textContent = "";
+  for (const d of ["RELEASE", "REVIEW", "REFUSE"]) counts.append(el("span", { class: `count ${d}`, text: `${ICON[d]} ${d} ${list.counts[d]}` }));
+  const want = params.get("job");
+  if (want && list.jobs.some((j) => j.job_id === want)) sel.value = want;
+  return sel.value;
+}
+
+async function loadJob(id) {
+  jobId = id;
+  $("error").hidden = true;
+  $("verify-out").textContent = "";
+  $("tamper-out").textContent = "";
+  view = await getJson(`/api/receipts/${encodeURIComponent(id)}`);
+  $("download").href = view.receipt;
+  $("download").setAttribute("download", `${id}-receipt.jsonl`);
+  $("provenance").textContent = `Provenance on the receipt: ${view.provenance ?? "not recorded"}. ${view.garment_note ?? ""}`;
+  const pick = $("render-pick");
+  pick.textContent = "";
+  for (const r of view.renders) pick.append(el("option", { value: r.render_id, text: `${r.render_id} (${r.decision ?? "no gate"})` }));
+  $("render-pick-row").hidden = view.renders.length < 2;
+  drawPipeline();
+  drawTimeline();
+  drawRender(view.renders[0]);
+}
+
+function drawPipeline() {
+  const ol = $("pipeline");
+  ol.textContent = "";
+  for (const n of view.pipeline) {
+    const lat = n.latency_ms == null ? "" : ` · ${(n.latency_ms / 1000).toFixed(1)} s`;
+    const body = el("div", {},
+      el("div", { text: n.title }),
+      el("div", { class: "st", text: n.status === "done" ? `✓ done${lat}` : "? UNVERIFIED" }),
+      n.component ? el("div", { class: "muted", text: n.component }) : null,
+      el("div", { class: "muted", text: n.detail }));
+    const inner = n.seq == null ? body : el("a", { href: `#entry-${n.seq}`, "aria-label": `${n.title}: receipt entry ${n.seq}` }, body);
+    ol.append(el("li", { class: `node ${n.status}` }, inner));
+  }
+}
+
+function drawTimeline() {
+  const ol = $("timeline");
+  ol.textContent = "";
+  for (const c of view.cards) {
+    const copy = el("button", { type: "button", text: "Copy hash", "aria-label": `Copy hash of entry ${c.seq}` });
+    copy.addEventListener("click", () => navigator.clipboard?.writeText(c.hash).then(() => { copy.textContent = "Copied"; }, () => { copy.textContent = "Copy failed"; }));
+    const prev = c.seq === 0 ? el("span", { text: "genesis" }) : el("a", { href: `#entry-${c.seq - 1}`, text: c.prev.slice(0, 12) });
+    ol.append(el("li", { id: `entry-${c.seq}` },
+      el("div", {}, el("strong", { text: `#${c.seq} ${c.kind}` }), el("span", { class: "muted", text: ` · ${ist(c.at)}` })),
+      el("div", { text: c.summary }),
+      el("div", { class: "row" }, el("span", { text: "hash " }), el("code", { text: c.hash.slice(0, 12) }), copy, el("span", { text: "prev " }), prev)));
+  }
+}
+
+function frame(src, alt, boxes) {
+  const img = el("img", { src, alt, loading: "lazy" });
+  const f = el("div", { class: "frame" }, img);
+  for (const b of boxes) {
+    const d = el("div", { class: "bbox" }, el("span", { text: b.label }));
+    d.style.left = `${b.box[0] * 100}%`; d.style.top = `${b.box[1] * 100}%`;
+    d.style.width = `${b.box[2] * 100}%`; d.style.height = `${b.box[3] * 100}%`;
+    f.append(d);
+  }
+  img.addEventListener("error", () => f.replaceWith(el("div", { class: "missing", text: `${alt}: no file matches the recorded hash on this machine` })));
+  return f;
+}
+
+function drawRender(r) {
+  const reasons = r ? [...(r.cited ? [r.cited] : []), ...r.reasons.filter((x) => !r.cited || x.reason !== r.cited.reason)] : [];
+  const srcBoxes = reasons.filter((x) => x.source_bbox).map((x) => ({ box: x.source_bbox, label: x.attribute }));
+  const renBoxes = reasons.filter((x) => x.render_bbox).map((x) => ({ box: x.render_bbox, label: x.attribute }));
+
+  const sources = $("sources");
+  sources.textContent = "";
+  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, s.name, i === 0 ? srcBoxes : []), el("figcaption", { text: `${s.name} · ${s.sha256.slice(0, 12)}` }))));
+  if (view.sources.length === 0) sources.append(el("div", { class: "missing", text: "The receipt records no source photos." }));
+
+  const badgeRow = $("badge-row");
+  badgeRow.textContent = "";
+  const result = $("result");
+  result.textContent = "";
+  $("licence").hidden = true;
+  if (!r) {
+    badgeRow.append(el("span", { class: "badge none", text: "No render" }));
+    $("badge-tip").textContent = "";
+    $("chip").textContent = "";
+    $("reasons").textContent = "";
+    return;
+  }
+  const icon = r.badge.kind === "ai-generated" ? "◆ " : r.badge.kind === "not-ai" ? "● " : "";
+  badgeRow.append(el("span", { class: `badge ${r.badge.kind}`, title: r.badge.tooltip, text: icon + r.badge.label }));
+  $("badge-tip").textContent = r.badge.tooltip + (r.fallback_reason ? ` Fell back from the try-on: ${r.fallback_reason}.` : "");
+  if (r.model_image_id) {
+    const p = $("licence");
+    p.textContent = "";
+    p.append(el("a", { href: `https://github.com/rmanish2000-del/proofshot-hackathon/blob/master/data/models/${encodeURIComponent(r.model_image_id)}/LICENSE.md`, text: `Synthetic model licence (data/models/${r.model_image_id}/LICENSE.md)` }));
+    p.hidden = false;
+  }
+  const image = view.images[r.render_id];
+  if (image) result.append(el("figure", {}, frame(image, `render ${r.render_id}`, renBoxes), el("figcaption", { text: `${r.render_id} · ${r.image_sha256 ? r.image_sha256.slice(0, 12) : ""}${r.released ? " · released" : " · not released"}` })));
+  else result.append(el("div", { class: "missing", text: r.image_sha256 ? "The render's image file is not in this job folder." : "No image was made for this render (see the reasons)." }));
+
+  const chip = $("chip");
+  chip.textContent = "";
+  const d = r.decision;
+  chip.append(el("span", { class: `chip ${d ?? ""}`, role: "status", text: d ? `${ICON[d]} ${d}` : "? no gate entry (UNVERIFIED)" }));
+
+  const ul = $("reasons");
+  ul.textContent = "";
+  if (reasons.length === 0) ul.append(el("li", { text: d === "RELEASE" ? "No rule fired: every attribute matched above its floor." : "No reasons recorded." }));
+  for (const x of reasons) {
+    const parts = [
+      x.quality_precheck ? "Quality pre-check (before any render)" : x.attribute ?? (x.rule === "fidelity" ? "fidelity" : "—"),
+      x.verdict ? `verdict ${x.verdict}` : null,
+      x.confidence != null ? `confidence ${x.confidence.toFixed(2)}` : null,
+      x.severity ? `${x.severity} attribute` : null,
+      `rule ${x.rule}`,
+    ].filter(Boolean).join(" · ");
+    ul.append(el("li", { class: x.severity ?? "" }, el("strong", { text: parts }), el("div", { text: x.reason })));
+  }
+}
+
+$("job").addEventListener("change", (e) => {
+  history.replaceState(null, "", `?job=${encodeURIComponent(e.target.value)}`);
+  loadJob(e.target.value).catch(showError);
+});
+$("render-pick").addEventListener("change", (e) => drawRender(view.renders.find((r) => r.render_id === e.target.value)));
+$("boxes").addEventListener("change", (e) => document.body.classList.toggle("hide-boxes", !e.target.checked));
+$("verify").addEventListener("click", async () => {
+  const out = $("verify-out");
+  out.textContent = "Verifying…";
+  try {
+    const r = await getJson(`/api/receipts/${encodeURIComponent(jobId)}/verify`, { method: "POST" });
+    out.className = `result-line ${r.ok ? "ok" : "bad"}`;
+    out.textContent = r.ok ? `✓ Chain intact (${r.length} entries)` : `✕ Chain broken at entry ${r.index}: ${r.reason}`;
+  } catch (err) { out.className = "result-line bad"; out.textContent = String(err.message || err); }
+});
+$("tamper").addEventListener("click", async () => {
+  const out = $("tamper-out");
+  out.textContent = "Checking a tampered copy…";
+  try {
+    const r = await getJson(`/api/receipts/${encodeURIComponent(jobId)}/tamper`, { method: "POST" });
+    out.className = `result-line ${r.result.ok ? "ok" : "bad"}`;
+    out.textContent = r.result.ok
+      ? "The tampered copy still verified: this should not happen."
+      : `✕ Tampered copy: chain broken at entry ${r.result.index} (${r.result.reason}). The stored receipt was not changed.`;
+  } catch (err) { out.className = "result-line bad"; out.textContent = String(err.message || err); }
+});
+function showError(err) { $("error").hidden = false; $("error").textContent = String(err.message || err); }
+
+loadList().then((id) => id ? loadJob(id) : showError("No jobs with a receipt under the jobs folder.")).catch(showError);
+</script>
+</body>
+</html>
