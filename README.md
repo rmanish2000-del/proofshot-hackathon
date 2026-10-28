@@ -176,3 +176,7 @@ over; it marks every change made here with *(event)*. Config boilerplate
 (`tsconfig.json`, `.gitignore`) mirrors the pre-existing repo. ProofShot's pre-existing
 core stays in a separate private repository. It is not copied here and is
 only called as a hosted service.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
