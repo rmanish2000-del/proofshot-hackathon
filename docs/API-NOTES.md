@@ -29,6 +29,37 @@ What the two calls show:
 Cost: not logged. Baseten's response carries no price field, and no rate card
 was read during these runs, so no cost figure is written here.
 
+### The verifier with images (P6, `src/verifier.ts`)
+
+Same endpoint. One system message (instructions + the SPEC §4 schema + "Return
+only JSON matching this schema, no prose") and one user message with seven
+content parts: a text part naming each image, then its `image_url` data URL
+(`detail: "auto"`), three seller photos of kurta-01 and the render (the
+stand-in, the same bytes as the first photo), then the instruction. Every image
+is a 715×1600 JPEG of 258 to 274 KB, sent unresized. `temperature: 0`, no
+`response_format`. The logs replace each data URL with the byte count and
+sha256 and the header with a placeholder (`scripts/verifier-log.ts`).
+
+| Log | max_tokens | HTTP | finish_reason | content | prompt tokens | completion tokens | reasoning tokens | latency |
+|---|---|---|---|---|---|---|---|---|
+| `evidence/verifier-2026-10-28T03-55-00-289Z.json` | 1500 | 200 | `length` | cut off inside the second finding | 6885 (0 cached) | 1500 | 1338 | 24680 ms |
+| `evidence/verifier-2026-10-28T03-59-30-015Z.json` | 4096 | 200 | `stop` | one JSON object, 9 findings, all `match`, confidence 0.96 to 1.0 | 6918 (0 cached) | 1808 | 1022 | 15483 ms |
+
+What the two calls show:
+
+- Four images cost about 6900 prompt tokens; `usage` has no per-image count
+  for this model (the receipt records each image's bytes and pixel size from
+  the file headers instead).
+- The reasoning before the answer is long for this task (1338 and 1022
+  tokens), so 1500 was not enough: the JSON was cut off and the gate refused
+  the render as `not_verified` (`data/jobs/live-kurta-01`). At 4096 the whole
+  answer arrived in 1808 completion tokens (`data/jobs/live-kurta-01-2`).
+- The model read the schema's bbox as `[x, y, w, h]` in the second call after
+  the instructions said so; in the first it used corner coordinates. Bboxes
+  are evidence on the receipt, not gate input, so neither changes a decision.
+- The render was the first photo itself, so `match` everywhere is the right
+  answer and says nothing about mismatch detection.
+
 ## Meta Model API, SAM 3.1 (`sam-3.1`)
 
 Endpoint: `POST https://api.meta.ai/v1/responses` (Responses API, `stream: true`,

@@ -13,7 +13,7 @@ import type { Providers } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { standInRenderer } from "../src/render.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
-import { STEPS, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
+import { STEPS, UPLOAD_JOB_PREFIX, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
 import type { ServeProviders, StepName, StepState } from "../src/serve.ts";
 import { CATALOG_FILE } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
@@ -97,6 +97,57 @@ test("providersFromEnv: fixture mode with no key, stand-in render by default, la
   const openai = providersFromEnv({ RENDER_PROVIDER: "openai-images" });
   assert.match(openai.mode.labels.render, /^openai-images \/ gpt-image-1: no render transport/);
   assert.throws(() => providersFromEnv({ RENDER_PROVIDER: "meta", MODEL_RENDER: "muse-image-1.0" }), /Muse Image/);
+});
+
+test("providersFromEnv: BASETEN_API_KEY plus a fetch makes the verifier live and the run live; the key alone does not", () => {
+  const keyOnly = providersFromEnv({ BASETEN_API_KEY: "set-in-the-test-only" });
+  assert.equal(keyOnly.mode.fixture, true);
+  assert.match(keyOnly.mode.labels.verify, /^fixture: BASETEN_API_KEY is set but no fetch/);
+  assert.equal(keyOnly.providers.verifier.identity.provider, "fixture");
+
+  const live = providersFromEnv({ BASETEN_API_KEY: "set-in-the-test-only" }, { verifierFetch: async () => ({ status: 500, text: async () => "" }) });
+  assert.equal(live.mode.fixture, false);
+  assert.equal(live.mode.provenance, "live");
+  assert.deepEqual(live.providers.verifier.identity, { provider: "baseten", model: "meta-models/muse-spark-open-1026", base: "https://inference.baseten.co/v1" });
+  assert.equal(live.mode.labels.verify, "baseten / meta-models/muse-spark-open-1026: the model judges every attribute");
+  assert.match(live.mode.labels.fidelity, /REVIEW with no metrics, since no segmenter ran/);
+  assert.match(live.mode.labels.segment, /^fixture: no segmenter ran/, "the segmenter still claims nothing");
+});
+
+test("a live run with no mask is REVIEW, not RELEASE: the live verifier's findings and the masked fidelity check both reach the receipt", async () => {
+  const findings = { findings: ATTRIBUTES.map((attribute) => ({ attribute, verdict: "match", confidence: 0.95, note: "same", evidence: { source_bbox: null, render_bbox: null } })) };
+  const answer = JSON.stringify({ choices: [{ message: { content: JSON.stringify(findings) } }], usage: { prompt_tokens: 1, completion_tokens: 1 } });
+  let calls = 0;
+  const live = providersFromEnv({ BASETEN_API_KEY: "set-in-the-test-only" }, { verifierFetch: async () => { calls++; return { status: 200, text: async () => answer }; } });
+  const { srv, jobs } = server(live, "live");
+  const { job_id } = srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }]));
+  await srv.settled(job_id);
+  const s = srv.status(job_id)!;
+  assert.equal(calls, 1);
+  assert.equal(s.status, "done");
+  assert.deepEqual(states(s), { exif: "done", segment: "done", render: "done", verify: "done", gate: "done" });
+  assert.equal(s.result!.decision, "REVIEW");
+  assert.equal(s.result!.provenance, "live");
+  assert.deepEqual(s.result!.reasons, ["fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg"]);
+  const entries = parseReceipt(readFileSync(join(jobs, job_id, RECEIPT_FILE), "utf8"));
+  assert.equal((entries[0]!.payload as { provenance: string }).provenance, "live");
+  const verifier = entries.find((e) => e.kind === "verifier")!.payload as { verifier: { provider: string }; findings: unknown[] };
+  assert.equal(verifier.verifier.provider, "baseten");
+  assert.equal(verifier.findings.length, ATTRIBUTES.length);
+  const fidelity = entries.find((e) => e.kind === "fidelity")!.payload as { decision: string; metrics: unknown };
+  assert.deepEqual([fidelity.decision, fidelity.metrics], ["REVIEW", null]);
+  assert.throws(() => srv.publish(job_id), /was REVIEW, not RELEASE/);
+});
+
+test("a seller upload the server names itself is upload-* and .gitignore keeps data/jobs/upload-*/ out of every commit", async () => {
+  const ignore = readFileSync(join(ROOT, ".gitignore"), "utf8").split(/\r?\n/);
+  assert.ok(ignore.includes(`data/jobs/${UPLOAD_JOB_PREFIX}*/`), ".gitignore has the upload jobs line");
+  const jobs = tmp("named-jobs");
+  const srv = new UploadServer({ webDir: WEB, jobsRoot: jobs, shopDir: tmp("named-shop"), providers: providers() });
+  const { job_id } = srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }]));
+  assert.match(job_id, new RegExp(`^${UPLOAD_JOB_PREFIX}\\d{8}-\\d{6}-[0-9a-f]{4}$`));
+  await srv.settled(job_id);
+  assert.ok(existsSync(join(jobs, job_id, RECEIPT_FILE)), "the server still writes the job under the jobs root");
 });
 
 test("parseUpload refuses what the page must never send, with the reason", () => {

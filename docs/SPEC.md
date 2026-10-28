@@ -212,6 +212,11 @@ string, or a `content` field holding one of those; a `content` field is only
 unwrapped when the object has no `findings` key; a note that is not a string is
 `"(no note)"`; an `evidence` that is not an object gives two `null` bboxes.
 
+The live verifier *(event, P6)* is in §12: Muse Spark Open on Baseten, no JSON
+mode, so the schema goes in the system message and the answer's text is parsed
+here as strictly as any other; the only leniency added is that code fences and
+prose around the JSON object are dropped before parsing.
+
 Duplicate attributes *(event, pinned 27 Oct)*: the parser keeps every finding,
 so two findings for one attribute (say `color` match 0.9 and `color` mismatch
 0.8) reach the gate, which refuses them as `duplicate_attribute` (§2, rule 6)
@@ -428,8 +433,17 @@ UNCALIBRATED). No model judges anything.
     takes the crop's mean grey.
 - On the receipt *(event, Grok 27 Oct)*: each render's fidelity result is a
   `fidelity` entry between `verifier` and `gate` (§3), and the gate takes it as
-  an input (§2). The pipeline calls an injected checker; a checker that decodes
-  the SAM mask PNGs and calls `checkFidelity` is not wired in yet.
+  an input (§2). The pipeline calls an injected checker.
+- The checker *(event, P6)*, `maskedFidelityChecker({thresholds?, segmenter?})`
+  in `src/fidelity.ts`: the source mask is the first segment with mask bytes
+  whose label starts `<first source name>/`; the render mask comes from the
+  given segmenter, asked once with the render as an image named `render`.
+  No source mask, no segmenter, a segmenter that finds nothing in the render,
+  an image that is not a PNG (this build decodes only PNG: there is no JPEG
+  decoder, so a JPEG render or source is unmeasured), or a mask or image that
+  does not decode is `REVIEW` with `metrics: null` and the reason, never a
+  pass; otherwise the result is `checkFidelity`'s. A replay's hash-only mask
+  is not mask bytes, so a replay is unmeasured too.
 - The segmenter *(event, #18)*, `src/sam.ts`: `samSegmenter({model, transport,
   prompt?})` is the pipeline's `Segmenter` behind an injected transport that
   does the HTTP request, so the adapter reads no key. It asks once per source
@@ -556,14 +570,52 @@ server, which read it from the receipt.
   `RENDER_PROVIDER`, defaulting to `stand-in` (§8) since no render transport
   exists; the segmenter is SAM 3.1 (§10) only when `MODEL_SEGMENT`,
   `MODEL_API_KEY` and a mask parser are all present, else a fixture that finds
-  nothing and claims no model; the verifier and the fidelity check are
-  fixtures in this build (the live verifier is P6). Each step is labelled with
-  what stood behind it, and the whole run is **fixture mode** when any provider
-  is a fixture: the receipt's `provenance` is `fixture`, `GET /api/mode` says
+  nothing and claims no model; the verifier is Muse Spark Open on Baseten (§4,
+  *P6*) when `BASETEN_API_KEY` is set and the caller gave a fetch, and then
+  the fidelity check is the masked one of §10 (`maskedFidelityChecker`),
+  which is REVIEW with no metrics while no mask exists. Each step is labelled
+  with what stood behind it. The run is **live** (`provenance: "live"`) when
+  the verifier is live: a segmenter that did not run claims nothing (zero
+  segments, no model on the entry) and the fidelity entry says why it could
+  not measure, so nothing on such a receipt is invented. Without the key the
+  verifier and the fidelity check are fixtures and the run is **fixture
+  mode**: the receipt's `provenance` is `fixture`, `GET /api/mode` says
   `fixture: true`, and the page shows the notice and a "fixture job" tag on the
   card. Fixture mode's verifier records every attribute as `match` with the note
   "recorded in fixture mode: no model judged this image"; it is the same device
   as the garment preview jobs of §11 and is labelled the same way.
+- The live verifier *(event, P6, Grok 28 Oct 09:00)*, `src/verifier.ts`
+  `basetenVerifier({env, fetch, onCall?})`: one `POST
+  https://inference.baseten.co/v1/chat/completions` per render, model
+  `meta-models/muse-spark-open-1026` (`MODEL_VERIFIER` overrides; Muse Image
+  is refused), the key from `BASETEN_API_KEY` as the bearer token. Messages: a
+  `system` message that is the instructions plus the §4 schema verbatim plus
+  "Return only JSON matching this schema, no prose"; one `user` message whose
+  content parts are, in order, a text part naming each image ("source 1:
+  <name>" … "render") followed by its `image_url` data URL (`detail: auto`),
+  then the instruction text last. `temperature: 0`, `max_tokens: 4096` (the
+  model reasons before it answers; 1500 cut the first live answer off), no
+  `response_format` (no JSON mode on Baseten). The message content is the
+  raw value, after code fences and prose around the first JSON object are
+  dropped; `parseFindings` (§4) still checks it strictly, so prose, a cut-off
+  answer, null content, a non-JSON body, a network error or a non-2xx status
+  (reported by number only) is a thrown verifier and a `not_verified` REFUSE.
+  The receipt's `verifier` entry carries the identity and `usage` (prompt,
+  completion and cached tokens, each image's bytes and pixel size read from
+  the JPEG frame header or PNG IHDR). `onCall` receives the call log with the
+  auth header replaced by a placeholder, every image data URL replaced by its
+  byte count and sha256, and the key's value replaced wherever it appears;
+  `npm run serve` and `npm run job:live` write it to
+  `evidence/verifier-<started_at>.json`. Images are sent as they are: this
+  build has no JPEG decoder, so it cannot resize (Baseten's limits are 10 MB
+  an image, 8 images, 100 MiB a body; each is refused before the request).
+- `npm run job:live [-- <garment dir> <job id> [<jobs root>]]`
+  (`scripts/live-job.ts`) runs one real job on a garment's intake photos
+  through `providersFromEnv`, refusing to start unless the verifier is live.
+  The first two live jobs are `data/jobs/live-kurta-01` (REFUSE: the answer
+  was cut off at 1500 tokens, `not_verified`) and `data/jobs/live-kurta-01-2`
+  (REVIEW: all nine findings `match`, fidelity unmeasured because no mask
+  exists), recorded as `demo/recordings/live-kurta-01-2`.
 - A job: the photos are decoded, each goes through intake (metadata stripped,
   both hashes kept; a file that is not a JPEG ends the job before the pipeline,
   with no receipt), the stripped bytes are written to

@@ -13,17 +13,22 @@
 // fixture that finds nothing, the verifier records all attributes as matching
 // without a model, fidelity measures nothing, and the renderer is the stand-in
 // (the seller's own front photo). The receipt's provenance is then `fixture`
-// and the page says so. No key is read here; the transports read their own.
+// and the page says so. With BASETEN_API_KEY (P6) the verifier is Muse Spark
+// Open and the run is live. No key is read here; the transports read their own.
+//
+// Jobs this server names start with `upload-`; data/jobs/upload-*/ is in
+// .gitignore so a seller's photos can never be committed by a sync.
 
 import { randomBytes } from "node:crypto";
 import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, resolve, sep } from "node:path";
 
+import { maskedFidelityChecker } from "./fidelity.ts";
 import { intakeJpeg } from "./intake.ts";
 import type { IntakeFile } from "./intake.ts";
 import { fixtureProviders, runJob } from "./pipeline.ts";
-import type { Provenance, Providers, Renderer, Segment, Segmenter, SourceImage, Verifier } from "./pipeline.ts";
+import type { FidelityChecker, Provenance, Providers, Renderer, Segment, Segmenter, SourceImage, Verifier } from "./pipeline.ts";
 import { RECEIPT_FILE } from "./prior.ts";
 import type { Clock } from "./receipt.ts";
 import { rendererFromEnv } from "./render.ts";
@@ -35,6 +40,11 @@ import { buildShop } from "./shop.ts";
 import type { CatalogRow } from "./shop.ts";
 import { ATTRIBUTES } from "./types.ts";
 import type { Decision } from "./types.ts";
+import { basetenVerifier } from "./verifier.ts";
+import type { VerifierCallLog, VerifierFetch } from "./verifier.ts";
+
+/** Jobs the upload server names itself start with this; .gitignore keeps the data/jobs/upload-* folders out of every commit. */
+export const UPLOAD_JOB_PREFIX = "upload-";
 
 export const STEPS = ["exif", "segment", "render", "verify", "gate"] as const;
 export type StepName = (typeof STEPS)[number];
@@ -130,6 +140,10 @@ export interface ProvidersFromEnvOptions {
   readonly sam?: { readonly fetch: FetchLike; readonly parse: MaskParser };
   /** Overrides MODEL_API_KEY-based wiring in tests. */
   readonly samTransport?: SamTransport;
+  /** Needed for the live verifier (P6): the fetch it calls Baseten with. Without it the verifier is a fixture even with a key. */
+  readonly verifierFetch?: VerifierFetch;
+  /** Receives the redacted log of every live verifier call. */
+  readonly onVerifierCall?: (log: VerifierCallLog) => void;
 }
 
 /**
@@ -137,8 +151,12 @@ export interface ProvidersFromEnvOptions {
  * to `stand-in` here (no render transport exists); any other provider is built
  * by rendererFromEnv and every render is refused by a transport that throws,
  * which the receipt records as render_failed. The segmenter is live only with
- * MODEL_SEGMENT, MODEL_API_KEY and a mask parser; the verifier and fidelity
- * are fixtures in this build (no live verifier is wired, P6).
+ * MODEL_SEGMENT, MODEL_API_KEY and a mask parser. The verifier is Muse Spark
+ * Open on Baseten (P6) with BASETEN_API_KEY and a fetch; then the fidelity
+ * check is the masked one of SPEC §10 (REVIEW while no mask is available),
+ * and the run is live. Without the key, verifier and fidelity are fixtures and
+ * the run is fixture mode. A segmenter that did not run claims nothing (zero
+ * segments, no model on the receipt), so it does not make a live run a fixture.
  */
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>, opts: ProvidersFromEnvOptions = {}): ServeProviders {
   const base = fixtureProviders({ renders: () => new Uint8Array(0), findings: () => ({ findings: [] }) });
@@ -148,9 +166,6 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     verify: "fixture: findings recorded as all matching; no model judged the image",
     fidelity: "fixture: not measured",
   };
-  // The verifier and the fidelity check are fixtures in this build (P6 wires the
-  // live verifier), so every receipt this server writes says `fixture`.
-  const fixture = true;
 
   let segmenter: Segmenter = base.segmenter;
   const wantsSam = (env.MODEL_SEGMENT ?? "").trim() !== "";
@@ -169,8 +184,24 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     ? "stand-in: the seller's own front photo, nothing generated"
     : `${renderer.provider} / ${renderer.model}: no render transport in this build, every render is refused`;
 
-  const providers: Providers = { segmenter, renderer, verifier: fixtureVerifier(), fidelity: base.fidelity };
-  return { providers, mode: { provenance: fixture ? "fixture" : "live", fixture, labels } };
+  let verifier: Verifier = fixtureVerifier();
+  let fidelity: FidelityChecker = base.fidelity;
+  const hasKey = (env.BASETEN_API_KEY ?? "").trim() !== "";
+  const live = hasKey && opts.verifierFetch !== undefined;
+  if (live) {
+    verifier = basetenVerifier({ env, fetch: opts.verifierFetch!, ...(opts.onVerifierCall ? { onCall: opts.onVerifierCall } : {}) });
+    labels.verify = `${verifier.identity.provider} / ${verifier.identity.model}: the model judges every attribute`;
+    // Masks come from the segmenter's segments; the render is segmented only by a live segmenter.
+    fidelity = maskedFidelityChecker(segmenter.identity ? { segmenter } : {});
+    labels.fidelity = segmenter.identity
+      ? "masked metrics (SPEC §10): delta_e, hist, texture, area against config/fidelity.json"
+      : "masked metrics (SPEC §10): REVIEW with no metrics, since no segmenter ran and there is no mask";
+  } else if (hasKey) {
+    labels.verify = "fixture: BASETEN_API_KEY is set but no fetch was given to providersFromEnv, so no verifier ran";
+  }
+
+  const providers: Providers = { segmenter, renderer, verifier, fidelity };
+  return { providers, mode: { provenance: live ? "live" : "fixture", fixture: !live, labels } };
 }
 
 export interface UploadServerOptions {
@@ -426,7 +457,7 @@ export class UploadServer {
 
 function defaultJobId(now: Date): string {
   const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "").replace("T", "-");
-  return `upload-${stamp}-${randomBytes(2).toString("hex")}`;
+  return `${UPLOAD_JOB_PREFIX}${stamp}-${randomBytes(2).toString("hex")}`;
 }
 
 function errorText(err: unknown): string {

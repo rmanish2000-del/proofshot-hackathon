@@ -7,6 +7,8 @@
 
 import { readFileSync } from "node:fs";
 
+import type { FidelityChecker, Segmenter } from "./pipeline.ts";
+import { decodePng, maskFromPng, rgbFromPng } from "./png.ts";
 import type { Mask, RgbImage } from "./png.ts";
 import type { Decision } from "./types.ts";
 
@@ -221,4 +223,61 @@ function matchingBits(a: readonly number[], b: readonly number[]): number {
   let same = 0;
   for (let k = 0; k < a.length; k++) if (a[k] === b[k]) same++;
   return same;
+}
+
+/** The pipeline's checker (P6): masks from the segments, images decoded here, numbers from checkFidelity. */
+export interface MaskedFidelityOptions {
+  readonly thresholds?: Thresholds;
+  /** Segments the render; without one, no render mask exists and the result is REVIEW. */
+  readonly segmenter?: Segmenter;
+}
+
+/**
+ * The `FidelityChecker` the pipeline calls (SPEC §10). The source mask is the
+ * first segment with mask bytes for the first source photo (labels are
+ * `<image name>/<label>`); the render mask comes from the given segmenter, asked
+ * once with the render as an image named `render`. A missing mask, or an image
+ * this build cannot decode (only PNG is decoded: there is no JPEG decoder), is
+ * REVIEW with `metrics: null` and the reason, never a pass. With both masks and
+ * both images decoded, the result is checkFidelity's.
+ */
+export function maskedFidelityChecker(opts: MaskedFidelityOptions = {}): FidelityChecker {
+  const t = opts.thresholds ?? loadThresholds();
+  const unmeasured = (reason: string): FidelityResult => ({ decision: "REVIEW", metrics: null, reasons: [reason] });
+  return {
+    check: async ({ sources, segments, render }) => {
+      const source = sources[0];
+      if (!source) return unmeasured("source mask is missing: the job has no source photo");
+      const sourceSeg = segments.find((s) => s.label.startsWith(`${source.name}/`) && s.mask instanceof Uint8Array);
+      if (!sourceSeg) return unmeasured(`source mask is missing: no segment with mask bytes for ${source.name}`);
+      if (!opts.segmenter) return unmeasured("render mask is missing: no segmenter is available for the render");
+      const renderSegs = await opts.segmenter.segment([{ name: "render", bytes: render }]);
+      const renderSeg = renderSegs.find((s) => s.mask instanceof Uint8Array);
+      if (!renderSeg) return unmeasured("render mask is missing: the segmenter found no garment in the render");
+
+      const decoded: Record<"source" | "render", RgbImage | null> = { source: null, render: null };
+      for (const [name, bytes] of [["source", source.bytes], ["render", render]] as const) {
+        if (!isPng(bytes)) return unmeasured(`${name} image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured`);
+        try {
+          decoded[name] = rgbFromPng(decodePng(bytes));
+        } catch (err) {
+          return unmeasured(`${name} image could not be decoded: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+      const masks: Record<"source" | "render", Mask | null> = { source: null, render: null };
+      for (const [name, seg] of [["source", sourceSeg], ["render", renderSeg]] as const) {
+        try {
+          masks[name] = maskFromPng(decodePng(seg.mask as Uint8Array));
+        } catch (err) {
+          return unmeasured(`${name} mask could not be decoded: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+      return checkFidelity({ source: decoded.source!, render: decoded.render!, sourceMask: masks.source, renderMask: masks.render }, t);
+    },
+  };
+}
+
+const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
+function isPng(bytes: Uint8Array): boolean {
+  return bytes.length >= 8 && PNG_SIGNATURE.every((b, i) => bytes[i] === b);
 }
