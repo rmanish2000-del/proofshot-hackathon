@@ -84,7 +84,8 @@ npm run serve -- --jobs out/ui-jobs --shop out/ui-shop
 - Live VERIFIER: Muse Spark Open on Baseten (`meta-models/muse-spark-open-1026`), one chat completion per render, per-attribute findings.
 - Live SEGMENTER: SAM 3.1 on `api.meta.ai`; every SAM call in `job:live` writes a redacted call log.
 - JPEG decode is wired, so fidelity is measured on JPEG.
-- The render is still a stand-in returning the owner front photo, tagged "owner's photo, stands in for render"; nothing is generated, so a RELEASE on it is photo-vs-itself and proves the measured path runs, NOT accuracy.
+- Renders: the `sam` jobs below used the stand-in (the owner's front photo, tagged "owner's photo, stands in for render"), so a RELEASE on them is photo-vs-itself and proves the measured path runs, NOT accuracy. Since NR1 (6beed3a) `RENDER_PROVIDER=composite` places the SAM-cut garment from the seller's front photo onto the code-drawn `mannequin-01` template (homography warp, feathered edge); the receipt says `method: composite`, `generative: false`, and a missing mask is a REFUSE, never a fall-back to the stand-in. No image model is called, nothing is generated, and no person is in frame.
+- Live composite jobs (0e12a5e): `live-kurta-02-composite` RELEASE (2 SAM segments, verifier 9 of 9 `match`, fidelity on the warped source mask delta_e 0.19); `live-kurta-01-composite` REFUSE `not_verified`, because the verifier answer was cut off at max_tokens 4096. NR2 (8d0b72b) retries a cut-off answer once and refuses a second one as `verifier_truncated`; the kurta-01 re-run is pending. The composite is the same photo's pixels on a new background, so these too show the measured path, not accuracy on a generated image.
 - Verifier accuracy NOT MEASURED.
 - Absent or undefined verifier findings fail closed as `REFUSE not_verified`, the same as a verifier that failed.
 - Live jobs on `kurta-01`: `REFUSE not_verified` (first answer cut off), `REVIEW` (no mask), `REFUSE mismatch` (kurta-02 front as the render, colour hard mismatch, n=1), `live-kurta-01-sam` (3 segments 0.957/0.949/0.973, gate `REVIEW`, fidelity could not decode JPEG then), and `live-kurta-01-sam-2` (4 logged SAM calls, verifier matched, fidelity measured, gate `RELEASE`).
@@ -177,8 +178,8 @@ reason, provenance, a "Verify it yourself offline" link to
 `verify.html#sha=<hex>` (which prefills the hash) and downloads of the receipt
 and image. The shop decides nothing and calls no model; it reads.
 
-Today it shows fixture jobs only, written by the same script with a recorded
-clock, because no live render transport exists yet (SPEC §8); the page says so.
+It shows fixture jobs, written by the same script with a recorded clock, and
+the committed live jobs; no generative render transport exists (SPEC §8).
 `data/jobs/fixture-shirt-01` has synthetic images. `data/jobs/kurta-01` and
 `kurta-02` are preview jobs for the two photographed garments under
 `data/garments/`: the sources are the intake photos with their `intake.json`
@@ -187,7 +188,9 @@ hashes, and the released "render" is the garment's own front photo, unchanged
 which the receipt's render entry names (`stand-in` / `owner-photo`). Every card
 and product view built from such a receipt carries the tag "owner's photo,
 stands in for render". They let a judge see a real garment go through the
-receipt, the in-browser verification and the badge.
+receipt, the in-browser verification and the badge. `live-kurta-02-composite`
+is a live job whose released image is a composite (see Providers), tagged
+"Composite: your garment photo on a mannequin. Not AI-generated."
 
 New in this feature, all written during the event: `src/shop.ts`,
 `scripts/shop-build.ts`, `web/shop.html`, `web/shop/` (generated),
@@ -257,6 +260,11 @@ committed.
   `gpt-image-1`, and `fal` and `meta` require it. `stand-in` generates nothing:
   it returns the owner's own front photo and records `owner-photo` as its
   model; any other `MODEL_RENDER` with it is refused (`src/render.ts`).
+  `composite` (`src/composite.ts`, model `composite-v1`) generates nothing
+  either: it warps the SAM-masked garment from the front photo onto the
+  `mannequin-01` template, and with no mask the scene is refused
+  (`render_failed`); shop cards from it say "Composite: your garment photo on
+  a mannequin. Not AI-generated."
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
   and again before each request (`src/render.ts`).
