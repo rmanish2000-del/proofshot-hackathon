@@ -252,7 +252,7 @@ function drawRender(r) {
   const notStored = (s) => el("div", { class: "missing source-card" },
     el("strong", { text: "Source photo not stored here (hash recorded)" }),
     el("div", { class: "muted", text: `sha256 ${s.sha256.slice(0, 16)}…` }));
-  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, s.name, i === 0 ? srcBoxes : [], notStored(s)), el("figcaption", { text: `${s.name} · ${s.sha256.slice(0, 12)}` }))));
+  view.sources.forEach((s, i) => sources.append(el("figure", {}, frame(`/api/receipts/${encodeURIComponent(jobId)}/source/${i}`, `${s.label}: ${s.name}`, i === 0 ? srcBoxes : [], notStored(s)), el("figcaption", {}, el("strong", { text: s.label }), ` · ${s.name} · ${s.sha256.slice(0, 12)}`))));
   if (view.sources.length === 0) sources.append(el("div", { class: "missing", text: "The receipt records no source photos." }));
 
   const badgeRow = $("badge-row");
