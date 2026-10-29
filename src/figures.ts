@@ -1,0 +1,113 @@
+// Judge-review fix 1 (Codex, 29 Oct): every figure README.md and SUBMISSION.md
+// quote is computed here from committed evidence, and written between markers
+// `<!--f:key-->value<!--/f-->` by `npm run figures`, so the prose cannot drift
+// from the evidence. A test fails when a committed doc and this disagree.
+//
+// Sources: evidence/pack/summary.json (receipts, per-stage call counts, copy),
+// evidence/calibration-jobs-2026-10-29.json (the latest calibration report),
+// evidence/ms4-summary.json, data/jobs receipts (try-on renders), and the test
+// files (the number of top-level `test(` calls, which is what `npm test` runs).
+
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+type Json = Record<string, any>;
+const readJson = (p: string): Json => JSON.parse(readFileSync(p, "utf8")) as Json;
+const of = (n: number, d: number) => `${n} of ${d}`;
+
+export const CALIBRATION_FILE = "evidence/calibration-jobs-2026-10-29.json";
+
+/** Top-level `test(` calls in test/*.test.ts: the count `npm test` reports, without running it. */
+export function testCount(root: string): number {
+  const dir = join(root, "test");
+  return readdirSync(dir)
+    .filter((n) => n.endsWith(".test.ts"))
+    .reduce((n, f) => n + (readFileSync(join(dir, f), "utf8").match(/^test\(/gm)?.length ?? 0), 0);
+}
+
+export function computeFigures(root: string): Record<string, string> {
+  const pack = readJson(join(root, "evidence/pack/summary.json"));
+  const stage = (prefix: string) => (pack.stages as Json[]).find((s) => String(s.stage).startsWith(prefix));
+  const calls = (prefix: string) => String(stage(prefix)?.calls ?? 0);
+  const answered = (prefix: string) => String(stage(prefix)?.answered ?? 0);
+
+  const cal = readJson(join(root, CALIBRATION_FILE));
+  const x1 = (cal.gate as Json[]).find((g) => g.name === "x1")!;
+  const recorded = (cal.cases as Json[]).filter((c) => c.recorded);
+  const reproduced = recorded.filter((c) => (x1.cases as Json[]).find((k) => k.id === c.id)?.decision === c.recorded).length;
+
+  const ms4 = readJson(join(root, "evidence/ms4-summary.json"));
+  const changed = ms4.by_expected.changed;
+
+  let tryon = 0;
+  const tryonBy: Record<string, number> = {};
+  const jobs = join(root, "data/jobs");
+  for (const job of readdirSync(jobs)) {
+    const p = join(jobs, job, "receipt.jsonl");
+    if (job.startsWith("upload-") || !existsSync(p)) continue;
+    const lines = readFileSync(p, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l) as Json);
+    for (const r of lines.filter((l) => l.kind === "render" && l.payload.provider === "replicate-pruna-tryon")) {
+      const g = lines.find((l) => l.kind === "gate" && l.payload.render_id === r.payload.render_id)?.payload.decision ?? "none";
+      tryon++;
+      tryonBy[g] = (tryonBy[g] ?? 0) + 1;
+    }
+  }
+
+  const r = pack.receipts as Json;
+  return {
+    tests: String(testCount(root)),
+    sam_calls: calls("segment: SAM"),
+    muse13_calls: calls("verify: muse-spark-1.3"),
+    muse13_answered: answered("verify: muse-spark-1.3"),
+    fireworks_calls: calls("copy: accounts/fireworks/models/muse-spark-open"),
+    baseten_calls: calls("verify: meta-models/muse-spark-open-1026"),
+    llama_calls: calls("copy: accounts/fireworks/models/llama"),
+    jobs: String(r.jobs),
+    renders: String(r.renders),
+    chains: of(r.chains_ok, r.jobs),
+    live_renders: String(r.live_renders),
+    fixture_renders: String(r.renders - r.live_renders),
+    garments: String((r.garments_with_receipts as string[]).length),
+    cal_cases: String(x1.same + x1.different),
+    cal_same: String(x1.same),
+    cal_different: String(x1.different),
+    cal_false_match: String(x1.false_match),
+    cal_false_refuse: String(x1.false_refuse),
+    cal_unmeasured: String(x1.unmeasured),
+    cal_reproduced: of(reproduced, recorded.length),
+    cal_skipped: String((cal.skipped as unknown[]).length),
+    ms4_pairs: String(ms4.pairs),
+    ms4_runs: String(ms4.runs),
+    ms4_wrong_refused: of(ms4.mismatch_catch.refused, ms4.mismatch_catch.answered),
+    ms4_same_released: of(ms4.by_expected.same.correct, ms4.by_expected.same.answered),
+    ms4_changed_held: of(changed.correct, changed.answered),
+    ms4_changed_passed: of(changed.answered - changed.correct, changed.answered),
+    ms4_consistent: of(ms4.consistency.same_decision_all_reps, ms4.consistency.pairs_scored),
+    tryon_total: String(tryon),
+    tryon_refuse: String(tryonBy.REFUSE ?? 0),
+    tryon_review: String(tryonBy.REVIEW ?? 0),
+    tryon_release: String(tryonBy.RELEASE ?? 0),
+    copy_texts: String(pack.copy.texts),
+    copy_model: String(pack.copy.by_model),
+    copy_template: String(pack.copy.template),
+  };
+}
+
+const MARKER = /<!--f:([a-z0-9_]+)-->([\s\S]*?)<!--\/f-->/g;
+
+/** The text with every marked figure set to its computed value; unknown keys are reported, never guessed. */
+export function applyFigures(text: string, figures: Readonly<Record<string, string>>): { text: string; unknown: string[]; count: number } {
+  const unknown: string[] = [];
+  let count = 0;
+  const out = text.replace(MARKER, (whole, key: string) => {
+    count++;
+    if (!(key in figures)) {
+      unknown.push(key);
+      return whole;
+    }
+    return `<!--f:${key}-->${figures[key]}<!--/f-->`;
+  });
+  return { text: out, unknown, count };
+}
+
+export const FIGURE_DOCS = ["README.md", "SUBMISSION.md"] as const;

@@ -17,13 +17,13 @@ try-on, can quietly change the garment: its colour, its print, its length. A
 buyer then gets something other than what the photo showed.
 
 In our live try-on calls, long kurtas came back hip-length, and the gate caught
-every one: 7 of 7 try-on images were held (5 REFUSE, 2 REVIEW), none released.
+every one: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-on images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW), none released.
 ProofShot checks each candidate image against the seller's own photos before it
 can be listed, and a deterministic gate, not a model, decides.
 
 Checked against:
 - Try-on results: the 7 receipts with a `replicate-pruna-tryon` render entry in
-  `data/jobs/live-kurta-0*-tryon*` (5 REFUSE, 2 REVIEW, 0 RELEASE), and
+  `data/jobs/live-kurta-0*-tryon*` (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, <!--f:tryon_release-->0<!--/f--> RELEASE), and
   `data/calibration/labels.json` (the 7 try-on renders, length changed).
 - The gate: `src/gate.ts`, README "How the gate decides".
 - No claim is made about returns or sales.
@@ -48,8 +48,8 @@ Checked against:
 - No findings, refused: `data/jobs/live-kurta-01` (gate REFUSE not_verified).
 - No stored mask: `data/jobs/live-kurta-01-mismatch` has no segment with mask
   bytes; the judge view line is from a13273f.
-- Copy audit and fix: 86cffe1, 3f891ec (`data/copy`: 168 texts for 42 jobs,
-  164 by the model, 4 template, from `evidence/pack/summary.json`).
+- Copy audit and fix: 86cffe1, 3f891ec (`data/copy`: <!--f:copy_texts-->168<!--/f--> texts,
+  <!--f:copy_model-->164<!--/f--> by the model, <!--f:copy_template-->4<!--/f--> template, from `evidence/pack/summary.json`).
 - Caps and reserve: README spend section (Fireworks 60 USD batch + 40 reserve,
   Meta Model API 80 USD batch + 70 reserve).
 - Network retry: `live-shirt-plaid-composite-v2` and `-r2` (REFUSE
@@ -59,12 +59,12 @@ Checked against:
 
 ## Calibration
 
-`npm run calibrate:jobs` re-judges 37 labelled renders from committed receipts
-(18 same garment, 19 different) at threshold factors 0.5x to 2x. At 1x it
-reproduces the recorded gate decision on 37 of 37. The gate reports 0 false
-matches at every factor. At 1x there are 4 false refusals, all four renders
+`npm run calibrate:jobs` re-judges <!--f:cal_cases-->37<!--/f--> labelled renders from committed receipts
+(<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different) at threshold factors 0.5x to 2x. At 1x it
+reproduces the recorded gate decision on <!--f:cal_reproduced-->37 of 37<!--/f-->. The gate reports <!--f:cal_false_match-->0<!--/f--> false
+matches at 1x (0 at every factor in the report). At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them renders
 where the verifier gave no answer (not_verified), so they are not a threshold
-effect; 10 at 0.5x and 5 at 0.75x. Six fixture renders are skipped because
+effect; <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped because
 their fidelity values were written, not measured. No threshold changed. Four
 garments and many repeated images: this is not a calibrated error rate.
 
@@ -84,17 +84,17 @@ chain in the browser with WebCrypto.
 
 | Model | Served by | Role | Logged calls |
 |---|---|---|---|
-| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | 117 |
-| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | 224 |
-| muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | 291 |
-| Muse Spark Open | Baseten | The first verifier (27 to 28 Oct) | 19 |
+| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | <!--f:sam_calls-->122<!--/f--> |
+| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->225<!--/f--> |
+| muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->291<!--/f--> |
+| Muse Spark Open | Baseten | The first verifier (27 to 28 Oct) | <!--f:baseten_calls-->19<!--/f--> |
 
 Candidate images come from a composite v2 renderer (the seller's own garment
 pixels on a ghost mannequin, deterministic code, no image model) or an AI
 try-on (Pruna on Replicate). No Meta image generator is used; Muse Image is
-refused at runtime. The Muse Spark cross-check (MS4) ran 204 checks over 68
-(garment, image) pairs: 153 of 153 wrong-garment runs refused, 24 of 30
-same-garment runs released, 65 of 68 pairs gave the same decision three times.
+refused at runtime. The Muse Spark cross-check (MS4) ran <!--f:ms4_runs-->204<!--/f--> checks over <!--f:ms4_pairs-->68<!--/f-->
+(garment, image) pairs: <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs refused, <!--f:ms4_same_released-->24 of 30<!--/f-->
+same-garment runs released, <!--f:ms4_consistent-->65 of 68<!--/f--> pairs gave the same decision three times.
 
 Spend from the ledgers: Meta Model API 5.99 USD of the 80 USD cap, Fireworks
 4.83 USD of 60, Replicate 0.105 USD, Baseten 0 on its ledger; no reserve used.
