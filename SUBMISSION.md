@@ -103,23 +103,23 @@ Checked against: README "What each Meta model does" and "Limits",
 `evidence/pack/summary.json` (call counts), `evidence/ms4-summary.json`,
 `package.json`, `npm run ledger` on 29 Oct after d0499ca.
 
-## Demo script (90 s)
+## Demo script (76 s)
 
-Eight beats, ten shots, 90 s, in `docs/DEMO.md` (v5): the seller's phone
-photos of a plaid shirt; a pipeline smoke example (`ms2-shirt-plaid`, the
-owner's own photo as the candidate, RELEASE: it shows the pipeline runs, not
-accuracy); then the real proof, one committed AI try-on that shortened a long
-kurta (`live-kurta-01-tryon-m`): the verifier matched every attribute, and the
-measured fidelity check held it (REVIEW, the garment shrank in frame); REVIEW
-for a composite whose brand label is below its confidence floor
-(`live-shirt-plaid-composite-v2-r3`); REFUSE for the wrong garment
-(`live-shirt-plaid-mismatch`); then one byte of the receipt changed and the
-verify page says TAMPERED. The try-on image shows a synthetic person, so the
-video shows its receipt, not the image. Framed for "Build for Your World".
+Seven beats, nine shots, 76 s, in `docs/DEMO.md` (v6), showing the two shirts
+only (plaid and zebra): the seller's phone photos of a plaid shirt; a pipeline
+smoke example (`ms2-shirt-plaid`, the owner's own photo as the candidate,
+RELEASE: it shows the pipeline runs, not accuracy); REVIEW for a composite
+whose brand label is below its confidence floor
+(`live-shirt-plaid-composite-v2-r3`); REFUSE for the wrong garment, the zebra
+shirt against the plaid shirt's photos (`live-shirt-plaid-mismatch`); then one
+byte of the receipt changed and the verify page says TAMPERED. Framed for
+"Build for Your World". The video has no try-on beat: every committed try-on
+is of a kurta, and there is no shirt try-on. The try-on results (all held by
+the gate, none released) are under Problem above and in the README.
 
 Checked against `docs/DEMO.md` and `test/demo-capture.test.ts` (word caps,
-timecodes summing to 90 s, every job committed, the try-on job held on
-fidelity with 9 of 9 verifier matches).
+timecodes summing to 76 s, every job committed, no kurta job in any shot,
+every committed try-on a kurta job).
 
 ## Built during the event and prior work
 
