@@ -80,7 +80,7 @@ test("DEMO1b: no shot is skipped; title cards show only text that is in docs/DEM
 
 test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode, and the total is under 115 s", () => {
   const beats = beatSecondsFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
-  assert.equal(beats.get(2), 14, "beat 2 is 0:05-0:19");
+  assert.equal(beats.get(2), 14, "beat 2 is 0:06-0:20");
   const perBeat = new Map<number, number>();
   for (const s of DEMO_SHOTS) {
     assert.ok(Number.isInteger(s.seconds) && s.seconds > 0, `${s.id} seconds`);
@@ -100,7 +100,7 @@ test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode
 test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md, timed like frames.txt, ending at the total", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
-  assert.ok(voice.get(4)!.startsWith("A buyer drops the receipt"), "beat 4 voiceover");
+  assert.ok(voice.get(6)!.startsWith("Every decision is written into a hash-chained receipt."), "beat 6 voiceover");
   const narration = shotNarration(DEMO_SHOTS, voice);
   const narrated = DEMO_SHOTS.filter((s) => narration.get(s.id));
   assert.ok(narrated.length > 0);
@@ -149,16 +149,16 @@ test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md,
   assert.equal(piped.get(3), "Said.");
 });
 
-test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 and 6 carry Grok's lines, and S1's card shows beat 1", () => {
+test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 and 5 carry the v4 lines, and S1's card shows beat 1", () => {
   const voice = narrationFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
-  assert.equal(voice.get(1), "A wrong image can sink a seller. ProofShot proves what was checked.");
+  assert.equal(voice.get(1), "Build for Your World. An Indian boutique seller lists a shirt online.");
   assert.equal(
     voice.get(3),
-    "This is a replay of the recorded job live-kurta-01-2. Each receipt entry is one line, and every line is chained to the one before it.",
+    "First candidate: the seller's own front photo. Muse Spark checks nine attributes and all match, so the code gate, not the model, says RELEASE.",
   );
   assert.equal(
-    voice.get(6),
-    "Here the image to publish shows a different kurta. The verifier flags a hard mismatch, and the gate refuses it. A wrong image cannot ship.",
+    voice.get(5),
+    "Third candidate: a different shirt. The verifier finds a hard colour mismatch and the gate says REFUSE. A wrong image cannot ship.",
   );
   for (const [beat, line] of voice) assert.ok(!line.includes("TBD") && !line.includes("["), `beat ${beat} voiceover has no TBD`);
   const narration = shotNarration(DEMO_SHOTS, voice);
@@ -187,16 +187,16 @@ test("DEMO1g: the DEMO.md beat table has no [TBD], its timecodes are the cumulat
     at = sec(to!);
   }
   assert.equal(at, DEMO_SHOTS.reduce((n, s) => n + s.seconds, 0), "last timecode is the shots.json total");
-  assert.equal(at, 101, "1:41");
+  assert.equal(at, 90, "1:30 (Codex review: 90 s)");
 });
 
-test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the Words cell is the real count, and beats 4, 5 and 7 carry Grok's lines", () => {
+test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the Words cell is the real count, and beats 2, 4 and 6 carry the v4 lines", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
   const beats = beatSecondsFromDemoMd(md);
   const table = md.split("## Timecode table")[1]!.split("\n## ")[0]!;
   const rows = table.split("\n").filter((l) => /^\|\s*\d+\s*\|/.test(l));
-  assert.equal(rows.length, 8);
+  assert.equal(rows.length, 7);
   for (const row of rows) {
     const beat = Number(/^\|\s*(\d+)/.exec(row)![1]);
     const words = voice.get(beat)!.split(/\s+/).filter(Boolean).length;
@@ -205,37 +205,39 @@ test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the
     assert.match(row, new RegExp(`\\| ${words} / ${cap} \\|`), `beat ${beat}: Words cell says ${words} / ${cap}`);
   }
   assert.equal(
+    voice.get(2),
+    "The seller uploads their own phone photos of the shirt. ProofShot checks every candidate listing image against those photos before it goes on sale.",
+  );
+  assert.equal(
     voice.get(4),
-    "A buyer drops the receipt and the image onto the verify page. The page recomputes every hash in the browser, with no server and no account. The chain holds and the image is the released one: VALID.",
+    "Second candidate: a ghost-mannequin composite of the same shirt. The brand label is matched below its confidence floor, so the gate says REVIEW and a person looks first.",
   );
   assert.equal(
-    voice.get(5),
-    "Now change one byte of the receipt. The page says TAMPERED and names the entry that broke. The gate decides from recorded checks alone: here REVIEW, because no mask was stored.",
-  );
-  assert.equal(
-    voice.get(7),
-    "Not every difference is a refusal. Here the hem changed, a soft attribute, so the gate sends it to a person for REVIEW. Every outcome lands in the receipt.",
+    voice.get(6),
+    "Every decision is written into a hash-chained receipt. The verify page checks every hash in the browser, with no server: VALID. Change one byte, and it says TAMPERED.",
   );
   assert.ok(!table.includes("wait on Grok"), "no open note under the table");
 });
 
-test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S5 is the receipt bytes, the checklist asks for verify.html from disk", () => {
+test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S7 is the receipt bytes, the checklist asks for verify.html from disk", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   assert.ok(!/wi-?fi/i.test(md), "no Wi-Fi in DEMO.md");
   assert.ok(!/offline/i.test(md), "no offline claim in DEMO.md");
-  const s5 = md.split("\n").find((l) => /^\|\s*S5\s*\|/.test(l))!;
-  assert.match(s5, /receipt bytes around the byte that will change/);
+  const s7 = md.split("\n").find((l) => /^\|\s*S7\s*\|/.test(l))!;
+  assert.match(s7, /receipt bytes around the byte that will change/);
   assert.ok(md.includes("- [ ] verify.html opened from disk (file:// URL visible), no server running."));
 });
 
-test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload page was browser-checked, no pinned test count or commit, S4 is the log page", () => {
+test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload page was browser-checked, no pinned test count or commit, the RELEASE shot says it is the owner's photo", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   for (const stale of ["no generative render transport", "not checked in a real browser", "214", "c4feb75", "generated on-model image exists"]) {
     assert.ok(!md.includes(stale), `no "${stale}" in DEMO.md`);
   }
   const s4 = md.split("\n").find((l) => /^\|\s*S4\s*\|/.test(l))!;
-  assert.match(s4, /replay log page/);
-  assert.ok(!/terminal/i.test(s4), "S4 is not a terminal");
+  assert.match(s4, /stand-in tag/);
+  const release = md.split("\n").find((l) => l.startsWith("| RELEASE on the plaid shirt"))!;
+  assert.match(release, /owner's own front photo/);
+  assert.match(release, /\*\*not\*\* accuracy/);
   const gen = md.split("\n").find((l) => l.startsWith("| A generated on-model image"))!;
   assert.match(gen, /no generated image has been released/);
   // The call count is read from the committed receipts, never typed from memory.
@@ -247,7 +249,7 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
   assert.match(gen, new RegExp(`the ${tryons.length} live try-on calls committed so far \\(${tryons.length} receipts`));
 });
 
-test("DEMO1b: the S4 log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
+test("DEMO1b: the replay log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
   const receipt = readFileSync(join(root, "data/jobs/live-kurta-01-2/receipt.jsonl"), "utf8");
   const lines = replayLogLines({
     recording: "live-kurta-01-2",
@@ -273,23 +275,23 @@ test("DEMO1b: the S4 log page shows the replay lines and one line per receipt en
   assert.ok(!html.includes("C:\\Users") && !html.includes("/home/"));
 });
 
-test("DEMO1b: the S5/S7 bytes page highlights the same byte S6 changes", () => {
-  const text = readFileSync(join(root, "web/shop/kurta-01/receipt.jsonl"), "utf8");
+test("DEMO1b: the S7 bytes page highlights the same byte S8 changes", () => {
+  const text = readFileSync(join(root, "web/shop/ms2-shirt-plaid/receipt.jsonl"), "utf8");
   const spot = tamperSpot(text)!;
   const bad = tamperOneByte(text)!;
   assert.equal(text[spot.offset], spot.before);
   assert.equal(bad[spot.offset], spot.after);
   assert.equal(spot.line, 1);
-  const both = bytesHtml("web/shop/kurta-01/receipt.jsonl", text, "both");
+  const both = bytesHtml("web/shop/ms2-shirt-plaid/receipt.jsonl", text, "both");
   assert.ok(both.includes(`<mark>${spot.before}</mark>`) && both.includes(`<mark>${spot.after}</mark>`));
   assert.ok(both.includes(`byte ${spot.offset}`) && both.includes("entry 1"));
-  const before = bytesHtml("web/shop/kurta-01/receipt.jsonl", text, "before");
+  const before = bytesHtml("web/shop/ms2-shirt-plaid/receipt.jsonl", text, "before");
   assert.ok(before.includes(`<mark>${spot.before}</mark>`) && !before.includes("After"));
   assert.throws(() => bytesHtml("x", "{}", "both"));
 });
 
 test("DEMO1: the tampered receipt differs by one byte and fails the chain check; the original passes", () => {
-  const text = readFileSync(join(root, "web/shop/kurta-01/receipt.jsonl"), "utf8");
+  const text = readFileSync(join(root, "web/shop/ms2-shirt-plaid/receipt.jsonl"), "utf8");
   const bad = tamperOneByte(text)!;
   assert.equal(bad.length, text.length);
   assert.equal([...bad].filter((c, i) => c !== text[i]).length, 1);

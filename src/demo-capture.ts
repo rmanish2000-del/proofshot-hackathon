@@ -56,97 +56,79 @@ export const MAX_TOTAL_SECONDS = 115;
 
 const judge = (job: string) => `/judge?job=${encodeURIComponent(job)}`;
 const loaded = { wait: "#chip" } as const;
-const TAMPERED_RECEIPT = "web/shop/kurta-01/receipt.jsonl";
+const TAMPERED_RECEIPT = "web/shop/ms2-shirt-plaid/receipt.jsonl";
+const TAMPER_IMAGE = "web/shop/ms2-shirt-plaid/ms2-shirt-plaid-r0.jpg";
 
 /** One entry per row of the docs/DEMO.md shot list, in order. */
 export const DEMO_SHOTS: readonly Shot[] = [
   {
     id: "S1",
     beat: 1,
-    seconds: 5,
-    // DEMO1f: the card shows beat 1's voiceover line from DEMO.md, one sentence per line.
+    seconds: 6,
+    // The card shows beat 1's voiceover line from DEMO.md, one sentence per line.
     frames: [
       {
         name: "S01-title",
         from: "page",
         path: "docs/DEMO.md",
         actions: [],
-        page: { kind: "card", title: "ProofShot", lines: ["A wrong image can sink a seller.", "ProofShot proves what was checked."] },
+        page: { kind: "card", title: "ProofShot", lines: ["Build for Your World.", "An Indian boutique seller lists a shirt online."] },
       },
     ],
   },
+  { id: "S2", beat: 2, seconds: 6, frames: [{ name: "S02-upload-page", from: "jobs", path: "/", actions: [] }] },
   {
-    id: "S2",
+    id: "S3",
     beat: 2,
-    seconds: 7,
-    frames: [{ name: "S02-kurta-01-photos", from: "jobs", path: judge("kurta-01"), actions: [loaded, { scrollTo: "#h-result" }] }],
+    seconds: 8,
+    frames: [{ name: "S03-plaid-photos", from: "jobs", path: judge("ms2-shirt-plaid"), actions: [loaded, { scrollTo: "#h-result" }] }],
   },
-  { id: "S3", beat: 2, seconds: 7, frames: [{ name: "S03-shop-grid", from: "jobs", path: "/shop.html", actions: [] }] },
   {
     id: "S4",
     beat: 3,
-    seconds: 12,
-    frames: [{ name: "S04-replay-log", from: "page", path: "demo/recordings/live-kurta-01-2", actions: [], page: { kind: "log", recording: "live-kurta-01-2" } }],
+    seconds: 16,
+    frames: [{ name: "S04-plaid-release", from: "jobs", path: judge("ms2-shirt-plaid"), actions: [loaded, { scrollTo: "#h-gate" }] }],
   },
   {
     id: "S5",
     beat: 4,
-    seconds: 4,
-    frames: [{ name: "S05-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
+    seconds: 14,
+    frames: [
+      { name: "S05a-composite-photos", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S05b-composite-review", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-gate" }] },
+    ],
   },
   {
     id: "S6",
-    beat: 4,
+    beat: 5,
     seconds: 14,
     frames: [
-      {
-        name: "S06a-verify-valid",
-        from: "disk",
-        path: "web/verify.html",
-        actions: [{ verify: { receipt: "web/shop/kurta-01/receipt.jsonl", image: "web/shop/kurta-01/kurta-01-r0.jpg", tamper: false } }],
-      },
-      {
-        name: "S06b-verify-tampered",
-        from: "disk",
-        path: "web/verify.html",
-        actions: [{ verify: { receipt: "web/shop/kurta-01/receipt.jsonl", image: "web/shop/kurta-01/kurta-01-r0.jpg", tamper: true } }],
-      },
+      { name: "S06a-mismatch-photos", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S06b-mismatch-refuse", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
     ],
   },
   {
     id: "S7",
-    beat: 5,
-    seconds: 6,
-    frames: [{ name: "S07-tamper-one-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "both" } }],
+    beat: 6,
+    seconds: 4,
+    frames: [{ name: "S07-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
   },
   {
     id: "S8",
-    beat: 5,
-    seconds: 10,
-    frames: [{ name: "S08-gate-input-kurta-01", from: "jobs", path: judge("live-kurta-01-2"), actions: [loaded, { scrollTo: "#h-gate" }] }],
-  },
-  {
-    id: "S9",
     beat: 6,
-    seconds: 16,
+    seconds: 14,
     frames: [
-      { name: "S09a-mismatch-photos", from: "jobs", path: judge("live-kurta-01-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
-      { name: "S09b-mismatch-refuse", from: "jobs", path: judge("live-kurta-01-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
+      { name: "S08a-verify-valid", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: false } }] },
+      { name: "S08b-verify-tampered", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: true } }] },
     ],
   },
   {
-    id: "S10",
+    id: "S9",
     beat: 7,
-    seconds: 12,
-    frames: [{ name: "S10-review", from: "replay", path: "/judge?job=@review", actions: [loaded, { scrollTo: "#h-gate" }] }],
-  },
-  {
-    id: "S11",
-    beat: 8,
     seconds: 8,
     frames: [
       {
-        name: "S11-end",
+        name: "S09-end",
         from: "page",
         path: "docs/DEMO.md",
         actions: [],
@@ -156,8 +138,8 @@ export const DEMO_SHOTS: readonly Shot[] = [
   },
 ];
 
-/** The recordings the capture replays; `@<name>` in a "replay" frame path is the job id the replay writes. */
-export const REPLAYED_RECORDINGS: readonly string[] = ["review", "live-kurta-01-2"];
+/** The recordings the capture replays; `@<name>` in a "replay" frame path is the job id the replay writes. v4 replays none. */
+export const REPLAYED_RECORDINGS: readonly string[] = [];
 
 /** Seconds per beat from the "## Timecode table" of docs/DEMO.md (`| 2 | 0:08-0:22 |` gives beat 2 = 14). */
 export function beatSecondsFromDemoMd(md: string): Map<number, number> {
