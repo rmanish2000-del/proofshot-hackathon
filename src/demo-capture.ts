@@ -28,7 +28,7 @@ export type DemoPage =
   | { readonly kind: "bytes"; readonly show: "before" | "both" };
 
 export interface CapturedFrame {
-  /** Frame name under out/demo/, e.g. "S06a-verify-valid". */
+  /** Frame name under out/demo/, e.g. "S05a-verify-valid". */
   readonly name: string;
   /**
    * Served by the capture's local server ("jobs" = data/jobs, "replay" = replayed recordings), a repo
@@ -92,11 +92,10 @@ export const DEMO_SHOTS: readonly Shot[] = [
   {
     id: "S5",
     beat: 4,
-    seconds: 14,
-    // The try-on image shows a synthetic person: only the gate and receipt sections, below it, are framed.
+    seconds: 12,
     frames: [
-      { name: "S05a-tryon-gate", from: "jobs", path: judge("live-kurta-01-tryon-m"), actions: [loaded, { scrollTo: "#h-gate" }] },
-      { name: "S05b-tryon-receipt", from: "jobs", path: judge("live-kurta-01-tryon-m"), actions: [loaded, { scrollTo: "#h-receipt" }] },
+      { name: "S05a-composite-photos", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S05b-composite-review", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-gate" }] },
     ],
   },
   {
@@ -104,41 +103,32 @@ export const DEMO_SHOTS: readonly Shot[] = [
     beat: 5,
     seconds: 12,
     frames: [
-      { name: "S06a-composite-photos", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-result" }] },
-      { name: "S06b-composite-review", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-gate" }] },
+      { name: "S06a-mismatch-photos", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S06b-mismatch-refuse", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
     ],
   },
   {
     id: "S7",
     beat: 6,
-    seconds: 12,
-    frames: [
-      { name: "S07a-mismatch-photos", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
-      { name: "S07b-mismatch-refuse", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
-    ],
+    seconds: 4,
+    frames: [{ name: "S07-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
   },
   {
     id: "S8",
-    beat: 7,
-    seconds: 4,
-    frames: [{ name: "S08-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
+    beat: 6,
+    seconds: 12,
+    frames: [
+      { name: "S08a-verify-valid", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: false } }] },
+      { name: "S08b-verify-tampered", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: true } }] },
+    ],
   },
   {
     id: "S9",
     beat: 7,
-    seconds: 12,
-    frames: [
-      { name: "S09a-verify-valid", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: false } }] },
-      { name: "S09b-verify-tampered", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: true } }] },
-    ],
-  },
-  {
-    id: "S10",
-    beat: 8,
     seconds: 6,
     frames: [
       {
-        name: "S10-end",
+        name: "S09-end",
         from: "page",
         path: "docs/DEMO.md",
         actions: [],
