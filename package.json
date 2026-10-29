@@ -26,7 +26,8 @@
     "composite:preview": "node --experimental-strip-types scripts/composite-preview.ts",
     "make:template":"node --experimental-strip-types scripts/make-template.ts",
     "copy:fireworks": "node --experimental-strip-types scripts/fireworks-copy.ts",
-    "models:fireworks": "node --experimental-strip-types scripts/fireworks-models.ts"
+    "models:fireworks": "node --experimental-strip-types scripts/fireworks-models.ts",
+    "ledger": "node --experimental-strip-types scripts/ledger.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
