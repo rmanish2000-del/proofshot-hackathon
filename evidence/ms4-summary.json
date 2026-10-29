@@ -11,7 +11,9 @@
   "decision_rule": "the gate's own decide() over Muse Spark's findings alone (verifier only, no fidelity); for gate_agreement, decide() with the job's recorded fidelity result, compared with the recorded gate decision",
   "garments": [
     "kurta-01",
-    "kurta-02"
+    "kurta-02",
+    "shirt-plaid",
+    "shirt-zebra"
   ],
   "renders": [
     {
@@ -47,6 +49,15 @@
       ]
     },
     {
+      "render_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "path": "data/jobs/ms2-shirt-plaid/ms2-shirt-plaid-r0.jpg",
+      "shows": "shirt-plaid",
+      "jobs": [
+        "ms2-shirt-plaid",
+        "shirt-plaid"
+      ]
+    },
+    {
       "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
       "path": "data/jobs/live-kurta-02-tryon-s02/live-kurta-02-tryon-s02-r0.jpg",
       "shows": "kurta-02",
@@ -54,6 +65,14 @@
       "jobs": [
         "live-kurta-02-tryon-s02",
         "ms3-live-kurta-02-tryon-s02"
+      ]
+    },
+    {
+      "render_sha256": "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331",
+      "path": "data/jobs/live-shirt-plaid-composite-v2-r2/live-shirt-plaid-composite-v2-r2-r0.png",
+      "shows": "shirt-plaid",
+      "jobs": [
+        "live-shirt-plaid-composite-v2-r2"
       ]
     },
     {
@@ -67,6 +86,15 @@
       ]
     },
     {
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "path": "data/jobs/ms2-shirt-zebra/ms2-shirt-zebra-r0.jpg",
+      "shows": "shirt-zebra",
+      "jobs": [
+        "ms2-shirt-zebra",
+        "shirt-zebra"
+      ]
+    },
+    {
       "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
       "path": "data/jobs/live-kurta-01-tryon/live-kurta-01-tryon-r0.jpg",
       "shows": "kurta-01",
@@ -75,6 +103,22 @@
         "live-kurta-01-tryon",
         "live-kurta-01-tryon-reverify",
         "ms3-live-kurta-01-tryon"
+      ]
+    },
+    {
+      "render_sha256": "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c",
+      "path": "data/jobs/live-shirt-plaid-composite-v2/live-shirt-plaid-composite-v2-r0.png",
+      "shows": "shirt-plaid",
+      "jobs": [
+        "live-shirt-plaid-composite-v2"
+      ]
+    },
+    {
+      "render_sha256": "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a",
+      "path": "data/jobs/live-shirt-plaid-composite-v2-r3/live-shirt-plaid-composite-v2-r3-r0.png",
+      "shows": "shirt-plaid",
+      "jobs": [
+        "live-shirt-plaid-composite-v2-r3"
       ]
     },
     {
@@ -154,19 +198,19 @@
     "reason": "the PS-SP1 list is not in proofshot-hackathon, proofshot (coordination) or the #23 comments, and no garment photos exist beyond kurta-01 and kurta-02 (shirt-01..03 have notes only)"
   },
   "attempts": {
-    "lines": 72,
-    "failed_attempts": 0
+    "lines": 205,
+    "failed_attempts": 1
   },
-  "pairs": 24,
-  "runs": 72,
-  "answered": 72,
+  "pairs": 68,
+  "runs": 204,
+  "answered": 204,
   "failed": 0,
   "by_expected": {
     "same": {
-      "pairs": 5,
-      "answered": 15,
-      "correct": 15,
-      "correct_rate": 1,
+      "pairs": 10,
+      "answered": 30,
+      "correct": 24,
+      "correct_rate": 0.8,
       "refused": 0
     },
     "changed": {
@@ -177,29 +221,29 @@
       "refused": 0
     },
     "other_garment": {
-      "pairs": 12,
-      "answered": 36,
-      "correct": 36,
+      "pairs": 51,
+      "answered": 153,
+      "correct": 153,
       "correct_rate": 1,
-      "refused": 36
+      "refused": 153
     }
   },
   "mismatch_catch": {
-    "answered": 36,
-    "caught": 36,
+    "answered": 153,
+    "caught": 153,
     "rate": 1,
-    "refused": 36
+    "refused": 153
   },
   "consistency": {
-    "pairs_scored": 24,
-    "same_decision_all_reps": 23,
-    "rate": 0.958,
-    "mean_verdict_agreement": 0.949
+    "pairs_scored": 68,
+    "same_decision_all_reps": 65,
+    "rate": 0.956,
+    "mean_verdict_agreement": 0.91
   },
   "gate_agreement": {
-    "compared": 93,
-    "agree": 84,
-    "rate": 0.903,
+    "compared": 108,
+    "agree": 92,
+    "rate": 0.852,
     "disagreements": [
       {
         "job_id": "live-kurta-01",
@@ -254,6 +298,48 @@
         "recorded": "REFUSE",
         "ms4": "REVIEW",
         "rep": 3
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2",
+        "recorded": "REFUSE",
+        "ms4": "REVIEW",
+        "rep": 1
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2",
+        "recorded": "REFUSE",
+        "ms4": "REVIEW",
+        "rep": 2
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2",
+        "recorded": "REFUSE",
+        "ms4": "REVIEW",
+        "rep": 3
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2-r2",
+        "recorded": "REFUSE",
+        "ms4": "REVIEW",
+        "rep": 1
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2-r2",
+        "recorded": "REFUSE",
+        "ms4": "RELEASE",
+        "rep": 2
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2-r2",
+        "recorded": "REFUSE",
+        "ms4": "RELEASE",
+        "rep": 3
+      },
+      {
+        "job_id": "live-shirt-plaid-composite-v2-r3",
+        "recorded": "REVIEW",
+        "ms4": "RELEASE",
+        "rep": 3
       }
     ]
   },
@@ -307,6 +393,22 @@
       "correct": 0
     },
     {
+      "id": "kurta-01~2aeafd1e6242",
+      "garment": "kurta-01",
+      "render_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
       "id": "kurta-01~31e277f52ee3",
       "garment": "kurta-01",
       "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
@@ -323,9 +425,41 @@
       "correct": 3
     },
     {
+      "id": "kurta-01~4a72dd7d9378",
+      "garment": "kurta-01",
+      "render_sha256": "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
       "id": "kurta-01~4db80da781e2",
       "garment": "kurta-01",
       "render_sha256": "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "kurta-01~689f4c8e6ed1",
+      "garment": "kurta-01",
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
       "expected": "other_garment",
       "runs": 3,
       "failed": 0,
@@ -352,6 +486,38 @@
       ],
       "consistent": true,
       "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "kurta-01~875a9098ec9f",
+      "garment": "kurta-01",
+      "render_sha256": "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
+      "id": "kurta-01~9a0f03bb5606",
+      "garment": "kurta-01",
+      "render_sha256": "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
       "correct": 3
     },
     {
@@ -499,6 +665,22 @@
       "correct": 3
     },
     {
+      "id": "kurta-02~2aeafd1e6242",
+      "garment": "kurta-02",
+      "render_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
       "id": "kurta-02~31e277f52ee3",
       "garment": "kurta-02",
       "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
@@ -512,6 +694,22 @@
       ],
       "consistent": true,
       "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "kurta-02~4a72dd7d9378",
+      "garment": "kurta-02",
+      "render_sha256": "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
       "correct": 3
     },
     {
@@ -531,6 +729,22 @@
       "correct": 3
     },
     {
+      "id": "kurta-02~689f4c8e6ed1",
+      "garment": "kurta-02",
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
       "id": "kurta-02~782d5fec4d53",
       "garment": "kurta-02",
       "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
@@ -544,6 +758,38 @@
       ],
       "consistent": true,
       "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "kurta-02~875a9098ec9f",
+      "garment": "kurta-02",
+      "render_sha256": "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "kurta-02~9a0f03bb5606",
+      "garment": "kurta-02",
+      "render_sha256": "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
       "correct": 3
     },
     {
@@ -641,17 +887,561 @@
       "consistent": true,
       "verdict_agreement": 0.889,
       "correct": 3
+    },
+    {
+      "id": "shirt-plaid~12c00767fb18",
+      "garment": "shirt-plaid",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~20039f1360ac",
+      "garment": "shirt-plaid",
+      "render_sha256": "20039f1360ac65c0151751206d0441151993428f20414f02a0131aacc7a1a5aa",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~291a0026c18e",
+      "garment": "shirt-plaid",
+      "render_sha256": "291a0026c18ed31915bd300c0fd5b7214a48d4f47bf1ee04e6d50b6b467de336",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~2aeafd1e6242",
+      "garment": "shirt-plaid",
+      "render_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "expected": "same",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "RELEASE",
+        "RELEASE",
+        "RELEASE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~31e277f52ee3",
+      "garment": "shirt-plaid",
+      "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~4a72dd7d9378",
+      "garment": "shirt-plaid",
+      "render_sha256": "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331",
+      "expected": "same",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REVIEW",
+        "RELEASE",
+        "RELEASE"
+      ],
+      "consistent": false,
+      "verdict_agreement": 0.889,
+      "correct": 2
+    },
+    {
+      "id": "shirt-plaid~4db80da781e2",
+      "garment": "shirt-plaid",
+      "render_sha256": "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~689f4c8e6ed1",
+      "garment": "shirt-plaid",
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~782d5fec4d53",
+      "garment": "shirt-plaid",
+      "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~875a9098ec9f",
+      "garment": "shirt-plaid",
+      "render_sha256": "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c",
+      "expected": "same",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 0
+    },
+    {
+      "id": "shirt-plaid~9a0f03bb5606",
+      "garment": "shirt-plaid",
+      "render_sha256": "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a",
+      "expected": "same",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REVIEW",
+        "REVIEW",
+        "RELEASE"
+      ],
+      "consistent": false,
+      "verdict_agreement": 0.889,
+      "correct": 1
+    },
+    {
+      "id": "shirt-plaid~9ef0a85dcca7",
+      "garment": "shirt-plaid",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~bd26aab8f680",
+      "garment": "shirt-plaid",
+      "render_sha256": "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~bf1c847f2d50",
+      "garment": "shirt-plaid",
+      "render_sha256": "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~f5aa1b02e71e",
+      "garment": "shirt-plaid",
+      "render_sha256": "f5aa1b02e71e7c6aa61734d6c0aacfedc1f33d627500bdf249a5598651730dd3",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~f79bd873c053",
+      "garment": "shirt-plaid",
+      "render_sha256": "f79bd873c053fd8dffe29edbf63c77c7eb4034a7067808d2dbe191172dc3b973",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-plaid~fe94fc7c7a11",
+      "garment": "shirt-plaid",
+      "render_sha256": "fe94fc7c7a11a463a18aad2860420d1a4145d5bc06ca292063e6ccf62264a7de",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~12c00767fb18",
+      "garment": "shirt-zebra",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~20039f1360ac",
+      "garment": "shirt-zebra",
+      "render_sha256": "20039f1360ac65c0151751206d0441151993428f20414f02a0131aacc7a1a5aa",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~291a0026c18e",
+      "garment": "shirt-zebra",
+      "render_sha256": "291a0026c18ed31915bd300c0fd5b7214a48d4f47bf1ee04e6d50b6b467de336",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~2aeafd1e6242",
+      "garment": "shirt-zebra",
+      "render_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.667,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~31e277f52ee3",
+      "garment": "shirt-zebra",
+      "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~4a72dd7d9378",
+      "garment": "shirt-zebra",
+      "render_sha256": "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~4db80da781e2",
+      "garment": "shirt-zebra",
+      "render_sha256": "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~689f4c8e6ed1",
+      "garment": "shirt-zebra",
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "expected": "same",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "RELEASE",
+        "RELEASE",
+        "RELEASE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 1,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~782d5fec4d53",
+      "garment": "shirt-zebra",
+      "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~875a9098ec9f",
+      "garment": "shirt-zebra",
+      "render_sha256": "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~9a0f03bb5606",
+      "garment": "shirt-zebra",
+      "render_sha256": "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.667,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~9ef0a85dcca7",
+      "garment": "shirt-zebra",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.778,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~bd26aab8f680",
+      "garment": "shirt-zebra",
+      "render_sha256": "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~bf1c847f2d50",
+      "garment": "shirt-zebra",
+      "render_sha256": "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~f5aa1b02e71e",
+      "garment": "shirt-zebra",
+      "render_sha256": "f5aa1b02e71e7c6aa61734d6c0aacfedc1f33d627500bdf249a5598651730dd3",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~f79bd873c053",
+      "garment": "shirt-zebra",
+      "render_sha256": "f79bd873c053fd8dffe29edbf63c77c7eb4034a7067808d2dbe191172dc3b973",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.667,
+      "correct": 3
+    },
+    {
+      "id": "shirt-zebra~fe94fc7c7a11",
+      "garment": "shirt-zebra",
+      "render_sha256": "fe94fc7c7a11a463a18aad2860420d1a4145d5bc06ca292063e6ccf62264a7de",
+      "expected": "other_garment",
+      "runs": 3,
+      "failed": 0,
+      "decisions": [
+        "REFUSE",
+        "REFUSE",
+        "REFUSE"
+      ],
+      "consistent": true,
+      "verdict_agreement": 0.889,
+      "correct": 3
     }
   ],
   "spend": {
     "account": "meta",
-    "batch_usd": 1.290359,
-    "batch_calls": 72,
+    "batch_usd": 5.395713,
+    "batch_calls": 205,
     "estimated": true,
-    "ledger_spent_usd": 1.644525,
-    "ledger_calls": 131,
+    "ledger_spent_usd": 5.938343,
+    "ledger_calls": 288,
     "batch_cap_usd": 80,
-    "batch_left_usd": 78.355475,
+    "batch_left_usd": 74.061657,
     "reserve_used": false
   },
   "limits": "Small sample: 2 photographed garments (both women's kurtas), one photo set each, 3 repeats per pair. A rate here says how this checker behaved on these pairs, not how it behaves in general."

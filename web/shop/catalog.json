@@ -136,6 +136,21 @@
       "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
     },
     {
+      "job_id": "ms2-shirt-plaid",
+      "render_id": "ms2-shirt-plaid-r0",
+      "scene": "studio",
+      "image_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "head": "a709806d26d1a8e407077b7917331aff20d3623d956bd1d494fc9d0e4593fa10",
+      "receipt": "shop/ms2-shirt-plaid/receipt.jsonl",
+      "image": "shop/ms2-shirt-plaid/ms2-shirt-plaid-r0.jpg",
+      "garment_note": "shirt-plaid: Type: shirt (long sleeves, button front); Fabric and weave: not recorded; Main colour: cream with navy, light blue, mustard and maroon checks; Print or motif (what, where, size): large plaid check all over; as in the photos; Collar and cuffs: point collar, buttoned cuffs; Buttons: white, as in the photos; Anything the render must not change: check pattern, colours and collar exactly as photographed",
+      "provenance": "live",
+      "render_provider": "stand-in",
+      "render_model": "owner-photo",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
       "job_id": "ms3-live-kurta-01-composite",
       "render_id": "ms3-live-kurta-01-composite-r0",
       "scene": "studio",

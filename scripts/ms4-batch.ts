@@ -12,14 +12,14 @@
 // evidence/ms4-runs.jsonl, so a stopped batch resumes; the score goes to
 // evidence/ms4-summary.json.
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { parseRenderLabels } from "../src/calibrate.ts";
 import { MS4_REPEATS, garmentPhotos, planMs4, recordedDecisions, scoreMs4 } from "../src/ms4.ts";
 import type { Ms4Pair, Ms4Run } from "../src/ms4.ts";
 import { parseFindings } from "../src/schema.ts";
-import { META_LIMIT, accountLedger, meteredFetch, spendSummary, summaryLine } from "../src/spend-meta.ts";
+import { META_LIMIT, accountLedger, meteredFetch, spendSummary, summaryLine, tokensUsd } from "../src/spend-meta.ts";
 import { META_KEY_ENV, META_VERIFIER_MODEL, metaVerifier, resolveUserEnvKey } from "../src/verifier-meta.ts";
 import { writeVerifierLog } from "./verifier-log.ts";
 
@@ -111,10 +111,17 @@ for (const g of plan.garments) for (const p of garmentPhotos(join("data/garments
 const score = scoreMs4(plan.pairs, runs, recordedDecisions("data/jobs", photoGarment));
 const meta = spendSummary(ledger, META_LIMIT);
 const ledgerEntries = ledger.read();
-// MS4's spend: the Meta verifier calls booked from the first MS4 run on (MS4 is the only Meta user in that window).
-const firstRun = all.map((r) => r.started_at).sort()[0] ?? new Date().toISOString();
-const ms4Entries = ledgerEntries.filter((e) => e.prediction_id.startsWith("meta:muse:") && e.at >= firstRun);
-const batchUsd = Math.round(ms4Entries.reduce((s, e) => s + e.cost_usd, 0) * 1e6) / 1e6;
+// MS4's spend: the ledger rule (tokens x price) over MS4's own call logs in evidence/ms4/, so Meta calls
+// made by other jobs in the same hours (NR3, MS2 shirts) are not counted here.
+let batchUsd = 0;
+let batchCalls = 0;
+for (const name of readdirSync("evidence/ms4").filter((n) => n.endsWith(".json"))) {
+  const log = JSON.parse(readFileSync(join("evidence/ms4", name), "utf8")) as { response?: { body?: { usage?: { input_tokens?: number; output_tokens?: number } } } };
+  const u = log.response?.body?.usage;
+  batchCalls++;
+  if (typeof u?.input_tokens === "number" && typeof u.output_tokens === "number") batchUsd += tokensUsd(u.input_tokens, u.output_tokens);
+}
+batchUsd = Math.round(batchUsd * 1e6) / 1e6;
 
 writeFileSync(SUMMARY, `${JSON.stringify({
   item: "MS4: Muse Spark cross-check matrix (Grok, #23, 29 Oct 15:54 IST)",
@@ -131,7 +138,7 @@ writeFileSync(SUMMARY, `${JSON.stringify({
   },
   attempts: { lines: all.length, failed_attempts: all.filter((r) => !r.ok).length },
   ...score,
-  spend: { account: "meta", batch_usd: batchUsd, batch_calls: ms4Entries.length, estimated: true, ledger_spent_usd: meta.spent_usd, ledger_calls: ledgerEntries.length, batch_cap_usd: meta.cap_usd, batch_left_usd: meta.batch_left_usd, reserve_used: false },
+  spend: { account: "meta", batch_usd: batchUsd, batch_calls: batchCalls, estimated: true, ledger_spent_usd: meta.spent_usd, ledger_calls: ledgerEntries.length, batch_cap_usd: meta.cap_usd, batch_left_usd: meta.batch_left_usd, reserve_used: false },
   limits: "Small sample: 2 photographed garments (both women's kurtas), one photo set each, 3 repeats per pair. A rate here says how this checker behaved on these pairs, not how it behaves in general.",
 }, null, 2)}\n`);
 console.log(`wrote ${SUMMARY}`);
