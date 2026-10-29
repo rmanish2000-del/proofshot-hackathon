@@ -30,7 +30,8 @@
     "models:fireworks": "node --experimental-strip-types scripts/fireworks-models.ts",
     "ledger": "node --experimental-strip-types scripts/ledger.ts",
     "models:meta": "node --experimental-strip-types scripts/meta-models.ts",
-    "ms3": "node --experimental-strip-types scripts/ms3-batch.ts"
+    "ms3": "node --experimental-strip-types scripts/ms3-batch.ts",
+    "ms4": "node --experimental-strip-types scripts/ms4-batch.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
