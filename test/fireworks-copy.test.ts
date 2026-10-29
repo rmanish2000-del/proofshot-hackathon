@@ -95,7 +95,7 @@ test("FW 2: the request is OpenAI chat-completions shape, names the exact muse-s
 });
 
 test("FW 3: a key only in the Windows User env scope is used and recorded as user_env; process env wins over it", async () => {
-  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "A peach women's kurta. Its colour was checked against the photos." } }] });
+  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "A peach women's kurta. It is cut for women, in peach." } }] });
   const lookup = { platform: "win32", readUserEnv: (n: string) => (n === "FIREWORKS_API_KEY" ? "fw-user-scope" : null) };
   const rec = await writeCopy("listing_copy", FACTS, { env: {}, fetch, ledger: memoryLedger(), lookup });
   assert.equal(rec.key_source, "user_env");
@@ -147,7 +147,7 @@ test("FW 6: listing copy is written from the seller's claims only; the template 
   const user = copyMessages("listing_copy", FACTS)[1]!;
   assert.match(user.content, /- Main colour: peach/);
   assert.equal(user.content.includes("REVIEW"), false, "the listing prompt carries no gate decision");
-  assert.equal(templateText("listing_copy", FACTS), "Type: kurta (women's). Main colour: peach. Checked against the seller's photos and matching: colour.");
+  assert.equal(templateText("listing_copy", FACTS), "Type: kurta (women's). Main colour: peach.");
 });
 
 test("FW 7: facts from a committed receipt: decision and reasons from the last gate entry, claims from the job note, no bounding boxes", () => {
@@ -244,7 +244,7 @@ test("FW2 1: Hindi asks for Devanagari with the decision word in English capital
 
 test("FW2 2: the Hindi template frames the receipt's facts in Hindi and keeps the decision word", () => {
   assert.equal(templateText("receipt_summary", FACTS, "hi"), "निर्णय: REVIEW, प्रकाशित करने से पहले किसी व्यक्ति को इसे देखना होगा। कारण: hem: mismatch (soft).");
-  assert.equal(templateText("listing_copy", FACTS, "hi"), "विक्रेता का विवरण: Type: kurta (women's). Main colour: peach. तस्वीरों से जाँचा गया और मेल खाता है: colour।");
+  assert.equal(templateText("listing_copy", FACTS, "hi"), "विक्रेता का विवरण: Type: kurta (women's). Main colour: peach.");
   assert.ok(keepsDecision("receipt_summary", templateText("receipt_summary", { ...FACTS, decision: "REFUSE" }, "hi"), "REFUSE"), "the REFUSE template passes its own guard");
 });
 
@@ -266,7 +266,7 @@ test("FW2 3: a Hindi answer that softens REVIEW or REFUSE, or drops the English 
 
 test("FW2 4: listing copy under two sentences is asked once more; still short falls back with too_short; both calls are logged and paid", async () => {
   const one = { ...OK, choices: [{ message: { role: "assistant", content: "Women's kurta in rust/orange." }, finish_reason: "stop" }] };
-  const two = { ...OK, choices: [{ message: { role: "assistant", content: "A women's kurta in peach. Its colour and hem were checked against the seller's photos." }, finish_reason: "stop" }] };
+  const two = { ...OK, choices: [{ message: { role: "assistant", content: "A women's kurta in peach. It is cut long, as photographed." }, finish_reason: "stop" }] };
   const answers = [one, two];
   let n = 0;
   const retried: FireworksFetch = async () => ({ status: 200, text: async () => JSON.stringify(answers[n++]) });
@@ -275,7 +275,7 @@ test("FW2 4: listing copy under two sentences is asked once more; still short fa
   const rec = await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: retried, ledger, lookup: NO_USER_ENV, onCall: (l) => logs.push(l), lang: "en" });
   assert.equal(rec.generated, true);
   assert.equal(rec.attempts, 2);
-  assert.equal(rec.text, "A women's kurta in peach. Its colour and hem were checked against the seller's photos.");
+  assert.equal(rec.text, "A women's kurta in peach. It is cut long, as photographed.");
   assert.equal(logs.length, 2);
   assert.equal(ledger.entries.length, 2);
   assert.equal(rec.cost_usd, Math.round(2 * fireworksCostUsd(300, 40) * 1e6) / 1e6);
@@ -289,8 +289,8 @@ test("FW2 4: listing copy under two sentences is asked once more; still short fa
 
   const user = copyMessages("listing_copy", FACTS)[1]!.content;
   assert.match(user, /2 to 3 full sentences/);
-  assert.match(user, /Attributes checked and matching the photos: colour/);
-  assert.equal(user.includes("hem"), false, "a mismatched attribute is not offered for the listing");
+  assert.ok(user.endsWith("Seller's description:\n- Type: kurta (women's)\n- Main colour: peach"), user);
+  assert.equal(user.includes("mismatch"), false, "no check result is offered for the listing");
   assert.deepEqual(matchedAttributes(FACTS), ["colour"]);
   assert.equal(sentenceCount("Women's kurta in rust/orange."), 1);
   assert.equal(sentenceCount("गहरे नारंगी रंग का कुर्ता। रंग तस्वीरों से मेल खाता है।"), 2);
@@ -304,4 +304,92 @@ test("FW2 5: Hindi listing copy gets a system prompt that names no decision word
   assert.match(listing, /never write RELEASE, REVIEW or REFUSE/);
   assert.doesNotMatch(listing, /in English capital letters exactly as given/);
   assert.equal(copyMessages("receipt_summary", FACTS, "hi")[0]!.content, COPY_SYSTEM_PROMPT_HI);
+});
+
+test("FW2 fix 1: a free-text fixture note is one Description plus its closing aside; provenance comes from the job entry; a Field: value note keeps its (as photographed)", async () => {
+  const { noteAside } = await import("../src/fireworks-copy.ts");
+  assert.deepEqual(noteClaims("kurta (women's), rust / orange (preview: the owner's photo of the garment stands in for the render)"), [{ field: "Description", value: "kurta (women's), rust / orange" }]);
+  assert.equal(noteAside("kurta (women's), rust / orange (preview: the owner's photo of the garment stands in for the render)"), "preview: the owner's photo of the garment stands in for the render");
+  assert.equal(noteAside("kurta-02: Type: kurta (women's); Length: long, below the knee (as photographed)"), null);
+  assert.deepEqual(noteClaims("kurta-02: Type: kurta (women's); Length: long, below the knee (as photographed)").at(-1), { field: "Length", value: "long, below the knee (as photographed)" });
+  const f = copyFacts("fixture-shirt-01", parseReceipt(readFileSync(new URL("../data/jobs/fixture-shirt-01/receipt.jsonl", import.meta.url), "utf8")));
+  assert.equal(f.provenance, "fixture");
+  assert.deepEqual(f.claims, [{ field: "Description", value: "indigo cotton shirt, white placket, spread collar" }]);
+  assert.equal(f.aside, "fixture: synthetic images, no garment was photographed");
+  assert.equal(FIREWORKS_MAX_TOKENS, 16384, "doubled after 15 FW2 answers stopped at 8192");
+});
+
+test("FW2 fix 2: listing copy describes the garment: a pipeline word (EN or HI) or a fixture listing without 'fixture' is asked once more, then falls back with off_topic", async () => {
+  const { listingOnTopic } = await import("../src/fireworks-copy.ts");
+  const fixture: CopyFacts = { ...FACTS, provenance: "fixture", aside: "fixture: synthetic images, no garment was photographed" };
+  assert.equal(listingOnTopic("This is a women's kurta in peach. The colour matches the seller's photos.", FACTS), false);
+  assert.equal(listingOnTopic("The seller lists this as a women's kurta. No attributes were found matching the photos.", FACTS), false);
+  assert.equal(listingOnTopic("यह महिलाओं का कुर्ता है। रंग तस्वीरों से मेल खाता है।", FACTS), false);
+  assert.equal(listingOnTopic("A women's kurta in peach. It is long and falls below the knee.", FACTS), true);
+  assert.equal(listingOnTopic("An indigo cotton shirt with a spread collar. It has a white placket.", fixture), false, "a fixture listing must say so");
+  assert.equal(listingOnTopic("An indigo cotton shirt with a spread collar. This is fixture data: no garment was photographed.", fixture), true);
+  for (const f of [FACTS, fixture]) for (const lang of ["en", "hi"] as const) assert.ok(listingOnTopic(templateText("listing_copy", f, lang), f), `template ${lang}`);
+  assert.match(copyMessages("listing_copy", fixture)[1]!.content, /contains the English word "fixture"/);
+  assert.equal(copyMessages("listing_copy", FACTS)[1]!.content.includes("fixture data"), false);
+
+  const off = { ...OK, choices: [{ message: { role: "assistant", content: "A women's kurta in peach. The colour matches the seller's photos." }, finish_reason: "stop" }] };
+  const good = { ...OK, choices: [{ message: { role: "assistant", content: "A women's kurta in peach. It is long and falls below the knee." }, finish_reason: "stop" }] };
+  let n = 0;
+  const answers = [off, good];
+  const ledger = memoryLedger();
+  const rec = await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: async () => ({ status: 200, text: async () => JSON.stringify(answers[n++]) }), ledger, lookup: NO_USER_ENV });
+  assert.equal(rec.generated, true);
+  assert.equal(rec.attempts, 2);
+  const twice = memoryLedger();
+  const fell = await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: fakeFetch(200, off).fetch, ledger: twice, lookup: NO_USER_ENV });
+  assert.equal(fell.fallback_reason, "off_topic");
+  assert.equal(fell.text, templateText("listing_copy", FACTS));
+  assert.equal(twice.entries.length, 2);
+});
+
+test("FW2 fix 3: with no verifier findings the summary prompt says so, and a summary claiming a match or a kept detail is asked once more, then falls back with unsupported", async () => {
+  const { summarySupported } = await import("../src/fireworks-copy.ts");
+  const none: CopyFacts = {
+    ...FACTS, decision: "REFUSE", reasons: ["fidelity REFUSE: area 0.213 below 0.400"], findings: [],
+    claims: [...FACTS.claims, { field: "Anything the render must not change", value: "colour, print and neckline exactly as photographed" }],
+  };
+  const user = copyMessages("receipt_summary", none)[1]!.content;
+  assert.match(user, /No verifier findings were recorded: say the garment details could not be compared/);
+  assert.match(user, /- The seller asked that these stay as photographed: colour, print and neckline/);
+  assert.equal(user.includes("Buttons: as in the photos"), false);
+  assert.doesNotMatch(copyMessages("receipt_summary", FACTS)[1]!.content, /No verifier findings were recorded/);
+  assert.equal(summarySupported("Decision is REFUSE. Colour, print and neckline were not kept as required.", none), false);
+  assert.equal(summarySupported("Decision is REFUSE. No attributes were found matching the photos.", none), false);
+  assert.equal(summarySupported("निर्णय REFUSE है। रंग, प्रिंट फोटो जैसे मिले।", none), false);
+  assert.equal(summarySupported("Decision is REFUSE, which means the image must not be published. The garment details could not be compared.", none), true);
+  assert.equal(summarySupported("Decision is REVIEW. Colour matched.", FACTS), true, "with findings the check does not apply");
+
+  const bad = { ...OK, choices: [{ message: { role: "assistant", content: "Decision is REFUSE, which means the image must not be published. Colour was kept." }, finish_reason: "stop" }] };
+  const ledger = memoryLedger();
+  const rec = await writeCopy("receipt_summary", none, { env: { FIREWORKS_API_KEY: KEY }, fetch: fakeFetch(200, bad).fetch, ledger, lookup: NO_USER_ENV });
+  assert.equal(rec.fallback_reason, "unsupported");
+  assert.equal(ledger.entries.length, 2);
+});
+
+test("FW2 fix 4: every committed listing describes the garment (no gate, receipt or pipeline word, EN or HI; fixture jobs say fixture), and no summary claims a match the receipt has no finding for", async () => {
+  const { listingOnTopic, summarySupported } = await import("../src/fireworks-copy.ts");
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../data/copy/", import.meta.url);
+  const files = readdirSync(dir).filter((n) => n.endsWith(".json"));
+  assert.ok(files.length >= 24);
+  for (const name of files) {
+    const { job_id, records } = JSON.parse(readFileSync(new URL(name, dir), "utf8")) as { job_id: string; records: { task: string; lang?: string; text: string; receipt_head: string }[] };
+    const f = copyFacts(job_id, parseReceipt(readFileSync(new URL(`../data/jobs/${job_id}/receipt.jsonl`, import.meta.url), "utf8")));
+    for (const r of records) {
+      const where = `${job_id} ${r.task} ${r.lang ?? "en"}: ${r.text}`;
+      assert.equal(r.receipt_head, f.receipt_head, where);
+      if (r.task === "listing_copy") {
+        assert.ok(listingOnTopic(r.text, f), where);
+        assert.ok(listingLongEnough(r.text), where);
+      } else {
+        assert.ok(summarySupported(r.text, f), where);
+        assert.ok(keepsDecision("receipt_summary", r.text, f.decision), where);
+      }
+    }
+  }
 });

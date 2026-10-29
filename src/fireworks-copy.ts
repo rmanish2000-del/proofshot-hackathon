@@ -46,7 +46,8 @@ export const FIREWORKS_SPEND_CAP_USD = 60;
 export const FIREWORKS_RESERVE_USD = 40;
 export const FIREWORKS_LIMIT: SpendLimit = Object.freeze({ cap_usd: FIREWORKS_SPEND_CAP_USD, reserve_usd: FIREWORKS_RESERVE_USD });
 /** A reasoning model spends output tokens thinking before it answers: 400 cut most answers off, and 4096 cut the live-kurta-01-mismatch summary (FW1b, 29 Oct). */
-export const FIREWORKS_MAX_TOKENS = 8192;
+/** FW2 fix: 15 of 96 FW2 answers spent all of 8192 tokens reasoning (finish_reason length), so the limit is doubled. */
+export const FIREWORKS_MAX_TOKENS = 16384;
 /** muse-spark-open reasons for 30 s or more before answering (FW1b run, 29 Oct); one listing call passed 60 s. */
 export const FIREWORKS_TIMEOUT_MS = 180_000;
 export const TEMPLATE_PROVIDER = "template";
@@ -58,9 +59,12 @@ export type CopyLang = "en" | "hi";
  * no_api_token: no key; spend_cap: the ledger would pass the cap, or cannot be read;
  * fireworks_failed: an error or empty answer; truncated: the answer stopped at max_tokens;
  * decision_changed: the answer drops, changes or softens the gate decision;
- * too_short: listing copy under two sentences, twice (FW2: one retry).
+ * too_short: listing copy under two sentences, twice (FW2: one retry);
+ * off_topic: listing copy that talks about the check, gate or receipt instead of the garment,
+ *   or a fixture listing that does not say it is fixture data, twice (FW2 fix);
+ * unsupported: a summary that says details matched or were kept when the receipt has no verifier findings, twice (FW2 fix).
  */
-export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed" | "truncated" | "decision_changed" | "too_short";
+export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed" | "truncated" | "decision_changed" | "too_short" | "off_topic" | "unsupported";
 
 export type FireworksFetch = (
   url: string,
@@ -80,6 +84,10 @@ export interface CopyFacts {
   readonly reasons: readonly string[];
   readonly findings: readonly { attribute: string; verdict: string }[];
   readonly claims: readonly { field: string; value: string }[];
+  /** The job's provenance ("fixture" or "live"); absent when the job entry has none. */
+  readonly provenance?: string;
+  /** A free-text note's closing parenthesis, e.g. "fixture: synthetic images, no garment was photographed". */
+  readonly aside?: string;
 }
 
 export interface CopyRecord {
@@ -176,7 +184,8 @@ export function estimateCallUsd(body: string, maxTokens: number): number {
 /** The facts from a parsed receipt and the seller's note. Bounding boxes, scores and notes from the verifier are left out. */
 export function copyFacts(jobId: string, entries: readonly ReceiptEntry[]): CopyFacts {
   const head = entries.at(-1)?.hash ?? "";
-  const job = entries.find((e) => e.kind === "job")?.payload as { garment_note?: string } | undefined;
+  const job = entries.find((e) => e.kind === "job")?.payload as { garment_note?: string; provenance?: string } | undefined;
+  const aside = noteAside(job?.garment_note ?? "");
   const gates = entries.filter((e) => e.kind === "gate");
   const gate = gates.at(-1)?.payload as { decision?: string; reasons?: readonly unknown[] } | undefined;
   const verifier = entries.filter((e) => e.kind === "verifier").at(-1)?.payload as { findings?: readonly { attribute?: unknown; verdict?: unknown }[] } | undefined;
@@ -189,6 +198,8 @@ export function copyFacts(jobId: string, entries: readonly ReceiptEntry[]): Copy
       .filter((f) => typeof f.attribute === "string" && typeof f.verdict === "string")
       .map((f) => ({ attribute: f.attribute as string, verdict: f.verdict as string })),
     claims: noteClaims(job?.garment_note ?? ""),
+    ...(typeof job?.provenance === "string" ? { provenance: job.provenance } : {}),
+    ...(aside ? { aside } : {}),
   };
 }
 
@@ -202,9 +213,32 @@ function reasonText(r: unknown): string {
 }
 
 /** `Field: value` claims from the job's garment note, minus empty and "not recorded" values. */
+const FIELD_START = /^[A-Z][^:;()]*:/;
+
+/** The job entry prefixes the note with the garment folder id ("kurta-02: Type: ..."). */
+function noteBody(note: string): string {
+  return note.trim().replace(/^[a-z0-9][a-z0-9-]*:\s+/, "");
+}
+
+/**
+ * The closing parenthesis of a free-text note (the fixture jobs: "indigo cotton
+ * shirt, ... (fixture: synthetic images, ...)"), or null. A `Field: value` note
+ * has none: its "(as photographed)" belongs to the value.
+ */
+export function noteAside(note: string): string | null {
+  const body = noteBody(note);
+  if (FIELD_START.test(body)) return null;
+  return /\(([^()]*)\)\s*$/.exec(body)?.[1]?.trim() || null;
+}
+
 export function noteClaims(note: string): { field: string; value: string }[] {
-  // The job entry prefixes the note with the garment folder id ("kurta-02: Type: ...").
-  const body = note.replace(/^[a-z0-9][a-z0-9-]*:\s+/, "");
+  const body = noteBody(note);
+  // FW2 fix: a free-text note is one description, without its closing parenthesis;
+  // before, "(preview: ...)" was read as a field named "kurta (women's), rust / orange (preview".
+  if (body && !FIELD_START.test(body)) {
+    const value = body.replace(/\s*\([^()]*\)\s*$/, "").trim();
+    return value ? [{ field: "Description", value }] : [];
+  }
   const out: { field: string; value: string }[] = [];
   for (const part of body.split(/;\s*(?=[A-Z][^:;]*:)/)) {
     const i = part.indexOf(":");
@@ -248,20 +282,30 @@ export function copyMessages(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"
     const system = task === "listing_copy" ? COPY_SYSTEM_PROMPT_HI_LISTING : COPY_SYSTEM_PROMPT_HI;
     return copyMessages(task, f, "en").map((m): ChatMessage => (m.role === "system" ? { role: "system", content: system } : { role: "user", content: m.content.replace("\n\n", `${HINDI_ASK}\n\n`) }));
   }
-  const claims = f.claims.map((c) => `- ${c.field}: ${c.value}`).join("\n") || "- none recorded";
   if (task === "listing_copy") {
-    const matched = matchedAttributes(f).join(", ") || "none";
+    const described = garmentClaims(f).map((c) => `- ${c.field}: ${c.value}`).join("\n") || "- none recorded";
+    const fixture = isFixture(f)
+      ? `\nThis job is fixture data, not a live listing${f.aside ? ` (${f.aside})` : ""}. Say so plainly in one sentence that contains the English word "fixture".`
+      : "";
     return [
       { role: "system", content: COPY_SYSTEM_PROMPT },
       {
         role: "user",
         content:
-          `Write a product listing of 2 to 3 full sentences, at most 60 words, using only the seller's claims and the attributes the check found matching the seller's photos. ` +
-          `Where a claim says "as in the photos", say nothing about that detail.\n\nSeller's claims:\n${claims}\nAttributes checked and matching the photos: ${matched}`,
+          `Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. ` +
+          `Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.${fixture}\n\nSeller's description:\n${described}`,
       },
     ];
   }
+  const keep = f.claims.filter((c) => /must not change/i.test(c.field)).map((c) => c.value);
+  const claims = [
+    ...garmentClaims(f).map((c) => `- ${c.field}: ${c.value}`),
+    ...keep.map((v) => `- The seller asked that these stay as photographed: ${v}`),
+  ].join("\n") || "- none recorded";
   const findings = f.findings.map((x) => `- ${x.attribute}: ${x.verdict}`).join("\n") || "- none recorded";
+  const noFindings = f.findings.length === 0
+    ? `No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. `
+    : "";
   const reasons = f.reasons.map((r) => `- ${r}`).join("\n") || "- none";
   return [
     { role: "system", content: COPY_SYSTEM_PROMPT },
@@ -269,7 +313,8 @@ export function copyMessages(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"
       role: "user",
       content:
         `Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. ` +
-        `Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\n` +
+        `Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. ${noFindings}` +
+        `The seller's description says what the garment is; it is not a check result.\n\n` +
         `Decision: ${f.decision ?? "none recorded"}\nReasons:\n${reasons}\nVerifier findings (attribute: verdict):\n${findings}\nSeller's claims:\n${claims}`,
     },
   ];
@@ -283,6 +328,36 @@ const ATTRIBUTE_WORDS: Readonly<Record<string, string>> = {
 /** The attributes the verifier found matching, in plain words, in vocabulary order. */
 export function matchedAttributes(f: CopyFacts): string[] {
   return f.findings.filter((x) => x.verdict === "match").map((x) => ATTRIBUTE_WORDS[x.attribute] ?? x.attribute.replace(/_/g, " "));
+}
+
+/** The seller's description of the garment: no "as in the photos" or "not recorded" value and no "must not change" line. */
+export function garmentClaims(f: CopyFacts): { field: string; value: string }[] {
+  return f.claims.filter((c) => !/as in the photos|not recorded/i.test(c.value) && !/must not change/i.test(c.field));
+}
+
+export function isFixture(f: CopyFacts): boolean {
+  return f.provenance === "fixture";
+}
+
+/** Words that describe the pipeline, not the garment (FW2 fix): listing copy has none of them. */
+export const LISTING_PIPELINE_WORDS =
+  /\b(?:gate|receipts?|pipeline|check(?:s|ed|ing)?|verif\w*|match\w*|mismatch\w*|attributes?|decisions?|approv\w*|render\w*|findings?|fidelity|AI|RELEASE|REVIEW|REFUSE)\b/i;
+export const LISTING_PIPELINE_WORDS_HI = /गेट|रसीद|पाइपलाइन|जाँच|जांच|मेल खा|मिलान|सत्याप|निर्णय|मंज़ूर|मंजूर|स्वीकृत|रेंडर|फ़िडेलिटी|फिडेलिटी/;
+const FIXTURE_WORD = /fixture|फ़िक्स्चर|फिक्स्चर/i;
+
+/** Listing copy describes the garment (no pipeline word in either language), and a fixture job's listing says it is fixture data. */
+export function listingOnTopic(text: string, f: CopyFacts): boolean {
+  if (LISTING_PIPELINE_WORDS.test(text) || LISTING_PIPELINE_WORDS_HI.test(text)) return false;
+  return !isFixture(f) || FIXTURE_WORD.test(text);
+}
+
+const CLAIMS_MATCH = /\b(?:match\w*|kept)\b|\bas (?:in|shown in) (?:the )?photo/i;
+const CLAIMS_MATCH_HI = /मेल खा|मिलान|मिलते|मिले|फ़?ोटो जैस/;
+
+/** With no verifier findings, a summary must not say a detail matched or was kept (FW2 fix: live-kurta-02-tryon-2). */
+export function summarySupported(text: string, f: CopyFacts): boolean {
+  if (f.findings.length > 0) return true;
+  return !CLAIMS_MATCH.test(text) && !CLAIMS_MATCH_HI.test(text);
 }
 
 /** Sentences in a text, by full stops (., !, ?, Devanagari ।); a text with none counts as one. */
@@ -308,14 +383,15 @@ const MEANING_HI: Readonly<Record<string, string>> = {
 /** The text used when no model call is made: the facts, word for word (in Hindi, only the frame is translated). */
 export function templateText(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"): string {
   if (task === "listing_copy") {
-    const parts = f.claims.filter((c) => !/as in the photos/i.test(c.value) && !/must not change/i.test(c.field)).map((c) => `${c.field}: ${c.value}.`);
-    const matched = matchedAttributes(f);
+    // FW2 fix: the seller's description only, word for word; nothing about the check.
+    const parts = garmentClaims(f).map((c) => `${c.field}: ${c.value}.`);
+    const aside = f.aside && !LISTING_PIPELINE_WORDS.test(f.aside) ? f.aside : null;
     if (lang === "hi") {
       const said = parts.length ? `विक्रेता का विवरण: ${parts.join(" ")}` : "विक्रेता का कोई विवरण दर्ज नहीं है।";
-      return matched.length ? `${said} तस्वीरों से जाँचा गया और मेल खाता है: ${matched.join(", ")}।` : said;
+      return isFixture(f) ? `${said} यह डेमो का fixture (टेस्ट) डेटा है, असली लिस्टिंग नहीं।${aside ? ` (${aside})` : ""}` : said;
     }
-    const said = parts.join(" ") || "No seller claims recorded.";
-    return matched.length ? `${said} Checked against the seller's photos and matching: ${matched.join(", ")}.` : said;
+    const said = parts.join(" ") || "No seller description recorded.";
+    return isFixture(f) ? `${said} This is fixture data for the demo, not a live listing${aside ? ` (${aside})` : ""}.` : said;
   }
   if (lang === "hi") {
     const d = f.decision ?? "दर्ज नहीं";
@@ -401,8 +477,8 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
   if (spent + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > spendLimitUsd(FIREWORKS_LIMIT, opts.env) + 1e-9) return fallback("spend_cap");
 
   const now = opts.now ?? Date.now;
-  // Listing copy shorter than two sentences is asked once more (FW2); each attempt is logged and paid for.
-  const attempts = task === "listing_copy" ? 2 : 1;
+  // A text that fails a content check (too short, off topic, unsupported) is asked once more; each attempt is logged and paid for.
+  const attempts = 2;
   let paid = 0;
   for (let attempt = 1; attempt <= attempts; attempt++) {
     const started = now();
@@ -457,8 +533,12 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
     if (finish === "length") return fallback("truncated");
     if (!text) return fallback("fireworks_failed");
     if (!keepsDecision(task, text, facts.decision)) return fallback("decision_changed");
-    if (task === "listing_copy" && !listingLongEnough(text)) {
-      if (attempt >= attempts) return fallback("too_short");
+    const problem: CopyFallbackReason | null =
+      task === "listing_copy"
+        ? !listingLongEnough(text) ? "too_short" : !listingOnTopic(text, facts) ? "off_topic" : null
+        : !summarySupported(text, facts) ? "unsupported" : null;
+    if (problem) {
+      if (attempt >= attempts) return fallback(problem);
       // The ledger must still allow the retry.
       let total: number;
       try {
@@ -485,4 +565,11 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
     };
   }
   return fallback("fireworks_failed");
+}
+
+/** A committed record the batch may keep: written by the model for this receipt head, and passing today's checks. */
+export function recordStillGood(r: CopyRecord, f: CopyFacts): boolean {
+  if (!r.generated || r.receipt_head !== f.receipt_head) return false;
+  if (!keepsDecision(r.task, r.text, f.decision)) return false;
+  return r.task === "listing_copy" ? listingLongEnough(r.text) && listingOnTopic(r.text, f) : summarySupported(r.text, f);
 }

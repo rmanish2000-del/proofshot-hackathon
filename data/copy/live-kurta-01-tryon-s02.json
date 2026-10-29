@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "bae0eef8c7f8b30cc1ea7353540430e244838bbaae5428cb2969272685609c53",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
       "usage": {
-        "prompt_tokens": 371,
-        "completion_tokens": 6476
+        "prompt_tokens": 313,
+        "completion_tokens": 1321
       },
-      "cost_usd": 0.027987,
+      "cost_usd": 0.006006,
       "cost_estimated": true,
-      "text": "This is a women's kurta. Its main colour is rust orange."
+      "text": "This is a women's kurta in rust orange. It is long, below the knee as photographed."
     },
     {
       "job_id": "live-kurta-01-tryon-s02",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "0f04888c39abf0267591ee6d6456a75a446864359ed510214a28585179cd7447",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
       "usage": {
-        "prompt_tokens": 404,
-        "completion_tokens": 2399
+        "prompt_tokens": 346,
+        "completion_tokens": 2083
       },
-      "cost_usd": 0.010701,
+      "cost_usd": 0.009285,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह घुटने के नीचे तक लंबा है।"
     }
   ]
 }

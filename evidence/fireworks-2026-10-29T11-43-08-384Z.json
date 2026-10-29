@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-tryon-s02",
+  "started_at": "2026-10-29T11:43:08.384Z",
+  "finished_at": "2026-10-29T11:43:31.745Z",
+  "latency_ms": 23361,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-2a133dbd27094ee79b4bbaeeaf7622ed",
+      "object": "chat.completion",
+      "created": 1793274189,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह घुटने के नीचे तक लंबा है।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need short plain Hindi in Devanagari script.\n\nFacts:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)\n\nWe must describe garment itself. 2-3 full sentences, at most 60 words.\n\nWe need to ensure we don't add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nSo we can say: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है। इसकी लंबाई घुटने के नीचे तक है।\n\nThat's 3 sentences. Need to count words. In Hindi, words count? At most 60 words. Our sentence is well under.\n\nWe must ensure we use only facts given. Don't add colours, fabrics, sizes, prices, care advice.\n\nWe should not add extra details like \"सुंदर\" maybe that's a claim? The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Adding \"सुंदर\" might be considered a claim not in facts. Better to keep plain.\n\nWe should not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. So avoid those.\n\nWe need to write in Hindi Devanagari script. Ensure no English words? Probably Hindi only. But \"कुर्ता\" is okay. Use Hindi.\n\nWe must not add markdown, emoji, headings.\n\nWe need to ensure 2-3 full sentences. So 2 or 3 sentences.\n\nWe should not mention \"as photographed\" maybe? The length: long, below the knee (as photographed). We can say घुटने के नीचे तक लंबा है। That's fine. Should we include \"as photographed\"? Probably not needed, but we can say \"तस्वीर के अनुसार घुटने के नीचे तक लंबा है\" but that mentions photo? The instruction says Never mention photos being compared, a check, a match... But can we mention \"as photographed\"? The seller's description says length: long, below the knee (as photographed). The instruction says Use only the facts given. Do not add ... This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. Also earlier: Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nDoes mentioning \"तस्वीर के अनुसार\" count as mentioning photos being compared? Possibly it's borderline. Safer to just say \"घुटने के नीचे तक लंबा है\" without mentioning photo.\n\nWe must ensure we don't add extra details.\n\nWe should write plain Hindi.\n\nPotential output:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह घुटने के नीचे तक लंबा है।\n\nCheck word count: यह(1) महिलाओं(2) के(3) लिए(4) कुर्ता(5) है।(5) इसका(6) मुख्य(7) रंग(8) रस्ट(9) नारंगी(10) है।(10) यह(11) घुटने(12) के(13) नीचे(14) तक(15) लंबा(16) है।(16) So under 60.\n\nWe need to ensure we use Devanagari script only. \"रस्ट\" is Hindi transliteration, okay. Could also write \"रस्ट / नारंगी\" but slash maybe okay. Better to write \"रस्ट नारंगी\".\n\nWe must not add colours beyond given. Rust/orange is given.\n\nWe should not add fabric.\n\nWe should ensure we don't accidentally add English.\n\nWe need to ensure we don't mention any check, decision, approval, etc.\n\nWe should provide 2-3 sentences.\n\nWe must not use markdown.\n\nWe should output just the Hindi text.\n\nWe need to be careful: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nSo we must comply.\n\nWe should not add any extra English explanation.\n\nWe should just output Hindi sentences.\n\nPotential nuance: The user wants product listing of 2-3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write text in Hindi (Devanagari script).\n\nSo we must do that.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe should output in Hindi.\n\nWe should not add any preamble like \"Here is...\".\n\nJust the listing.\n\nWe should ensure we use Devanagari script fully. That means no Latin characters. But \"रस्ट\" is Devanagari. Good.\n\nWe should avoid using \"/\" maybe? It's not Devanagari but punctuation. Better to avoid slash and just write \"रस्ट नारंगी\".\n\nWe should ensure we don't add extra claim like \"आरामदायक\" etc.\n\nWe should keep it simple.\n\nWe should also ensure we don't mention \"seller's description\" etc.\n\nWe should output 3 sentences.\n\nWe need to double-check we haven't added any disallowed content.\n\nWe should not mention photos being compared. So don't say \"फोटो\".\n\nWe should not mention check, match, decision, approval, receipt, gate, render, model or AI. So avoid those Hindi equivalents? The instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So we must not mention those concepts in any language. So don't mention \"जाँच\", \"मिलान\", \"निर्णय\", \"अनुमोदन\", etc. Safer to just describe garment.\n\nWe should not mention \"AI\".\n\nWe should ensure we don't write RELEASE, REVIEW, REFUSE in any case.\n\nWe should comply.\n\nWe should produce final answer in Hindi.\n\nWe should ensure at most 60 words. Our draft is 16 words, okay.\n\nWe should ensure 2-3 full sentences. Our draft has 3 sentences, each ending with \"।\" or \".\"? In Hindi, full stop is \"।\" (danda). Should use \"।\" for Hindi sentences. The instruction says full sentences. Using \"।\" is appropriate for Hindi. Could also use \".\" but better to use \"।\".\n\nWe should use \"।\" to indicate sentence end.\n\nWe should ensure we don't add markdown.\n\nWe should output:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह घुटने के नीचे तक लंबा है।\n\nThat's good.\n\nWe should check if \"महिलाओं के लिए\" is allowed? Type: kurta (women's) - yes, that's fact. So we can say women's kurta.\n\nWe should not add any other detail.\n\nWe should ensure we don't add \"सुंदर\", \"आकर्षक\", etc.\n\nWe should keep plain.\n\nWe should output exactly that.\n\nWe must not add any English.\n\nWe should ensure we don't accidentally include \"Hindi\" etc.\n\nWe should just output the three sentences.\n\nWe should be careful about word count: At most 60 words, we are well within.\n\nWe should not add extra sentences.\n\nWe should ensure we don't add any heading.\n\nWe should output final answer.\n\nWe should consider if we need to include \"लंबा\" - yes, length: long, below the knee. So \"घुटने के नीचे तक लंबा\" covers both.\n\nWe should not add \"as photographed\" - we omitted, which is okay. The instruction says Use only facts given. Do not add ... But we can omit parenthetical? The fact is length is long, below the knee (as photographed). We can just say long, below the knee. That's accurate. Including \"as photographed\" is not necessary and might violate \"Never mention photos being compared\". So omit.\n\nWe should ensure we don't add colours beyond rust/orange. We didn't.\n\nWe should ensure we don't add fabrics, sizes, prices, care advice. We didn't.\n\nWe should ensure we don't add any claim not in facts. \"महिलाओं के लिए कुर्ता है\" is fact. \"मुख्य रंग रस्ट नारंगी है\" is fact. \"घुटने के नीचे तक लंबा है\" is fact. No extra claim.\n\nWe should output.\n\nWe should ensure we use Devanagari script only. Our output uses Devanagari.\n\nWe should not include any Latin characters.\n\nWe should ensure we don't include numbers? No numbers needed.\n\nWe should output final.\n\nWe should double-check we haven't inadvertently included any disallowed word like \"check\" etc. We haven't.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 346,
+        "total_tokens": 2429,
+        "completion_tokens": 2083,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2043
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2043
+        }
+      }
+    }
+  },
+  "error": null
+}

@@ -1,0 +1,34 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T11:30:06.344Z",
+  "finished_at": "2026-10-29T11:33:06.372Z",
+  "latency_ms": 180028,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": null,
+  "error": "TimeoutError: The operation was aborted due to timeout"
+}

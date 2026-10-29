@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-02-composite",
+  "started_at": "2026-10-29T11:43:49.522Z",
+  "finished_at": "2026-10-29T11:43:59.649Z",
+  "latency_ms": 10127,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-793108dedd8d41a3ac4d45a01ae7bbdc",
+      "object": "chat.completion",
+      "created": 1793274230,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।",
+            "reasoning_content": "We need to write product listing of 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short, plain Hindi in Devanagari script.\n\nWe have type: kurta (women's), main colour: peach. No length, no detail stated. So we should only describe type and colour. Must not add length if not given. Must not add detail if not given.\n\nWe need 2 to 3 full sentences, at most 60 words.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nSo we can say: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।\n\nThat's 2 sentences. Need to ensure Hindi Devanagari. That's within 60 words.\n\nWe must not add length. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, don't mention length.\n\nWe should not invent length.\n\nWe should keep plain Hindi.\n\nWe must ensure not to add extra claims like \"सुंदर\" maybe is okay? But better to avoid adding adjectives not in facts. The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Does \"सुंदर\" count as claim not in facts? Possibly. Safer to keep strictly factual.\n\nSo: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।\n\nThat's 2 sentences. Count words: यह(1) महिलाओं(2) के(3) लिए(4) कुर्ता(5) है।(5) इसका(6) मुख्य(7) रंग(8) पीच(9) है।(9) So under 60 words.\n\nWe need to ensure we don't add anything else.\n\nWe should not mention photos being compared etc. We are not.\n\nWe must write in Hindi Devanagari script. Yes.\n\nWe should not add markdown, emoji, headings. Just plain text.\n\nWe need to ensure we don't accidentally add English words.\n\nWe should output exactly the Hindi sentences.\n\nPotential nuance: The seller's description says Type: kurta (women's), Main colour: peach. So we can translate peach as पीच. That's correct.\n\nWe should not add length.\n\nWe should ensure 2-3 full sentences. We have 2.\n\nWe must not add extra detail like fabric.\n\nWe should not mention \"seller's description\" etc.\n\nWe should just output the product listing.\n\nWe must ensure we don't write RELEASE, REVIEW, REFUSE.\n\nWe should not mention check, decision, approval.\n\nWe are good.\n\nWe should output in Hindi.\n\nWe need to be careful about not adding \"आकर्षक\" etc.\n\nWe should keep plain.\n\nWe could also add third sentence? But 2 is enough.\n\nWe must ensure at most 60 words. We are well under.\n\nWe should not add punctuation that could be considered markdown. Just plain sentences.\n\nWe should not add bullet points.\n\nWe should output final answer.\n\nWe need to consider that the user wants product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else.\n\nWe have done.\n\nWe should ensure we use Devanagari script fully. \"पीच\" is transliteration, but okay. Could also use \"आड़ू\" but peach colour is commonly \"पीच\". Better to use पीच.\n\nWe should not add English.\n\nWe should output final.\n\nWe must not add any extra explanation.\n\nWe should just output the Hindi text.\n\nWe should ensure we don't add \"धन्यवाद\" etc.\n\nWe should output exactly 2 sentences.\n\nWe should ensure we don't violate policy. This is safe.\n\nWe should not mention AI.\n\nWe are good.\n\nWe should produce final answer in Hindi.\n\nWe should ensure we don't add markdown like **.\n\nWe should just write:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।\n\nThat's it.\n\nWe should check word count again: It's under 60.\n\nWe should ensure we don't add extra spaces or lines that could be considered headings.\n\nWe should output plain.\n\nWe should not add English translation.\n\nWe are done.\n\nWe should ensure we follow system instruction: You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe have complied.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 331,
+        "total_tokens": 1479,
+        "completion_tokens": 1148,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1122
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1122
+        }
+      }
+    }
+  },
+  "error": null
+}

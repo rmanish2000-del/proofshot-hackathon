@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms3-live-kurta-01-composite",
+  "started_at": "2026-10-29T12:00:48.219Z",
+  "finished_at": "2026-10-29T12:01:01.358Z",
+  "latency_ms": 13139,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-3737d36489cf4f708c70c4b27e6fa1ec",
+      "object": "chat.completion",
+      "created": 1793275249,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given.\n\nFacts:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)\n\nWe must describe garment itself: type, colour, length and any detail stated. Use nothing else.\n\nWe need 2-3 full sentences, at most 60 words.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe should write in Hindi Devanagari.\n\nExample: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।\n\nThat's 3 sentences. Need to ensure word count at most 60 words. Let's count words.\n\nयह(1) महिलाओं(2) के(3) लिए(4) कुर्ता(5) है।(6) इसका(7) मुख्य(8) रंग(9) रस्ट(10) नारंगी(11) है।(12) यह(13) लंबा(14) है(15) और(16) घुटने(17) के(18) नीचे(19) तक(20) आता(21) है।(22)\n\nThat's 22 words, within 60. Need to ensure plain Hindi.\n\nWe must not add extra details like fabric etc.\n\nWe should not mention \"as photographed\" maybe? The length: long, below the knee (as photographed). We can say घुटने के नीचे तक लंबा है। That's fine.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe must not write RELEASE, REVIEW or REFUSE.\n\nWe must use Devanagari script only. So no English words? But \"rust\" maybe? The colour is rust / orange. In Hindi we can write रस्ट / नारंगी or जंग जैसा नारंगी? Better to write रस्ट नारंगी. But we should keep Hindi. The instruction says write short, plain Hindi in Devanagari script. So we should transliterate rust as रस्ट. That's okay, still Devanagari.\n\nWe must not add markdown, emoji, headings.\n\nWe need 2-3 full sentences. So we have 3 sentences, good.\n\nWe must ensure we don't add extra claims.\n\nPotential pitfalls: The system says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must not invent fabric like cotton, etc.\n\nWe should not mention \"women's\" incorrectly? It's women's kurta. So महिलाओं के लिए कुर्ता is correct.\n\nWe should ensure we don't exceed 60 words.\n\nWe should provide final answer in Hindi Devanagari.\n\nWe must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE.\n\nWe should just output the product listing.\n\nWe need to be careful: The user request is to write product listing. We must comply.\n\nWe should not add English.\n\nWe should ensure we use Devanagari script fully. Punctuation is okay.\n\nWe should not include any English words like \"kurta\" in Latin script. Use कुर्ता.\n\nWe should not include \"rust / orange\" in Latin. Use Devanagari.\n\nWe should produce 2-3 sentences.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe should output only the Hindi text.\n\nWe must not add markdown.\n\nWe should ensure we don't add extra explanation.\n\nWe should just output the listing.\n\nWe need to consider word count: at most 60 words. Our draft is 22 words, okay.\n\nWe should ensure we use plain Hindi.\n\nWe should not add \"as photographed\" phrase? The length is long, below the knee (as photographed). We can just say लंबा है, घुटने के नीचे तक आता है। That's accurate.\n\nWe should not add \"beautiful\" etc. That's extra claim? The instruction says do not add any claim that is not in facts. So avoid adjectives like सुंदर, आकर्षक, etc. Keep plain.\n\nWe should just describe type, colour, length.\n\nWe should ensure we don't add \"main colour\" incorrectly? We can say मुख्य रंग रस्ट नारंगी है।\n\nWe should ensure we don't add extra colours.\n\nWe should produce final answer.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. So avoid those words.\n\nWe should write in Hindi Devanagari script.\n\nWe should ensure we don't accidentally include English.\n\nWe should output:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।\n\nThat's good.\n\nWe should check if we need to include \"rust / orange\" exactly. We have रस्ट नारंगी. Could also write रस्ट या नारंगी. Better to write रस्ट नारंगी.\n\nWe should ensure we don't add slash? Slash is okay but maybe avoid. Use \"रस्ट नारंगी\" is fine.\n\nWe should ensure we have 3 sentences, each ends with । (danda) or . But Hindi uses । . The instruction says full sentences. Use । .\n\nWe should use Devanagari danda.\n\nWe should ensure we don't exceed 60 words.\n\nWe should output final.\n\nWe must not add any extra English explanation.\n\nWe should comply.\n\nWe should not add \"Product listing:\" heading.\n\nJust the text.\n\nWe should ensure we don't add markdown.\n\nWe should produce final answer in Hindi.\n\nWe should be careful to not add \"seller's description\" etc.\n\nWe should just output the 2-3 sentences.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 346,
+        "total_tokens": 1765,
+        "completion_tokens": 1419,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1376
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1376
+        }
+      }
+    }
+  },
+  "error": null
+}

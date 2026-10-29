@@ -6,22 +6,38 @@
       "task": "receipt_summary",
       "lang": "en",
       "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Decision: REVIEW, a person must look before it is published. Reasons: fidelity REVIEW: source image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "8c7dc327568d8e97e9adfb87f330acc3e00519a35fc135bcf1d5f63920185fd9",
+      "usage": {
+        "prompt_tokens": 447,
+        "completion_tokens": 2461
+      },
+      "cost_usd": 0.011018,
+      "cost_estimated": true,
+      "text": "Your image decision is REVIEW meaning a person must look first. The system could not measure fidelity because the file is not a PNG and this build only reads PNG. Colour, print, neckline and other details were noted as matching but need human check."
     },
     {
       "job_id": "live-kurta-01-sam",
       "task": "listing_copy",
       "lang": "en",
       "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Type: kurta (women's). Main colour: rust / orange. Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "2351bca12454fe852cfd38195b4957351bbed61c3feb2f6f7435eea35612a329",
+      "usage": {
+        "prompt_tokens": 300,
+        "completion_tokens": 2427
+      },
+      "cost_usd": 0.01069,
+      "cost_estimated": true,
+      "text": "This is a women's kurta. Its main colour is rust / orange."
     },
     {
       "job_id": "live-kurta-01-sam",
@@ -52,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "1084e2db27898763d30a221161b35f15b6960cdc1b61bf2965a2bff4e70b32c2",
+      "request_sha256": "ccb14ba4152ce852636b1b085d363b0eb989c02325e6062db7044f6a30699f4e",
       "usage": {
-        "prompt_tokens": 397,
-        "completion_tokens": 2717
+        "prompt_tokens": 333,
+        "completion_tokens": 1366
       },
-      "cost_usd": 0.012044,
+      "cost_usd": 0.006222,
       "cost_estimated": true,
-      "text": "यह महिलाओं का कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।"
     }
   ]
 }

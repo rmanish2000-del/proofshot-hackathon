@@ -1,0 +1,73 @@
+{
+  "job_id": "ms3-live-kurta-01-tryon-m",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-01-tryon-m",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "b8e9a3c557bbdb952084795bbd91ed9de6903a8ec812a82dbb75ea06e13be707",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Decision: REVIEW, a person must look before it is published. Reasons: fidelity REVIEW: delta_e 17.522 above 10; area 0.301 below 0.400: the garment shrank in frame."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-m",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "b8e9a3c557bbdb952084795bbd91ed9de6903a8ec812a82dbb75ea06e13be707",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 2229
+      },
+      "cost_usd": 0.009865,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust/orange. It is long, below the knee as photographed."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-m",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "b8e9a3c557bbdb952084795bbd91ed9de6903a8ec812a82dbb75ea06e13be707",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "8e3e53c95e9e821afd12110dfe475473b2110a46fa41439240d307ebbfa274b1",
+      "usage": {
+        "prompt_tokens": 497,
+        "completion_tokens": 4107
+      },
+      "cost_usd": 0.018076,
+      "cost_estimated": true,
+      "text": "आपकी छवि का परिणाम REVIEW है, इसका मतलब है कि प्रकाशन से पहले एक व्यक्ति को जांच करनी होगी। कारण है कि रंग अंतर 17.522 जो 10 से अधिक है और कपड़े का क्षेत्र 0.301 जो 0.400 से कम है, कपड़ा फ्रेम में छोटा दिखा। रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट मिलान में हैं।"
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-m",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "b8e9a3c557bbdb952084795bbd91ed9de6903a8ec812a82dbb75ea06e13be707",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 2016
+      },
+      "cost_usd": 0.009001,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
+    }
+  ]
+}

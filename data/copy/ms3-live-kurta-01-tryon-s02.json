@@ -1,0 +1,81 @@
+{
+  "job_id": "ms3-live-kurta-01-tryon-s02",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-01-tryon-s02",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "b1e4edc219a44babfcf41153fa0cbc1d3ab6c564f11ffdffde2a0b844ac01099",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "c4110b33e87a449f82820ef1f63e80ae103ed670098ead116f8293d28487dacf",
+      "usage": {
+        "prompt_tokens": 490,
+        "completion_tokens": 2392
+      },
+      "cost_usd": 0.010779,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE, which means the image must not be published. The image failed fidelity checks for texture, colour difference and visible area as the garment shrank in frame, and the hem did not match. Other checks for colour, print, collar and other attributes matched."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-s02",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "b1e4edc219a44babfcf41153fa0cbc1d3ab6c564f11ffdffde2a0b844ac01099",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 2414
+      },
+      "cost_usd": 0.010651,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. It is long, falling below the knee."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-s02",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "b1e4edc219a44babfcf41153fa0cbc1d3ab6c564f11ffdffde2a0b844ac01099",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "4cf9072f087982c3389d7f8130836e8c16c497fd3739a6b1b70905ad32a1ceee",
+      "usage": {
+        "prompt_tokens": 524,
+        "completion_tokens": 3515
+      },
+      "cost_usd": 0.015594,
+      "cost_estimated": true,
+      "text": "आपकी तस्वीर का निर्णय REFUSE है जिसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। कपड़ा फ्रेम में छोटा दिखा, बनावट और रंग अंतर तय सीमा से बाहर रहे और हेम में अंतर मिला। रंग, प्रिंट, कॉलर, आस्तीन, जेब, बटन, लोगो और कपड़े की बनावट जाँच में ठीक पाए गए।"
+    },
+    {
+      "job_id": "ms3-live-kurta-01-tryon-s02",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "b1e4edc219a44babfcf41153fa0cbc1d3ab6c564f11ffdffde2a0b844ac01099",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 2015
+      },
+      "cost_usd": 0.008996,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "job_id": "ms3-live-kurta-01-mismatch",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-01-mismatch",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "ab49760d8ca873f64362233246ed6ef60244a58c0fb77000428b9ac618ad916c",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Decision: REFUSE, the image must not be published. Reasons: color: mismatch at 0.98 on a hard attribute; print_pattern: mismatch at 0.95 on a hard attribute; sleeve_length: mismatch at 0.85 on a soft attribute; hem: mismatch at 0.92 on a soft attribute; fidelity REFUSE: delta_e 37.566 above 20; texture 0.547 below 0.650; hist 0.402 above 0.350."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-mismatch",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "ab49760d8ca873f64362233246ed6ef60244a58c0fb77000428b9ac618ad916c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 1321
+      },
+      "cost_usd": 0.006006,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. It is long, below the knee as photographed."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-mismatch",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "ab49760d8ca873f64362233246ed6ef60244a58c0fb77000428b9ac618ad916c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "4994f26eeef6537ba5c52a5b54c0b195eab0497ad64a4cd4020a314cc4999b1e",
+      "usage": {
+        "prompt_tokens": 561,
+        "completion_tokens": 3579
+      },
+      "cost_usd": 0.015912,
+      "cost_estimated": true,
+      "text": "निर्णय REFUSE है, इसका अर्थ है यह छवि प्रकाशित नहीं होगी। विक्रेता ने कुर्ता (महिला) रंग रस्ट/नारंगी लंबा घुटने के नीचे बताया और रंग, प्रिंट, नेकलाइन वैसा ही रखने को कहा। जांच में रंग और प्रिंट पैटर्न में कड़ा अंतर, आस्तीन लंबाई और हेम में अंतर मिला। फिडेलिटी जांच डेल्टा ई 37.566, टेक्सचर 0.547, हिस्ट 0.402 पर विफल रही।"
+    },
+    {
+      "job_id": "ms3-live-kurta-01-mismatch",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "ab49760d8ca873f64362233246ed6ef60244a58c0fb77000428b9ac618ad916c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 2015
+      },
+      "cost_usd": 0.008996,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
+    }
+  ]
+}

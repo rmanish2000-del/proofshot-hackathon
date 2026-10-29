@@ -30,25 +30,33 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "e6f8ccadf531b0963361d3c75e3a9f019e088a3af86b00fa7f076c16f7b3c70c",
+      "request_sha256": "e85e7313c770c2902a2d2457fd0981c8022fa6232bcd5b741088d09b897fcd36",
       "usage": {
-        "prompt_tokens": 372,
-        "completion_tokens": 3015
+        "prompt_tokens": 311,
+        "completion_tokens": 2022
       },
-      "cost_usd": 0.013279,
+      "cost_usd": 0.008982,
       "cost_estimated": true,
-      "text": "This is a women's kurta in peach. The colour is as shown in the seller's photos."
+      "text": "This is a women's kurta in peach. It is long, below the knee."
     },
     {
       "job_id": "live-kurta-02-tryon-s02",
       "task": "receipt_summary",
       "lang": "hi",
       "receipt_head": "5363128373fd0189b72f6d3ae626efeb9def66814a3c86cda6d8cffa7d38ddb9",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "निर्णय: REFUSE, तस्वीर प्रकाशित नहीं की जानी चाहिए। कारण: fidelity REFUSE: delta_e 20.799 above 20; hist 0.561 above 0.350; texture 0.688 below 0.800; area 0.210 below 0.400: the garment shrank in frame; hem: mismatch at 0.92 on a soft attribute."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "29e93548d214cfc7616e5912d0181b53092cc6854ba09306598af6e8bbd4038e",
+      "usage": {
+        "prompt_tokens": 533,
+        "completion_tokens": 3988
+      },
+      "cost_usd": 0.017615,
+      "cost_estimated": true,
+      "text": "निर्णय REFUSE है इसका मतलब तस्वीर प्रकाशित नहीं होगी। आपने महिलाओं का कुर्ता पीच लंबा घुटने के नीचे बताया। विश्वसनीयता जाँच में डेल्टा 20.799 हिस्ट 0.561 टेक्सचर 0.688 एरिया 0.210 से कपड़ा फ्रेम में छोटा दिखा। हेम में 0.92 पर बेमेल है। रंग प्रिंट लोगो कॉलर आस्तीन जेब बटन बनावट मिले।"
     },
     {
       "job_id": "live-kurta-02-tryon-s02",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "c4830614700ccaa890e53e90d990df681bcca01cba3f5de9059fae6f166df3dc",
+      "request_sha256": "042d48f6908faf2abd2ebc668757f3517abbfa2318eb8962d7374865cfa5a07b",
       "usage": {
-        "prompt_tokens": 405,
-        "completion_tokens": 5817
+        "prompt_tokens": 344,
+        "completion_tokens": 1338
       },
-      "cost_usd": 0.025229,
+      "cost_usd": 0.006117,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। यह घुटने के नीचे तक लंबा है।"
+      "text": "यह महिलाओं के लिए पीच रंग का कुर्ता है। यह लंबा कुर्ता है जिसकी लंबाई घुटने के नीचे तक है।"
     }
   ]
 }

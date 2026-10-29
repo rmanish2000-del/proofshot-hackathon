@@ -1,0 +1,81 @@
+{
+  "job_id": "ms3-live-kurta-01-composite",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-01-composite",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "022cc9feee17da404621373cdb189382ae4ad9ffeea38bc747bca2fc5df548f3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "5fe8e1269b6118452240252445297777b774459daeaf3e68195d69827550acd0",
+      "usage": {
+        "prompt_tokens": 434,
+        "completion_tokens": 2563
+      },
+      "cost_usd": 0.011435,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. Your women's kurta was checked and all verifier checks matched for colour, print, logo text, collar and neckline, sleeve length, hem, pocket count, buttons and fabric texture. No reasons against publishing were found."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-composite",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "022cc9feee17da404621373cdb189382ae4ad9ffeea38bc747bca2fc5df548f3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 1321
+      },
+      "cost_usd": 0.006006,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. It is long, below the knee as photographed."
+    },
+    {
+      "job_id": "ms3-live-kurta-01-composite",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "022cc9feee17da404621373cdb189382ae4ad9ffeea38bc747bca2fc5df548f3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "5574c1e13965dc1bb82358e995eb88619385603d42123ca6f19c88f86997b468",
+      "usage": {
+        "prompt_tokens": 468,
+        "completion_tokens": 2728
+      },
+      "cost_usd": 0.012179,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम RELEASE है। इसका अर्थ है तस्वीर प्रकाशित की जा सकती है। विक्रेता के अनुसार यह महिलाओं का कुर्ता है, मुख्य रंग रस्ट / नारंगी है, लंबाई घुटने के नीचे तक है। विक्रेता ने रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा रखने को कहा था। जाँच में रंग, प्रिंट, लोगो टेक्स्ट, कॉलर, आस्तीन, हेम, जेब, बटन और बनावट सभी मिलान हैं।"
+    },
+    {
+      "job_id": "ms3-live-kurta-01-composite",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "022cc9feee17da404621373cdb189382ae4ad9ffeea38bc747bca2fc5df548f3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 1419
+      },
+      "cost_usd": 0.006463,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
+    }
+  ]
+}

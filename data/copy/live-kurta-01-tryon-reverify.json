@@ -30,25 +30,33 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "bae0eef8c7f8b30cc1ea7353540430e244838bbaae5428cb2969272685609c53",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
       "usage": {
-        "prompt_tokens": 371,
-        "completion_tokens": 3403
+        "prompt_tokens": 313,
+        "completion_tokens": 1321
       },
-      "cost_usd": 0.014927,
+      "cost_usd": 0.006006,
       "cost_estimated": true,
-      "text": "This is a women's kurta in rust orange. The colour matches the seller's photos."
+      "text": "This is a women's kurta in rust orange. It is long, below the knee as photographed."
     },
     {
       "job_id": "live-kurta-01-tryon-reverify",
       "task": "receipt_summary",
       "lang": "hi",
       "receipt_head": "99c2338a990053f9cf451e272a296e7e37b89b83c8e591686bc4bdf27e1eb48a",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "निर्णय: REFUSE, तस्वीर प्रकाशित नहीं की जानी चाहिए। कारण: fidelity REFUSE: texture 0.641 below 0.650; delta_e 12.214 above 10; area 0.206 below 0.400: the garment shrank in frame; sleeve_length: mismatch at 0.94 on a soft attribute; hem: mismatch at 0.98 on a soft attribute."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e8206369d38768a3cfbb2e7e531f88cac8d90f3972da3b46534bc9ec7f89b143",
+      "usage": {
+        "prompt_tokens": 539,
+        "completion_tokens": 3783
+      },
+      "cost_usd": 0.016752,
+      "cost_estimated": true,
+      "text": "आपकी तस्वीर का परिणाम REFUSE है इसका मतलब है तस्वीर प्रकाशित नहीं की जा सकती। कारण कपड़ा फ्रेम में छोटा दिखा, बनावट और रंग अंतर सीमा से बाहर है। आस्तीन की लंबाई और हेम में अंतर मिला। रंग, प्रिंट, लोगो, कॉलर, जेब, बटन और कपड़े की बनावट मिले।"
     },
     {
       "job_id": "live-kurta-01-tryon-reverify",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "0f04888c39abf0267591ee6d6456a75a446864359ed510214a28585179cd7447",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
       "usage": {
-        "prompt_tokens": 404,
-        "completion_tokens": 3871
+        "prompt_tokens": 346,
+        "completion_tokens": 1979
       },
-      "cost_usd": 0.016957,
+      "cost_usd": 0.008843,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
     }
   ]
 }

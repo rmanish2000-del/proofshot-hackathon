@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "dea3412ce49c7b0e5aecf659ae969eb01c88fecb11fa1f57278c26dc538aa6c8",
+      "request_sha256": "edd48460715c17b62a14f3207a2d9c3c43e59a8b8c020aa3f5f4a32e6a24b20a",
       "usage": {
-        "prompt_tokens": 311,
-        "completion_tokens": 2843
+        "prompt_tokens": 334,
+        "completion_tokens": 2330
       },
-      "cost_usd": 0.012472,
+      "cost_usd": 0.01032,
       "cost_estimated": true,
-      "text": "Women's kurta in peach. Preview image is the owner's photo of the garment. Colour matches the seller's photos."
+      "text": "This is a women's kurta in peach. This is fixture data, not a live listing, with the owner's photo standing in for the preview."
     },
     {
       "job_id": "kurta-02",
@@ -63,19 +63,11 @@
       "task": "listing_copy",
       "lang": "hi",
       "receipt_head": "7f37cfa1436f6358879caa808dd97a7172c6f5dc4d6440a050f16edfb660752c",
-      "provider": "fireworks",
-      "model": "accounts/fireworks/models/muse-spark-open",
-      "response_model": "accounts/fireworks/models/muse-spark-open",
-      "generated": true,
-      "key_source": "user_env",
-      "request_sha256": "cb19fa74fefc60fed92339ceaf4a69adae3671ee8361e39f31369f9fca322549",
-      "usage": {
-        "prompt_tokens": 344,
-        "completion_tokens": 2596
-      },
-      "cost_usd": 0.011463,
-      "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। यह पीच रंग में है।"
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "विक्रेता का विवरण: Description: kurta (women's), peach. यह डेमो का fixture (टेस्ट) डेटा है, असली लिस्टिंग नहीं।"
     }
   ]
 }

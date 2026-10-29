@@ -6,22 +6,38 @@
       "task": "receipt_summary",
       "lang": "en",
       "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Decision: REVIEW, a person must look before it is published. Reasons: fidelity REVIEW: delta_e 17.522 above 10; area 0.301 below 0.400: the garment shrank in frame."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b54e9be47f8c61b3282afcff155b5b4df90b5c34dd40123041c13d12624c1c04",
+      "usage": {
+        "prompt_tokens": 463,
+        "completion_tokens": 1912
+      },
+      "cost_usd": 0.008705,
+      "cost_estimated": true,
+      "text": "Decision is REVIEW which means a person must look first. Colour difference 17.522 is above limit 10 and garment area 0.301 is below limit 0.400 so garment shrank in frame. All other checks for colour, print, logo, collar, sleeve, hem, pockets, buttons and fabric texture were matches."
     },
     {
       "job_id": "live-kurta-01-tryon-m",
       "task": "listing_copy",
       "lang": "en",
       "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Type: kurta (women's). Main colour: rust / orange. Length: long, below the knee (as photographed). Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 1736
+      },
+      "cost_usd": 0.007769,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. It is long, falling below the knee as photographed."
     },
     {
       "job_id": "live-kurta-01-tryon-m",
@@ -52,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "6570dbc73254f0e68090dda04ebae67de8cd29704b7c900fedc897722e05dbd4",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
       "usage": {
-        "prompt_tokens": 409,
-        "completion_tokens": 3741
+        "prompt_tokens": 346,
+        "completion_tokens": 1461
       },
-      "cost_usd": 0.016411,
+      "cost_usd": 0.006642,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
     }
   ]
 }

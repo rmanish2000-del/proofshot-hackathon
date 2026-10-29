@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "kurta-02",
+  "started_at": "2026-10-29T11:22:49.539Z",
+  "finished_at": "2026-10-29T11:23:14.486Z",
+  "latency_ms": 24947,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\nThis job is fixture data, not a live listing (preview: the owner's photo of the garment stands in for the render). Say so plainly in one sentence that contains the English word \"fixture\".\n\nSeller's description:\n- Description: kurta (women's), peach"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-e24c6c85f82d48868caad5a47569e91e",
+      "object": "chat.completion",
+      "created": 1793272970,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta in peach. This is fixture data, not a live listing, with the owner's photo standing in for the preview.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nThis job is fixture data, not a live listing (preview: the owner's photo of the garment stands in for the render). Say so plainly in one sentence that contains the English word \"fixture\".\n\nSeller's description:\n- Description: kurta (women's), peach\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else.\n\nWe must include one sentence that contains the English word \"fixture\" and says plainly that this job is fixture data, not a live listing (preview: the owner's photo of the garment stands in for the render).\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe have description: kurta (women's), peach. So type: kurta (women's), colour peach. Length? Not given. So we should not invent length. Any detail stated? Only that.\n\nWe need to produce 2-3 sentences. One of them must be the fixture sentence. So total sentences 2-3. Must include fixture sentence.\n\nWe need to describe garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else.\n\nSo we need to say: This is a women's kurta in peach. That's one sentence.\n\nSecond sentence: This is fixture data, not a live listing... Must contain word \"fixture\". And say plainly that preview: owner's photo stands in for render. But we are forbidden to mention render? The instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nBut the second instruction says: This job is fixture data, not a live listing (preview: the owner's photo of the garment stands in for the render). Say so plainly in one sentence that contains the English word \"fixture\".\n\nConflict: We must say that owner's photo stands in for the render, but we are told never mention render. How to resolve? The higher priority? The system says: Use only facts given. Do not add colours... Do not change or soften gate decision. No markdown... The user says Never mention ... a render ... This job is fixture data ... Say so plainly in one sentence that contains English word \"fixture\". The parenthetical says preview: the owner's photo of the garment stands in for the render. But the prohibition says never mention render. Which takes precedence?\n\nWe need to interpret: The user instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. But also says Say so plainly in one sentence that contains English word \"fixture\". The parenthetical is explanation of what to say: the owner's photo stands in for the render. However we cannot use word render. Could we paraphrase without using forbidden word? Perhaps we can say \"owner's photo stands in for the preview image\" ? But instruction says preview: the owner's photo stands in for the render. Could we avoid word render by saying \"preview image\"? But that would be altering instruction.\n\nWe need to find way to satisfy both: The prohibition says never mention render. So we must not use word render. But we must convey that owner's photo stands in for render. Could we say \"owner's photo stands in for the preview\" without using word render? That might be considered acceptable, as we are not mentioning render word.\n\nAlternatively, maybe the prohibition is absolute, and we must not include that parenthetical detail? But the second instruction explicitly says to say so plainly in one sentence that contains English word fixture. The content of that sentence should convey that this is fixture data, not live listing, and that owner's photo stands in for render. But if we cannot use word render, we need to find synonym.\n\nWe could say: This is fixture data, not a live listing, and the owner's photo stands in for the preview. That contains fixture, says it's not live listing, and mentions owner's photo stands in for preview, without using forbidden word render.\n\nIs that allowed? The instruction says Never mention ... a render ... So we must avoid that word. Using \"preview\" instead is okay.\n\nWe also must not mention photos being compared. But we are mentioning owner's photo stands in for preview. Is that considered mentioning photos being compared? Probably not; it's just stating that owner's photo is used.\n\nWe need to keep total words at most 60 words. 2-3 sentences.\n\nWe need to describe garment: type, colour, length and any detail stated. Use nothing else. So we cannot add length if not given. We should not invent length. So just say women's kurta, peach.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So only peach.\n\nWe need to ensure we don't add extra details like \"beautiful\" etc? That might be considered adding claim not in facts. Should keep plain.\n\nPotential output:\n\n\"This is a women's kurta in peach. This is fixture data, not a live listing, with the owner's photo standing in for the preview.\"\n\nThat's 2 sentences. Word count: This(1) is2 a3 women's4 kurta5 in6 peach7. This8 is9 fixture10 data,11 not12 a13 live14 listing,15 with16 the17 owner's18 photo19 standing20 in21 for22 the23 preview24. That's 24 words, under 60. Contains fixture. Does not mention forbidden words. Describes type, colour.\n\nBut does it mention length? Length not given, so we cannot mention length. The instruction says describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. If length not stated, we just don't mention it. That's okay.\n\nWe must ensure we don't mention gate, decision, etc.\n\nWe need to ensure we say plainly in one sentence that contains English word \"fixture\". We did.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe must not change or soften gate decision. Not relevant.\n\nNo markdown, no emoji, no headings. Plain text.\n\nWe should ensure we don't accidentally include forbidden words: photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. We have not.\n\nWe used \"photo\" - is that allowed? The prohibition says Never mention photos being compared. Does mentioning photo at all violate? The instruction says Never mention photos being compared, a check... The phrase \"photos being compared\" might mean don't mention the concept of photos being compared. But we are required to mention owner's photo stands in for preview. So mentioning photo is required by second instruction. So it's allowed to mention photo in that context, just not \"photos being compared\". So we are okay.\n\nWe must ensure we don't use word \"render\". We used \"preview\" instead. Is that acceptable to satisfy the requirement that owner's photo stands in for the render? The instruction parenthetical says preview: the owner's photo stands in for the render. Perhaps we can interpret that we need to convey that meaning without using forbidden word. Using \"preview\" might be considered okay, as we are describing preview.\n\nAlternative phrasing: \"This fixture is not a live listing; the owner's photo stands in for the preview.\" That contains fixture.\n\nWe need to be careful: The user says \"Say so plainly in one sentence that contains the English word 'fixture'.\" So one sentence must contain fixture and state that this job is fixture data, not a live listing (preview: owner's photo stands in for render). So we need to include both ideas in one sentence.\n\nOur sentence: \"This is fixture data, not a live listing, with the owner's photo standing in for the preview.\" That does it.\n\nWe should ensure we don't accidentally add extra sentence that also contains fixture? Only one sentence needs to contain it, but it's okay if only one does.\n\nWe need 2 to 3 full sentences. We have 2. Good.\n\nWe should ensure we don't add extra claims like \"beautiful\" etc.\n\nWe should output exactly 2 sentences.\n\nPotential final answer: \"This is a women's kurta in peach. This is fixture data, not a live listing, with the owner's photo standing in for the preview.\"\n\nCheck word count: At most 60 words, we are at 24.\n\nWe must ensure we use plain English for Indian clothing seller. That's fine.\n\nWe must not add length detail not given. We didn't.\n\nWe should not mention \"gate\" etc.\n\nWe should ensure we don't use markdown.\n\nWe should output just the listing.\n\nWe must ensure we don't add extra explanation.\n\nWe should be careful about apostrophe: owner's - okay.\n\nWe should not mention AI.\n\nWe should ensure we don't mention \"model\".\n\nWe are good.\n\nWe should consider alternative: Could we include \"kurta (women's), peach\" exactly? Yes.\n\nWe should ensure we don't add \"length\" if not given. So we just describe type and colour.\n\nWe should ensure we don't add \"any detail stated\" beyond that.\n\nWe should output final.\n\nWe must ensure we don't violate \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must not add any adjective like \"lovely\" etc. Our sentence \"This is a women's kurta in peach.\" is factual.\n\nWe should not add \"beautiful\" etc.\n\nWe are good.\n\nWe should produce final answer with 2 sentences.\n\nWe need to ensure we don't accidentally include forbidden word \"render\". We didn't.\n\nWe should double-check forbidden list: photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. We have none of those words. We used \"photo\" singular, not \"photos being compared\". That's okay. We used \"preview\" not \"render\". We didn't use \"model\" or \"AI\". Good.\n\nWe should ensure we don't use word \"gate\" inside \"gate\"? No.\n\nWe should ensure we don't use word \"check\" etc.\n\nWe are good.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 334,
+        "total_tokens": 2664,
+        "completion_tokens": 2330,
+        "prompt_tokens_details": {
+          "cached_tokens": 192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2291
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2291
+        }
+      }
+    }
+  },
+  "error": null
+}

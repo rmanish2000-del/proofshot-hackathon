@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "kurta-01",
+  "started_at": "2026-10-29T11:21:13.494Z",
+  "finished_at": "2026-10-29T11:21:27.774Z",
+  "latency_ms": 14280,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result.\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Description: kurta (women's), rust / orange"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-d54277b52b2448a3b7516f4310ea63c7",
+      "object": "chat.completion",
+      "created": 1793272874,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is RELEASE which means the image can be published. Your description says kurta (women's), rust / orange. Verifier found color, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture all match. Reasons: none.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Description: kurta (women's), rust / orange\n\nWe must write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to state decision word exactly as given (RELEASE) and what it means: RELEASE = the image can be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe have decision RELEASE. So we must include RELEASE once. Must not include REVIEW or REFUSE anywhere. Since reasons is none, we don't have to worry about describing reason containing those words. But we must ensure we don't accidentally write REVIEW or REFUSE. Also we must not write RELEASE again? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Means we should write the decision word exactly once in capitals. And no other occurrence of those three words anywhere. So we must include RELEASE exactly once. Must not include REVIEW or REFUSE. Also must not include RELEASE a second time. So careful.\n\nWe need to explain in at most 70 words. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention seller's description: kurta (women's), rust / orange. And verifier findings: color match, print_pattern match, etc. But we must not add colours beyond given? The seller's description says rust / orange. We can mention that. Verifier findings say color: match etc. We can say all attributes matched.\n\nWe must not add care advice etc.\n\nWe need to state what RELEASE means: the image can be published.\n\nWe must keep under 70 words. Let's craft ~50 words.\n\nWe need to ensure we don't accidentally write the word \"RELEASE\" twice. Also need to ensure we don't write \"REVIEW\" or \"REFUSE\" even inside explanation of meaning? But we must explain what RELEASE means: \"the image can be published\". The instruction says: State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. So we need to state the meaning. For RELEASE, we say \"the image can be published\". We must not write the other definitions.\n\nWe must be careful not to include the words REVIEW or REFUSE in our explanation. So don't mention them.\n\nWe must include decision word RELEASE in capitals. Exactly once.\n\nPotential text:\n\n\"Decision is RELEASE which means the image can be published. Your description says kurta (women's), rust / orange. Verifier found color, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture all match. No issues found.\"\n\nCheck word count: Let's count.\n\nDecision(1) is2 RELEASE3 which4 means5 the6 image7 can8 be9 published10. Your11 description12 says13 kurta14 (women's),15 rust16 /17 orange18. Verifier19 found20 color,21 print22 pattern,23 logo24 text,25 collar,26 sleeve27 length,28 hem,29 pocket30 count,31 buttons32 and33 fabric34 texture35 all36 match.37 No38 issues39 found40.\n\n40 words, under 70. Contains RELEASE once. Does not contain REVIEW or REFUSE. Good.\n\nBut we must ensure we didn't add any claim not in facts. We said \"all match\" which is true per verifier findings. We listed attributes. That's allowed. We said \"No issues found\" - reasons: none. That's okay. Is that adding claim? It's summarizing reasons none. Probably okay. But we must not add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe must use only facts given. We used seller's claims and verifier findings. Good.\n\nWe must not add markdown, emoji, headings. We didn't.\n\nWe must write short plain English for Indian clothing seller. This is plain.\n\nCheck instruction: \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" We added \"No issues found\" - is that a claim not in facts? Reasons: none - that implies no issues. Might be okay. But to be safe, we could say \"Reasons: none\" but that's fact. Better to say \"No reasons listed.\" Let's keep \"No issues found\" - it's interpretation of reasons none. Might be considered adding claim. Safer to say \"Reasons: none.\" That is directly fact.\n\nLet's revise to be strictly factual.\n\n\"Decision is RELEASE which means the image can be published. Your description says kurta (women's), rust / orange. Verifier found color, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture all match. Reasons: none.\"\n\nCount again:\n\nDecision1 is2 RELEASE3 which4 means5 the6 image7 can8 be9 published10. Your11 description12 says13 kurta14 (women's),15 rust16 /17 orange18. Verifier19 found20 color,21 print22 pattern,23 logo24 text,25 collar,26 sleeve27 length,28 hem,29 pocket30 count,31 buttons32 and33 fabric34 texture35 all36 match.37 Reasons:38 none39.\n\n39 words. Good.\n\nWe must ensure we didn't accidentally include RELEASE twice. Only once. Good.\n\nWe must not include REVIEW or REFUSE. We didn't.\n\nWe should ensure we don't use lowercase release elsewhere. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere. Does that mean we cannot write \"release\" in lowercase either? Probably they mean case-insensitive. So avoid any occurrence of those strings in any case. So we have only one occurrence, in capitals. Good.\n\nWe must not add colours beyond given. We listed rust / orange as given. That's okay.\n\nWe should output exactly that paragraph, no extra headings.\n\nWe must ensure at most 70 words. We are at 39.\n\nWe should not add extra explanation like \"Gate decision\" etc.\n\nWe must not change or soften gate decision. We stated it clearly.\n\nWe should ensure we don't add markdown. No bullet points.\n\nWe should deliver final answer.\n\nPotential nuance: The seller's description says what garment is; it is not a check result. So we should not treat description as verdict. We correctly treated it as description.\n\nWe should not add care advice.\n\nWe are good.\n\nWe must ensure we don't accidentally include the word \"REVIEW\" inside \"reviewer\"? No.\n\nWe should output final.\n\nWe need to be careful about punctuation: \"RELEASE\" is in capitals, we have it.\n\nWe should not include quotes around it that might be considered extra? It's okay.\n\nWe should ensure we don't include the other decision words in the explanation of meaning. We only explained RELEASE meaning.\n\nWe should not include \"REVIEW = a person must look first\" etc. We didn't.\n\nWe are done.\n\nWe should provide final answer in plain text.\n\nWe must ensure no markdown, no emoji, no headings. So just paragraph.\n\nWe should not add \"Explanation:\" heading. Just paragraph.\n\nWe should output exactly the paragraph.\n\nWe need to ensure we don't accidentally include the word \"RELEASE\" in \"RELEASED\"? No.\n\nWe are good.\n\nWe should answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 398,
+        "total_tokens": 2179,
+        "completion_tokens": 1781,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1715
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1715
+        }
+      }
+    }
+  },
+  "error": null
+}

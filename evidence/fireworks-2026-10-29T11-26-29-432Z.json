@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-2",
+  "started_at": "2026-10-29T11:26:29.432Z",
+  "finished_at": "2026-10-29T11:26:47.409Z",
+  "latency_ms": 17977,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-a5a2a9a0bec74899b6aa71ae7328020a",
+      "object": "chat.completion",
+      "created": 1793273190,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta. Its main colour is rust orange.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe have type: kurta (women's), main colour: rust / orange. Length? Not given. Any detail stated? Not given. So we should only describe type and colour. Must not invent length. But instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we should not mention length. We should not hallucinate length.\n\nWe need 2 to 3 full sentences, at most 60 words.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nSo we can say: This is a women's kurta in rust orange. ... Need 2-3 sentences.\n\nWe must be careful not to add extra details like fabric, embroidery, etc.\n\nWe should keep plain English.\n\nPotential output: \"This women's kurta is presented in a rust orange shade. It is a classic kurta style for everyday wear.\"\n\nBut \"classic kurta style for everyday wear\" might be considered adding claim not in facts? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we cannot add \"classic\" or \"everyday wear\" if not in facts. We must be very strict.\n\nWe have only type and colour. So we must only state those. But we need 2-3 sentences. How to make 2 sentences with only type and colour without adding extra claims?\n\nWe could say: \"This is a women's kurta. The main colour is rust orange.\"\n\nThat's 2 sentences, 11 words. That uses only facts. Does it violate anything? It describes type and colour. It doesn't add length because not given. It doesn't add detail.\n\nWe must ensure we don't add \"main colour is rust / orange\" - that's fact. We should phrase as rust / orange.\n\nWe must not add length. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So we should only include length if stated. Since not stated, omit.\n\nWe must ensure we don't add any extra adjectives like \"beautiful\", \"elegant\", etc. That could be considered a claim not in facts. The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we should avoid subjective claims.\n\nKeep it minimal.\n\nWe need to ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We won't.\n\nWe need to write short, plain English for Indian clothing seller.\n\nWe should not use markdown, emoji, headings.\n\nWe should produce 2-3 full sentences, at most 60 words.\n\nPotential answer: \"This is a women's kurta. Its main colour is rust orange.\"\n\nThat's 2 sentences, 10 words. That satisfies.\n\nWe must ensure we don't add \"rust / orange\" vs \"rust orange\" - both okay. The seller says rust / orange, so we can say rust orange.\n\nWe should not add length.\n\nWe must not add any other detail.\n\nWe should be careful not to add \"women's\" incorrectly? Seller says Type: kurta (women's) - so we can say women's kurta.\n\nWe should not add fabric.\n\nWe should not add care advice.\n\nWe should not add price.\n\nWe should not add size.\n\nWe should not add claim.\n\nWe should ensure we don't accidentally add \"Indian\" etc. But we are writing for Indian clothing seller, but we shouldn't add extra claims about garment.\n\nWe should keep it simple.\n\nWe must not change or soften gate decision. What gate decision? Probably this is part of a larger system where we need to not approve? But instruction says do not change or soften gate decision. No markdown, no emoji, no headings. We must not mention gate.\n\nWe need to ensure we don't add length like \"long\" or \"short\".\n\nWe should produce final answer.\n\nWe need to consider that the user wants product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must comply.\n\nWe should output exactly 2 sentences.\n\nWe must ensure we don't accidentally add extra words that imply fabric or style.\n\nWe should not say \"classic\" or \"traditional\" unless that's in facts. It's not.\n\nWe should not say \"comfortable\" etc.\n\nWe should just state facts.\n\nWe should ensure we don't add \"beautiful\" etc.\n\nWe should produce final answer: \"This is a women's kurta. The main colour is rust orange.\"\n\nThat's safe.\n\nWe should check word count: This(1) is2 a3 women's4 kurta5. The6 main7 colour8 is9 rust10 orange11. That's 11 words, under 60.\n\nWe need to ensure we use plain English.\n\nWe should not add any other sentence.\n\nWe should not add \"seller's description\" etc.\n\nWe should not mention gate.\n\nWe should output that.\n\nWe must ensure we don't use markdown. So no bullet points, no bold, no headings.\n\nWe should just output plain text.\n\nWe should ensure we don't add \"Type: kurta\" etc. Just natural sentences.\n\nWe should ensure we don't add length. Since length not given, we omit.\n\nWe should ensure we don't add detail not stated.\n\nWe should ensure we don't add colour beyond rust/orange.\n\nWe should ensure we don't add fabric.\n\nWe should ensure we don't add size.\n\nWe should ensure we don't add price.\n\nWe should ensure we don't add care advice.\n\nWe should ensure we don't add claim.\n\nWe should ensure we don't mention photos.\n\nWe should ensure we don't mention check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe should ensure we don't change gate decision. What is gate decision? Possibly we need to not approve? But we are just writing product listing. The instruction says do not change or soften gate decision. So we must not say \"approved\" etc. We won't.\n\nWe should output final answer.\n\nWe should consider if we need to mention that length not stated? No, we should just not mention length.\n\nWe should ensure we don't add \"at most 60 words\" etc.\n\nWe should just output 2 sentences.\n\nWe should ensure we don't add extra punctuation that could be considered markdown.\n\nWe should output final answer.\n\nWe should be careful to not add \"Indian\" etc. But we are writing for Indian clothing seller, but we shouldn't add extra claims.\n\nWe should output final answer as plain text.\n\nWe should ensure we don't add \"women's kurta in rust orange\" is okay.\n\nWe should ensure we don't add \"orange\" vs \"rust / orange\" - both okay.\n\nWe should ensure we don't add \"main colour\" is fact, so okay.\n\nWe should ensure we don't add \"type\" etc.\n\nWe should output final answer.\n\nWe should consider if we need to add \"kurta (women's)\" exactly as given. We can say women's kurta.\n\nWe should ensure we don't add \"garment\" etc. But we can say \"This is a women's kurta.\" That's describing garment.\n\nWe should ensure we don't add \"seller's description\" etc.\n\nWe should output final answer.\n\nWe should ensure we don't add any extra sentence that adds claim.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 300,
+        "total_tokens": 2102,
+        "completion_tokens": 1802,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1778
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1778
+        }
+      }
+    }
+  },
+  "error": null
+}

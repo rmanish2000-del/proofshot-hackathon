@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "ms3-live-kurta-02-tryon-2",
+  "started_at": "2026-10-29T12:18:26.848Z",
+  "finished_at": "2026-10-29T12:18:48.344Z",
+  "latency_ms": 21496,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result.\n\nDecision: REVIEW\nReasons:\n- hem: mismatch at 0.95 on a soft attribute\n- fidelity REVIEW: delta_e 15.479 above 10; hist 0.383 above 0.350; texture 0.672 below 0.800; area 0.213 below 0.400: the garment shrank in frame\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: mismatch\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- Length: long, below the knee (as photographed)\n- The seller asked that these stay as photographed: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-9c170d4fad6d4324b0994d3c93351fa8",
+      "object": "chat.completion",
+      "created": 1793276308,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REVIEW which means a person must look first. Hem shows mismatch at 0.95 on soft attribute. Image fidelity failed with high colour difference 15.479, histogram 0.383, low texture 0.672 and small area 0.213 as garment shrank in frame. Other attributes colour, print, logo, collar, sleeve, pocket, buttons and fabric texture match.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe have decision: REVIEW. Reasons include fidelity REVIEW: delta_e etc. We must not write RELEASE or REFUSE anywhere, and we must not write REVIEW except the one decision word? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we can only write REVIEW once, as the decision word. We cannot write RELEASE or REFUSE at all. Also cannot write REVIEW a second time. So we must avoid repeating REVIEW. But we need to describe reasons. One reason is \"fidelity REVIEW: delta_e 15.479 above 10; hist 0.383 above 0.350; texture 0.672 below 0.800; area 0.213 below 0.400: the garment shrank in frame\". We need to describe such a reason in plain words instead. So we cannot use the word REVIEW there. We need to paraphrase.\n\nAlso hem mismatch at 0.95 on soft attribute.\n\nVerifier findings: hem mismatch, others match.\n\nSeller's claims: Type kurta women's, main colour peach, length long below knee, seller asked that these stay as photographed: colour, print and neckline exactly as photographed.\n\nWe need to write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe must state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. So we need to include that definition.\n\nWe must not add colours? But we can mention peach? That's given. The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can use colours given.\n\nWe need at most 70 words.\n\nWe need to ensure we only write REVIEW once. So we must be careful not to accidentally write review in lowercase? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Does that include case-insensitive? Likely yes. So we cannot write \"review\" in lowercase either. So we must avoid the word entirely except the one capital instance.\n\nWe need to describe hem mismatch and fidelity issue.\n\nWe must not write RELEASE or REFUSE. So avoid those words.\n\nWe need to count words <=70.\n\nWe need to include decision word in capitals.\n\nPotential text:\n\n\"Decision is REVIEW which means a person must look first. Hem shows mismatch. Image fidelity check failed on colour difference, histogram, texture and area as garment shrank in frame. Colour, print, logo, collar, sleeve, pocket, buttons and fabric texture match.\"\n\nBut need to check word count and avoid forbidden words.\n\nWe used REVIEW once. We did not use RELEASE or REFUSE. We described fidelity REVIEW reason without using the word.\n\nWe need to ensure we don't use \"review\" again. We used \"REVIEW\" once.\n\nWe need to ensure we don't accidentally include \"refuse\" or \"release\" as substrings? Probably exact words.\n\nWe must be careful: \"mismatch\" is okay.\n\nWe should mention seller's description? The seller's description says what garment is; it is not a check result. So we should not present seller's claims as check result. But we can mention them? The instruction says use only facts given. So we can include seller's claims but clarify they are not check result. Might be optional.\n\nWe need to keep under 70 words. Let's count.\n\nDraft: \"Decision is REVIEW which means a person must look first. Hem shows mismatch at 0.95 on soft attribute. Image fidelity failed with high colour difference 15.479, histogram 0.383, low texture 0.672 and small area 0.213 as garment shrank in frame. Other attributes colour, print, logo, collar, sleeve, pocket, buttons and fabric texture match.\"\n\nCount words:\n\nDecision(1) is2 REVIEW3 which4 means5 a6 person7 must8 look9 first10. Hem11 shows12 mismatch13 at14 0.9515 on16 soft17 attribute18. Image19 fidelity20 failed21 with22 high23 colour24 difference25 15.479,26 histogram27 0.383,28 low29 texture30 0.67231 and32 small33 area34 0.21335 as36 garment37 shrank38 in39 frame40. Other41 attributes42 colour,43 print,44 logo,45 collar,46 sleeve,47 pocket,48 buttons49 and50 fabric51 texture52 match53.\n\n53 words, under 70. Good.\n\nWe used REVIEW once. We did not use RELEASE or REFUSE.\n\nWe need to ensure we didn't add colours etc not in facts. We didn't add new colours. We mentioned colour difference but that's from facts.\n\nWe should not add care advice.\n\nWe need to ensure plain English for Indian clothing seller. This is okay.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe must ensure we state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. We did: \"Decision is REVIEW which means a person must look first.\" That satisfies.\n\nWe must not write \"RELEASE\" or \"REFUSE\" anywhere. We didn't.\n\nWe must not write REVIEW again. We only wrote once.\n\nCheck if \"fidelity\" is okay. Yes.\n\nWe should ensure we don't accidentally write \"review\" inside another word? No.\n\nWe should output final answer.\n\nPotential improvement: mention seller's claims? The instruction says seller's description says what garment is; it is not a check result. So we should not confuse. Our text doesn't mention seller's claims as check result, but we could optionally mention them as context. But we have limited words. It's okay to omit? The instruction says use only facts given. It doesn't require to include all facts, but we should not add false claims. Omitting seller claims is allowed? Probably better to include to show we didn't treat them as check result. But we have word limit.\n\nWe could add a sentence: \"Seller described kurta peach long below knee.\" But that adds words. Might be okay but not required. The instruction says seller's description says what garment is; it is not a check result. So we must not present seller's claims as verification. Our current draft doesn't do that, so it's fine.\n\nWe must ensure we don't add \"peach\" incorrectly? We didn't add peach, but we could. It's okay.\n\nWe should ensure we don't use the word \"mismatch\" incorrectly? It's given.\n\nWe need to ensure we don't soften gate decision. We said decision is REVIEW which means person must look first. That's accurate, not softened.\n\nWe should deliver final answer with at most 70 words. Our draft is 53 words, good.\n\nCheck for forbidden words: RELEASE, REVIEW, REFUSE. We have REVIEW once. Ensure we didn't include \"REVIEW:\" in reasons description. We paraphrased as \"Image fidelity failed\". Good.\n\nWe must ensure we don't include \"RELEASE\" or \"REFUSE\" as part of other words like \"refused\"? Probably not, but avoid.\n\nWe should output final text exactly as plain paragraph.\n\nMake sure no markdown like **.\n\nWe should not add headings.\n\nWe should ensure we don't accidentally write \"review\" in lowercase in explanation of meaning. We wrote \"a person must look first\" which is the meaning, without repeating the word. Good.\n\nWe need to ensure we didn't write \"REVIEW\" twice via \"REVIEW which means...\" That's one occurrence. Good.\n\nPotential edge: The phrase \"a person must look first\" includes no forbidden word.\n\nWe should output.\n\nWe must ensure we don't add extra explanation that includes forbidden words.\n\nWe should double-check we didn't use \"release\" or \"refuse\" inadvertently. No.\n\nWe should ensure we didn't use \"REVIEW\" in the decision line and also in the meaning definition. The meaning definition should not contain the word REVIEW again. We wrote \"which means a person must look first\" without repeating REVIEW. Good.\n\nWe should ensure we meet \"State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\" So we need to state what it means. We did.\n\nWe should ensure we use plain English.\n\nWe should output final answer.\n\nWe must be careful about word count limit: at most 70 words. We are at 53, okay.\n\nWe should not add extra sentences beyond.\n\nWe should ensure we don't add \"soft attribute\" maybe okay.\n\nWe should ensure we don't add colours, fabrics, sizes, prices, care advice not in facts. We didn't.\n\nWe should ensure we don't change gate decision. We didn't.\n\nWe should produce final answer.\n\nPotential final answer: as drafted.\n\nWe should ensure no trailing forbidden words.\n\nWe should output exactly one paragraph.\n\nLet's produce final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 497,
+        "total_tokens": 2547,
+        "completion_tokens": 2050,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1959
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1959
+        }
+      }
+    }
+  },
+  "error": null
+}

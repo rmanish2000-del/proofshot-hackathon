@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-02-composite-v2",
+  "started_at": "2026-10-29T11:49:40.205Z",
+  "finished_at": "2026-10-29T11:49:56.546Z",
+  "latency_ms": 16341,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-6f8f19c054a5436fa10b022b62fff5b9",
+      "object": "chat.completion",
+      "created": 1793274581,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं का कुर्ता है। इसका मुख्य रंग पीच है।",
+            "reasoning_content": "We need to write product listing of 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short, plain Hindi in Devanagari script.\n\nWe have type: kurta (women's), main colour: peach. Length? Not given. Any detail stated? Only those two. So we must describe type, colour, length and any detail stated. But length not stated, so we cannot invent length. We should just describe type and colour.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nSo we need 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe need to write in Hindi Devanagari.\n\nExample: \"यह महिलाओं के लिए पीच रंग का कुर्ता है। यह रोज़मर्रा के पहनावे के लिए उपयुक्त है।\" But second sentence adds claim not in facts: \"रोज़मर्रा के पहनावे के लिए उपयुक्त है\" - that's adding claim not in facts. We must not add any claim not in facts.\n\nWe must use only facts given. So we cannot add extra details like suitable for daily wear, comfortable, etc. That would be adding claim not in facts.\n\nWe need to be careful: Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts.\n\nSo we can only say: It's women's kurta, main colour peach.\n\nWe need 2-3 full sentences. How to make 2-3 sentences with only those facts without adding extra claims? We need to rephrase same facts across sentences without adding new info.\n\nWe must not add length if not given. So we should not mention length.\n\nWe need to ensure we don't add any detail not stated. So we cannot say \"सुंदर\" ? Is that a claim? Probably \"सुंदर\" is subjective claim not in facts. Should avoid adjectives not in facts. Keep plain.\n\nWe should write something like:\n\n\"यह महिलाओं का कुर्ता है। इसका मुख्य रंग पीच है।\"\n\nThat's 2 sentences. Word count: Let's count words. \"यह(1) महिलाओं(2) का(3) कुर्ता(4) है।(5?) Actually है counts. इसका(1) मुख्य(2) रंग(3) पीच(4) है(5)।\" Total maybe ~9 words. Under 60 words. That's okay.\n\nBut does that satisfy \"describing the garment itself from the seller's description below: its type, colour, length and any detail stated.\" We have type and colour. Length not stated, so we omit.\n\nWe must ensure we don't add length. So don't mention length.\n\nWe must write in Hindi Devanagari script. Use plain Hindi.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We won't.\n\nWe must not use markdown, emoji, headings. Just plain text.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice.\n\nWe should not add \"आरामदायक\" etc.\n\nWe need to ensure we use only facts given. So second sentence \"इसका मुख्य रंग पीच है।\" That's fact.\n\nWe need to ensure we don't add extra claim like \"यह महिलाओं के लिए पीच रंग का कुर्ता है।\" That's okay.\n\nWe need 2-3 full sentences. So 2 sentences is okay.\n\nWe must ensure we don't accidentally add English words. Use Hindi Devanagari.\n\nWe should not write \"peach\" in English; write \"पीच\" in Hindi.\n\nWe should not add \"women's\" in English.\n\nWe must ensure we don't add \"लंबाई\" if not given.\n\nWe should produce final output in Hindi.\n\nPotential nuance: The instruction says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must be strict.\n\nWe should not add \"आकर्षक\" etc.\n\nWe should just state type and colour.\n\nWe need to ensure we don't add \"मुख्य रंग\" is okay because seller says main colour: peach. So \"मुख्य रंग पीच है\" is accurate.\n\nWe should not add \"हल्का पीच\" or \"गहरा पीच\" - just peach.\n\nWe should not add fabric like \"सूती\".\n\nWe should not add size.\n\nWe should not add price.\n\nWe should not add care advice.\n\nWe should not add any claim like \"स्टाइलिश\" \"ट्रेंडी\" \"पहनने में आसान\".\n\nSo minimal listing is best.\n\nWe need to ensure we write 2-3 full sentences. So we need at least 2 sentences. Let's do 2 sentences.\n\nExample final:\n\n\"यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।\"\n\nCheck word count: यह(1) महिलाओं(2) के(3) लिए(4) कुर्ता(5) है।(6) इसका(7) मुख्य(8) रंग(9) पीच(10) है।(11) Under 60.\n\nWe must ensure we don't add \"के लिए\" is okay? Type: kurta (women's) => women's kurta => \"महिलाओं का कुर्ता\" or \"महिलाओं के लिए कुर्ता\" both okay. That's not adding claim.\n\nWe should not add length.\n\nWe should ensure we don't add any detail not stated. \"महिलाओं के लिए\" is from type.\n\nWe should not add \"लंबा\" \"छोटा\".\n\nWe should produce final answer in Hindi Devanagari.\n\nWe must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. We won't.\n\nWe must not use markdown. So no bold, no bullet.\n\nWe should just output the two sentences.\n\nWe need to ensure we don't accidentally add English punctuation? Hindi punctuation \"।\" is okay. But we can use \"।\" or \".\" Both are okay, but Hindi typically uses \"।\". The instruction says write in Hindi Devanagari script. Using \"।\" is fine. Using \".\" is also okay but better to use \"।\".\n\nWe should ensure we don't add extra sentences beyond 3.\n\nWe should ensure at most 60 words. We are well under.\n\nWe should not add \"नमस्ते\" etc.\n\nWe should just output product listing.\n\nWe must be careful not to add \"यह उत्पाद\" - is that adding claim? \"उत्पाद\" is okay, but it's not in facts. Is that considered adding claim? Probably not, but to be safe, stick to garment description.\n\nWe should not add \"उपलब्ध है\" - that might be considered extra claim not in facts? The seller's description is type and colour. Saying \"उपलब्ध है\" might be considered extra but maybe okay. Safer to just describe garment.\n\nWe should not add \"खरीदें\" etc.\n\nWe should keep plain.\n\nWe should ensure we don't add \"सुंदर\" \"अच्छा\".\n\nWe should output exactly 2 sentences.\n\nWe must ensure we don't add \"लंबाई\" mention.\n\nWe should do:\n\n\"यह महिलाओं का कुर्ता है। इसका मुख्य रंग पीच है।\"\n\nThat's good.\n\nWe need to ensure we don't add \"मुख्य\" is okay because seller says main colour.\n\nWe should not add \"रंग\" extra? That's fine.\n\nWe should ensure we don't add any other colour.\n\nWe should not add fabric.\n\nWe should not add size.\n\nWe should not add price.\n\nWe should not add care advice.\n\nWe should not add any claim.\n\nWe should ensure we don't add \"आरामदायक\".\n\nWe should produce final answer.\n\nWe must ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We won't.\n\nWe must ensure we write short, plain Hindi in Devanagari script.\n\nWe should output only the listing. No extra explanation.\n\nWe should not add heading.\n\nWe should not add markdown.\n\nWe should just output the two sentences.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe should do that.\n\nWe need to consider if we need to mention length? The instruction says describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we should not mention length. So we just mention type and colour.\n\nWe should not invent length like \"घुटने तक\" etc.\n\nWe should be safe.\n\nWe should output final answer in Hindi.\n\nWe should ensure we don't add English words.\n\nWe should produce final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 331,
+        "total_tokens": 2311,
+        "completion_tokens": 1980,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1955
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1955
+        }
+      }
+    }
+  },
+  "error": null
+}

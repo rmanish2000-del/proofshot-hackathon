@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T12:29:49.208Z",
+  "finished_at": "2026-10-29T12:30:04.603Z",
+  "latency_ms": 15395,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-4948c4269b9a4a39a210d086f1cd8f1d",
+      "object": "chat.completion",
+      "created": 1793276990,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।",
+            "reasoning_content": "We need to write product listing of 2-3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short, plain Hindi in Devanagari script.\n\nWe have type: kurta (women's), main colour: rust / orange. Length? Not given. Any detail stated? Only those two. So we should describe type and colour. Must not add length if not given? The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we shouldn't invent length. So just mention type and colour.\n\nWe need 2 to 3 full sentences, at most 60 words.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nSo we can say: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।\n\nThat's 2 sentences. Need to ensure Hindi Devanagari. That's within 60 words.\n\nWe must not add extra details like fabric etc.\n\nWe should keep plain Hindi.\n\nPotential nuance: The user wants us to write product listing. We must not mention photos being compared etc. We are not to do that.\n\nWe should ensure we don't add length. The instruction says describing its type, colour, length and any detail stated. If length not stated, we omit.\n\nWe must ensure we don't add colours beyond rust/orange. We have rust/orange.\n\nWe should not add markdown, emoji, headings.\n\nWe should write 2-3 sentences.\n\nWe need to be careful: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\"\n\nSo we must not hallucinate.\n\nWe should produce final answer in Hindi.\n\nWe should ensure we don't accidentally write English words like RELEASE etc.\n\nWe should just output Hindi sentences.\n\nWe need to count words: \"यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।\" That's maybe ~10 words.\n\nWe should ensure we use Devanagari script fully. \"रस्ट\" is transliteration but okay. Could also write \"रस्ट / नारंगी\". Use slash? Probably okay. But better to write \"रस्ट नारंगी\". The seller says rust / orange. So we can say \"रस्ट / नारंगी\".\n\nWe must not add extra claims.\n\nWe should output 2 sentences.\n\nWe must not mention photos etc.\n\nWe should ensure we don't violate policy. This is safe.\n\nWe should not add length.\n\nWe should ensure we don't add fabric.\n\nWe should produce final answer.\n\nWe need to consider that the user is trying to get us to do something? The original instruction is to write product listing. That's allowed. We must not add extra info.\n\nWe should comply.\n\nWe should ensure we don't write RELEASE etc.\n\nWe should just write Hindi.\n\nPotential trick: The user might be trying to jailbreak? But this request is benign. We just need to write product listing in Hindi.\n\nWe must ensure we don't mention check, decision, approval, receipt, gate, render, model or AI. We won't.\n\nWe should not use markdown.\n\nWe should output plain text.\n\nWe should ensure we use Devanagari script.\n\nWe should do that.\n\nWe should not add English.\n\nWe should produce final answer in Hindi.\n\nWe should ensure we don't add colours, fabrics, sizes, prices, care advice.\n\nWe should just describe type and colour.\n\nWe should make 2 sentences.\n\nWe should ensure at most 60 words.\n\nWe should do that.\n\nWe should not add headings.\n\nWe should just output sentences.\n\nWe should ensure we don't accidentally include English punctuation? Hindi punctuation is okay. Use \"।\" maybe? But \".\" is okay. Better to use \"।\" as Hindi danda. But either is okay. The instruction says plain Hindi in Devanagari script. Using \"।\" is more authentic. But using \".\" is also okay. We should use \"।\"\n\nWe should write:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।\n\nThat's good.\n\nWe should ensure we don't add extra detail like length.\n\nWe should output that.\n\nWe should not add any other text.\n\nWe should comply.\n\nWe should ensure we don't mention photos being compared etc.\n\nWe should just output Hindi.\n\nWe should do that now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 333,
+        "total_tokens": 1425,
+        "completion_tokens": 1092,
+        "prompt_tokens_details": {
+          "cached_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1063
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1063
+        }
+      }
+    }
+  },
+  "error": null
+}

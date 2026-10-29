@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "061a73f1946d7504b3249c417daf9744b4aa3d1b68c3ea358b6c857af0d406f2",
+      "request_sha256": "d788877570e5068684773303a1be1d3be685973a8d4149c2286933964a5cabf8",
       "usage": {
-        "prompt_tokens": 376,
-        "completion_tokens": 2671
+        "prompt_tokens": 313,
+        "completion_tokens": 1321
       },
-      "cost_usd": 0.011822,
+      "cost_usd": 0.006006,
       "cost_estimated": true,
-      "text": "This is a women's kurta in rust orange. It is long and falls below the knee as photographed."
+      "text": "This is a women's kurta in rust orange. It is long, below the knee as photographed."
     },
     {
       "job_id": "ms2-kurta-01",
@@ -63,11 +63,19 @@
       "task": "listing_copy",
       "lang": "hi",
       "receipt_head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: rust / orange. Length: long, below the knee (as photographed). तस्वीरों से जाँचा गया और मेल खाता है: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture।"
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62c1cc33b4b0605cfb2c186e51aae25263b8676d30306c6bc9f6cab4cf999aab",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 1814
+      },
+      "cost_usd": 0.008142,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है। यह लंबा है और घुटने के नीचे तक आता है।"
     }
   ]
 }
