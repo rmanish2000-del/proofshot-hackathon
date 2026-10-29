@@ -76,59 +76,69 @@ export const DEMO_SHOTS: readonly Shot[] = [
       },
     ],
   },
-  { id: "S2", beat: 2, seconds: 6, frames: [{ name: "S02-upload-page", from: "jobs", path: "/", actions: [] }] },
+  { id: "S2", beat: 2, seconds: 5, frames: [{ name: "S02-upload-page", from: "jobs", path: "/", actions: [] }] },
   {
     id: "S3",
     beat: 2,
-    seconds: 8,
+    seconds: 7,
     frames: [{ name: "S03-plaid-photos", from: "jobs", path: judge("ms2-shirt-plaid"), actions: [loaded, { scrollTo: "#h-result" }] }],
   },
   {
     id: "S4",
     beat: 3,
-    seconds: 16,
-    frames: [{ name: "S04-plaid-release", from: "jobs", path: judge("ms2-shirt-plaid"), actions: [loaded, { scrollTo: "#h-gate" }] }],
+    seconds: 12,
+    frames: [{ name: "S04-smoke-release", from: "jobs", path: judge("ms2-shirt-plaid"), actions: [loaded, { scrollTo: "#h-gate" }] }],
   },
   {
     id: "S5",
     beat: 4,
     seconds: 14,
+    // The try-on image shows a synthetic person: only the gate and receipt sections, below it, are framed.
     frames: [
-      { name: "S05a-composite-photos", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-result" }] },
-      { name: "S05b-composite-review", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-gate" }] },
+      { name: "S05a-tryon-gate", from: "jobs", path: judge("live-kurta-01-tryon-m"), actions: [loaded, { scrollTo: "#h-gate" }] },
+      { name: "S05b-tryon-receipt", from: "jobs", path: judge("live-kurta-01-tryon-m"), actions: [loaded, { scrollTo: "#h-receipt" }] },
     ],
   },
   {
     id: "S6",
     beat: 5,
-    seconds: 14,
+    seconds: 12,
     frames: [
-      { name: "S06a-mismatch-photos", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
-      { name: "S06b-mismatch-refuse", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
+      { name: "S06a-composite-photos", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S06b-composite-review", from: "jobs", path: judge("live-shirt-plaid-composite-v2-r3"), actions: [loaded, { scrollTo: "#h-gate" }] },
     ],
   },
   {
     id: "S7",
     beat: 6,
-    seconds: 4,
-    frames: [{ name: "S07-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
+    seconds: 12,
+    frames: [
+      { name: "S07a-mismatch-photos", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-result" }] },
+      { name: "S07b-mismatch-refuse", from: "jobs", path: judge("live-shirt-plaid-mismatch"), actions: [loaded, { scrollTo: "#h-gate" }] },
+    ],
   },
   {
     id: "S8",
-    beat: 6,
-    seconds: 14,
-    frames: [
-      { name: "S08a-verify-valid", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: false } }] },
-      { name: "S08b-verify-tampered", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: true } }] },
-    ],
+    beat: 7,
+    seconds: 4,
+    frames: [{ name: "S08-receipt-byte", from: "page", path: TAMPERED_RECEIPT, actions: [], page: { kind: "bytes", show: "before" } }],
   },
   {
     id: "S9",
     beat: 7,
-    seconds: 8,
+    seconds: 12,
+    frames: [
+      { name: "S09a-verify-valid", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: false } }] },
+      { name: "S09b-verify-tampered", from: "disk", path: "web/verify.html", actions: [{ verify: { receipt: TAMPERED_RECEIPT, image: TAMPER_IMAGE, tamper: true } }] },
+    ],
+  },
+  {
+    id: "S10",
+    beat: 8,
+    seconds: 6,
     frames: [
       {
-        name: "S09-end",
+        name: "S10-end",
         from: "page",
         path: "docs/DEMO.md",
         actions: [],

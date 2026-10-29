@@ -105,16 +105,21 @@ Checked against: README "What each Meta model does" and "Limits",
 
 ## Demo script (90 s)
 
-Seven beats, nine shots, 90 s, in `docs/DEMO.md` (v4): the seller's phone
-photos of a plaid shirt; RELEASE (`ms2-shirt-plaid`, said on screen to be the
-owner's own photo, so it shows the check path, not accuracy); REVIEW
-(`live-shirt-plaid-composite-v2-r3`, the brand label below its confidence
-floor); REFUSE for the wrong garment (`live-shirt-plaid-mismatch`, a hard colour
-mismatch); then one byte of the receipt changed and the verify page says
-TAMPERED. Framed for "Build for Your World".
+Eight beats, ten shots, 90 s, in `docs/DEMO.md` (v5): the seller's phone
+photos of a plaid shirt; a pipeline smoke example (`ms2-shirt-plaid`, the
+owner's own photo as the candidate, RELEASE: it shows the pipeline runs, not
+accuracy); then the real proof, one committed AI try-on that shortened a long
+kurta (`live-kurta-01-tryon-m`): the verifier matched every attribute, and the
+measured fidelity check held it (REVIEW, the garment shrank in frame); REVIEW
+for a composite whose brand label is below its confidence floor
+(`live-shirt-plaid-composite-v2-r3`); REFUSE for the wrong garment
+(`live-shirt-plaid-mismatch`); then one byte of the receipt changed and the
+verify page says TAMPERED. The try-on image shows a synthetic person, so the
+video shows its receipt, not the image. Framed for "Build for Your World".
 
 Checked against `docs/DEMO.md` and `test/demo-capture.test.ts` (word caps,
-timecodes summing to 90 s, every job committed).
+timecodes summing to 90 s, every job committed, the try-on job held on
+fidelity with 9 of 9 verifier matches).
 
 ## What's next
 
