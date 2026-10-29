@@ -9,8 +9,7 @@
    labels open-source dependencies and public datasets.
 2. **The old repo `rmanish2000-del/proofshot` stays private.** It is only for
    coordination (the team board #23, issues, the autorun settings, the sync
-   script) and is the pre-existing core called as a hosted service. No new
-   product code goes there.
+   script). No product code goes there, and nothing in this repository calls it.
 3. **Every spec, issue, board row, review and report names its target repo
    explicitly**: `proofshot-hackathon` or `proofshot (coordination)`.
 4. **This repo has been public since 28 Oct 2026** (Manish made it public after
