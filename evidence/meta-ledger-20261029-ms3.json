@@ -1,0 +1,9 @@
+{
+  "note": "MS3 Meta batch, 29 Oct 2026 13:55-14:01 IST. Summary as printed by npm run ledger after the batch (amounts only). The raw ledger file lives outside the repo (%LOCALAPPDATA%\\ProofShot\\meta-ledger.json) and could not be read by this run, so its per-call entries are not copied here; every call's redacted log is in evidence/ (sam-2026-10-29T08-* and verifier-2026-10-29T08-*).",
+  "account": "meta (api.meta.ai credit)",
+  "after_ms3": { "calls": 59, "spent_usd": 0.354166, "batch_cap_usd": 80, "batch_left_usd": 79.645834, "reserve_usd": 70, "reserve_left_usd": 70 },
+  "before_ms3": { "calls": 9, "source": "MS2 (d6d1368); first MS3 job printed 0.078693 USD in 14 calls, which is MS2 plus that job's 5 calls" },
+  "ms3_jobs": 11,
+  "ms3_calls": 50,
+  "reserve_used": false
+}
