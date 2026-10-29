@@ -38,9 +38,9 @@ Checked against:
   than the garment, so I added a copy audit and fix pass.
 - Partner credits run under hard per-provider caps, and the reserve only opens
   with an explicit opt-in.
-- A large-photo verifier call failed on a stale network connection after the
-  job's local work; it now retries once, and the failed runs stay on record as
-  refusals.
+- A verifier call with large photos failed before any answer came back, a
+  suspected network failure. It is now retried once, and the two failed runs
+  stay on record as refusals.
 - With only four garments so far, calibration is a self-check rather than a
   true error rate.
 
