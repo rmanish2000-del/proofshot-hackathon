@@ -121,6 +121,33 @@ Checked against `docs/DEMO.md` and `test/demo-capture.test.ts` (word caps,
 timecodes summing to 90 s, every job committed, the try-on job held on
 fidelity with 9 of 9 verifier matches).
 
+## Built during the event and prior work
+
+Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
+27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
+IST. Every commit in this repository was made during the event. The code was
+written here from the specification; no code from before the event was copied
+in.
+
+**Prior work used:**
+
+- `docs/SPEC.md`: the written specification of ProofShot's attributes, gate
+  rules and receipt format, first written on 24 Oct 2026, before the event, and
+  carried over. The code here is rewritten from it, and every change made to it
+  during the event is marked *(event)*.
+- Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
+  private repository.
+
+Nothing else from before the event is used. No pre-existing ProofShot service
+is called: the demo and every committed receipt use only the code in this
+repository and the providers named under Built with (SAM 3.1 and Muse Spark 1.3 on
+`api.meta.ai`, Muse Spark Open on Baseten, muse-spark-open on Fireworks, Pruna
+on Replicate).
+
+Checked against: `git log --reverse` (first commit and the dates of all
+commits), the `provider` fields of every receipt in `data/jobs`, and every
+endpoint URL in `src/` and `scripts/`.
+
 ## What's next
 
 These are plans, not results:
