@@ -158,8 +158,12 @@ test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 an
   );
   assert.equal(
     voice.get(5),
-    "Then a different shirt. The verifier finds a hard colour mismatch and the gate says REFUSE. A wrong image cannot ship.",
+    "Then a different shirt. The verifier finds a hard colour mismatch and the gate says REFUSE, so this image is not released.",
   );
+  assert.equal(voice.get(7), "ProofShot. Every image ships with its receipt. The code is on GitHub.");
+  // DM7 review: no absolute promise, in the voiceover or on a card.
+  const cards = DEMO_SHOTS.flatMap((s) => s.frames.flatMap((f) => (f.page?.kind === "card" ? f.page.lines : [])));
+  for (const line of [...voice.values(), ...cards]) assert.ok(!/cannot ship/i.test(line), `no "cannot ship" in: ${line}`);
   for (const [beat, line] of voice) assert.ok(!line.includes("TBD") && !line.includes("["), `beat ${beat} voiceover has no TBD`);
   const narration = shotNarration(DEMO_SHOTS, voice);
   for (const s of DEMO_SHOTS) assert.ok(narration.get(s.id), `${s.id} has a cue`);
