@@ -18,7 +18,9 @@ them on a ghost mannequin, in deterministic code. The try-on path is an AI
 try-on (Pruna on Replicate). No Meta image generator is used anywhere, and
 Muse Image is refused at runtime. No committed run has released a generated
 on-model photo: all <!--f:tryon_total-->7<!--/f--> try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f-->
-REVIEW).
+REVIEW). The verifier alone would not have held them all: in the Muse Spark
+cross-check it passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> checks of those shortened try-ons; the measured
+fidelity check is what held every one.
 
 ## What each Meta model does
 
@@ -39,6 +41,9 @@ Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
 - **Verifier accuracy is not measured in general.** The Muse Spark cross-check
   (MS4) refused <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f-->
   same-garment runs, on these four garments only.
+- **The verifier misses length changes.** On its own it passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->
+  checks of try-ons that had shortened the garment; the gate held all of them
+  only because the fidelity check measured the garment shrinking in frame.
 - **Thresholds are provisional.** Calibration over the committed receipts finds
   <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them where the verifier gave no
   answer; that is a self-check on few garments, not an error rate.
@@ -193,8 +198,10 @@ signature or outside witness (`docs/SPEC.md` §3, threat model).
 
 ## Verify page
 
-`web/verify.html` is one self-contained file. Open it from disk. It works offline: a
-Content-Security-Policy of `default-src 'none'` blocks every request. Give it a
+`web/verify.html` is one self-contained file that makes no network request: a
+Content-Security-Policy of `default-src 'none'` blocks every request. It has
+been checked in a browser served over local HTTP; opening it straight from disk
+(`file://`) is not yet checked. Give it a
 `receipt.jsonl` and an image (or its sha256). It checks the chain with
 WebCrypto (`crypto.subtle`) and answers **VALID** (this image was released by
 this record), **NOT RELEASED** (rendered but not released, with the gate's
