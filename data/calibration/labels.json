@@ -67,6 +67,31 @@
       "changed": "length: Pruna still shortened the kurta with the margined full-length cut-out",
       "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 23:50)",
       "why": "Pruna try-on live-kurta-02-tryon-m on synthetic-02 (ace95ac)"
+    },
+    "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd": {
+      "shows": "shirt-plaid",
+      "by": "interactive Claude Code 29 Oct 2026",
+      "why": "byte-identical to data/garments/shirt-plaid/1-front.jpg (intake.json sha256): the owner photo standing in for a render"
+    },
+    "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e": {
+      "shows": "shirt-zebra",
+      "by": "interactive Claude Code 29 Oct 2026",
+      "why": "byte-identical to data/garments/shirt-zebra/1-front.jpg (intake.json sha256): the owner photo standing in for a render"
+    },
+    "875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c": {
+      "shows": "shirt-plaid",
+      "by": "interactive Claude Code 29 Oct 2026",
+      "why": "composite v2 (live-shirt-plaid-composite-v2): shirt-plaid own cut-out on the ghost mannequin; looked at, check pattern, colours, collar, buttons and pocket as photographed"
+    },
+    "4a72dd7d9378095124c01c6f823d0409404e32286da0fe0c9499a4ae0fe26331": {
+      "shows": "shirt-plaid",
+      "by": "interactive Claude Code 29 Oct 2026",
+      "why": "composite v2 (live-shirt-plaid-composite-v2-r2): shirt-plaid own cut-out on the ghost mannequin; same input and code as live-shirt-plaid-composite-v2 (looked at); this image itself not looked at, fidelity RELEASE delta_e 1.94"
+    },
+    "9a0f03bb56069929348545ca6035ce24ab46c80822f303b70e1f3c7c0d72139a": {
+      "shows": "shirt-plaid",
+      "by": "interactive Claude Code 29 Oct 2026",
+      "why": "composite v2 (live-shirt-plaid-composite-v2-r3): shirt-plaid own cut-out on the ghost mannequin; same input and code as live-shirt-plaid-composite-v2 (looked at); this image itself not looked at, fidelity RELEASE delta_e 1.94"
     }
   }
 }

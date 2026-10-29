@@ -1,0 +1,121 @@
+{
+  "provider": "meta",
+  "model": "muse-spark-1.3",
+  "url": "https://api.meta.ai/v1/responses",
+  "render_id": "kurta-02~875a9098ec9f#1",
+  "started_at": "2026-10-29T13:41:56.692Z",
+  "finished_at": "2026-10-29T13:42:12.095Z",
+  "latency_ms": 15403,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "Bearer [MODEL_API_KEY]"
+    },
+    "body": {
+      "model": "muse-spark-1.3",
+      "instructions": "You check garment fidelity. You see the seller's photos of one garment and one image to be published. Compare only the garment: colour, pattern, print, embroidery, neckline, sleeves, length, buttons, visible text. Ignore the model, pose, background and photo quality. Reply with exactly one JSON object that matches this schema and nothing else. A bbox is [x, y, w, h], each 0..1 of the image, or null when the attribute has no place in the image. If the garment is not clearly visible in an image, say so in the finding's note and give the verdict \"uncertain\" rather than guessing.\n\nSchema:\n{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\n    \"findings\"\n  ],\n  \"properties\": {\n    \"findings\": {\n      \"type\": \"array\",\n      \"minItems\": 9,\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"required\": [\n          \"attribute\",\n          \"verdict\",\n          \"confidence\",\n          \"note\",\n          \"evidence\"\n        ],\n        \"properties\": {\n          \"attribute\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"color\",\n              \"print_pattern\",\n              \"logo_text\",\n              \"collar\",\n              \"sleeve_length\",\n              \"hem\",\n              \"pocket_count\",\n              \"buttons\",\n              \"fabric_texture\"\n            ]\n          },\n          \"verdict\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"match\",\n              \"mismatch\",\n              \"uncertain\"\n            ]\n          },\n          \"confidence\": {\n            \"type\": \"number\",\n            \"minimum\": 0,\n            \"maximum\": 1\n          },\n          \"note\": {\n            \"type\": \"string\"\n          },\n          \"evidence\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"source_bbox\",\n              \"render_bbox\"\n            ],\n            \"properties\": {\n              \"source_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              },\n              \"render_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nReturn only JSON matching this schema, no prose.",
+      "input": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": "source 1: 1-front.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "input_image",
+              "image_url": "data:image/jpeg;base64,[219384 bytes, sha256 9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425, left out of the log]"
+            },
+            {
+              "type": "input_text",
+              "text": "source 2: 2-back.jpg (the seller's photo of the garment)"
+            },
+            {
+              "type": "input_image",
+              "image_url": "data:image/jpeg;base64,[268636 bytes, sha256 869eb3e4cea72edf01b35884b8c80a1b976d9a65502c91f994104b4e256b2183, left out of the log]"
+            },
+            {
+              "type": "input_text",
+              "text": "render: the image to be published"
+            },
+            {
+              "type": "input_image",
+              "image_url": "data:image/png;base64,[861000 bytes, sha256 875a9098ec9fb3d1e2e2b9f08eb6920bfa1d86f0e28bf40f115fe5a41d64370c, left out of the log]"
+            },
+            {
+              "type": "input_text",
+              "text": "Compare the garment in the render (the last image) with the garment in the seller's photos. One finding per attribute: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture. Return only JSON matching the schema, no prose."
+            }
+          ]
+        }
+      ],
+      "max_output_tokens": 8192,
+      "temperature": 0,
+      "stream": false
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "top_logprobs": 0,
+      "temperature": 0,
+      "top_p": 1,
+      "service_tier": "auto",
+      "model": "muse-spark-1.3",
+      "reasoning": {
+        "effort": "high"
+      },
+      "background": false,
+      "tools": [],
+      "tool_choice": "auto",
+      "truncation": "disabled",
+      "id": "resp_6ae34d323162a751d5334003",
+      "object": "response",
+      "status": "completed",
+      "created_at": 1793281330,
+      "completed_at": 1793281330,
+      "error": null,
+      "incomplete_details": null,
+      "output": [
+        {
+          "type": "reasoning",
+          "id": "rs_6ae34d323162a751d5334003:rs_4f50c1dd-b7e7-4a1c-86ec-afeef1baee85",
+          "summary": [],
+          "status": "completed"
+        },
+        {
+          "type": "message",
+          "id": "msg_b21662c1-fc23-408e-a464-a7ff450fe9c3",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "{\"findings\": [{\"attribute\": \"color\", \"verdict\": \"mismatch\", \"confidence\": 1.0, \"note\": \"Source is light beige/cream kurta; render is white with navy blue and mustard-yellow plaid. Completely different base color.\", \"evidence\": {\"source_bbox\": [0.09, 0.14, 0.83, 0.81], \"render_bbox\": [0.085, 0.32, 0.885, 0.39]}}, {\"attribute\": \"print_pattern\", \"verdict\": \"mismatch\", \"confidence\": 1.0, \"note\": \"Source is solid with gold embroidered motifs; render is large plaid check pattern.\", \"evidence\": {\"source_bbox\": [0.29, 0.24, 0.45, 0.22], \"render_bbox\": [0.38, 0.38, 0.4, 0.28]}}, {\"attribute\": \"logo_text\", \"verdict\": \"match\", \"confidence\": 0.9, \"note\": \"Neither garment shows legible visible text or logo on the exterior; render has only small illegible inner neck tag.\", \"evidence\": {\"source_bbox\": null, \"render_bbox\": null}}, {\"attribute\": \"collar\", \"verdict\": \"mismatch\", \"confidence\": 1.0, \"note\": \"Source has round scoop neckline with embroidered edge and no collar; render has pointed shirt collar.\", \"evidence\": {\"source_bbox\": [0.27, 0.14, 0.53, 0.15], \"render_bbox\": [0.52, 0.32, 0.16, 0.07]}}, {\"attribute\": \"sleeve_length\", \"verdict\": \"mismatch\", \"confidence\": 0.99, \"note\": \"Source has 3/4 sleeves ending below elbow; render has full long sleeves with cuffs.\", \"evidence\": {\"source_bbox\": [0.09, 0.16, 0.23, 0.3], \"render_bbox\": [0.085, 0.38, 0.33, 0.24]}}, {\"attribute\": \"hem\", \"verdict\": \"mismatch\", \"confidence\": 0.98, \"note\": \"Source is long kurta straight hem below knee; render is short shirt with curved shirttail hem.\", \"evidence\": {\"source_bbox\": [0.18, 0.87, 0.68, 0.08], \"render_bbox\": [0.375, 0.64, 0.41, 0.07]}}, {\"attribute\": \"pocket_count\", \"verdict\": \"mismatch\", \"confidence\": 0.85, \"note\": \"Source shows no pockets; render is a different shirt type with chest pocket area, count does not match zero.\", \"evidence\": {\"source_bbox\": [0.2, 0.4, 0.6, 0.4], \"render_bbox\": [0.4, 0.4, 0.35, 0.15]}}, {\"attribute\": \"buttons\", \"verdict\": \"mismatch\", \"confidence\": 1.0, \"note\": \"Source has no buttons; render has central front placket with white buttons.\", \"evidence\": {\"source_bbox\": null, \"render_bbox\": [0.55, 0.36, 0.04, 0.3]}}, {\"attribute\": \"fabric_texture\", \"verdict\": \"mismatch\", \"confidence\": 0.95, \"note\": \"Source is lightweight crinkled cotton with embroidery/sequin work; render is heavier smooth flannel-like check shirting with no embroidery.\", \"evidence\": {\"source_bbox\": [0.09, 0.14, 0.83, 0.81], \"render_bbox\": [0.085, 0.32, 0.885, 0.39]}}]}",
+              "annotations": [],
+              "logprobs": []
+            }
+          ],
+          "status": "completed"
+        }
+      ],
+      "instructions": "You check garment fidelity. You see the seller's photos of one garment and one image to be published. Compare only the garment: colour, pattern, print, embroidery, neckline, sleeves, length, buttons, visible text. Ignore the model, pose, background and photo quality. Reply with exactly one JSON object that matches this schema and nothing else. A bbox is [x, y, w, h], each 0..1 of the image, or null when the attribute has no place in the image. If the garment is not clearly visible in an image, say so in the finding's note and give the verdict \"uncertain\" rather than guessing.\n\nSchema:\n{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\n    \"findings\"\n  ],\n  \"properties\": {\n    \"findings\": {\n      \"type\": \"array\",\n      \"minItems\": 9,\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"required\": [\n          \"attribute\",\n          \"verdict\",\n          \"confidence\",\n          \"note\",\n          \"evidence\"\n        ],\n        \"properties\": {\n          \"attribute\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"color\",\n              \"print_pattern\",\n              \"logo_text\",\n              \"collar\",\n              \"sleeve_length\",\n              \"hem\",\n              \"pocket_count\",\n              \"buttons\",\n              \"fabric_texture\"\n            ]\n          },\n          \"verdict\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"match\",\n              \"mismatch\",\n              \"uncertain\"\n            ]\n          },\n          \"confidence\": {\n            \"type\": \"number\",\n            \"minimum\": 0,\n            \"maximum\": 1\n          },\n          \"note\": {\n            \"type\": \"string\"\n          },\n          \"evidence\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"source_bbox\",\n              \"render_bbox\"\n            ],\n            \"properties\": {\n              \"source_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              },\n              \"render_bbox\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"array\",\n                    \"items\": {\n                      \"type\": \"number\",\n                      \"minimum\": 0,\n                      \"maximum\": 1\n                    },\n                    \"minItems\": 4,\n                    \"maxItems\": 4\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nReturn only JSON matching this schema, no prose.",
+      "usage": {
+        "input_tokens": 6199,
+        "input_tokens_details": {
+          "cached_tokens": 3569
+        },
+        "output_tokens": 3135,
+        "output_tokens_details": {
+          "reasoning_tokens": 2263
+        },
+        "total_tokens": 9334
+      },
+      "parallel_tool_calls": true,
+      "store": true,
+      "max_output_tokens": 8192
+    }
+  },
+  "error": null,
+  "note": "the auth header is a placeholder; every image data URL is replaced by its byte count and sha256; the key's value is replaced wherever it appears"
+}
