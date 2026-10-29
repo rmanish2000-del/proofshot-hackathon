@@ -1,0 +1,73 @@
+{
+  "job_id": "live-kurta-02-tryon-2-reverify",
+  "records": [
+    {
+      "job_id": "live-kurta-02-tryon-2-reverify",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "61a649183a7c44bfd8035dc050f6cbba999c43177b79adf97aac3bf923eb8d9c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "3cc42b6a88a2396e0091d448319f17111ee5667e802092bb04c23836cec435c6",
+      "usage": {
+        "prompt_tokens": 520,
+        "completion_tokens": 4163
+      },
+      "cost_usd": 0.018343,
+      "cost_estimated": true,
+      "text": "Your image decision is REVIEW, which means a person must look first. Hem shows mismatch at 0.96. Colour, print, logo, collar, sleeve length, buttons, pocket count and fabric texture matched, but the garment shrank in frame with colour difference 15.479, hist 0.383, texture 0.672 and area 0.213."
+    },
+    {
+      "job_id": "live-kurta-02-tryon-2-reverify",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "61a649183a7c44bfd8035dc050f6cbba999c43177b79adf97aac3bf923eb8d9c",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Type: kurta (women's). Main colour: peach. Length: long, below the knee (as photographed). Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, pockets, buttons, fabric texture."
+    },
+    {
+      "job_id": "live-kurta-02-tryon-2-reverify",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "61a649183a7c44bfd8035dc050f6cbba999c43177b79adf97aac3bf923eb8d9c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "51d5a42c64ce112b849bbe64f72c79f3414d25717799b9f319a82e58f15dbf96",
+      "usage": {
+        "prompt_tokens": 554,
+        "completion_tokens": 5404
+      },
+      "cost_usd": 0.02366,
+      "cost_estimated": true,
+      "text": "आपकी कुर्ता छवि का निर्णय REVIEW है, मतलब प्रकाशन से पहले एक व्यक्ति जाँच करेगा। हेम में 0.96 पर अंतर मिला, कपड़ा फ्रेम में छोटा दिखा। रंग, प्रिंट, कॉलर, बटन मिलते हैं। डेल्टा ई 15.479, हिस्ट 0.383, टेक्सचर 0.672, एरिया 0.213 के कारण विश्वसनीयता जाँच विफल रही।"
+    },
+    {
+      "job_id": "live-kurta-02-tryon-2-reverify",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "61a649183a7c44bfd8035dc050f6cbba999c43177b79adf97aac3bf923eb8d9c",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "c4830614700ccaa890e53e90d990df681bcca01cba3f5de9059fae6f166df3dc",
+      "usage": {
+        "prompt_tokens": 405,
+        "completion_tokens": 3671
+      },
+      "cost_usd": 0.016108,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
+    }
+  ]
+}

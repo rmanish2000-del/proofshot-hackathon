@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "ms2-kurta-02",
+  "started_at": "2026-10-29T07:17:16.403Z",
+  "finished_at": "2026-10-29T07:17:54.367Z",
+  "latency_ms": 37964,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write the text in Hindi (Devanagari script).\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-47b52d001b604486a5216fce68cd93cb",
+      "object": "chat.completion",
+      "created": 1793258237,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "निर्णय RELEASE है इसका अर्थ है तस्वीर प्रकाशित की जा सकती है जाँच में रंग प्रिंट कॉलर आस्तीन हेम जेब बटन और कपड़े की बनावट सभी फोटो से मिले आपके बताए अनुसार पीच महिला कुर्ता लंबाई घुटने के नीचे सही है",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write text in Hindi (Devanagari script).\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Type kurta women's, main colour peach, print motif as in photos not recorded in words, collar and cuffs as in photos, buttons as in photos, anything render must not change: colour, print and neckline exactly as photographed, length long below knee as photographed\n\nWe must write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nWe need to include decision word RELEASE exactly. And explain what it means: RELEASE = the image can be published. So we need to say in Hindi that image can be published.\n\nWe must not include other decision words REVIEW or REFUSE anywhere. So avoid those words. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Since reasons is none, we don't need to worry.\n\nWe must write in Hindi Devanagari script. But we must include RELEASE in English capitals. That's allowed? The instruction says write text in Hindi (Devanagari script). But also need to include decision word in English capitals. So we will have mostly Hindi Devanagari plus the English word RELEASE.\n\nWe must be careful: Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we cannot add extra colours etc. We can mention facts given: type kurta women's, main colour peach, print as in photos, collar and cuffs as in photos, buttons as in photos, length long below knee as photographed. But we must not add new colours etc. We can mention peach? That's given. So we can say.\n\nWe need at most 70 words. Let's count Hindi words.\n\nWe need to explain check result. Verifier findings all match. So we can say all attributes matched.\n\nWe must use only facts given. So we should not invent.\n\nWe need to keep plain Hindi.\n\nWe must not add markdown, emoji, headings.\n\nWe need to ensure we don't accidentally include the words REVIEW or REFUSE. So avoid them.\n\nWe need to include RELEASE exactly once? At least once. Should not include other decision words.\n\nWe need to ensure we don't write \"RELEASE\" inside another word.\n\nWe need to write in Devanagari script. So Hindi words in Devanagari. The English word RELEASE is in Latin capitals, that's okay as exception.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we must not say fabric is cotton etc. Don't add.\n\nWe should produce maybe ~50 words.\n\nExample:\n\nआपकी जाँच का परिणाम RELEASE है इसका मतलब है तस्वीर प्रकाशित की जा सकती है सभी जाँच बिंदु मिले रंग प्रिंट कॉलर आस्तीन हेम जेब बटन कपड़े की बनावट सब फोटो जैसे हैं आपका दावा पीच रंग कुर्ता लंबाई घुटने के नीचे सही पाया गया\n\nBut need to count words. Let's craft properly.\n\nWe need to ensure we use only facts given. The seller's claims include Type: kurta (women's), Main colour: peach, Print or motif (what, where, size): as in the photos; not recorded in words, Collar and cuffs: as in the photos, Buttons: as in the photos, Anything the render must not change: colour, print and neckline exactly as photographed, Length: long, below the knee (as photographed)\n\nVerifier findings: color: match, print_pattern: match, logo_text: match, collar: match, sleeve_length: match, hem: match, pocket_count: match, buttons: match, fabric_texture: match\n\nWe can mention those matches.\n\nWe must not add colours beyond peach. So we can mention peach.\n\nWe must not add fabrics beyond what is given. Fabric_texture match but we don't know fabric type, so just say बनावट मिली.\n\nWe must not add sizes beyond long below knee.\n\nWe must keep plain Hindi.\n\nWe need to ensure we don't exceed 70 words. Let's aim for ~45 words.\n\nWe need to include decision word RELEASE and its meaning: image can be published.\n\nIn Hindi: इसका अर्थ है कि तस्वीर प्रकाशित की जा सकती है\n\nWe should include that.\n\nWe must not use English words other than RELEASE? Probably okay to use English word RELEASE only. But we should avoid other English words. Use Hindi.\n\nWe must ensure we don't accidentally write REVIEW or REFUSE. So avoid.\n\nWe need to ensure we don't write \"रिलीज़\" etc. Use RELEASE exactly.\n\nWe need to ensure we don't add markdown.\n\nWe should produce final answer in Hindi Devanagari.\n\nLet's draft:\n\nनिर्णय RELEASE है इसका अर्थ है तस्वीर प्रकाशित की जा सकती है जाँच में रंग प्रिंट कॉलर आस्तीन हेम जेब बटन और कपड़े की बनावट सभी फोटो से मिले आपके बताए अनुसार पीच कुर्ता लंबाई घुटने के नीचे सही है\n\nNow count words. Let's count:\n\nनिर्णय(1) RELEASE(2) है(3) इसका(4) अर्थ(5) है(6) तस्वीर(7) प्रकाशित(8) की(9) जा(10) सकती(11) है(12) जाँच(13) में(14) रंग(15) प्रिंट(16) कॉलर(17) आस्तीन(18) हेम(19) जेब(20) बटन(21) और(22) कपड़े(23) की(24) बनावट(25) सभी(26) फोटो(27) से(28) मिले(29) आपके(30) बताए(31) अनुसार(32) पीच(33) कुर्ता(34) लंबाई(35) घुटने(36) के(37) नीचे(38) सही(39) है(40)\n\n40 words, under 70. Good.\n\nWe used only facts given. We mentioned peach kurta, length below knee. We mentioned all verifier findings.\n\nWe didn't add colours, fabrics, sizes, prices, care advice beyond facts. We mentioned peach which is given. We mentioned length below knee which is given.\n\nWe didn't add fabric type, just बनावट.\n\nWe should ensure we didn't add claim not in facts. We said \"सही है\" which is okay as verifier says match.\n\nWe need to ensure we didn't add \"women's\" maybe we should include? Could add महिला कुर्ता. The seller claim is Type: kurta (women's). So we could say महिला कुर्ता. We said कुर्ता, but could add महिला. It's okay to include. But we already have 40 words, we could add महिला before कुर्ता. That would be one more word.\n\nLet's add महिला for accuracy.\n\nAlso need to ensure we use plain Hindi.\n\nWe must not add markdown.\n\nWe should output final answer.\n\nCheck instruction: \"Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must not add any colour other than peach. We didn't. We didn't add fabric type. We didn't add size. We didn't add price. Good.\n\n\"Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given.\" We kept RELEASE.\n\n\"No markdown, no emoji, no headings.\" We have none.\n\n\"Write the text in Hindi (Devanagari script).\" We did, except RELEASE in English. That's required.\n\nWe must ensure we don't accidentally include REVIEW or REFUSE. We didn't.\n\nWe should ensure we don't include English word \"match\" etc. We used Hindi.\n\nWe should ensure we don't include \"Verifier\" etc.\n\nWe should produce final answer with correct punctuation. Use Devanagari punctuation? Use normal.\n\nWe need to ensure we don't exceed 70 words. We are at 40-41 words.\n\nWe should deliver.\n\nPotential nuance: The instruction says \"State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\"\n\nSo we must state decision word and what it means. We did: RELEASE है इसका अर्थ है तस्वीर प्रकाशित की जा सकती है\n\nThat's correct.\n\nWe should ensure we don't write \"RELEASE = ...\" with equals sign? We explained meaning in Hindi, that's fine.\n\nWe must not write other decision words. We didn't.\n\nWe should output final answer.\n\nMake sure to not add extra English words like \"Decision:\" etc. Use Hindi.\n\nWe should ensure we don't accidentally include \"REVIEW\" or \"REFUSE\" in explanation of meaning. We explained only RELEASE meaning.\n\nWe should ensure we don't include \"RELEASE\" twice? It's okay to include once, but not other words. Including twice is okay but we have once.\n\nWe should ensure we don't include \"RELEASE\" inside Hindi transliteration.\n\nWe should output final answer as one paragraph.\n\nLet's produce final answer:\n\nनिर्णय RELEASE है इसका अर्थ है तस्वीर प्रकाशित की जा सकती है जाँच में रंग प्रिंट कॉलर आस्तीन हेम जेब बटन और कपड़े की बनावट सभी फोटो से मिले आपके बताए अनुसार पीच महिला कुर्ता लंबाई घुटने के नीचे सही है\n\nCount again with महिला added:\n\nनिर्णय(1) RELEASE(2) है(3) इसका(4) अर्थ(5) है(6) तस्वीर(7) प्रकाशित(8) की(9) जा(10) सकती(11) है(12) जाँच(13) में(14) रंग(15) प्रिंट(16) कॉलर(17) आस्तीन(18) हेम(19) जेब(20) बटन(21) और(22) कपड़े(23) की(24) बनावट(25) सभी(26) फोटो(27) से(28) मिले(29) आपके(30) बताए(31) अनुसार(32) पीच(33) महिला(34) कुर्ता(35) लंबाई(36) घुटने(37) के(38) नीचे(39) सही(40) है(41)\n\n41 words, under 70.\n\nWe should ensure we didn't add any disallowed claim. We said \"सही है\" which is supported by verifier findings match.\n\nWe should not add \"not recorded in words\" etc. Not needed.\n\nWe should deliver.\n\nWe must ensure we use Devanagari script for Hindi words. We did.\n\nWe should not add period? We can add period at end. That's okay. But ensure not to add markdown.\n\nWe should output final answer exactly as Hindi sentence.\n\nWe should not add extra explanation in English.\n\nWe should proceed to final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 489,
+        "total_tokens": 3017,
+        "completion_tokens": 2528,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2453
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2453
+        }
+      }
+    }
+  },
+  "error": null
+}

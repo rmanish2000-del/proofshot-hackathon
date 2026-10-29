@@ -1,0 +1,65 @@
+{
+  "job_id": "ms2-kurta-02",
+  "records": [
+    {
+      "job_id": "ms2-kurta-02",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "b13f2b47256010edf0d3ab2ff9bd105b048c556c9eefbf3e991fd571588f0d23",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Decision: RELEASE, the image can be published."
+    },
+    {
+      "job_id": "ms2-kurta-02",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "b13f2b47256010edf0d3ab2ff9bd105b048c556c9eefbf3e991fd571588f0d23",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Type: kurta (women's). Main colour: peach. Length: long, below the knee (as photographed). Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture."
+    },
+    {
+      "job_id": "ms2-kurta-02",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "b13f2b47256010edf0d3ab2ff9bd105b048c556c9eefbf3e991fd571588f0d23",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "f35ceabdef7770440d80258e25500e3335b3614ef98f8a2988f5ba76f542345f",
+      "usage": {
+        "prompt_tokens": 489,
+        "completion_tokens": 2528
+      },
+      "cost_usd": 0.011355,
+      "cost_estimated": true,
+      "text": "निर्णय RELEASE है इसका अर्थ है तस्वीर प्रकाशित की जा सकती है जाँच में रंग प्रिंट कॉलर आस्तीन हेम जेब बटन और कपड़े की बनावट सभी फोटो से मिले आपके बताए अनुसार पीच महिला कुर्ता लंबाई घुटने के नीचे सही है"
+    },
+    {
+      "job_id": "ms2-kurta-02",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "b13f2b47256010edf0d3ab2ff9bd105b048c556c9eefbf3e991fd571588f0d23",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b6504b8dff314ff09d8822daf0aa1f5dee597f4ddeeffb4b9c6db641f23d1dc2",
+      "usage": {
+        "prompt_tokens": 407,
+        "completion_tokens": 2071
+      },
+      "cost_usd": 0.009311,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। यह लंबा है और घुटने के नीचे तक आता है।"
+    }
+  ]
+}

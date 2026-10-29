@@ -1,0 +1,73 @@
+{
+  "job_id": "live-kurta-02-tryon-s02",
+  "records": [
+    {
+      "job_id": "live-kurta-02-tryon-s02",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "5363128373fd0189b72f6d3ae626efeb9def66814a3c86cda6d8cffa7d38ddb9",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "7b4a9d7b5ffd704ed4cf80c1a1ffb1ea5c9fbc2acfbef8ded2e4dbf582db00f1",
+      "usage": {
+        "prompt_tokens": 522,
+        "completion_tokens": 1573
+      },
+      "cost_usd": 0.007338,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE which means the image must not be published. The render failed fidelity checks as the garment shrank in frame and colour and texture scores were outside limits, and the hem did not match the photo."
+    },
+    {
+      "job_id": "live-kurta-02-tryon-s02",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "5363128373fd0189b72f6d3ae626efeb9def66814a3c86cda6d8cffa7d38ddb9",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e6f8ccadf531b0963361d3c75e3a9f019e088a3af86b00fa7f076c16f7b3c70c",
+      "usage": {
+        "prompt_tokens": 372,
+        "completion_tokens": 3015
+      },
+      "cost_usd": 0.013279,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in peach. The colour is as shown in the seller's photos."
+    },
+    {
+      "job_id": "live-kurta-02-tryon-s02",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "5363128373fd0189b72f6d3ae626efeb9def66814a3c86cda6d8cffa7d38ddb9",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "निर्णय: REFUSE, तस्वीर प्रकाशित नहीं की जानी चाहिए। कारण: fidelity REFUSE: delta_e 20.799 above 20; hist 0.561 above 0.350; texture 0.688 below 0.800; area 0.210 below 0.400: the garment shrank in frame; hem: mismatch at 0.92 on a soft attribute."
+    },
+    {
+      "job_id": "live-kurta-02-tryon-s02",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "5363128373fd0189b72f6d3ae626efeb9def66814a3c86cda6d8cffa7d38ddb9",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "c4830614700ccaa890e53e90d990df681bcca01cba3f5de9059fae6f166df3dc",
+      "usage": {
+        "prompt_tokens": 405,
+        "completion_tokens": 5817
+      },
+      "cost_usd": 0.025229,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। यह घुटने के नीचे तक लंबा है।"
+    }
+  ]
+}
