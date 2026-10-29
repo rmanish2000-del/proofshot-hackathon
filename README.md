@@ -58,8 +58,8 @@ npm run intake -- <folder>   # garment photos in: strips metadata, records both 
 npm run call:baseten         # one live Muse Spark Open call, logged to evidence/
 ```
 
-`npm run call:baseten` is the only command that uses the network, and it needs
-`BASETEN_API_KEY` set.
+Of these, `npm run call:baseten` is the only command that makes a live model
+API call, and it needs `BASETEN_API_KEY` set.
 
 ## Judge quickstart
 
