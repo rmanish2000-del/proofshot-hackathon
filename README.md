@@ -120,8 +120,9 @@ Demo frames (DEMO1, DEMO1b): `npm run demo:capture` starts its own local
 server on a free port, opens every `docs/DEMO.md` shot in headless Edge or
 Chrome (`PROOFSHOT_BROWSER` names another) from the committed receipts, and
 writes numbered PNG frames at 360 and 1280 px to the gitignored `out/demo/`.
-Title cards (S1, S11), the replay's terminal lines (S4) and the tampered byte
-(S5, S7) are plain pages it writes from committed files. `out/demo/shots.json`
+Title cards (S1, S9) and the receipt bytes around the byte the tamper step
+changes (S7) are plain pages it writes from committed files; S8 opens
+`web/verify.html` from disk with the receipt and then its one-byte copy. `out/demo/shots.json`
 gives each shot's seconds (under 115 s in total) and `out/demo/frames.txt` is
 an ffmpeg concat list of the 1280 px frames; the video is assembled from it
 elsewhere, the script runs no ffmpeg. `out/demo/captions.srt` (DEMO1c) is the
