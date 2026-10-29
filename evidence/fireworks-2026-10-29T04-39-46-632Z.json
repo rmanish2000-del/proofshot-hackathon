@@ -1,0 +1,45 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T04:39:46.632Z",
+  "finished_at": "2026-10-29T04:39:47.060Z",
+  "latency_ms": 428,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of at most 60 words from the seller's claims below. Where a claim says \"as in the photos\", say nothing about that detail.\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 400,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 404,
+    "body": {
+      "error": {
+        "message": "Model not found, inaccessible, and/or not deployed",
+        "param": "model",
+        "code": "NOT_FOUND",
+        "type": "error"
+      },
+      "request_id": "chatcmpl-e9c360ef1d9e46cd8b7285928601f2e7"
+    }
+  },
+  "error": "HTTP 404"
+}

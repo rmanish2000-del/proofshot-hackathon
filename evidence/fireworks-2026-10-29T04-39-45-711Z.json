@@ -1,0 +1,45 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T04:39:45.711Z",
+  "finished_at": "2026-10-29T04:39:46.584Z",
+  "latency_ms": 873,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 400,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 404,
+    "body": {
+      "error": {
+        "message": "Model not found, inaccessible, and/or not deployed",
+        "param": "model",
+        "code": "NOT_FOUND",
+        "type": "error"
+      },
+      "request_id": "chatcmpl-5ddb5bb71a02437fbf8b4e200f59c5cf"
+    }
+  },
+  "error": "HTTP 404"
+}

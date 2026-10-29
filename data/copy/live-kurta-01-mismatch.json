@@ -1,0 +1,25 @@
+{
+  "job_id": "live-kurta-01-mismatch",
+  "records": [
+    {
+      "job_id": "live-kurta-01-mismatch",
+      "task": "receipt_summary",
+      "receipt_head": "3604695a9f6202aa548ffd9fc507730df1685edaca5ff741ab27386f112e62a2",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Decision: REFUSE, the image must not be published. Reasons: color: mismatch at 0.99 on a hard attribute; print_pattern: mismatch at 0.98 on a hard attribute; sleeve_length: mismatch at 0.88 on a soft attribute; hem: mismatch at 0.96 on a soft attribute; fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg."
+    },
+    {
+      "job_id": "live-kurta-01-mismatch",
+      "task": "listing_copy",
+      "receipt_head": "3604695a9f6202aa548ffd9fc507730df1685edaca5ff741ab27386f112e62a2",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Type: kurta (women's). Main colour: rust / orange."
+    }
+  ]
+}

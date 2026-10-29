@@ -1,0 +1,25 @@
+{
+  "job_id": "live-kurta-02-composite-v2",
+  "records": [
+    {
+      "job_id": "live-kurta-02-composite-v2",
+      "task": "receipt_summary",
+      "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Decision: REVIEW, a person must look before it is published. Reasons: CompositeQualityReview: over- or under-exposed photo."
+    },
+    {
+      "job_id": "live-kurta-02-composite-v2",
+      "task": "listing_copy",
+      "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Type: kurta (women's). Main colour: peach."
+    }
+  ]
+}
