@@ -109,7 +109,18 @@ export function checkFidelity(input: FidelityInput, t: Thresholds): FidelityResu
     texture: matchingBits(s.dhash, r.dhash) / 64,
     area: r.share / s.share,
   };
+  // Key order decision, metrics, reasons: receipts serialise this object as is.
+  const { decision, reasons } = judgeMetrics(metrics, t);
+  return { decision, metrics, reasons };
+}
 
+/**
+ * The thresholds applied to measured values: every breach as a reason, REFUSE
+ * if any refuse limit is crossed, else REVIEW if any review limit is, else
+ * RELEASE. A value that is not a finite number is REVIEW. checkFidelity uses
+ * it, and so does the calibration scorer on values recorded in a receipt.
+ */
+export function judgeMetrics(metrics: Metrics, t: Thresholds): { decision: Decision; reasons: string[] } {
   const refuse: string[] = [];
   const review: string[] = [];
   const f = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(3));
@@ -127,7 +138,7 @@ export function checkFidelity(input: FidelityInput, t: Thresholds): FidelityResu
   else if (area > t.area.review_above) review.push(`area ${f(area)} above ${f(t.area.review_above)}: the garment grew in frame`);
 
   const decision: Decision = refuse.length > 0 ? "REFUSE" : review.length > 0 ? "REVIEW" : "RELEASE";
-  return { decision, metrics, reasons: [...refuse, ...review] };
+  return { decision, reasons: [...refuse, ...review] };
 }
 
 function isRgb(img: unknown): img is RgbImage {
