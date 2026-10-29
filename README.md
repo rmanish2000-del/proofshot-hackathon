@@ -4,7 +4,9 @@ ProofShot checks a candidate listing image against the seller's own phone
 photos of the garment (three or four of them) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
 code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
-from those structured findings and a measured fidelity check. Every step is
+from those structured findings and a fidelity check, measured on the garment
+masks when measurable; missing measurements fail closed and are reported on
+the receipt (the gate never releases an unmeasured image). Every step is
 written into a hash-chained receipt that anyone can check offline in
 `web/verify.html`: a single page that makes no network request and needs no
 account (checked in a browser over local HTTP; opening it from disk is not yet
