@@ -725,6 +725,678 @@
       "prediction_id": "fireworks:ms2-kurta-02:listing_copy:hi",
       "cost_usd": 0.009311,
       "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:20:49.571Z",
+      "prediction_id": "fireworks:fixture-shirt-01:listing_copy",
+      "cost_usd": 0.010673,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:21:13.123Z",
+      "prediction_id": "fireworks:fixture-shirt-01:listing_copy:hi",
+      "cost_usd": 0.012894,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:21:27.774Z",
+      "prediction_id": "fireworks:kurta-01:receipt_summary",
+      "cost_usd": 0.008067,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:22:09.180Z",
+      "prediction_id": "fireworks:kurta-01:listing_copy",
+      "cost_usd": 0.016897,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:22:48.442Z",
+      "prediction_id": "fireworks:kurta-01:listing_copy:hi",
+      "cost_usd": 0.015748,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:23:14.486Z",
+      "prediction_id": "fireworks:kurta-02:listing_copy",
+      "cost_usd": 0.01032,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:25:57.275Z",
+      "prediction_id": "fireworks:kurta-02:listing_copy:hi",
+      "cost_usd": 0.070091,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:26:16.184Z",
+      "prediction_id": "fireworks:live-kurta-01:listing_copy",
+      "cost_usd": 0.007311,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:26:28.937Z",
+      "prediction_id": "fireworks:live-kurta-01:listing_copy:hi",
+      "cost_usd": 0.00561,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:26:47.409Z",
+      "prediction_id": "fireworks:live-kurta-01-2:listing_copy",
+      "cost_usd": 0.008034,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:27:01.635Z",
+      "prediction_id": "fireworks:live-kurta-01-2:listing_copy:hi",
+      "cost_usd": 0.006222,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:29:51.291Z",
+      "prediction_id": "fireworks:live-kurta-01-composite:listing_copy",
+      "cost_usd": 0.070007,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:30:05.901Z",
+      "prediction_id": "fireworks:live-kurta-01-composite:listing_copy:hi",
+      "cost_usd": 0.006222,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:36:37.276Z",
+      "prediction_id": "fireworks:live-kurta-01-mismatch:listing_copy",
+      "cost_usd": 0.012275,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:36:59.686Z",
+      "prediction_id": "fireworks:live-kurta-01-mismatch:listing_copy:hi",
+      "cost_usd": 0.007569,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:37:27.722Z",
+      "prediction_id": "fireworks:live-kurta-01-sam:receipt_summary",
+      "cost_usd": 0.011018,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:37:52.802Z",
+      "prediction_id": "fireworks:live-kurta-01-sam:listing_copy",
+      "cost_usd": 0.01069,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:38:06.332Z",
+      "prediction_id": "fireworks:live-kurta-01-sam:listing_copy:hi",
+      "cost_usd": 0.006222,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:38:32.706Z",
+      "prediction_id": "fireworks:live-kurta-01-sam-2:listing_copy",
+      "cost_usd": 0.011268,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:38:49.402Z",
+      "prediction_id": "fireworks:live-kurta-01-sam-2:listing_copy:hi",
+      "cost_usd": 0.006073,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:39:09.997Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon:listing_copy",
+      "cost_usd": 0.007825,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:39:51.274Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon:receipt_summary:hi",
+      "cost_usd": 0.017597,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:40:39.171Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon:receipt_summary:hi:attempt2",
+      "cost_usd": 0.021962,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:41:00.534Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon:listing_copy:hi",
+      "cost_usd": 0.007653,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:41:16.111Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-m:receipt_summary",
+      "cost_usd": 0.008705,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:41:30.509Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-m:listing_copy",
+      "cost_usd": 0.007769,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:41:44.769Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-m:listing_copy:hi",
+      "cost_usd": 0.006642,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:41:57.277Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-reverify:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:42:32.223Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-reverify:receipt_summary:hi",
+      "cost_usd": 0.016752,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:42:54.341Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-reverify:listing_copy:hi",
+      "cost_usd": 0.008843,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:43:08.301Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-s02:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:43:31.745Z",
+      "prediction_id": "fireworks:live-kurta-01-tryon-s02:listing_copy:hi",
+      "cost_usd": 0.009285,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:43:49.461Z",
+      "prediction_id": "fireworks:live-kurta-02-composite:listing_copy",
+      "cost_usd": 0.009506,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:43:59.649Z",
+      "prediction_id": "fireworks:live-kurta-02-composite:listing_copy:hi",
+      "cost_usd": 0.005293,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:46:38.595Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary",
+      "cost_usd": 0.070151,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:48:53.629Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:listing_copy",
+      "cost_usd": 0.070005,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:49:17.100Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary:hi",
+      "cost_usd": 0.009146,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:49:40.143Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary:hi:attempt2",
+      "cost_usd": 0.010613,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:49:56.546Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:listing_copy:hi",
+      "cost_usd": 0.008829,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:50:15.500Z",
+      "prediction_id": "fireworks:live-kurta-02-sam:listing_copy",
+      "cost_usd": 0.009306,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:50:35.149Z",
+      "prediction_id": "fireworks:live-kurta-02-sam:listing_copy:hi",
+      "cost_usd": 0.00837,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:50:55.458Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon:listing_copy",
+      "cost_usd": 0.008154,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:51:13.639Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon:listing_copy:hi",
+      "cost_usd": 0.00837,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:51:38.097Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-2:receipt_summary",
+      "cost_usd": 0.010943,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:52:03.288Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-2:listing_copy",
+      "cost_usd": 0.010801,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:52:14.348Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-2:listing_copy:hi",
+      "cost_usd": 0.005203,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:53:46.383Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-2-reverify:listing_copy",
+      "cost_usd": 0.039693,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:54:01.755Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-2-reverify:listing_copy:hi",
+      "cost_usd": 0.006788,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:54:18.074Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-m:listing_copy",
+      "cost_usd": 0.006628,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:54:29.486Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-m:listing_copy:hi",
+      "cost_usd": 0.005203,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:54:50.984Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-s02:listing_copy",
+      "cost_usd": 0.008982,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:55:33.097Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-s02:receipt_summary:hi",
+      "cost_usd": 0.017615,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:55:46.344Z",
+      "prediction_id": "fireworks:live-kurta-02-tryon-s02:listing_copy:hi",
+      "cost_usd": 0.006117,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:56:01.040Z",
+      "prediction_id": "fireworks:ms2-kurta-01:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:56:19.964Z",
+      "prediction_id": "fireworks:ms2-kurta-01:listing_copy:hi",
+      "cost_usd": 0.008142,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:58:44.747Z",
+      "prediction_id": "fireworks:ms2-kurta-02:receipt_summary",
+      "cost_usd": 0.070172,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:59:09.148Z",
+      "prediction_id": "fireworks:ms2-kurta-02:listing_copy",
+      "cost_usd": 0.009688,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T11:59:39.927Z",
+      "prediction_id": "fireworks:ms2-kurta-02:listing_copy:hi",
+      "cost_usd": 0.011395,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:00:06.097Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite:receipt_summary",
+      "cost_usd": 0.011435,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:00:21.423Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:00:48.111Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite:receipt_summary:hi",
+      "cost_usd": 0.012179,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:01:01.358Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite:listing_copy:hi",
+      "cost_usd": 0.006463,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:01:23.837Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite-r2:receipt_summary",
+      "cost_usd": 0.00957,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:01:38.254Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite-r2:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:01:59.366Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite-r2:receipt_summary:hi",
+      "cost_usd": 0.010156,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:02:19.401Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-composite-r2:listing_copy:hi",
+      "cost_usd": 0.008996,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:05:01.368Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-mismatch:receipt_summary",
+      "cost_usd": 0.070291,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:05:18.319Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-mismatch:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:05:53.150Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-mismatch:receipt_summary:hi",
+      "cost_usd": 0.015912,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:06:15.353Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-mismatch:listing_copy:hi",
+      "cost_usd": 0.008996,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:06:46.869Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon:receipt_summary",
+      "cost_usd": 0.016826,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:06:59.928Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon:listing_copy",
+      "cost_usd": 0.006006,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:08:26.903Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon:receipt_summary:hi",
+      "cost_usd": 0.040864,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:08:44.449Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon:listing_copy:hi",
+      "cost_usd": 0.007874,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:11:07.845Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-m:receipt_summary",
+      "cost_usd": 0.070211,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:11:29.503Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-m:listing_copy",
+      "cost_usd": 0.009865,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:12:12.101Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-m:receipt_summary:hi",
+      "cost_usd": 0.018076,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:12:33.138Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-m:listing_copy:hi",
+      "cost_usd": 0.009001,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:12:56.315Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-s02:receipt_summary",
+      "cost_usd": 0.010779,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:13:21.808Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-s02:listing_copy",
+      "cost_usd": 0.010651,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:13:59.423Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-s02:receipt_summary:hi",
+      "cost_usd": 0.015594,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:14:20.682Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-s02:listing_copy:hi",
+      "cost_usd": 0.008996,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:14:37.628Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-composite:receipt_summary",
+      "cost_usd": 0.009822,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:14:56.857Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-composite:listing_copy",
+      "cost_usd": 0.006913,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:16:04.050Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-composite:receipt_summary:hi",
+      "cost_usd": 0.025934,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:16:24.504Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-composite:listing_copy:hi",
+      "cost_usd": 0.009143,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:17:09.680Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon:receipt_summary",
+      "cost_usd": 0.02072,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:17:27.899Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon:listing_copy",
+      "cost_usd": 0.007206,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:18:14.354Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon:receipt_summary:hi",
+      "cost_usd": 0.021884,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:18:26.753Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon:listing_copy:hi",
+      "cost_usd": 0.005203,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:18:48.344Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-2:receipt_summary",
+      "cost_usd": 0.009334,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:19:06.320Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-2:listing_copy",
+      "cost_usd": 0.007724,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:19:39.684Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-2:receipt_summary:hi",
+      "cost_usd": 0.015526,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:19:50.960Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-2:listing_copy:hi",
+      "cost_usd": 0.005203,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:20:22.870Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-m:receipt_summary",
+      "cost_usd": 0.015422,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:20:41.713Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-m:listing_copy",
+      "cost_usd": 0.007733,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:21:36.577Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-m:receipt_summary:hi",
+      "cost_usd": 0.023914,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:21:58.996Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-m:listing_copy:hi",
+      "cost_usd": 0.008288,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:22:40.030Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-s02:receipt_summary",
+      "cost_usd": 0.018708,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:22:57.524Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-s02:listing_copy",
+      "cost_usd": 0.007733,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:23:20.515Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-s02:receipt_summary:hi",
+      "cost_usd": 0.010837,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:23:33.689Z",
+      "prediction_id": "fireworks:ms3-live-kurta-02-tryon-s02:listing_copy:hi",
+      "cost_usd": 0.005203,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:26:53.153Z",
+      "prediction_id": "fireworks:kurta-02:listing_copy:hi",
+      "cost_usd": 0.070091,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:27:08.739Z",
+      "prediction_id": "fireworks:live-kurta-01-composite:listing_copy",
+      "cost_usd": 0.005705,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:29:48.741Z",
+      "prediction_id": "fireworks:live-kurta-01-composite-r2:listing_copy",
+      "cost_usd": 0.070007,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:30:04.603Z",
+      "prediction_id": "fireworks:live-kurta-01-composite-r2:listing_copy:hi",
+      "cost_usd": 0.005057,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:30:37.458Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary",
+      "cost_usd": 0.013154,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:30:54.888Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:listing_copy",
+      "cost_usd": 0.008154,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:31:26.138Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary:hi",
+      "cost_usd": 0.012933,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:31:50.708Z",
+      "prediction_id": "fireworks:live-kurta-02-composite-v2:receipt_summary:hi:attempt2",
+      "cost_usd": 0.010171,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:32:17.761Z",
+      "prediction_id": "fireworks:ms2-kurta-02:receipt_summary",
+      "cost_usd": 0.012721,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T12:37:40.320Z",
+      "prediction_id": "fireworks:ms3-live-kurta-01-tryon-m:receipt_summary",
+      "cost_usd": 0.070211,
+      "estimated": true
     }
   ]
 }

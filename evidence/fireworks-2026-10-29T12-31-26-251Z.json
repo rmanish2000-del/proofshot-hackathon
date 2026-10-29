@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-02-composite-v2",
+  "started_at": "2026-10-29T12:31:26.251Z",
+  "finished_at": "2026-10-29T12:31:50.708Z",
+  "latency_ms": 24457,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. The seller's description says what the garment is; it is not a check result. Write the text in Hindi (Devanagari script).\n\nDecision: REVIEW\nReasons:\n- CompositeQualityReview: over- or under-exposed photo\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- The seller asked that these stay as photographed: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-559270a2c1824e488dd9540e9db586c4",
+      "object": "chat.completion",
+      "created": 1793277087,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपकी जाँच का परिणाम REVIEW है, इसका मतलब है कि प्रकाशन से पहले एक व्यक्ति को देखना होगा। फोटो में रोशनी बहुत अधिक या बहुत कम है। सत्यापन में कपड़े के विवरण की तुलना नहीं हो सकी। विक्रेता का विवरण कि यह पीच रंग का महिला कुर्ता है और रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही रहे, जाँच का परिणाम नहीं है।",
+            "reasoning_content": "We need to write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nReasoning strength 1.\n\nWe need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = image can be published, REVIEW = a person must look first, REFUSE = image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say garment details could not be compared, and do not say that any detail matched, did not match or was kept. Seller's description says what garment is; it is not a check result. Write text in Hindi (Devanagari script).\n\nDecision: REVIEW\nReasons:\n- CompositeQualityReview: over- or under-exposed photo\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- The seller asked that these stay as photographed: colour, print and neckline exactly as photographed\n\nWe need to produce Hindi text, at most 70 words. Must include decision word REVIEW exactly once, in capitals. Must not include RELEASE or REFUSE anywhere. Must not include REVIEW elsewhere? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REVIEW once. Must not include RELEASE or REFUSE. Also must not include REVIEW a second time. So only one occurrence of REVIEW.\n\nWe need to explain what REVIEW means: a person must look first. In Hindi.\n\nWe need to handle reason: CompositeQualityReview: over- or under-exposed photo. But we cannot use word REVIEW again. So we need to describe reason in plain words instead. So we should say photo is over- or under-exposed. But we must not use the word REVIEW. The reason name contains REVIEW, but we should not write that word. Just describe: फोटो बहुत ज्यादा या बहुत कम रोशनी वाली है.\n\nWe must say garment details could not be compared, because no verifier findings were recorded. Do not say any detail matched, did not match or was kept.\n\nSeller's description says what garment is; it is not a check result. So we need to mention seller's claims: Type: kurta (women's), Main colour: peach, The seller asked that these stay as photographed: colour, print and neckline exactly as photographed. But we must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. We can mention the seller's claims as given. But we must be careful: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. So we can mention peach colour as seller's claim. That's allowed because it's in facts. But we must not add other colours.\n\nWe need to write in Hindi Devanagari script. But decision word REVIEW must be in English capitals. So the text will be mostly Hindi, with one English word REVIEW.\n\nWe must not use markdown, emoji, headings.\n\nWe need at most 70 words. Let's count words. Hindi words count? Probably split by spaces. Need to keep under 70 words.\n\nWe need to state decision word exactly as given and what it means.\n\nWe need to say garment details could not be compared.\n\nWe need to mention seller's description is not a check result.\n\nWe need to describe reason in plain words instead of using the forbidden words.\n\nWe must ensure we don't accidentally include the words RELEASE, REVIEW, REFUSE elsewhere. So we must not write \"REVIEW\" in the reason. Also must not write RELEASE or REFUSE anywhere. So be careful not to include those English words.\n\nWe need to write in Hindi Devanagari. So we must not write English words except REVIEW.\n\nWe need to ensure we don't accidentally write \"RELEASE\" etc in Hindi transliteration? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. So we must not write those strings. So we must not write them even in Hindi? Probably just English capitals. But to be safe, don't write those words at all except the one decision word.\n\nWe need to produce maybe ~50 words.\n\nExample structure:\n\nआपकी जाँच का परिणाम REVIEW है, इसका मतलब है कि प्रकाशन से पहले एक व्यक्ति को देखना होगा। फोटो में रोशनी बहुत अधिक या बहुत कम है। सत्यापन में कपड़े के विवरण की तुलना नहीं हो सकी। विक्रेता का विवरण कि यह पीच रंग का महिला कुर्ता है और रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही रहे, जाँच का परिणाम नहीं है।\n\nCheck word count: Let's count.\n\nआपकी(1) जाँच(2) का(3) परिणाम(4) REVIEW(5) है,(6) इसका(7) मतलब(8) है(9) कि(10) प्रकाशन(11) से(12) पहले(13) एक(14) व्यक्ति(15) को(16) देखना(17) होगा।(18) फोटो(19) में(20) रोशनी(21) बहुत(22) अधिक(23) या(24) बहुत(25) कम(26) है।(27) सत्यापन(28) में(29) कपड़े(30) के(31) विवरण(32) की(33) तुलना(34) नहीं(35) हो(36) सकी।(37) विक्रेता(38) का(39) विवरण(40) कि(41) यह(42) पीच(43) रंग(44) का(45) महिला(46) कुर्ता(47) है(48) और(49) रंग,(50) प्रिंट(51) और(52) गले(53) का(54) डिज़ाइन(55) फोटो(56) जैसा(57) ही(58) रहे,(59) जाँच(60) का(61) परिणाम(62) नहीं(63) है।(64)\n\nThat's 64 words, under 70. Good.\n\nWe need to ensure we didn't add colours, fabrics, sizes, prices, care advice or any claim not in facts. We mentioned peach colour, which is in seller's claims. That's allowed. We mentioned kurta women's, that's allowed. We mentioned colour, print and neckline exactly as photographed - we said रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही रहे - that's accurate.\n\nWe said garment details could not be compared - we said सत्यापन में कपड़े के विवरण की तुलना नहीं हो सकी। That's correct for no verifier findings.\n\nWe described reason: फोटो में रोशनी बहुत अधिक या बहुत कम है। That's over- or under-exposed photo.\n\nWe stated decision word REVIEW and what it means: a person must look first. We said प्रकाशन से पहले एक व्यक्ति को देखना होगा। That's correct.\n\nWe must ensure we didn't say any detail matched, did not match or was kept. We didn't.\n\nWe must ensure we didn't add colours, fabrics, sizes, prices, care advice. We didn't add extra.\n\nWe must ensure we use only facts given. We didn't add extra facts.\n\nWe must ensure we write in Hindi Devanagari script. We did, except REVIEW.\n\nWe must ensure no markdown, no emoji, no headings. We have plain text.\n\nWe must ensure we keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. We have REVIEW.\n\nWe must ensure we don't change or soften gate decision. We kept it.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice or any claim not in facts. We didn't.\n\nWe must ensure we do not say that any detail matched, did not match or was kept. We didn't.\n\nWe must ensure seller's description says what garment is; it is not a check result. We said that.\n\nWe should output final answer.\n\nPotential pitfalls: The word \"प्रकाशन\" might be okay. Need to ensure we don't exceed 70 words. We are at 64, okay.\n\nWe must ensure we don't accidentally include the word \"REVIEW\" twice. We have it once. Good.\n\nWe must ensure we don't include \"RELEASE\" or \"REFUSE\" anywhere. We didn't.\n\nWe must ensure we don't include markdown. No.\n\nWe should deliver final answer in Hindi.\n\nWe should double-check instruction: \"No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept.\" We did.\n\n\"The seller's description says what the garment is; it is not a check result.\" We did.\n\nWe need to ensure we use plain Hindi.\n\nWe should output exactly the paragraph.\n\nWe must ensure we don't add extra English words like \"CompositeQualityReview\". We didn't.\n\nWe should ensure we don't add \"peach\" in English? We wrote पीच, which is Hindi transliteration. That's okay, but we could also write peach in Hindi. The seller's claim main colour peach, we wrote पीच रंग. That's okay. It's not adding new colour.\n\nWe should ensure we don't add fabric etc.\n\nWe should ensure we don't use markdown bullet points.\n\nWe should ensure we keep at most 70 words. We are good.\n\nWe should output final answer.\n\nPotential improvement: Ensure we mention that seller asked that these stay as photographed: colour, print and neckline exactly as photographed. We did.\n\nWe should ensure we don't accidentally say \"kept\" or \"matched\". We didn't.\n\nWe should ensure we use Devanagari script for all Hindi words. We did.\n\nWe should ensure we don't use English punctuation that might be considered markdown? No.\n\nWe should deliver.\n\nWe must ensure we don't add extra sentences that add claims.\n\nWe should output final answer as one paragraph.\n\nWe must ensure we don't add \"70 words\" etc.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 449,
+        "total_tokens": 2710,
+        "completion_tokens": 2261,
+        "prompt_tokens_details": {
+          "cached_tokens": 448
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2157
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2157
+        }
+      }
+    }
+  },
+  "error": null
+}

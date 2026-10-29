@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "fixture-shirt-01",
+  "started_at": "2026-10-29T11:20:22.850Z",
+  "finished_at": "2026-10-29T11:20:49.571Z",
+  "latency_ms": 26721,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\nThis job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). Say so plainly in one sentence that contains the English word \"fixture\".\n\nSeller's description:\n- Description: indigo cotton shirt, white placket, spread collar"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-5915c6af6d164d0aa1c4f76ef0fc8c9a",
+      "object": "chat.completion",
+      "created": 1793272824,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is an indigo cotton shirt with a white placket and spread collar. This is fixture data with synthetic images and no garment was photographed, not a live listing.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nThis job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). Say so plainly in one sentence that contains the English word \"fixture\".\n\nSeller's description:\n- Description: indigo cotton shirt, white placket, spread collar\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nThis job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). Say so plainly in one sentence that contains the English word \"fixture\".\n\nWe need to include a sentence that contains the English word \"fixture\". And also describe garment.\n\nWe need 2 to 3 full sentences total. One of them must be the fixture sentence. So total sentences 2-3. Must contain word \"fixture\". Must describe garment: type, colour, length and any detail stated. Seller description: indigo cotton shirt, white placket, spread collar. So type: shirt, colour: indigo, length? Not given length. So we shouldn't invent length. But instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we don't mention length. We must not add.\n\nWe need to ensure we don't add colours, fabrics, sizes, prices, care advice or any claim not in facts. So only indigo, cotton, white placket, spread collar, shirt.\n\nWe need to say plainly in one sentence that contains English word \"fixture\" that this job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). So we need a sentence containing \"fixture\". Example: \"This is fixture data and not a live listing.\" That contains fixture.\n\nWe need 2 to 3 full sentences, at most 60 words. So we can do 2 sentences: one describing garment, one fixture sentence. Or 3 sentences: two describing garment + one fixture.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So avoid those words.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice.\n\nWe need to write short, plain English for Indian clothing seller.\n\nWe must not use markdown, emoji, headings.\n\nWe need to ensure we don't exceed 60 words.\n\nExample: \"This is an indigo cotton shirt with a white placket and spread collar. This listing is fixture data and not a real product.\" That's 2 sentences, contains fixture. Word count: This(1) is2 an3 indigo4 cotton5 shirt6 with7 a8 white9 placket10 and11 spread12 collar13. This14 listing15 is16 fixture17 data18 and19 not20 a21 real22 product23. That's 23 words, under 60.\n\nBut need to ensure we say plainly in one sentence that contains English word \"fixture\" that this job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). So we need to convey that it's fixture data, not live listing, synthetic images, no garment was photographed. The instruction: Say so plainly in one sentence that contains the English word \"fixture\". So we need to say that. Could be: \"This is fixture data with synthetic images and no garment was photographed, not a live listing.\" That contains fixture.\n\nWe need to be careful: The user wants us to write product listing describing garment. But also wants us to say it's fixture data. So we must include that.\n\nWe must not mention photos being compared, a check, etc. So avoid those.\n\nWe should produce 2-3 sentences.\n\nPotential final output: \"Indigo cotton shirt with white placket and spread collar. This is fixture data with synthetic images and no garment was photographed, not a live listing.\"\n\nCheck word count: Indigo1 cotton2 shirt3 with4 white5 placket6 and7 spread8 collar9. This10 is11 fixture12 data13 with14 synthetic15 images16 and17 no18 garment19 was20 photographed,21 not22 a23 live24 listing25. That's 25 words, 2 sentences, under 60.\n\nWe must ensure we don't add extra claims. \"Indigo cotton shirt with white placket and spread collar.\" That's accurate. We didn't add length because not given. That's okay.\n\nWe need to ensure we use plain English.\n\nWe must not add colours, fabrics beyond given. We used indigo, cotton, white - all given.\n\nWe should not add sizes, prices, care advice.\n\nWe must not change or soften gate decision. There's no gate decision mentioned here? But we must not mention gate.\n\nWe must not use markdown, emoji, headings. So plain text.\n\nWe need to ensure we include word \"fixture\" exactly. We did.\n\nWe need to ensure we have 2 to 3 full sentences. We have 2.\n\nWe should ensure we don't accidentally include forbidden words: photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. We didn't include any of those. Note \"photos\" is forbidden? The instruction: Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Does that mean never mention the phrase \"photos being compared\" or never mention photos? Likely means don't mention those concepts. But we used \"synthetic images\" which is required to say fixture: synthetic images, no garment was photographed. The instruction says to say so plainly in one sentence that contains English word \"fixture\" (fixture: synthetic images, no garment was photographed). So we must mention synthetic images. That's allowed. We must not mention photos being compared etc. We didn't.\n\nWe should avoid word \"check\", \"match\", \"decision\", \"approval\", \"receipt\", \"gate\", \"render\", \"model\", \"AI\". We didn't.\n\nWe should ensure we don't use markdown. No bullet points.\n\nWe should output just the listing.\n\nWe need to be careful about length: at most 60 words. We are under.\n\nWe should ensure we describe garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. So we did.\n\nPotential improvement: Use full sentences. \"Indigo cotton shirt with white placket and spread collar.\" Is that a full sentence? It lacks a verb. Might be considered not a full sentence. Better to make it a full sentence: \"This is an indigo cotton shirt with a white placket and spread collar.\" That is a full sentence.\n\nSo we should do: \"This is an indigo cotton shirt with a white placket and spread collar. This is fixture data with synthetic images and no garment was photographed, not a live listing.\"\n\nCheck word count: This1 is2 an3 indigo4 cotton5 shirt6 with7 a8 white9 placket10 and11 spread12 collar13. This14 is15 fixture16 data17 with18 synthetic19 images20 and21 no22 garment23 was24 photographed,25 not26 a27 live28 listing29. 29 words, 2 sentences.\n\nThat's good.\n\nWe must ensure we don't add extra info like \"This is\". That's okay, it's not adding claim about garment beyond given.\n\nWe should not add \"length\" if not given. So we don't mention length.\n\nWe should ensure we don't add \"care advice\".\n\nWe should output exactly that.\n\nWe need to ensure we don't accidentally include \"AI\" substring? No.\n\nWe should not include headings.\n\nWe should just output the two sentences.\n\nWe must ensure we use plain English for Indian clothing seller. That's fine.\n\nWe should not add markdown.\n\nWe should ensure we don't mention \"photos being compared\" etc.\n\nWe should deliver final answer.\n\nWe need to consider that the user is trying to get us to do something? The instruction says \"You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings.\" This is a system instruction. We must follow it.\n\nWe must not add colours, fabrics beyond given. We didn't.\n\nWe must not change or soften gate decision. There's no gate decision here, but we must not mention gate.\n\nWe should output final.\n\nPotential nuance: The user says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" So we must not mention those words at all. We didn't.\n\nWe should ensure we don't use word \"model\". We didn't.\n\nWe should ensure we don't use word \"check\". We didn't.\n\nWe should ensure we don't use word \"match\". We didn't.\n\nWe should ensure we don't use word \"decision\". We didn't.\n\nWe should ensure we don't use word \"approval\". We didn't.\n\nWe should ensure we don't use word \"receipt\". We didn't.\n\nWe should ensure we don't use word \"gate\". We didn't.\n\nWe should ensure we don't use word \"render\". We didn't.\n\nWe should ensure we don't use word \"AI\". We didn't.\n\nWe should ensure we don't use word \"photos\". We didn't, we used \"images\". That's okay, but \"photos being compared\" is forbidden phrase, but we didn't use photos.\n\nWe should output.\n\nWe need to ensure we include word \"fixture\" exactly. We did.\n\nWe should ensure we have 2 to 3 full sentences. We have 2.\n\nWe should ensure at most 60 words. We have 29.\n\nWe should ensure we describe garment itself. We did.\n\nWe should ensure we use nothing else. We didn't add extra details.\n\nWe should ensure we say plainly in one sentence that contains English word \"fixture\" that this job is fixture data, not a live listing (fixture: synthetic images, no garment was photographed). We did: \"This is fixture data with synthetic images and no garment was photographed, not a live listing.\"\n\nThat satisfies.\n\nWe should output that.\n\nWe must not add extra sentences beyond 3. We have 2, good.\n\nWe should not add any extra explanation.\n\nWe should just output the listing.\n\nWe should ensure we don't add markdown like **.\n\nWe should output plain text.\n\nWe should ensure we don't add emoji.\n\nWe should ensure we don't add headings.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 334,
+        "total_tokens": 2747,
+        "completion_tokens": 2413,
+        "prompt_tokens_details": {
+          "cached_tokens": 192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2369
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2369
+        }
+      }
+    }
+  },
+  "error": null
+}

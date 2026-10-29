@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "5d9810548c80b68ff12f01fe02bed0bf914c4a657e19c805449f3f15268714c4",
+      "request_sha256": "2e442ec6df7f2bccbebe5d82e020cde164544eef958675c6067a7f8c40df831b",
       "usage": {
-        "prompt_tokens": 309,
-        "completion_tokens": 4306
+        "prompt_tokens": 334,
+        "completion_tokens": 2413
       },
-      "cost_usd": 0.018687,
+      "cost_usd": 0.010673,
       "cost_estimated": true,
-      "text": "Seller describes this as a shirt with spread collar. The check found collar, sleeve length, hem, pockets, buttons, print, logo or text and fabric texture matching, but photos are synthetic and no garment was photographed."
+      "text": "This is an indigo cotton shirt with a white placket and spread collar. This is fixture data with synthetic images and no garment was photographed, not a live listing."
     },
     {
       "job_id": "fixture-shirt-01",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "e6bb86100072e9564173badd82722d8315168a574bc6787546c1aaa8243c876c",
+      "request_sha256": "57700aafd3a05c25cbd4da6daac4b4831616fa32d019cfe7f99fecb9cdbdf6f6",
       "usage": {
-        "prompt_tokens": 342,
-        "completion_tokens": 6391
+        "prompt_tokens": 367,
+        "completion_tokens": 2926
       },
-      "cost_usd": 0.027589,
+      "cost_usd": 0.012894,
       "cost_estimated": true,
-      "text": "यह कॉटन शर्ट है। इसमें स्प्रेड कॉलर है।"
+      "text": "यह इंडिगो कॉटन शर्ट है जिसमें सफेद प्लैकेट और स्प्रेड कॉलर है। यह fixture डेटा है, यह लाइव लिस्टिंग नहीं है और इसमें काल्पनिक चित्र हैं, कोई परिधान फोटो नहीं लिया गया।"
     }
   ]
 }

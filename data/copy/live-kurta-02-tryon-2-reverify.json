@@ -25,11 +25,19 @@
       "task": "listing_copy",
       "lang": "en",
       "receipt_head": "61a649183a7c44bfd8035dc050f6cbba999c43177b79adf97aac3bf923eb8d9c",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Type: kurta (women's). Main colour: peach. Length: long, below the knee (as photographed). Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, pockets, buttons, fabric texture."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e85e7313c770c2902a2d2457fd0981c8022fa6232bcd5b741088d09b897fcd36",
+      "usage": {
+        "prompt_tokens": 311,
+        "completion_tokens": 9248
+      },
+      "cost_usd": 0.039693,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in peach. It is long, below the knee as photographed."
     },
     {
       "job_id": "live-kurta-02-tryon-2-reverify",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "c4830614700ccaa890e53e90d990df681bcca01cba3f5de9059fae6f166df3dc",
+      "request_sha256": "042d48f6908faf2abd2ebc668757f3517abbfa2318eb8962d7374865cfa5a07b",
       "usage": {
-        "prompt_tokens": 405,
-        "completion_tokens": 3671
+        "prompt_tokens": 344,
+        "completion_tokens": 1496
       },
-      "cost_usd": 0.016108,
+      "cost_usd": 0.006788,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
+      "text": "यह महिलाओं के लिए पीच रंग का कुर्ता है। यह लंबा कुर्ता है और इसकी लंबाई घुटने के नीचे तक है।"
     }
   ]
 }

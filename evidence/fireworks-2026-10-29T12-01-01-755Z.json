@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "ms3-live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T12:01:01.755Z",
+  "finished_at": "2026-10-29T12:01:23.837Z",
+  "latency_ms": 22082,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result.\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)\n- The seller asked that these stay as photographed: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-dffb55b2f1974f7da3b035331f6e860e",
+      "object": "chat.completion",
+      "created": 1793275263,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is RELEASE which means the image can be published. All verifier checks matched for colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture. No reasons for concern were found.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Type kurta women's, Main colour rust/orange, Length long below knee, seller asked that these stay as photographed: colour, print and neckline exactly as photographed\n\nWe must write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to state decision word exactly as given (RELEASE) and what it means: RELEASE = the image can be published\n\nWe must write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Since reasons none, no issue. But we must ensure we don't write REVIEW or REFUSE anywhere. So we must not include those words. We need to explain RELEASE means image can be published. We must not write the other two words. So we should only write RELEASE.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. But we can mention seller's claims? The seller's description says what garment is; it is not a check result. So we should not present seller's claims as check result. We can mention them? Probably we should not add extra claims. Use only facts given. We can mention verifier findings: color match, print_pattern match, etc. But we must be careful not to add colours, fabrics, sizes, prices, care advice. The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we cannot invent colours. But we can state that colour matched? The verifier findings say color: match. That's a fact. So we can say colour matched. But we should not say rust/orange? That is seller's claim. Is that allowed? The seller's claims are facts given, but we should not present them as check result. We can mention them as seller's description? The instruction says seller's description says what garment is; it is not a check result. So we must not confuse.\n\nWe need to write at most 70 words. Plain English.\n\nWe need to include decision word RELEASE in capitals.\n\nWe must not write REVIEW or REFUSE anywhere. So we must avoid those strings. That includes not writing the definitions for those. The prompt says: State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. But also says Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nThis is contradictory: It says state what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. But also says write that one decision word in capitals and no other ... anywhere. So we should only state the meaning for the given decision, not all three. So for RELEASE, we say RELEASE means the image can be published. We must not mention REVIEW or REFUSE at all.\n\nWe must ensure we don't accidentally write the word \"review\" in lowercase? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Probably case-insensitive? It says write that one decision word in capitals and no other ... anywhere. So we must not write the other two words in any case. So avoid writing \"review\" or \"refuse\" entirely.\n\nWe need to keep under 70 words.\n\nWe should mention verifier findings: all attributes matched. That explains why RELEASE.\n\nWe must not add colours, fabrics, sizes, prices, care advice. So we should not say \"rust / orange\" ? But that is in seller's claims. Is mentioning it considered adding colours? The instruction says Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can use facts given, which include seller's claims about colour. But we should be careful: we should not add new colours. Mentioning seller's claimed colour might be okay, but is it necessary? The seller asked that these stay as photographed: colour, print and neckline exactly as photographed. We could mention that those were checked and matched.\n\nBut we must not add care advice.\n\nWe need to write short plain English for Indian clothing seller.\n\nExample: \"Decision is RELEASE which means the image can be published. All checks matched including colour, print, neckline, sleeve length, hem, pockets, buttons and fabric texture. No issues found.\"\n\nWe need to count words. Let's draft ~50 words.\n\nWe must ensure we don't write REVIEW or REFUSE. Our draft doesn't.\n\nWe must not use markdown, emoji, headings.\n\nWe must not change or soften gate decision.\n\nWe must ensure we state decision word exactly as given (RELEASE) in capitals.\n\nWe should not add extra claims like \"long below knee\" maybe not needed. But we could mention length? The seller's claims include length long below knee. But verifier findings don't include length? Actually verifier findings include hem, sleeve_length, etc. But not length explicitly. Should we mention length? Probably not needed. Keep simple.\n\nWe must ensure we don't exceed 70 words. Let's count.\n\nDraft: \"Decision is RELEASE which means the image can be published. All verifier checks matched for colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture. No reasons for concern were found.\"\n\nCount words:\n\nDecision(1) is2 RELEASE3 which4 means5 the6 image7 can8 be9 published10. All11 verifier12 checks13 matched14 for15 colour,16 print17 pattern,18 logo19 text,20 collar,21 sleeve22 length,23 hem,24 pocket25 count,26 buttons27 and28 fabric29 texture30. No31 reasons32 for33 concern34 were35 found36.\n\n36 words, under 70. Good.\n\nWe must ensure we didn't add colours, fabrics, sizes, prices, care advice. We mentioned fabric texture but that's in verifier findings, so allowed. We didn't add specific fabric type. We didn't add colour value like rust/orange. We just said colour matched. That's okay.\n\nWe should not mention seller's claims as check result. Our draft doesn't.\n\nWe must ensure we don't use markdown. No bullet points.\n\nWe should ensure plain English.\n\nWe must not include REVIEW or REFUSE. We didn't.\n\nWe should ensure we state decision word exactly as given and what it means. We did: RELEASE which means the image can be published.\n\nWe should ensure we don't accidentally include the word \"review\" inside \"verifier\"? No, verifier contains \"verifier\" not \"review\". That's fine.\n\nWe must ensure we don't write \"RELEASE, REVIEW or REFUSE\" list. We didn't.\n\nWe should output final answer.\n\nPotential nuance: The instruction says \"The seller's description says what the garment is; it is not a check result.\" So we must not present seller's claims as verification. Our draft doesn't.\n\nWe should ensure we don't add \"kurta (women's)\" etc. That's seller's description, not needed.\n\nWe should keep under 70 words.\n\nWe should not add headings.\n\nWe should ensure we use plain English for Indian clothing seller.\n\nWe should not add care advice.\n\nWe should ensure we don't add prices.\n\nWe should ensure we don't add sizes.\n\nWe should ensure we don't add colours beyond \"colour\". We didn't add rust/orange.\n\nWe should ensure we don't add fabric details beyond \"fabric texture\". That's okay.\n\nWe should ensure we don't soften gate decision. We said RELEASE means image can be published, which is correct.\n\nWe should ensure we don't add extra claims like \"exactly as photographed\" maybe we could mention seller asked that these stay as photographed: colour, print and neckline exactly as photographed. But we already said those matched. That's okay.\n\nWe should ensure we don't use markdown like bold.\n\nWe should output final answer as plain text.\n\nWe must ensure we don't exceed 70 words. Our draft is 36 words, good.\n\nWe should ensure we don't accidentally include the word \"review\" in \"reviewer\"? No.\n\nWe should ensure we don't include \"refuse\" substring? No.\n\nWe should ensure we don't include \"RELEASE\" more than once? It's allowed to include it once, but we have it once. Could we include it twice? The instruction says write that one decision word in capitals and no other ... anywhere. It doesn't forbid repeating the same decision word, but probably we should only write it once to be safe. Our draft has it once.\n\nWe should ensure we don't write \"REVIEW\" or \"REFUSE\" even in lowercase. We didn't.\n\nWe should ensure we don't write \"release\" in lowercase elsewhere. We have RELEASE in capitals once.\n\nWe should ensure we don't add extra punctuation that might be considered markdown. No.\n\nWe should output final answer.\n\nWe should consider if we need to mention \"Reasons: none\" -> No reasons for concern were found. That's accurate.\n\nWe should ensure we don't add \"none\" as reason containing RELEASE etc. No.\n\nWe should ensure we don't add \"gate decision\" phrase? Not needed.\n\nWe should ensure we use plain English.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 434,
+        "total_tokens": 2558,
+        "completion_tokens": 2124,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2068
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2068
+        }
+      }
+    }
+  },
+  "error": null
+}

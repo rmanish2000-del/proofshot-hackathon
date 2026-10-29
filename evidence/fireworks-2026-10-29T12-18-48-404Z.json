@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms3-live-kurta-02-tryon-2",
+  "started_at": "2026-10-29T12:18:48.404Z",
+  "finished_at": "2026-10-29T12:19:06.320Z",
+  "latency_ms": 17916,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-bc0507347cf04f4a8b62e516bacdcb3a",
+      "object": "chat.completion",
+      "created": 1793276329,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta in peach. Its length is long, below the knee.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n- Length: long, below the knee (as photographed)\n\nWe need to produce 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe should just describe: This is a women's kurta in peach, long length below the knee.\n\nWe must ensure not to add extra details like fabric, etc.\n\nWe need to be careful: \"as photographed\" maybe we should include? The length: long, below the knee (as photographed). We can say long, below the knee.\n\nWe need 2 to 3 full sentences. At most 60 words.\n\nExample: \"This women's kurta comes in peach. It is long, falling below the knee as shown.\"\n\nThat's 2 sentences, maybe 14 words. That's within limit.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe should not add \"as shown\" maybe that's okay? But \"as photographed\" is part of facts. Could include.\n\nWe must ensure we don't violate instruction: Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nSo we should not say \"comfortable\" or \"elegant\" etc? That would be adding claim not in facts. So keep plain.\n\nWe should just state type, colour, length.\n\nWe need to ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. So avoid those words.\n\nWe should not use markdown, emoji, headings.\n\nWe should write short plain English.\n\nWe need to ensure we don't add extra detail like \"perfect for occasions\".\n\nWe should produce final answer: 2-3 sentences.\n\nPotential answer: \"This is a women's kurta in peach. It is long, with length below the knee.\"\n\nThat's 2 sentences, 14 words.\n\nCheck word count: This(1) is2 a3 women's4 kurta5 in6 peach7. It8 is9 long,10 with11 length12 below13 the14 knee15. That's 15 words, under 60.\n\nWe need to ensure we include \"as photographed\" maybe? The seller description says Length: long, below the knee (as photographed). We could include that parenthetical. But we can just say long, below the knee.\n\nWe must not add anything else.\n\nWe should ensure we don't accidentally add \"main colour\" phrase? Just say colour peach.\n\nWe should not mention \"seller's description\" etc.\n\nWe should produce final output plain.\n\nWe must not change or soften gate decision. There's no gate decision mentioned here? But instruction says do not change or soften gate decision. Probably generic instruction.\n\nWe should just output the product listing.\n\nWe need to ensure we don't use markdown. So no bullet points, no bold.\n\nWe should ensure we use plain English.\n\nWe should not add \"Type: kurta\" etc.\n\nWe should produce 2-3 full sentences.\n\nWe should ensure we don't exceed 60 words.\n\nWe should not mention photos being compared etc. So avoid word \"photo\" maybe? The instruction says never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Does that mean we cannot mention the word \"photo\" at all? Probably we should avoid mentioning photos. The seller description says \"as photographed\" - but we might want to avoid saying \"as photographed\" because that mentions photos? However the instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" That is a bit ambiguous. It says never mention photos being compared. Does that mean we cannot mention photos at all? Safer to not mention photo. But the seller description includes \"(as photographed)\" - we could omit that part and just say below the knee. That would still be accurate and not add extra.\n\nThe instruction: \"Write a product listing ... describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\"\n\nSo we should not mention photos being compared. But we can still describe length as below the knee. We don't need to say as photographed.\n\nWe should ensure we don't accidentally include word \"photo\".\n\nWe should produce final answer.\n\nWe need to consider that the user wants us to write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe should not add \"beautiful\" etc.\n\nWe should just output 2-3 sentences.\n\nWe should ensure we don't add markdown.\n\nWe should output something like:\n\nThis women's kurta is in peach. It is long, falling below the knee.\n\nThat's good.\n\nWe need to ensure we don't add extra claim like \"falling\" maybe is okay? It's describing length. \"falling below the knee\" is equivalent to length below the knee. That's okay.\n\nWe should not add \"as shown\" etc.\n\nWe should keep it simple.\n\nWe should ensure we don't use heading.\n\nWe should just output the sentences.\n\nWe should not add any preamble like \"Here is the listing:\" That would be extra words but not part of listing? The instruction says write a product listing of 2 to 3 full sentences. So we should just output the listing itself, not extra explanation.\n\nWe should not add \"Product listing:\" heading.\n\nWe should just output the sentences.\n\nWe should ensure we don't exceed 60 words.\n\nWe should ensure we use correct grammar.\n\nWe should ensure we don't mention \"gate\" etc.\n\nWe should produce final answer.\n\nWe should also consider that the system says \"You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings.\"\n\nWe must follow that.\n\nWe should not add any extra claim like \"stylish\" etc.\n\nWe should produce final answer with 2 sentences.\n\nWe should ensure we don't accidentally add \"long, below the knee (as photographed)\" with parentheses maybe okay but includes photographed word. Better to avoid.\n\nWe should just say: This is a women's kurta in peach. Its length is long, below the knee.\n\nThat's 2 sentences.\n\nWord count: This1 is2 a3 women's4 kurta5 in6 peach7. Its8 length9 is10 long,11 below12 the13 knee14. That's 14 words.\n\nWe should output that.\n\nWe need to ensure we don't add any other text.\n\nWe should not add period after? We need full sentences.\n\nWe should output exactly that.\n\nWe should ensure we don't use markdown like bullet points.\n\nWe should output plain text.\n\nWe should not add extra newline heading.\n\nWe should just output the two sentences.\n\nWe should ensure we don't mention \"seller's description\".\n\nWe should do that.\n\nWe should also consider that the user might be testing if we add extra info. We must not.\n\nWe should produce final answer.\n\nWe should ensure we don't use \"AI\" etc.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 311,
+        "total_tokens": 2037,
+        "completion_tokens": 1726,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1698
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1698
+        }
+      }
+    }
+  },
+  "error": null
+}

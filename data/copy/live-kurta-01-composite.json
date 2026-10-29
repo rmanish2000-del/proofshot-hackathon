@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "7e288b5235e43464ea338a1aa8c30caaead772dbb3afc77b7d327dfa025070c1",
+      "request_sha256": "2351bca12454fe852cfd38195b4957351bbed61c3feb2f6f7435eea35612a329",
       "usage": {
-        "prompt_tokens": 344,
-        "completion_tokens": 3303
+        "prompt_tokens": 300,
+        "completion_tokens": 1254
       },
-      "cost_usd": 0.014468,
+      "cost_usd": 0.005705,
       "cost_estimated": true,
-      "text": "This is a women's kurta. The seller describes the main colour as rust/orange. The check found no attributes matching the photos."
+      "text": "This is a women's kurta in rust orange. Its main colour is rust orange."
     },
     {
       "job_id": "live-kurta-01-composite",
@@ -63,11 +63,19 @@
       "task": "listing_copy",
       "lang": "hi",
       "receipt_head": "d4ec3410e8b74c20437080c1bf4fd83d70df3ed3a16bd175e2e416ff9bb3ca51",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: rust / orange."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "ccb14ba4152ce852636b1b085d363b0eb989c02325e6062db7044f6a30699f4e",
+      "usage": {
+        "prompt_tokens": 333,
+        "completion_tokens": 1366
+      },
+      "cost_usd": 0.006222,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।"
     }
   ]
 }

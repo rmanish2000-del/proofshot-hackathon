@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms3-live-kurta-02-tryon-m",
+  "started_at": "2026-10-29T12:21:36.631Z",
+  "finished_at": "2026-10-29T12:21:58.996Z",
+  "latency_ms": 22365,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-aecfd9d062234eb7b981df8e4a038130",
+      "object": "chat.completion",
+      "created": 1793276497,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए पीच रंग का कुर्ता है। यह लंबा कुर्ता है जिसकी लंबाई घुटने के नीचे तक है।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given.\n\nFacts:\n- Type: kurta (women's)\n- Main colour: peach\n- Length: long, below the knee (as photographed)\n\nWe must describe garment itself: type, colour, length and any detail stated. Use nothing else.\n\nSo we need 2-3 full sentences, at most 60 words, in Hindi Devanagari.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe should write something like:\n\nयह महिलाओं के लिए पीच रंग का कुर्ता है। इसकी लंबाई घुटने से नीचे तक है, जैसा तस्वीर में दिखाया गया है।\n\nCheck word count: Need at most 60 words. That's fine. Must be 2-3 full sentences. We have 2 sentences. Need to ensure Hindi Devanagari script only. No English words? Probably Hindi only. But \"पीच\" is transliteration of peach, okay. \"कुर्ता\" is type.\n\nWe must not add extra details like fabric etc.\n\nWe must ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We did mention \"जैसा तस्वीर में दिखाया गया है\" - is that allowed? The instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Mentioning \"as photographed\" is part of facts: Length: long, below the knee (as photographed). So we can include that? The seller's description says length: long, below the knee (as photographed). So we can say \"तस्वीर के अनुसार\" maybe. But does that violate \"Never mention photos being compared\"? The instruction says Never mention photos being compared, a check, a match... But the seller's description includes \"(as photographed)\". Should we include it? The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So we should include length detail as photographed. However the other instruction says Never mention photos being compared... But \"as photographed\" is not \"photos being compared\". It's just describing length as photographed. Might be okay to include. But to be safe, we could just say \"घुटने से नीचे तक लंबा है\" without mentioning photo. But then we omit detail stated. The detail is \"as photographed\". Is that considered a detail to include? The instruction says \"any detail stated\". So we should include it. But the prohibition is about mentioning photos being compared, a check, etc. Saying \"जैसा तस्वीर में दिखाया गया है\" is not mentioning photos being compared, it's just referencing the photo. However the system instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" So mentioning \"तस्वीर में दिखाया गया है\" might be considered mentioning photos? But the seller's description explicitly says \"(as photographed)\". The user instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\" So we must not mention photos being compared. But can we mention photo at all? The phrase \"photos being compared\" suggests don't say \"photos are compared\" etc. But saying \"as photographed\" might be okay. However to be safe, we could avoid mentioning photo altogether and just describe length as long, below the knee. That still captures length.\n\nThe safest is to not mention photo, just say length is long below knee. That satisfies type, colour, length.\n\nWe need to ensure we don't add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe must write in Hindi Devanagari script. Use plain Hindi.\n\nWe need 2-3 full sentences, at most 60 words.\n\nExample:\n\nयह महिलाओं के लिए पीच रंग का कुर्ता है। यह लंबा है और इसकी लंबाई घुटनों के नीचे तक है।\n\nThat's 2 sentences. Word count: यह(1) महिलाओं(2) के(3) लिए(4) पीच(5) रंग(6) का(7) कुर्ता(8) है।(9) यह(10) लंबा(11) है(12) और(13) इसकी(14) लंबाई(15) घुटनों(16) के(17) नीचे(18) तक(19) है।(20) That's under 60.\n\nWe should ensure we don't add extra claims.\n\nWe must not use markdown, emoji, headings.\n\nWe must not write RELEASE, REVIEW or REFUSE.\n\nWe should output only the Hindi text.\n\nMake sure to use Devanagari script only. No English.\n\nWe should not add \"Type: kurta\" in English.\n\nWe should ensure we use plain Hindi.\n\nPotential nuance: The user wants us to write product listing. We must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. So we must not include those words.\n\nWe should comply.\n\nWe should produce final answer in Hindi.\n\nWe must ensure we don't accidentally include English words like \"peach\" in Latin script. Use Devanagari: पीच.\n\nWe should not add fabric like cotton etc.\n\nWe should keep it simple.\n\nWe should ensure we have 2-3 full sentences. Provide 2 sentences.\n\nWe must not mention photos being compared etc.\n\nWe should output final answer.\n\nWe need to consider that the system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nSo we must follow that.\n\nWe should not add any extra sentence about care advice.\n\nWe should just describe garment.\n\nWe should ensure we don't add \"सुंदर\" or \"आकर्षक\" maybe that's a claim not in facts? The instruction says do not add any claim that is not in the facts. Does \"सुंदर\" count as claim? Possibly it's subjective claim not in facts, so avoid. Keep plain factual.\n\nSo just state type, colour, length.\n\nWe should not add \"आरामदायक\" etc.\n\nWe should keep plain.\n\nThus final answer: Two sentences as above.\n\nWe should ensure we use correct Hindi grammar.\n\nWe could write:\n\nयह महिलाओं का पीच रंग का कुर्ता है। यह घुटने के नीचे तक आने वाला लंबा कुर्ता है।\n\nThat's good. Word count under 60.\n\nWe should ensure we mention colour peach, type kurta women's, length long below knee.\n\nWe should not mention \"as photographed\" to avoid photo mention prohibition. But we could include \"तस्वीर के अनुसार\" but that might be considered mentioning photos. Safer to omit.\n\nThe instruction says \"Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" So we must not mention photos being compared. If we say \"तस्वीर में जैसा दिख रहा है\" is that mentioning photos being compared? No, it's not comparing. But to be safe, omit.\n\nWe should produce final output in Hindi Devanagari.\n\nWe must not include any English explanation.\n\nWe should just output the Hindi sentences.\n\nWe need to ensure we don't accidentally include markdown like bullet points.\n\nWe should output plain text.\n\nWe should ensure we don't include headings.\n\nWe should ensure we don't include emoji.\n\nWe should ensure we don't write RELEASE etc.\n\nWe should comply.\n\nWe should produce final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 344,
+        "total_tokens": 2193,
+        "completion_tokens": 1849,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1807
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1807
+        }
+      }
+    }
+  },
+  "error": null
+}

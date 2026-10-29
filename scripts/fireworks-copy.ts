@@ -1,4 +1,4 @@
-// npm run copy:fireworks -- [--lang en,hi] (--all | <job-id> [<job-id> ...])
+// npm run copy:fireworks -- [--lang en,hi] [--redo listing_copy] (--all | <job-id> [<job-id> ...])
 //
 // FW1 / FW1b / FW2: for each committed job, writes the receipt summary and the
 // listing copy (src/fireworks-copy.ts) in each language asked for (English
@@ -20,7 +20,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { FIREWORKS_LIMIT, copyFacts, fireworksLedger, listingLongEnough, writeCopy } from "../src/fireworks-copy.ts";
+import { FIREWORKS_LIMIT, copyFacts, fireworksLedger, recordStillGood, writeCopy } from "../src/fireworks-copy.ts";
 import type { CopyLang, CopyRecord, CopyTask, FireworksCallLog, FireworksFetch } from "../src/fireworks-copy.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
 import { spendSummary, summaryLine } from "../src/spend-meta.ts";
@@ -49,6 +49,18 @@ if (li !== -1) {
   langs = list as CopyLang[];
   args.splice(li, 2);
 }
+// --redo listing_copy (or receipt_summary): write that task again for every job, kept or not.
+let redo: CopyTask[] = [];
+const ri = args.indexOf("--redo");
+if (ri !== -1) {
+  const list = (args[ri + 1] ?? "").split(",").filter(Boolean);
+  if (list.length === 0 || list.some((t) => !(TASKS as readonly string[]).includes(t))) {
+    console.error("--redo takes receipt_summary, listing_copy or both");
+    process.exit(2);
+  }
+  redo = list as CopyTask[];
+  args.splice(ri, 2);
+}
 const jobsDir = join(ROOT, "data", "jobs");
 const jobs = args.includes("--all")
   ? readdirSync(jobsDir).filter((j) => JOB.test(j) && !j.startsWith("upload-") && existsSync(join(jobsDir, j, "receipt.jsonl"))).sort()
@@ -75,8 +87,9 @@ for (const job of jobs) {
   const records: CopyRecord[] = [];
   for (const lang of langs) {
     for (const task of TASKS) {
-      // A listing written before FW2 asked for two sentences is written again.
-      const kept = before.find((r) => r.task === task && (r.lang ?? "en") === lang && r.generated && r.receipt_head === facts.receipt_head && (task !== "listing_copy" || listingLongEnough(r.text)));
+      // A record that fails today's checks (FW2: two sentences; FW2 fix: no pipeline words in a listing,
+      // no "matched" in a summary without findings), or whose task is in --redo, is written again.
+      const kept = redo.includes(task) ? undefined : before.find((r) => r.task === task && (r.lang ?? "en") === lang && recordStillGood(r, facts));
       if (kept) {
         records.push(kept);
         console.log(`${job} ${task} ${lang}: kept (${kept.provider} ${kept.model})`);

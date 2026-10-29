@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "b4500e95376a12205363d8b4fc8d057cb7427ead96e7222f2591305bcac4e43f",
+      "request_sha256": "970158ab0195bfabb4f86282478d33110caaa8f6972f6def014dfa804fd1239c",
       "usage": {
-        "prompt_tokens": 362,
-        "completion_tokens": 2994
+        "prompt_tokens": 298,
+        "completion_tokens": 2149
       },
-      "cost_usd": 0.013177,
+      "cost_usd": 0.009506,
       "cost_estimated": true,
-      "text": "This is a women's kurta. The main colour is peach."
+      "text": "This is a women's kurta in peach. Its main colour is peach."
     },
     {
       "job_id": "live-kurta-02-composite",
@@ -63,11 +63,19 @@
       "task": "listing_copy",
       "lang": "hi",
       "receipt_head": "67b3a40cc968d0aaabc2b8c699565a9d882df642593cd48820a5ab4fc7dafcc0",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: peach. तस्वीरों से जाँचा गया और मेल खाता है: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture।"
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "bc4f4251d3edb17d488af72bdc00d68d77ba5c6ff3487745569ce6a1661c013a",
+      "usage": {
+        "prompt_tokens": 331,
+        "completion_tokens": 1148
+      },
+      "cost_usd": 0.005293,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
     }
   ]
 }

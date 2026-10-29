@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-02-sam",
+  "started_at": "2026-10-29T11:49:56.604Z",
+  "finished_at": "2026-10-29T11:50:15.500Z",
+  "latency_ms": 18896,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-0ff489b499744590aed1035eb7603908",
+      "object": "chat.completion",
+      "created": 1793274597,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta. Its main colour is peach.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: peach\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe have type: kurta (women's), main colour: peach. Length? Not given. Any detail stated? Not given. So we should only describe type and colour. Must not invent length. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we should not mention length. We should not invent.\n\nWe need 2 to 3 full sentences, at most 60 words.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe need to write product listing.\n\nPotential listing: \"This women's kurta is presented in a soft peach tone. It offers a simple and elegant everyday option.\"\n\nThat's 2 sentences. Count words: This(1) women's2 kurta3 is4 presented5 in6 a7 soft8 peach9 tone10. It11 offers12 a13 simple14 and15 elegant16 everyday17 option18. That's 18 words, under 60.\n\nBut need to be careful: \"soft peach tone\" - is \"soft\" adding a claim not in facts? Main colour: peach. Adding \"soft\" might be considered adding colour descriptor? The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Is \"soft\" considered adding? Possibly it's an extra adjective describing colour shade. Safer to just say peach. Don't add \"soft\". Also \"simple and elegant everyday option\" - is that adding claim not in facts? The instruction says Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we cannot add \"simple and elegant everyday option\" because that's not in facts. We must only describe type, colour, length and any detail stated. So we cannot add subjective claims.\n\nWe need to be very strict: Only facts given: Type: kurta (women's), Main colour: peach. So we can only say it's a women's kurta in peach. How to make 2-3 sentences without adding extra claims?\n\nWe need to write 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else.\n\nSo we must not add any detail not stated. So we cannot say \"elegant\", \"beautiful\", \"comfortable\", \"perfect for\", etc. Those are claims not in facts.\n\nWe need to create sentences that only restate the facts. For example: \"This is a women's kurta. The main colour is peach.\" That's 2 sentences. That's 9 words. That satisfies.\n\nBut is that considered a product listing? It's very minimal but meets constraints. The instruction says write short, plain English for an Indian clothing seller. Use only facts given. So that is okay.\n\nWe must ensure we don't add length if not given. So we should not mention length.\n\nWe must not add fabrics, sizes, etc.\n\nWe should not add \"soft\", \"light\", etc.\n\nWe need to ensure we don't violate \"Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must be literal.\n\nPotential output: \"This is a women's kurta in peach. The main colour is peach.\"\n\nBut that's redundant. Better: \"This is a women's kurta. Its main colour is peach.\"\n\nThat's 2 sentences, 9 words.\n\nWe need to ensure we don't add anything else. That is safe.\n\nCould we add a third sentence? But we have no more facts. Adding a third sentence would require repeating or adding fluff which would be adding claim. So 2 sentences is best.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So we must not do that.\n\nWe must not use markdown, emoji, headings. So plain text.\n\nWe must not change or soften gate decision. What is gate decision? Not provided. Probably we are to not mention gate decision at all. The instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So we must not mention those.\n\nWe should output exactly 2 sentences.\n\nWe need to ensure we don't accidentally add \"beautiful\" etc.\n\nWe should output: \"This is a women's kurta. Its main colour is peach.\"\n\nCheck word count: This(1) is2 a3 women's4 kurta5. Its6 main7 colour8 is9 peach10. That's 10 words, under 60.\n\nIs \"women's kurta\" correct? Type: kurta (women's) - yes.\n\nWe should not add \"Indian\" ? The seller is Indian clothing seller, but we shouldn't add that as claim? The instruction says write short, plain English for an Indian clothing seller. That is context, not to add to listing? We can just describe garment.\n\nWe must not add length. So we don't mention length.\n\nWe must ensure we don't add any detail stated beyond what is given. So we are good.\n\nPotential nuance: The system says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must not add any adjective like \"lovely\". So keep minimal.\n\nWe should ensure we don't use markdown. So no bullet points, no bold.\n\nWe should output plain sentences.\n\nWe need to consider if we need to mention \"peach\" exactly as given. Yes.\n\nWe should not add \"main colour: peach\" vs \"peach colour\". Both okay.\n\nWe must ensure we don't add \"elegant\" etc.\n\nThus final answer is two sentences.\n\nWe should not add extra punctuation that could be considered markdown.\n\nWe should ensure we don't accidentally include \"gate\" etc.\n\nWe should output exactly that.\n\nWe need to be careful about reasoning strength 512. We have to think deeply.\n\nWe must not add any claim. So we cannot say \"This women's kurta is available in peach.\" Is \"available\" a claim? Might be considered extra claim not in facts. Safer to say \"This is a women's kurta. Its main colour is peach.\" That's purely descriptive.\n\nWe should not say \"This product is...\"? That's okay but \"product\" is not in facts but it's generic. Is that adding claim? Probably okay, but safer to stick to type.\n\nWe should not add \"beautiful\" etc.\n\nWe should ensure we don't add \"length\" if not given. So we don't mention length.\n\nWe should ensure we don't add \"detail stated\" if none.\n\nWe should ensure we meet 2 to 3 full sentences. So 2 sentences is okay.\n\nWe must ensure at most 60 words. We are well under.\n\nWe must not mention photos being compared, etc. So we don't.\n\nWe should output final answer.\n\nPotential edge: The user wants us to write product listing describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. So we must not invent length. So we just describe type and colour.\n\nWe should not add \"peach colour kurta\" is okay.\n\nWe should ensure we don't add \"women's\" incorrectly? Type is kurta (women's) so we should include women's.\n\nWe should ensure we use plain English.\n\nWe should not add \"Indian\" etc.\n\nWe should output final.\n\nWe must not add any extra sentence like \"Thank you for shopping\" - that would be extra claim not in facts? Probably considered extra content not allowed. So we must not.\n\nWe should just output the two sentences.\n\nWe need to ensure we don't accidentally include \"AI\" etc.\n\nWe should output exactly:\n\nThis is a women's kurta. Its main colour is peach.\n\nThat's it.\n\nWe should not add period after? We need full sentences with periods.\n\nWe should ensure we don't add extra whitespace or headings.\n\nWe should not use markdown like **.\n\nWe should ensure we don't add emoji.\n\nWe should ensure we don't add \"gate decision\" etc.\n\nWe are done.\n\nWe should consider if we need to mention \"peach\" as main colour. Yes.\n\nWe should not add \"soft peach\" etc.\n\nWe should not add \"length\" - we don't know length, so we don't mention.\n\nWe should not add \"any detail stated\" - none.\n\nWe should ensure we don't add \"fabric\" etc.\n\nWe should output final answer in plain text.\n\nWe must not change or soften gate decision. There's no gate decision mentioned, but we must not mention it.\n\nWe should output final answer.\n\nWe need to ensure we don't add \"seller's description\" etc.\n\nWe should just output listing.\n\nWe should ensure we don't add \"Type: kurta\" as bullet. That would be markdown? Better to write sentences.\n\nWe should output 2 sentences.\n\nWe should ensure we don't add extra words like \"lovely\".\n\nWe are good.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 298,
+        "total_tokens": 2400,
+        "completion_tokens": 2102,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2079
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2079
+        }
+      }
+    }
+  },
+  "error": null
+}

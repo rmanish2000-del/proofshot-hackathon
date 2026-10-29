@@ -11,14 +11,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "26416b04ff722067c82404924ff34971c7d2374559037286b66288ce2b269189",
+      "request_sha256": "c9943fd98ef5ee9e97b0d8de046eb6a36958a9469899466770c2cdbead451509",
       "usage": {
-        "prompt_tokens": 556,
-        "completion_tokens": 3049
+        "prompt_tokens": 564,
+        "completion_tokens": 2409
       },
-      "cost_usd": 0.013653,
+      "cost_usd": 0.010943,
       "cost_estimated": true,
-      "text": "Decision is REFUSE which means the image must not be published. No attributes could be verified as no findings were recorded. Fidelity checks failed with delta_e 15.479 above 10, hist 0.383 above 0.350, texture 0.672 below 0.800 and area 0.213 below 0.400 showing the garment shrank in frame. Colour, print and neckline were not kept as required."
+      "text": "Decision is REFUSE which means the image must not be published. The seller described a women's kurta in peach, long below the knee, asking colour, print and neckline stay as photographed. Garment details could not be compared. The image failed fidelity checks with high colour difference and low texture and area scores and the garment shrank in frame."
     },
     {
       "job_id": "live-kurta-02-tryon-2",
@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "0296407ab55add0fa5891cfd9939f0cf530cc8c299f0a48ae6450b3db05f4221",
+      "request_sha256": "e85e7313c770c2902a2d2457fd0981c8022fa6232bcd5b741088d09b897fcd36",
       "usage": {
-        "prompt_tokens": 354,
-        "completion_tokens": 3868
+        "prompt_tokens": 311,
+        "completion_tokens": 2450
       },
-      "cost_usd": 0.016882,
+      "cost_usd": 0.010801,
       "cost_estimated": true,
-      "text": "The seller lists this as a women's kurta. The seller describes the main colour as peach. No attributes were found matching the photos."
+      "text": "This women's kurta is in peach. It is long, falling below the knee."
     },
     {
       "job_id": "live-kurta-02-tryon-2",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "b267f59758a73e7f1c6fc03786bfc5f72a69251fb371819cce4d1b12fa25e9f4",
+      "request_sha256": "042d48f6908faf2abd2ebc668757f3517abbfa2318eb8962d7374865cfa5a07b",
       "usage": {
-        "prompt_tokens": 387,
-        "completion_tokens": 2428
+        "prompt_tokens": 344,
+        "completion_tokens": 1123
       },
-      "cost_usd": 0.010803,
+      "cost_usd": 0.005203,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। यह घुटने के नीचे तक आने वाला लंबा कुर्ता है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। इसकी लंबाई घुटने के नीचे तक है।"
     }
   ]
 }

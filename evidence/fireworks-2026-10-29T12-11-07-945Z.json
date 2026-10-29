@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms3-live-kurta-01-tryon-m",
+  "started_at": "2026-10-29T12:11:07.945Z",
+  "finished_at": "2026-10-29T12:11:29.503Z",
+  "latency_ms": 21558,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-ef468d8aef4949559a6edbc1c48b31cf",
+      "object": "chat.completion",
+      "created": 1793275869,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta in rust/orange. It is long, below the knee as photographed.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)\n\nWe need to produce 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can say: This is a women's kurta in rust/orange. It is long, below the knee as photographed.\n\nThat's 2 sentences. Need to ensure we don't add extra details. Should we mention \"as photographed\"? Yes that's in facts. Length: long, below the knee (as photographed). So we can include that.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So avoid those words.\n\nWe need to ensure plain English.\n\nWe must not add colours, fabrics, sizes, prices, care advice. So just type, colour, length.\n\nWe need to ensure at most 60 words. Our proposed is well under.\n\nWe should not add markdown, emoji, headings. Just plain text.\n\nWe need to be careful: \"rust / orange\" - we can write rust orange or rust/orange.\n\nWe should produce 2-3 sentences.\n\nPotential output: \"This women's kurta is in rust orange. It is long, falling below the knee as photographed.\"\n\nThat's 2 sentences, 14 words. Good.\n\nWe must not add any other claim. Don't say \"beautiful\" maybe that's extra claim? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Does \"beautiful\" count as claim not in facts? Probably yes, we should avoid adjectives not in facts. Keep strictly factual.\n\nWe should not add \"comfortable\" etc.\n\nWe should ensure we don't add \"women's\" incorrectly? Type is kurta (women's) so we can say women's kurta.\n\nWe should not add \"long\" beyond what's given. It's long, below the knee (as photographed). So we can say that.\n\nWe must ensure we don't change or soften gate decision. There's no gate decision mentioned here? But we must not mention gate etc.\n\nWe should output plain sentences.\n\nWe need to ensure we don't accidentally mention \"photo\" in forbidden way? The forbidden list: Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. But we are allowed to say \"as photographed\" because it's part of seller's description length detail. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nDoes \"as photographed\" count as mentioning photos being compared? The seller's description says \"as photographed\" - that's allowed? The instruction says Never mention photos being compared... But \"as photographed\" is part of length detail. Is that considered mentioning photos? The forbidden is \"photos being compared\" - maybe saying \"as photographed\" is okay because it's in the facts. However the instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" So we must not mention those concepts. But \"as photographed\" might be considered mentioning photos. However the seller's description includes \"(as photographed)\" as part of length. The task says describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. So we should include \"as photographed\" because it's part of length detail. But does that violate \"Never mention photos being compared\"? The phrase \"as photographed\" is not \"photos being compared\". It's just describing length as seen. Probably allowed. But to be safe, we could interpret that we should not mention photos being compared, but we can mention \"as photographed\" as it's a factual length qualifier. The instruction explicitly says Never mention photos being compared - that is a specific phrase. \"as photographed\" is not that.\n\nWe should include it to be faithful to facts.\n\nWe must ensure we don't add extra words like \"stunning\".\n\nWe should produce final answer with 2-3 sentences.\n\nWe need to ensure we don't use markdown. No bullet points.\n\nWe should write in plain English.\n\nPotential final: \"This is a women's kurta in rust orange. It is long, below the knee as photographed.\"\n\nCheck word count: This(1) is2 a3 women's4 kurta5 in6 rust7 orange8. It9 is10 long,11 below12 the13 knee14 as15 photographed16. That's 16 words, under 60.\n\nWe need to ensure we use \"rust / orange\" correctly. Could write \"rust/orange\" to be precise.\n\nWe should not add \"main colour\" phrase? We can just say colour is rust/orange.\n\nWe must not add fabrics, sizes, prices, care advice.\n\nWe should not add \"type: kurta\" with colon? Better to write natural sentence.\n\nWe should ensure we don't add \"long, below the knee (as photographed)\" with parentheses? Could include parentheses but better plain.\n\nWe should output exactly that.\n\nWe must not add any extra claim like \"perfect for any occasion\".\n\nWe should keep it simple.\n\nWe should ensure we don't mention \"seller's description\" etc.\n\nWe should not mention gate decision.\n\nWe should ensure we don't add markdown, emoji, headings. So just plain sentences.\n\nWe should ensure we use only facts given. So we should not add \"cotton\" etc.\n\nWe should produce final answer.\n\nWe need to consider if we need to mention \"women's\" - yes.\n\nWe should ensure we don't add \"Indian\" etc.\n\nWe should output 2 sentences.\n\nWe should ensure we don't accidentally add \"colour\" British spelling? Either is fine.\n\nWe should ensure we don't add \"garment\" extra? That's okay but not needed.\n\nWe should ensure we don't add \"type\" word.\n\nWe should produce final answer as requested.\n\nWe should not add any preamble like \"Here is...\" That would be extra claim? The instruction says Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself... Use nothing else. So we should not add introductory phrase like \"Here is your listing:\" That would be extra text beyond listing. We should just output the listing sentences.\n\nWe should ensure we don't add \"Product listing:\" heading. No headings.\n\nWe should just output the sentences.\n\nWe should ensure we don't add extra sentence beyond 3.\n\nWe should ensure we don't exceed 60 words.\n\nWe should ensure we don't mention photos being compared etc.\n\nWe should ensure we don't mention AI.\n\nWe should ensure we don't mention gate.\n\nWe should ensure we don't mention model.\n\nWe should ensure we don't mention render.\n\nWe should ensure we don't mention receipt, approval, decision, match, check.\n\nWe should ensure we don't mention those words at all. So avoid word \"check\", \"match\", \"decision\", \"approval\", \"receipt\", \"gate\", \"render\", \"model\", \"AI\". Also avoid \"photos being compared\" phrase. So don't use word \"photos\" maybe? But \"photographed\" contains \"photo\". Is that considered mentioning photos? The forbidden list says Never mention photos being compared. Does \"photographed\" count as mentioning photos? Possibly the filter will flag any mention of \"photo\". But the seller's description includes \"as photographed\" - we are instructed to use that detail. There's a conflict. The instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" It lists those as forbidden concepts. But \"as photographed\" is not \"photos being compared\". It's a length qualifier. Should we include it? The instruction says describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. So we must include length detail which includes \"as photographed\". But the \"Never mention photos being compared\" might be to prevent us from saying \"The photo matches the description\" etc. So \"as photographed\" should be allowed.\n\nWe need to decide. The safest is to include \"as photographed\" because it's part of facts, and the forbidden is specifically \"photos being compared\". The phrase \"as photographed\" is not that. So we can include it.\n\nWe should not add \"photo\" otherwise.\n\nWe should ensure we don't use word \"check\" etc.\n\nWe should produce final answer.\n\nWe should ensure we don't add \"AI\" etc.\n\nWe should ensure we don't add markdown like **.\n\nWe should ensure plain English.\n\nWe should output final.\n\nWe should consider if we need to mention \"long, below the knee (as photographed)\" exactly. We can phrase as \"It is long, below the knee as photographed.\"\n\nThat's good.\n\nWe should ensure we don't add \"main colour\" phrase.\n\nWe should ensure we don't add \"type\".\n\nWe should ensure we don't add extra adjectives.\n\nWe should output.\n\nWe should ensure we don't add period extra.\n\nWe should ensure we don't add extra whitespace.\n\nWe should ensure we don't add \"seller\".\n\nWe should ensure we don't add \"description\".\n\nWe should ensure we don't add \"garment\" maybe okay but not needed.\n\nWe should ensure we don't add \"Indian clothing seller\" etc.\n\nWe should just output listing.\n\nWe should ensure we don't add \"rust / orange\" with slash and spaces? Could write \"rust/orange\". Either is fine.\n\nWe should ensure we don't add \"women's\" apostrophe correctly.\n\nWe should ensure we don't add \"kurta (women's)\" with parentheses? Better natural.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 313,
+        "total_tokens": 2542,
+        "completion_tokens": 2229,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2198
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2198
+        }
+      }
+    }
+  },
+  "error": null
+}

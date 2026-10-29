@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms3-live-kurta-01-composite",
+  "started_at": "2026-10-29T12:00:06.952Z",
+  "finished_at": "2026-10-29T12:00:21.423Z",
+  "latency_ms": 14471,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-2c15dcd350244c3991b741f2f79caf47",
+      "object": "chat.completion",
+      "created": 1793275207,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta in rust orange. It is long, below the knee as photographed.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Length: long, below the knee (as photographed)\n\nWe need 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe should just describe: This is a women's kurta in rust/orange, long length below the knee.\n\nWe must ensure not to add colours, fabrics, sizes, prices, care advice.\n\nWe need to be careful: The instruction says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\"\n\nSo we can say: Women's kurta in rust orange. Long length, below the knee as photographed.\n\nThat's 2 sentences. Count words: Women's(1) kurta(2) in(3) rust(4) / orange(5) . Long(6) length,(7) below(8) the(9) knee(10) as(11) photographed(12). That's within 60 words.\n\nWe need to ensure we don't add extra details. Should we say \"rust / orange\"? The seller says main colour: rust / orange. So we can say rust orange.\n\nWe must not add any other claim.\n\nWe should produce plain English.\n\nWe must not use markdown, emoji, headings.\n\nWe should just output the listing.\n\nWe need to ensure 2 to 3 full sentences. So 2 sentences is okay.\n\nWe must not mention photos being compared etc. We are not.\n\nWe should not add \"as photographed\" maybe is allowed? The seller description says Length: long, below the knee (as photographed). So we can include that. That's part of facts.\n\nWe should not add anything else.\n\nWe must ensure we don't accidentally add fabric like cotton etc.\n\nWe should keep it simple.\n\nPotential nuance: The system says \"You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings.\"\n\nWe are not to change or soften gate decision - but there is no gate decision mentioned in this prompt? The seller's description is given. We just need to describe garment.\n\nWe must not mention gate etc.\n\nWe should output 2-3 sentences, at most 60 words.\n\nWe should ensure we don't exceed 60 words.\n\nWe should not add extra adjectives like beautiful, elegant, etc? That might be considered adding claim not in facts. The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So adding \"beautiful\" would be a claim not in facts. So avoid.\n\nWe should just state facts.\n\nWe should also not add \"women's\" incorrectly? The type is kurta (women's) so we can say women's kurta.\n\nWe should ensure we use plain English.\n\nWe should not add \"Main colour\" phrase? We can just say colour is rust/orange.\n\nWe should produce final answer.\n\nWe need to be careful about not adding \"long\" as length - that's given.\n\nWe should not add \"below the knee (as photographed)\" - we can include.\n\nWe should ensure we don't add any extra detail like sleeves, neckline, etc.\n\nWe should output something like:\n\nThis is a women's kurta in rust orange. It is long, falling below the knee as photographed.\n\nCount words: This(1) is2 a3 women's4 kurta5 in6 rust7 orange8. It9 is10 long,11 falling12 below13 the14 knee15 as16 photographed17. That's 17 words, within 60, 2 sentences.\n\nWe should ensure we don't add \"falling\" is that an extra claim? The seller says length: long, below the knee (as photographed). Saying \"falling below the knee\" is essentially same. Might be okay. But to be safe, use exact wording: \"long, below the knee as photographed.\"\n\nWe should not add \"falling\" if it's considered extra. But it's probably okay as it's describing length. However to be strictly using only facts, we should not add verbs that imply extra. But \"is long, below the knee\" is accurate.\n\nWe should produce final answer with 2 sentences.\n\nWe must not use markdown. So no bullet points, no bold.\n\nWe should just output plain text.\n\nWe should ensure we don't accidentally include heading.\n\nWe should output final listing.\n\nWe should also consider that the user wants us to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else.\n\nSo we must include type, colour, length.\n\nWe have done.\n\nWe should not mention photos being compared etc. We haven't.\n\nWe should ensure we don't mention \"seller's description\" etc.\n\nWe should just output listing.\n\nWe should be concise.\n\nWe should not add \"Use nothing else.\" etc.\n\nWe should output final answer.\n\nWe need to ensure we don't add any disallowed content.\n\nWe should not add \"Never mention photos...\" etc.\n\nWe should just output listing.\n\nWe should ensure we don't add extra punctuation that could be considered markdown? No.\n\nWe should output plain sentences.\n\nWe should ensure we don't add \"AI\" etc.\n\nWe should proceed to final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 313,
+        "total_tokens": 1634,
+        "completion_tokens": 1321,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1291
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1291
+        }
+      }
+    }
+  },
+  "error": null
+}

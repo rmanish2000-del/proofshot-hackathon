@@ -1,0 +1,81 @@
+{
+  "job_id": "ms3-live-kurta-02-tryon",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-02-tryon",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "1fbe84205ee013cc22d36c433d6d745826fe4ef249b153fc86225ee1896b8bf6",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "cf3a240360d9e764febb13f7da2abe3e28e93ae93e684ca952fc0c6cdaaf5370",
+      "usage": {
+        "prompt_tokens": 497,
+        "completion_tokens": 4729
+      },
+      "cost_usd": 0.02072,
+      "cost_estimated": true,
+      "text": "Decision is REVIEW meaning a person must look first before publishing. Hem does not match photo at 0.95 but it is a soft attribute. Image fidelity check flagged high colour difference and histogram over limit, texture and area below limit, garment shrank in frame. Colour, print, collar and other details matched."
+    },
+    {
+      "job_id": "ms3-live-kurta-02-tryon",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "1fbe84205ee013cc22d36c433d6d745826fe4ef249b153fc86225ee1896b8bf6",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e85e7313c770c2902a2d2457fd0981c8022fa6232bcd5b741088d09b897fcd36",
+      "usage": {
+        "prompt_tokens": 311,
+        "completion_tokens": 1604
+      },
+      "cost_usd": 0.007206,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in peach. It is long, with length below the knee."
+    },
+    {
+      "job_id": "ms3-live-kurta-02-tryon",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "1fbe84205ee013cc22d36c433d6d745826fe4ef249b153fc86225ee1896b8bf6",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "75a0c69c788ae4ff3042fd9a9affeb080d807c5e6f6c5399421144cb7bafb8ff",
+      "usage": {
+        "prompt_tokens": 531,
+        "completion_tokens": 4993
+      },
+      "cost_usd": 0.021884,
+      "cost_estimated": true,
+      "text": "आपका कुर्ता (महिला, पीच, घुटने के नीचे लंबा) की जाँच का निर्णय REVIEW है, इसका अर्थ है प्रकाशन से पहले एक व्यक्ति जाँच करेगा। कारण: हेम में नरम विशेषता पर 0.95 पर अंतर और तस्वीर में कपड़ा छोटा दिखा (डेल्टा ई 14.199, हिस्ट 0.368, टेक्सचर 0.688, एरिया 0.212 सीमा से बाहर)। रंग, प्रिंट, लोगो, कॉलर, आस्तीन, जेब, बटन, बनावट मिले, हेम नहीं मिला।"
+    },
+    {
+      "job_id": "ms3-live-kurta-02-tryon",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "1fbe84205ee013cc22d36c433d6d745826fe4ef249b153fc86225ee1896b8bf6",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "042d48f6908faf2abd2ebc668757f3517abbfa2318eb8962d7374865cfa5a07b",
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 1123
+      },
+      "cost_usd": 0.005203,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है। इसकी लंबाई घुटने के नीचे तक है।"
+    }
+  ]
+}

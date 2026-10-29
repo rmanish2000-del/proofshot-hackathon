@@ -4,20 +4,21 @@
     {
       "job_id": "live-kurta-02-composite-v2",
       "task": "receipt_summary",
+      "lang": "en",
       "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
       "provider": "fireworks",
       "model": "accounts/fireworks/models/muse-spark-open",
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "3bf9b2a0db31c65ae39cf19236615869c22545cc16b2f2ebe053aebdb2b172e4",
+      "request_sha256": "d240be36e2ed26f6ccf8c2c82fb976ea7122e3206bfb558093216b7cba3944d5",
       "usage": {
-        "prompt_tokens": 370,
-        "completion_tokens": 2281
+        "prompt_tokens": 415,
+        "completion_tokens": 2973
       },
-      "cost_usd": 0.010157,
+      "cost_usd": 0.013154,
       "cost_estimated": true,
-      "text": "Decision is REVIEW which means a person must look first. Your image was flagged for over- or under-exposed photo. No verifier findings were recorded. You stated type is kurta women's, main colour peach, and that colour, print and neckline must stay exactly as photographed. Collar, cuffs, buttons and print are as in photos."
+      "text": "Decision is REVIEW which means a person must look first. The photo was flagged for being over- or under-exposed. No verifier findings were recorded so garment details could not be compared. Your description says the item is a women's kurta in peach and you asked colour, print and neckline stay exactly as photographed. That description is not a check result."
     },
     {
       "job_id": "live-kurta-02-composite-v2",
@@ -29,33 +30,25 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "2f8e37f313ff05557a6783baefcd9efb7b5042fd064470444621afc02f4a4f42",
+      "request_sha256": "970158ab0195bfabb4f86282478d33110caaa8f6972f6def014dfa804fd1239c",
       "usage": {
-        "prompt_tokens": 342,
-        "completion_tokens": 4666
+        "prompt_tokens": 298,
+        "completion_tokens": 1831
       },
-      "cost_usd": 0.020258,
+      "cost_usd": 0.008154,
       "cost_estimated": true,
-      "text": "The seller describes this as a women's kurta. The seller lists the main colour as peach."
+      "text": "This is a women's kurta. Its main colour is peach."
     },
     {
       "job_id": "live-kurta-02-composite-v2",
       "task": "receipt_summary",
       "lang": "hi",
       "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
-      "provider": "fireworks",
-      "model": "accounts/fireworks/models/muse-spark-open",
-      "response_model": "accounts/fireworks/models/muse-spark-open",
-      "generated": true,
-      "key_source": "user_env",
-      "request_sha256": "89baa2a5aaed8699ce368983ad17d58ab4734f38c1708704c60299ae32faa695",
-      "usage": {
-        "prompt_tokens": 440,
-        "completion_tokens": 3364
-      },
-      "cost_usd": 0.014847,
-      "cost_estimated": true,
-      "text": "आपकी पीच रंग की कुर्ता (महिला) के लिए निर्णय REVIEW है, इसका अर्थ है प्रकाशन से पहले एक व्यक्ति जाँच करेगा। कारण फोटो का एक्सपोज़र सही नहीं है, बहुत ज्यादा या बहुत कम रोशनी है। रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही रखना जरूरी है।"
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "unsupported",
+      "text": "निर्णय: REVIEW, प्रकाशित करने से पहले किसी व्यक्ति को इसे देखना होगा। कारण: CompositeQualityReview: over- or under-exposed photo."
     },
     {
       "job_id": "live-kurta-02-composite-v2",
@@ -67,14 +60,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "3254b702f09be1a55a46e987009daec7ad76c63cd9e98dc995d05906fffe5130",
+      "request_sha256": "bc4f4251d3edb17d488af72bdc00d68d77ba5c6ff3487745569ce6a1661c013a",
       "usage": {
-        "prompt_tokens": 375,
-        "completion_tokens": 1554
+        "prompt_tokens": 331,
+        "completion_tokens": 1980
       },
-      "cost_usd": 0.007073,
+      "cost_usd": 0.008829,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
+      "text": "यह महिलाओं का कुर्ता है। इसका मुख्य रंग पीच है।"
     }
   ]
 }

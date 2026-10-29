@@ -1,0 +1,81 @@
+{
+  "job_id": "ms3-live-kurta-02-composite",
+  "records": [
+    {
+      "job_id": "ms3-live-kurta-02-composite",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "e49b3a49927e2668f8f662423fd0236aa2dc1ea19ef64398f7b44824e9a1cbe5",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "4df4c7ad6a22399550d255ee4d6208be21ec2635eecae1ab8fc4fe02a8daa302",
+      "usage": {
+        "prompt_tokens": 432,
+        "completion_tokens": 2184
+      },
+      "cost_usd": 0.009822,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. The photo matches your description of a women's kurta in peach, long below the knee, with colour, print and neckline as photographed. All checked attributes matched including colour, print, collar, sleeve, hem, pockets, buttons, logo and fabric."
+    },
+    {
+      "job_id": "ms3-live-kurta-02-composite",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "e49b3a49927e2668f8f662423fd0236aa2dc1ea19ef64398f7b44824e9a1cbe5",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e85e7313c770c2902a2d2457fd0981c8022fa6232bcd5b741088d09b897fcd36",
+      "usage": {
+        "prompt_tokens": 311,
+        "completion_tokens": 1535
+      },
+      "cost_usd": 0.006913,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in peach. It is long, with length below the knee."
+    },
+    {
+      "job_id": "ms3-live-kurta-02-composite",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "e49b3a49927e2668f8f662423fd0236aa2dc1ea19ef64398f7b44824e9a1cbe5",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0a585b44fa13a8b0e46d4c997ecdca1c839b01e8c19563818b706f23ca25a0dc",
+      "usage": {
+        "prompt_tokens": 466,
+        "completion_tokens": 5965
+      },
+      "cost_usd": 0.025934,
+      "cost_estimated": true,
+      "text": "निर्णय RELEASE है, इसका अर्थ है चित्र प्रकाशित किया जा सकता है। विक्रेता के अनुसार यह महिलाओं का कुर्ता है, मुख्य रंग पीच है, लंबाई फोटो जैसी घुटने के नीचे तक है। रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही है। जाँच में रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट सभी मिले।"
+    },
+    {
+      "job_id": "ms3-live-kurta-02-composite",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "e49b3a49927e2668f8f662423fd0236aa2dc1ea19ef64398f7b44824e9a1cbe5",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "042d48f6908faf2abd2ebc668757f3517abbfa2318eb8962d7374865cfa5a07b",
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 2050
+      },
+      "cost_usd": 0.009143,
+      "cost_estimated": true,
+      "text": "यह महिलाओं का कुर्ता है। इसका मुख्य रंग पीच है। इसकी लंबाई घुटने के नीचे तक है।"
+    }
+  ]
+}

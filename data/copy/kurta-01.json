@@ -6,11 +6,19 @@
       "task": "receipt_summary",
       "lang": "en",
       "receipt_head": "1dbb8b7b7b2c102dc247a5dc9cbe298bf0e3db9a377eee2617396913aa23979f",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Decision: RELEASE, the image can be published."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "60ff70d195c4eea78dbd9a17ed361f35498a229e8f890b28b9d62929ceeb401d",
+      "usage": {
+        "prompt_tokens": 398,
+        "completion_tokens": 1781
+      },
+      "cost_usd": 0.008067,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. Your description says kurta (women's), rust / orange. Verifier found color, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture all match. Reasons: none."
     },
     {
       "job_id": "kurta-01",
@@ -22,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "3b4aa1050e6e89828a836c90a50658a016c3413bf68df72fe2370f1025f869ba",
+      "request_sha256": "c17d04f984b64c86fb9f66a49c2c7f07d4d908acf4e37778164541cbee254619",
       "usage": {
-        "prompt_tokens": 313,
-        "completion_tokens": 2896
+        "prompt_tokens": 336,
+        "completion_tokens": 3877
       },
-      "cost_usd": 0.012699,
+      "cost_usd": 0.016897,
       "cost_estimated": true,
-      "text": "Women's kurta in rust/orange. The preview is the owner's photo standing in for the render. Colour, print, logo or text, collar, sleeve length, hem, pockets, buttons and fabric texture match the seller's photos."
+      "text": "This women's kurta is in rust orange. This job is fixture data, not a live listing, and the owner's photo stands in for the preview image."
     },
     {
       "job_id": "kurta-01",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "b26bcdd383486168b5be5917795509067dae40a5f438b9b02cb65e1fe8cf7bf6",
+      "request_sha256": "ffc60c3285f073ea11b8fdf858f992f67bba3691b1651b5cf620a71468ebfdbf",
       "usage": {
-        "prompt_tokens": 346,
-        "completion_tokens": 2995
+        "prompt_tokens": 369,
+        "completion_tokens": 3597
       },
-      "cost_usd": 0.013161,
+      "cost_usd": 0.015748,
       "cost_estimated": true,
-      "text": "यह महिलाओं के लिए कुर्ता है। इसका रंग रस्ट नारंगी है।"
+      "text": "यह महिलाओं का कुर्ता है। इसका रंग रस्ट नारंगी है। यह fixture डेटा है, लाइव लिस्टिंग नहीं है और मालिक की फोटो पूर्वावलोकन के लिए है।"
     }
   ]
 }
