@@ -402,3 +402,39 @@ test("FW2 shirts: 'check' is a garment word when the seller's own description us
   assert.equal(listingOnTopic("A women's kurta in peach. Its colour was checked against the photos.", FACTS), false, "no check in the kurta's description");
   assert.ok(listingOnTopic(templateText("listing_copy", plaid), plaid), "the plaid template passes");
 });
+
+test("FW2 fix 5: a preview job (real garment, owner's photo as the image) gets a garment-only listing: no fixture sentence, and 'preview' or 'stands in' in either language is off topic", async () => {
+  const { listingOnTopic, isPreview } = await import("../src/fireworks-copy.ts");
+  const preview: CopyFacts = { ...FACTS, provenance: "fixture", aside: "preview: the owner's photo of the garment stands in for the render" };
+  const synthetic: CopyFacts = { ...FACTS, provenance: "fixture", aside: "fixture: synthetic images, no garment was photographed" };
+  assert.equal(isPreview(preview), true);
+  assert.equal(isPreview(synthetic), false);
+  assert.equal(isPreview(FACTS), false);
+  const ask = copyMessages("listing_copy", preview)[1]!.content;
+  assert.equal(ask.includes("fixture"), false, "no fixture sentence is asked for");
+  assert.equal(ask.includes("stands in"), false, "the preview aside is not offered to the model");
+  assert.match(copyMessages("listing_copy", synthetic)[1]!.content, /contains the English word "fixture"/, "the synthetic fixture still says so");
+  assert.equal(listingOnTopic("This is a women's kurta in peach. This is fixture data, not a live listing, with the owner's photo standing in for the preview.", preview), false);
+  assert.equal(listingOnTopic("This women's kurta is in rust orange. The owner's photo stands in for the image.", preview), false);
+  assert.equal(listingOnTopic("यह महिलाओं का कुर्ता है। मालिक की फोटो पूर्वावलोकन के लिए है।", preview), false);
+  assert.equal(listingOnTopic("This is a women's kurta in peach. It is long and falls below the knee.", preview), true, "no fixture word needed");
+  assert.equal(templateText("listing_copy", preview), "Type: kurta (women's). Main colour: peach.");
+  assert.ok(listingOnTopic(templateText("listing_copy", preview, "hi"), preview));
+});
+
+test("FW2 fix 6: a detail written before '; as in the photos' is kept for the listing; a line that is only the sentinel is dropped", async () => {
+  const { garmentClaims } = await import("../src/fireworks-copy.ts");
+  const zebra: CopyFacts = { ...FACTS, claims: [
+    { field: "Type", value: "shirt (short sleeves, button front)" },
+    { field: "Print or motif (what, where, size)", value: "zebra-style stripe print all over; as in the photos" },
+    { field: "Buttons", value: "black, as in the photos" },
+    { field: "Collar and cuffs", value: "as in the photos" },
+    { field: "Print or motif", value: "as in the photos; not recorded in words" },
+    { field: "Anything the render must not change", value: "stripe print and colours exactly as photographed" },
+  ] };
+  assert.deepEqual(garmentClaims(zebra), [
+    { field: "Type", value: "shirt (short sleeves, button front)" },
+    { field: "Print or motif (what, where, size)", value: "zebra-style stripe print all over" },
+    { field: "Buttons", value: "black" },
+  ]);
+});

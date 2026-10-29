@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "shirt-plaid",
+  "started_at": "2026-10-29T14:27:01.226Z",
+  "finished_at": "2026-10-29T14:27:22.439Z",
+  "latency_ms": 21213,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Description: shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-a94ea33e53684f8d9f2fdb3d6a099f7d",
+      "object": "chat.completion",
+      "created": 1793284022,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्का नीला, मस्टर्ड और मैरून रंग के चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need short plain Hindi in Devanagari script.\n\nSeller's description: shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks\n\nSo we need to describe: shirt, long sleeves, button front, cream with navy, light blue, mustard and maroon checks.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe need 2-3 full sentences, at most 60 words.\n\nWe need to write in Hindi Devanagari.\n\nWe must ensure we don't add extra info. Use only facts given.\n\nWe should write something like:\n\nयह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्का नीला, मस्टर्ड और मैरून रंग के चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं।\n\nCheck word count: Need at most 60 words. That's fine. Need 2-3 full sentences. We have 2 sentences.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice. We used colours given. That's allowed. Don't add extra colours.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We didn't.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we should not say \"आरामदायक\" etc. Keep plain.\n\nWe need to ensure Hindi Devanagari script only. No English words. So \"शर्ट\" is okay? That's Hindi transliteration but in Devanagari. Should be okay. But maybe use \"शर्ट\". That's Devanagari.\n\nWe need to ensure we describe type, colour, length and any detail stated. Type: shirt, colour: cream with navy, light blue, mustard and maroon checks, length? Actually long sleeves is length of sleeves, not garment length. But we include long sleeves, button front.\n\nWe must not add extra details like fabric.\n\nWe should ensure we don't exceed 60 words. Let's count words in Hindi.\n\nयह(1) क्रीम(2) रंग(3) की(4) चेक(5) शर्ट(6) है(7) जिसमें(8) नेवी,(9) हल्का(10) नीला,(11) मस्टर्ड(12) और(13) मैरून(14) रंग(15) के(16) चेक(17) हैं।(18) इसमें(19) लंबी(20) आस्तीनें(21) और(22) सामने(23) बटन(24) हैं।(25)\n\n25 words, under 60, 2 sentences. Good.\n\nWe must ensure we don't use markdown, emoji, headings. Just plain text.\n\nWe should not add \"light blue\" translation incorrectly. \"हल्का नीला\" is correct for light blue.\n\nWe must ensure we don't add \"fabric\" etc.\n\nWe should output only the listing.\n\nPotential pitfalls: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nWe must not write RELEASE etc. We won't.\n\nWe must ensure we don't accidentally write English words like \"cream\" in Latin script. Use Devanagari. So \"क्रीम\" is okay.\n\nWe should ensure we don't add \"mustard\" in English. Use Devanagari \"मस्टर्ड\". That's okay, but it's transliteration. Could also translate as \"सरसों\". But seller description says mustard. Using \"मस्टर्ड\" is closer to not adding new claim. \"सरसों\" might be considered translation, but okay. Better to keep \"मस्टर्ड\" as transliteration to avoid adding interpretation.\n\nSimilarly \"नेवी\" and \"मैरून\".\n\nWe should ensure we don't add extra punctuation that could be considered markdown. Simple sentences.\n\nWe must not mention photos being compared etc. We won't.\n\nWe should output 2-3 sentences.\n\nWe must ensure we don't add \"length\" incorrectly. The seller description says shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks. There's no garment length like \"long\" or \"short\". So we shouldn't invent length. Just mention long sleeves.\n\nWe should not add \"type, colour, length and any detail stated\" as meta. Just describe garment.\n\nWe should ensure we use Devanagari script entirely. No Latin characters.\n\nWe should not add English words like \"shirt\" in Latin. Use Devanagari.\n\nWe should deliver final answer.\n\nWe must be careful not to add extra claims like \"सुंदर\" \"स्टाइलिश\" etc. That would be claim not in facts. So keep plain.\n\nWe should not add \"100% cotton\" etc.\n\nWe should just give the two sentences.\n\nPotential nuance: The instruction says \"Reasoning strength: 512.\" That's irrelevant.\n\nWe must ensure we don't accidentally write \"REVIEW\" etc. We won't.\n\nWe should output in Hindi.\n\nWe should ensure we don't add extra sentences beyond 3. We have 2.\n\nWe should ensure we don't exceed 60 words. We are at 25.\n\nWe should ensure we use correct Hindi grammar.\n\nWe should not add \"seller's description\" etc.\n\nWe should just output the listing.\n\nWe must ensure we don't use markdown like ** or #.\n\nWe should just output plain text.\n\nWe should ensure we don't add English punctuation? Hindi punctuation \"।\" is okay, but \".\" also okay. Use \"।\" maybe more Hindi. But \".\" is also okay. The instruction says Devanagari script, but punctuation maybe allowed. Use \"।\"\n\nWe should use \"।\" for full stop.\n\nLet's produce:\n\nयह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्का नीला, मस्टर्ड और मैरून रंग के चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं।\n\nThat's good.\n\nWe should ensure we don't add extra spaces or lines.\n\nWe should not add any preamble like \"Here is...\".\n\nJust the listing.\n\nWe must ensure we don't violate \"Use nothing else.\" So we must not add any extra info beyond seller's description. Our sentences use only that info.\n\nWe should not add \"garment itself\" etc.\n\nWe should ensure we don't add \"type, colour, length\" as words.\n\nWe should deliver.\n\nWe must ensure we don't mention \"photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" We didn't.\n\nWe should ensure we don't mention \"check\" as in \"चेक\" meaning checks pattern is okay? The instruction says never mention photos being compared, a check, a match... But \"check\" in English meaning verification is prohibited, but \"चेक\" as pattern is part of garment description (checks). The seller description says checks. So using \"चेक\" to describe pattern is allowed, because it's part of facts. The prohibition is about mentioning a check (as in verification). But to be safe, we use \"चेक\" as pattern, which is required. The instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" This is ambiguous: Does \"check\" mean the verification check? Probably yes. But we must describe checks pattern. The seller says \"checks\". So we must mention checks. The instruction says never mention a check - but that would conflict with describing checks pattern. However the earlier instruction says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE.\" So \"check\" here means verification check. But we need to describe \"checks\" pattern. We can use word \"चेक\" which is transliteration of checks pattern, not verification. That should be allowed, because it's part of facts. The prohibition is about mentioning a check process. So we can still use \"चेक\" as pattern.\n\nAlternatively we could use \"चौकड़ी\" or \"चेक्स\" but \"चेक\" is fine.\n\nWe should ensure we don't use word \"जाँच\" which means check.\n\nWe should avoid using word \"चेक\" in sense of verification. Our usage is pattern, so okay.\n\nWe should ensure we don't use word \"मैच\".\n\nWe should not use \"निर्णय\" etc.\n\nWe should just output.\n\nWe must ensure we don't add \"length\" word.\n\nWe should output final answer in Hindi Devanagari.\n\nWe should ensure we don't add English.\n\nWe should deliver.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 340,
+        "total_tokens": 2406,
+        "completion_tokens": 2066,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2012
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2012
+        }
+      }
+    }
+  },
+  "error": null
+}

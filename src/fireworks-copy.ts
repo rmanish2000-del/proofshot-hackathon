@@ -284,7 +284,7 @@ export function copyMessages(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"
   }
   if (task === "listing_copy") {
     const described = garmentClaims(f).map((c) => `- ${c.field}: ${c.value}`).join("\n") || "- none recorded";
-    const fixture = isFixture(f)
+    const fixture = needsFixtureWord(f)
       ? `\nThis job is fixture data, not a live listing${f.aside ? ` (${f.aside})` : ""}. Say so plainly in one sentence that contains the English word "fixture".`
       : "";
     return [
@@ -332,27 +332,47 @@ export function matchedAttributes(f: CopyFacts): string[] {
 
 /** The seller's description of the garment: no "as in the photos" or "not recorded" value and no "must not change" line. */
 export function garmentClaims(f: CopyFacts): { field: string; value: string }[] {
-  return f.claims.filter((c) => !/as in the photos|not recorded/i.test(c.value) && !/must not change/i.test(c.field));
+  // "zebra-style stripe print all over; as in the photos" keeps what was said before the sentinel
+  // (shirt-zebra, 29 Oct: its print was dropped); "as in the photos; not recorded in words" says nothing.
+  return f.claims
+    .filter((c) => !/must not change/i.test(c.field))
+    .map((c) => ({ field: c.field, value: c.value.replace(/\s*[;,]\s*as in the photos\s*$/i, "").trim() }))
+    .filter((c) => c.value !== "" && !/as in the photos|not recorded/i.test(c.value));
 }
 
 export function isFixture(f: CopyFacts): boolean {
   return f.provenance === "fixture";
 }
 
+/**
+ * A preview job (src/shop.ts): a real garment whose own front photo stands in
+ * for the render, recorded as fixture provenance. Its listing describes the
+ * garment only (Manish, 29 Oct: the kurta listings must not say the owner's
+ * photo stands in for the preview); only a synthetic fixture says "fixture".
+ */
+export function isPreview(f: CopyFacts): boolean {
+  return isFixture(f) && /^preview:/i.test(f.aside ?? "");
+}
+
+/** A fixture whose listing must say it is fixture data: synthetic images, no real garment. */
+function needsFixtureWord(f: CopyFacts): boolean {
+  return isFixture(f) && !isPreview(f);
+}
+
 /** Words that describe the pipeline, not the garment (FW2 fix): listing copy has none of them. */
 export const LISTING_PIPELINE_WORDS =
-  /\b(?:gate|receipts?|pipeline|check(?:s|ed|ing)?|verif\w*|match\w*|mismatch\w*|attributes?|decisions?|approv\w*|render\w*|findings?|fidelity|AI|RELEASE|REVIEW|REFUSE)\b/i;
-export const LISTING_PIPELINE_WORDS_HI = /गेट|रसीद|पाइपलाइन|जाँच|जांच|मेल खा|मिलान|सत्याप|निर्णय|मंज़ूर|मंजूर|स्वीकृत|रेंडर|फ़िडेलिटी|फिडेलिटी/;
+  /\b(?:gate|receipts?|pipeline|check(?:s|ed|ing)?|verif\w*|match\w*|mismatch\w*|attributes?|decisions?|approv\w*|render\w*|findings?|fidelity|AI|RELEASE|REVIEW|REFUSE|previews?|stands? in|stand-in)\b/i;
+export const LISTING_PIPELINE_WORDS_HI = /गेट|रसीद|पाइपलाइन|जाँच|जांच|मेल खा|मिलान|सत्याप|निर्णय|मंज़ूर|मंजूर|स्वीकृत|रेंडर|फ़िडेलिटी|फिडेलिटी|पूर्वावलोकन|प्रीव्यू/;
 const FIXTURE_WORD = /fixture|फ़िक्स्चर|फिक्स्चर/i;
 
-/** Listing copy describes the garment (no pipeline word in either language), and a fixture job's listing says it is fixture data. */
+/** Listing copy describes the garment (no pipeline or preview word in either language), and a synthetic fixture's listing says it is fixture data. */
 export function listingOnTopic(text: string, f: CopyFacts): boolean {
   // A plaid garment's own description says "checks" or "check pattern": that word describes the garment
   // there, so it is not read as the pipeline's check (shirt-plaid, 29 Oct).
   const own = /\bcheck(?:s|ed)?\b/i.test(garmentClaims(f).map((c) => c.value).join(" "));
   const t = own ? text.replace(/\bcheck(?:s|ed)?\b/gi, "") : text;
   if (LISTING_PIPELINE_WORDS.test(t) || LISTING_PIPELINE_WORDS_HI.test(t)) return false;
-  return !isFixture(f) || FIXTURE_WORD.test(text);
+  return !needsFixtureWord(f) || FIXTURE_WORD.test(text);
 }
 
 const CLAIMS_MATCH = /\b(?:match\w*|kept)\b|\bas (?:in|shown in) (?:the )?photo/i;
@@ -392,10 +412,10 @@ export function templateText(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"
     const aside = f.aside && !LISTING_PIPELINE_WORDS.test(f.aside) ? f.aside : null;
     if (lang === "hi") {
       const said = parts.length ? `विक्रेता का विवरण: ${parts.join(" ")}` : "विक्रेता का कोई विवरण दर्ज नहीं है।";
-      return isFixture(f) ? `${said} यह डेमो का fixture (टेस्ट) डेटा है, असली लिस्टिंग नहीं।${aside ? ` (${aside})` : ""}` : said;
+      return needsFixtureWord(f) ? `${said} यह डेमो का fixture (टेस्ट) डेटा है, असली लिस्टिंग नहीं।${aside ? ` (${aside})` : ""}` : said;
     }
     const said = parts.join(" ") || "No seller description recorded.";
-    return isFixture(f) ? `${said} This is fixture data for the demo, not a live listing${aside ? ` (${aside})` : ""}.` : said;
+    return needsFixtureWord(f) ? `${said} This is fixture data for the demo, not a live listing${aside ? ` (${aside})` : ""}.` : said;
   }
   if (lang === "hi") {
     const d = f.decision ?? "दर्ज नहीं";

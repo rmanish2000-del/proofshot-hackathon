@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-shirt-plaid-composite-v2",
+  "started_at": "2026-10-29T14:29:18.263Z",
+  "finished_at": "2026-10-29T14:29:44.506Z",
+  "latency_ms": 26243,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Print or motif (what, where, size): large plaid check all over\n- Collar and cuffs: point collar, buttoned cuffs\n- Buttons: white"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-ca9a0e3f84284e72b4136d18d425d1d5",
+      "object": "chat.completion",
+      "created": 1793284159,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This long sleeve shirt has a button front, point collar and buttoned cuffs. It is cream with navy, light blue, mustard and maroon large plaid checks all over and has white buttons.",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Print or motif (what, where, size): large plaid check all over\n- Collar and cuffs: point collar, buttoned cuffs\n- Buttons: white\n\nWe need to produce 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we must include type, colour, length and any detail stated.\n\nWe need to be careful: length? The seller description says shirt (long sleeves, button front). That's type. Main colour cream with navy, light blue, mustard and maroon checks. Print large plaid check all over. Collar and cuffs point collar, buttoned cuffs. Buttons white.\n\nWe should write something like: \"This long sleeve shirt has a button front and point collar. It is cream with navy, light blue, mustard and maroon large plaid checks all over and has white buttons and buttoned cuffs.\"\n\nCount words: Let's count.\n\nThis(1) long2 sleeve3 shirt4 has5 a6 button7 front8 and9 point10 collar.11 It12 is13 cream14 with15 navy,16 light17 blue,18 mustard19 and20 maroon21 large22 plaid23 checks24 all25 over26 and27 has28 white29 buttons30 and31 buttoned32 cuffs33.\n\nThat's 33 words, 2 sentences, within 60 words. Good.\n\nWe must ensure we don't add extra claims. We used \"long sleeve\" - seller says long sleeves. That's okay. \"button front\" is given. \"point collar\" given. \"buttoned cuffs\" given. \"white buttons\" given. \"cream with navy, light blue, mustard and maroon checks\" given. \"large plaid check all over\" given.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. We didn't.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe must use only facts given. We did.\n\nWe need to ensure we don't add \"length\" incorrectly. The seller didn't give length like knee-length etc. But type includes long sleeves. So we describe that.\n\nWe should ensure plain English.\n\nWe must not use markdown, emoji, headings. Just plain sentences.\n\nWe should output 2-3 full sentences, at most 60 words.\n\nWe should not add extra fluff like \"perfect for...\" That would be adding claim not in facts? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we should not add marketing fluff like \"stylish\" or \"comfortable\" or \"perfect for any occasion\". That would be a claim not in facts. So keep strictly descriptive.\n\nWe should avoid adding \"stylish\" etc.\n\nWe should ensure we don't change or soften gate decision. There's no gate decision mentioned here? But instruction says do not change or soften the gate decision. Probably irrelevant here, but we must not mention gate.\n\nWe should produce final answer.\n\nPotential nuance: The user wants us to write short, plain English for an Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. Do not change or soften the gate decision. No markdown, no emoji, no headings.\n\nWe must ensure we don't accidentally add \"Indian\" etc.\n\nWe should just output the listing.\n\nWe need to ensure we don't mention \"photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" We didn't.\n\nWe should output exactly 2-3 sentences.\n\nWe should double-check word count <=60.\n\nWe have 33 words, okay.\n\nWe should ensure we use correct punctuation.\n\nWe should not add extra sentences beyond 3.\n\nWe should ensure we don't use markdown like bullet points.\n\nWe should output plain text.\n\nWe should consider whether to include \"shirt (long sleeves, button front)\" exactly. We did.\n\nWe should ensure we don't add \"light blue\" vs \"light blue\" is given. Yes.\n\nWe should ensure we don't add \"mustard and maroon checks\" - we did.\n\nWe should ensure we don't add fabric like cotton.\n\nWe should ensure we don't add size like M, L.\n\nWe should ensure we don't add price.\n\nWe should ensure we don't add care advice like machine wash.\n\nWe should ensure we don't add claim like \"high quality\".\n\nWe should just output.\n\nWe should also consider that the instruction says \"Reasoning strength: 512.\" That's irrelevant.\n\nWe should output final answer in plain English.\n\nWe should not add heading like \"Product Listing:\" That would be a heading. The instruction says no headings. So just start with sentence.\n\nWe should not add markdown bold etc.\n\nWe should just output sentences.\n\nWe should ensure we don't accidentally include \"check\" as in \"check pattern\"? But the forbidden words include \"a check\". The instruction says Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Does \"a check\" mean we cannot use the word \"check\"? Or we cannot mention \"a check\" as in verification check? Probably they mean don't mention the verification check process. But the garment description includes \"checks\" as in plaid checks. Is that allowed? The seller's description says \"checks\" and \"plaid check\". The instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" This is ambiguous. Does \"a check\" refer to the quality check? Or any use of word check? The seller's description includes \"checks\" and we need to describe garment itself. The garment has checks. If we avoid word \"check\", we cannot accurately describe. But the instruction says \"Never mention ... a check\". Could be they want to avoid saying \"check passed\" etc. But using \"checks\" to describe pattern might be considered mentioning a check. However the instruction says \"Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" This is likely to prevent the AI from saying \"The photo matches the description, check passed\" etc. But describing the pattern as \"checks\" should be allowed because it's part of seller's description. The forbidden \"a check\" likely means the verification check, not the pattern. But to be safe, we could use \"plaid pattern\" instead of \"checks\"? However seller says \"checks\" and \"plaid check\". If we change to \"plaid pattern\", is that adding claim not in facts? The seller says \"large plaid check all over\" and \"cream with navy, light blue, mustard and maroon checks\". Using word \"checks\" is directly from facts. So we should use it. The instruction to never mention \"a check\" probably means don't say \"check completed\" etc. Using \"checks\" as noun for pattern should be okay, but we need to interpret strictly. The instruction says \"Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" If we interpret literally, we cannot use the word \"check\" at all. But then we cannot describe the garment accurately. However the instruction also says \"Write a product listing ... describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else.\" So we must use seller's description which includes \"checks\". There's a conflict. We need to resolve. Probably the intent is to not mention the verification process, but describing pattern as checks is allowed. The phrase \"a check\" might be singular, while \"checks\" plural might be okay. But to be safe, we could phrase as \"plaid\" without using word check? But seller says \"large plaid check all over\" - we could say \"large plaid all over\" - that omits word check but still conveys. However instruction says \"Use only the facts given. Do not add ... or any claim that is not in the facts.\" Omitting word check is not adding, but is it omitting detail? We should include all details. But if we include \"checks\", we risk violating \"Never mention ... a check\". Which is more important? The primary instruction is to describe garment itself from seller's description. The \"Never mention ...\" is to prevent leaking internal process. The word \"checks\" in context of pattern is not mentioning the process. So it should be allowed. The filter likely checks for phrases like \"check passed\" etc., not pattern description. So we can use \"checks\".\n\nWe should ensure we don't say \"check\" as verb.\n\nWe should output as planned.\n\nWe should ensure we don't accidentally say \"match\" - we didn't.\n\nWe should ensure we don't say \"decision\" etc.\n\nWe should output final answer.\n\nWe should keep it 2-3 sentences.\n\nWe should ensure we don't add extra fluff.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 349,
+        "total_tokens": 2507,
+        "completion_tokens": 2158,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2107
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2107
+        }
+      }
+    }
+  },
+  "error": null
+}

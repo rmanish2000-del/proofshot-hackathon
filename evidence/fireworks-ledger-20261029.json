@@ -1637,6 +1637,120 @@
       "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r3:listing_copy",
       "cost_usd": 0.008563,
       "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:25:50.137Z",
+      "prediction_id": "fireworks:kurta-01:listing_copy",
+      "cost_usd": 0.009758,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:26:03.570Z",
+      "prediction_id": "fireworks:kurta-01:listing_copy:hi",
+      "cost_usd": 0.005737,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:26:24.811Z",
+      "prediction_id": "fireworks:kurta-02:listing_copy",
+      "cost_usd": 0.008706,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:26:38.574Z",
+      "prediction_id": "fireworks:kurta-02:listing_copy:hi",
+      "cost_usd": 0.00525,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:27:00.873Z",
+      "prediction_id": "fireworks:shirt-plaid:listing_copy",
+      "cost_usd": 0.010227,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:27:22.439Z",
+      "prediction_id": "fireworks:shirt-plaid:listing_copy:hi",
+      "cost_usd": 0.009206,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:27:50.558Z",
+      "prediction_id": "fireworks:shirt-zebra:listing_copy",
+      "cost_usd": 0.011546,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:28:04.905Z",
+      "prediction_id": "fireworks:shirt-zebra:listing_copy:hi",
+      "cost_usd": 0.006334,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:28:28.196Z",
+      "prediction_id": "fireworks:ms2-shirt-plaid:listing_copy",
+      "cost_usd": 0.009935,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:28:43.130Z",
+      "prediction_id": "fireworks:ms2-shirt-plaid:listing_copy:hi",
+      "cost_usd": 0.005947,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:28:58.903Z",
+      "prediction_id": "fireworks:ms2-shirt-zebra:listing_copy",
+      "cost_usd": 0.007427,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:29:17.769Z",
+      "prediction_id": "fireworks:ms2-shirt-zebra:listing_copy:hi",
+      "cost_usd": 0.00805,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:29:44.506Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2:listing_copy",
+      "cost_usd": 0.009608,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:30:09.138Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2:listing_copy:hi",
+      "cost_usd": 0.008995,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:30:41.637Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r2:receipt_summary",
+      "cost_usd": 0.012306,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:31:28.474Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r2:listing_copy",
+      "cost_usd": 0.019013,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:31:42.618Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r2:listing_copy:hi",
+      "cost_usd": 0.005947,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:32:02.791Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r3:listing_copy",
+      "cost_usd": 0.007848,
+      "estimated": true
+    },
+    {
+      "at": "2026-10-29T14:32:17.364Z",
+      "prediction_id": "fireworks:live-shirt-plaid-composite-v2-r3:listing_copy:hi",
+      "cost_usd": 0.006785,
+      "estimated": true
     }
   ]
 }
