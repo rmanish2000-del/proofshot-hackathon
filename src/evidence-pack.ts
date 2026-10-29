@@ -135,6 +135,8 @@ interface CallSample {
 
 /** One sample from one committed call log, by its file name prefix; null for a log this pack does not read. */
 export function sampleFromLog(name: string, log: Obj): CallSample | null {
+  // A spend ledger (fireworks-ledger-*.json) sits beside the call logs but records no call.
+  if (/^[a-z]+-ledger-/.test(name)) return null;
   const latency = num(log.latency_ms);
   const response = (log.response ?? null) as Obj | null;
   const status = num(response?.status);
@@ -207,6 +209,8 @@ export interface PackSummary {
   readonly jobs_with_several_renders: readonly string[];
   readonly live_renders: number;
   readonly verifier_errors: number;
+  /** verifier_errors by error class: a transport error is a failed call, a protocol error an answered call with no usable findings. */
+  readonly verifier_errors_by_kind: Readonly<Record<string, number>>;
 }
 
 export function summarize(rows: readonly PackRow[]): PackSummary {
@@ -218,6 +222,12 @@ export function summarize(rows: readonly PackRow[]): PackSummary {
     return Object.fromEntries(Object.entries(out).sort());
   };
   const decisions = count(rows);
+  const errorKinds: Record<string, number> = {};
+  for (const r of rows) {
+    if (r.verifier_error === "") continue;
+    const kind = /^(\w+):/.exec(r.verifier_error)?.[1] ?? "other";
+    errorKinds[kind] = (errorKinds[kind] ?? 0) + 1;
+  }
   const perJob = new Map<string, number>();
   for (const r of rows) perJob.set(r.job_id, (perJob.get(r.job_id) ?? 0) + 1);
   return {
@@ -231,5 +241,6 @@ export function summarize(rows: readonly PackRow[]): PackSummary {
     jobs_with_several_renders: [...perJob].filter(([, n]) => n > 1).map(([j]) => j).sort(),
     live_renders: rows.filter((r) => r.provenance === "live").length,
     verifier_errors: rows.filter((r) => r.verifier_error !== "").length,
+    verifier_errors_by_kind: Object.fromEntries(Object.entries(errorKinds).sort()),
   };
 }
