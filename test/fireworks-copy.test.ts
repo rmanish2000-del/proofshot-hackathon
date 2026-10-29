@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 
 import {
-  FIREWORKS_LLAMA_MODEL, FIREWORKS_MAX_TOKENS, FIREWORKS_MODEL, FIREWORKS_SPEND_CAP_USD, FIREWORKS_URL, answerText, copyFacts, copyMessages, fireworksCostUsd,
+  FIREWORKS_LLAMA_MODEL, FIREWORKS_MAX_TOKENS, FIREWORKS_MODEL, FIREWORKS_RESERVE_USD, FIREWORKS_SPEND_CAP_USD, FIREWORKS_URL, answerText, copyFacts, copyMessages, fireworksCostUsd,
   keepsDecision, noteClaims, parseRegQuery,
   resolveFireworksKey, templateText, writeCopy,
 } from "../src/fireworks-copy.ts";
@@ -107,8 +107,8 @@ test("FW 3: a key only in the Windows User env scope is used and recorded as use
   assert.equal(parseRegQuery(reg, "OTHER"), null);
 });
 
-test("FW 4: the spend cap: a ledger near the cap, an unreadable ledger or no ledger falls back with spend_cap before any request", async () => {
-  const near = memoryLedger([{ at: "2026-10-29T00:00:00.000Z", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD - 0.0001, estimated: true }]);
+test("FW 4: the spend cap: a ledger near cap - reserve (60 - 40 USD), an unreadable ledger or no ledger falls back with spend_cap before any request", async () => {
+  const near = memoryLedger([{ at: "2026-10-29T00:00:00.000Z", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD - FIREWORKS_RESERVE_USD - 0.0001, estimated: true }]);
   const broken: Ledger = { read: () => { throw new Error("bad"); }, append: () => {} };
   for (const ledger of [near, broken, null]) {
     const { calls, fetch } = fakeFetch(200, OK);

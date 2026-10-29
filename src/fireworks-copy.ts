@@ -17,8 +17,9 @@
 // Windows, from the User env scope (HKCU\Environment) when the process did not
 // inherit it, so a shell started before the key was set does not silently fall
 // back. It goes in the Authorization header and nowhere else. With no key, or
-// a spend ledger that would pass 5 USD, the text comes from a fixed template
-// and the record says why (`fallback_reason`), never silently.
+// a spend ledger that would pass the cap less the reserve (CAP1: 60 USD cap,
+// 40 USD kept back), the text comes from a fixed template and the record says
+// why (`fallback_reason`), never silently.
 
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
@@ -37,7 +38,10 @@ export const FIREWORKS_LLAMA_MODEL = "accounts/fireworks/models/llama-v3p3-70b-i
 export const FIREWORKS_KEY_ENV = "FIREWORKS_API_KEY";
 /** USD per million tokens for muse-spark-open, serverless, from fireworks.ai/models/fireworks/muse-spark-open (read 29 Oct). Output includes reasoning tokens. */
 export const FIREWORKS_PRICE_PER_MTOK = Object.freeze({ input: 1.25, output: 4.25 });
-export const FIREWORKS_SPEND_CAP_USD = 5;
+/** CAP1 (Grok 29 Oct 10:25 IST, Manish approved): hard cap on the Fireworks ledger, raised from 5. */
+export const FIREWORKS_SPEND_CAP_USD = 60;
+/** CAP1: left unspent; calls stop at cap - reserve. */
+export const FIREWORKS_RESERVE_USD = 40;
 /** A reasoning model spends output tokens thinking before it answers: 400 cut most answers off, and 4096 cut the live-kurta-01-mismatch summary (FW1b, 29 Oct). */
 export const FIREWORKS_MAX_TOKENS = 8192;
 /** muse-spark-open reasons for 30 s or more before answering (FW1b run, 29 Oct); one listing call passed 60 s. */
@@ -311,7 +315,7 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
   } catch {
     return fallback("spend_cap");
   }
-  if (spent + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > FIREWORKS_SPEND_CAP_USD) return fallback("spend_cap");
+  if (spent + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > FIREWORKS_SPEND_CAP_USD - FIREWORKS_RESERVE_USD + 1e-9) return fallback("spend_cap");
 
   const now = opts.now ?? Date.now;
   const started = now();
