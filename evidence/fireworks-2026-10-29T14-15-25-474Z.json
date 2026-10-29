@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-shirt-plaid-composite-v2",
+  "started_at": "2026-10-29T14:15:25.474Z",
+  "finished_at": "2026-10-29T14:15:51.059Z",
+  "latency_ms": 25585,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. The seller's description says what the garment is; it is not a check result.\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-32de86e2f10944b0a4ad9d351a0119a7",
+      "object": "chat.completion",
+      "created": 1793283326,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REFUSE, which means the image must not be published. No verifier findings were recorded so garment details like colour, pattern, collar, sleeves, hem, pockets, buttons and texture could not be compared. Your description of a cream check shirt with point collar is noted but is not a check result.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. The seller's description says what the garment is; it is not a check result.\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed\n\nWe need to write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nConstraints:\n- At most 70 words.\n- State decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published. So we must include that definition.\n- Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n- No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept.\n- The seller's description says what the garment is; it is not a check result.\n\nWe need to be careful: We must not write RELEASE or REVIEW anywhere. Only REFUSE. So we cannot mention the other two decision words. The instruction says: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write RELEASE or REVIEW at all. Only REFUSE.\n\nWe must also not say that any detail matched, did not match or was kept. So we must say garment details could not be compared.\n\nWe need to explain reasons: color: no finding, so not verified etc. All reasons are no finding, so not verified. We need to describe that.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. But we can mention seller's claims? The seller's description says what garment is; it is not a check result. So we should mention seller's claims as description, not as check result.\n\nWe need to keep under 70 words.\n\nWe need to state decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published.\n\nWe must not use markdown, emoji, headings.\n\nWe need to use plain English.\n\nWe must not add colours, fabrics, sizes, prices, care advice. But seller's claims include colours: cream with navy etc. Can we mention them? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can mention colours if they are in facts. The seller's claims include colours. So we can mention them? But we should be careful not to add new colours. We can mention the seller's description.\n\nBut we must not say verifier findings matched etc.\n\nWe need to say garment details could not be compared.\n\nWe need to describe reasons in plain words instead of using RELEASE/REVIEW/REFUSE. But reasons here are all \"no finding, so not verified\" - none contain those words. So no issue.\n\nWe must ensure we don't accidentally write the word \"review\" in lowercase? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Does that include lowercase? Likely yes, case-insensitive. So we must not write \"review\" at all. So avoid word review. Also avoid \"release\" and \"refuse\" except the one decision word REFUSE. So we must not write \"refused\" maybe? Safer to avoid any form. Use synonyms.\n\nWe need to count words <=70.\n\nDraft:\n\nDecision is REFUSE, which means the image must not be published. No verifier findings were recorded so garment details like colour, pattern, collar, sleeves, hem, pockets, buttons and texture could not be compared. Your description of a cream check shirt with point collar is noted but is not a check result.\n\nCheck word count.\n\nCount words:\n\nDecision(1) is2 REFUSE,3 which4 means5 the6 image7 must8 not9 be10 published.11 No12 verifier13 findings14 were15 recorded16 so17 garment18 details19 like20 colour,21 pattern,22 collar,23 sleeves,24 hem,25 pockets,26 buttons27 and28 texture29 could30 not31 be32 compared.33 Your34 description35 of36 a37 cream38 check39 shirt40 with41 point42 collar43 is44 noted45 but46 is47 not48 a49 check50 result51.\n\n51 words, under 70. Good.\n\nWe must ensure we didn't add forbidden claims. We said \"cream check shirt with point collar\" - that's in seller's claims: Type: shirt (long sleeves, button front), Main colour: cream with navy, light blue, mustard and maroon checks, Collar and cuffs: point collar, buttoned cuffs. So we summarized correctly. We didn't add fabric, size, price, care advice.\n\nWe said garment details could not be compared - required.\n\nWe stated decision word exactly as given and what it means.\n\nWe didn't use RELEASE or REVIEW.\n\nWe didn't say any detail matched, did not match or was kept. We said could not be compared, which is allowed.\n\nWe need to ensure we use plain English for Indian clothing seller. That's okay.\n\nWe must not add markdown, emoji, headings. We didn't.\n\nWe must not change or soften gate decision. We said REFUSE means image must not be published - correct.\n\nWe should ensure we don't accidentally include \"review\" inside \"reviewed\"? We didn't.\n\nWe should output final answer.\n\nPotential nuance: The instruction says \"No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept.\" We did that.\n\n\"The seller's description says what the garment is; it is not a check result.\" We said \"Your description ... is noted but is not a check result.\" Good.\n\nWe must ensure we don't say \"not verified\" maybe? But reasons say not verified. Can we say not verified? The reasons are \"no finding, so not verified\". We said could not be compared. That's okay. We could also say not verified. But we already covered.\n\nWe should not add colours beyond facts. We mentioned cream check - that's okay. But we omitted navy, light blue, mustard, maroon. Could include but not necessary. We used only facts given. We didn't add new colours.\n\nWe should ensure we don't use the word \"release\" or \"review\" anywhere. We didn't.\n\nWe need to ensure we write decision word in capitals: REFUSE - we did.\n\nWe must ensure at most 70 words - we are at 51.\n\nWe should deliver final answer as plain text.\n\nPotential improvement: Use short plain English. Our sentence is okay.\n\nWe must not add markdown. So no bullet points.\n\nWe should output exactly the explanation.\n\nMake sure not to include extra heading like \"Explanation:\" That might be considered heading. Better just start with sentence. The instruction says no headings. So avoid \"Explanation:\".\n\nJust output the paragraph.\n\nWe should double-check we didn't accidentally include \"review\" in \"verifier\"? No.\n\nWe should ensure we didn't include \"REFUSE\" more than once? We included once. That's allowed. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere. Does that mean we can only write REFUSE once? It says write that one decision word in capitals and no other ... So we should only write REFUSE once, not multiple times. We did once. Good.\n\nWe should not write \"refuse\" in lowercase elsewhere. We didn't.\n\nWe should ensure we don't write \"RELEASE\" or \"REVIEW\" even in explanation of what it means. We wrote \"which means the image must not be published.\" That's correct definition for REFUSE. We didn't mention other definitions.\n\nWe should output final.\n\nPotential edge: The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed. Should we mention that? We could but not required. We already mentioned pattern, colours, collar.\n\nWe must not add care advice.\n\nWe are good.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 526,
+        "total_tokens": 2592,
+        "completion_tokens": 2066,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1994
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1994
+        }
+      }
+    }
+  },
+  "error": null
+}

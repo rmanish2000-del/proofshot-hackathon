@@ -1,0 +1,81 @@
+{
+  "job_id": "live-shirt-plaid-composite-v2",
+  "records": [
+    {
+      "job_id": "live-shirt-plaid-composite-v2",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "5c5801bdb01825d74dbbbaaa0f1ea916aecf91d1c0f2687cd2fc76120eac4697",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "bcffe21512162cfc53b62a5f0306e1bccf007ba3e66acbc2b66cb442b0d550d3",
+      "usage": {
+        "prompt_tokens": 526,
+        "completion_tokens": 2066
+      },
+      "cost_usd": 0.009438,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE, which means the image must not be published. No verifier findings were recorded so garment details like colour, pattern, collar, sleeves, hem, pockets, buttons and texture could not be compared. Your description of a cream check shirt with point collar is noted but is not a check result."
+    },
+    {
+      "job_id": "live-shirt-plaid-composite-v2",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "5c5801bdb01825d74dbbbaaa0f1ea916aecf91d1c0f2687cd2fc76120eac4697",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0ea8091dd212af3c2144fa92b6778c3cd150ca2a67ca00b92a237c6b6300a938",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 2280
+      },
+      "cost_usd": 0.010098,
+      "cost_estimated": true,
+      "text": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks and has a point collar and buttoned cuffs."
+    },
+    {
+      "job_id": "live-shirt-plaid-composite-v2",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "5c5801bdb01825d74dbbbaaa0f1ea916aecf91d1c0f2687cd2fc76120eac4697",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "a3fa4f97021eff706cf99ee06d90c6c0dfeb33cf7bec139af3d1309d35b1a65e",
+      "usage": {
+        "prompt_tokens": 560,
+        "completion_tokens": 2757
+      },
+      "cost_usd": 0.012417,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम REFUSE है, इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। जाँच में कपड़े के विवरण की तुलना नहीं हो सकी, इसलिए रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और बनावट सत्यापित नहीं हुए। विक्रेता का विवरण केवल बताता है कि कपड़ा क्या है, यह जाँच का परिणाम नहीं है।"
+    },
+    {
+      "job_id": "live-shirt-plaid-composite-v2",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "5c5801bdb01825d74dbbbaaa0f1ea916aecf91d1c0f2687cd2fc76120eac4697",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b020701794b365b294bdd3be0afe0b4eb93a32c239a047c2836beb249ec50c9f",
+      "usage": {
+        "prompt_tokens": 359,
+        "completion_tokens": 1563
+      },
+      "cost_usd": 0.007092,
+      "cost_estimated": true,
+      "text": "यह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, सरसों और मैरून रंग के चेक्स हैं। इसमें पॉइंट कॉलर और बटन वाले कफ हैं।"
+    }
+  ]
+}

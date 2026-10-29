@@ -1,0 +1,81 @@
+{
+  "job_id": "ms2-shirt-plaid",
+  "records": [
+    {
+      "job_id": "ms2-shirt-plaid",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "a709806d26d1a8e407077b7917331aff20d3623d956bd1d494fc9d0e4593fa10",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "54f0dc91ec019548bd4427d3b461bf70559ed507c63e8baab98f49ceaad8fefc",
+      "usage": {
+        "prompt_tokens": 448,
+        "completion_tokens": 2956
+      },
+      "cost_usd": 0.013123,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. All verifier checks matched your description for colour, print, collar, sleeve length, hem, pockets, buttons and fabric texture. No problems were found."
+    },
+    {
+      "job_id": "ms2-shirt-plaid",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "a709806d26d1a8e407077b7917331aff20d3623d956bd1d494fc9d0e4593fa10",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0ea8091dd212af3c2144fa92b6778c3cd150ca2a67ca00b92a237c6b6300a938",
+      "usage": {
+        "prompt_tokens": 326,
+        "completion_tokens": 1851
+      },
+      "cost_usd": 0.008274,
+      "cost_estimated": true,
+      "text": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks and has a point collar and buttoned cuffs."
+    },
+    {
+      "job_id": "ms2-shirt-plaid",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "a709806d26d1a8e407077b7917331aff20d3623d956bd1d494fc9d0e4593fa10",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "24e03d5e02d20b4b7f680edde4a8858c876dbbd46df091d956352b29db98e4ce",
+      "usage": {
+        "prompt_tokens": 482,
+        "completion_tokens": 3497
+      },
+      "cost_usd": 0.015465,
+      "cost_estimated": true,
+      "text": "निर्णय RELEASE है, इसका मतलब तस्वीर प्रकाशित की जा सकती है। विक्रेता के अनुसार यह लंबी आस्तीन वाला बटन फ्रंट शर्ट है, क्रीम पर नेवी, हल्के नीले, मस्टर्ड और मरून चेक्स, पॉइंट कॉलर और बटन वाले कफ हैं। विक्रेता ने चेक पैटर्न, रंग और कॉलर फोटो जैसा रखने को कहा था। जाँच में रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट सभी मिले।"
+    },
+    {
+      "job_id": "ms2-shirt-plaid",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "a709806d26d1a8e407077b7917331aff20d3623d956bd1d494fc9d0e4593fa10",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b020701794b365b294bdd3be0afe0b4eb93a32c239a047c2836beb249ec50c9f",
+      "usage": {
+        "prompt_tokens": 359,
+        "completion_tokens": 2232
+      },
+      "cost_usd": 0.009935,
+      "cost_estimated": true,
+      "text": "यह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, मस्टर्ड और मैरून चेक हैं। इसमें पॉइंट कॉलर और बटन वाले कफ हैं।"
+    }
+  ]
+}

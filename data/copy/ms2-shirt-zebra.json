@@ -1,0 +1,81 @@
+{
+  "job_id": "ms2-shirt-zebra",
+  "records": [
+    {
+      "job_id": "ms2-shirt-zebra",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "211d6a4512f51d01a3a6ba4e7e4a71a4be96b5e7a0e6897ed3fe96fab60c3078",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "9058296ec77e67b0b457ac0cf00d565f4ceb335de26f30cdf7d3150f7eb11726",
+      "usage": {
+        "prompt_tokens": 452,
+        "completion_tokens": 3361
+      },
+      "cost_usd": 0.014849,
+      "cost_estimated": true,
+      "text": "Your image check result is REVIEW which means a person must look first. The source mask is missing with no segment with mask bytes for 1-front.jpg so it needs a manual check. All checked attributes matched: colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture."
+    },
+    {
+      "job_id": "ms2-shirt-zebra",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "211d6a4512f51d01a3a6ba4e7e4a71a4be96b5e7a0e6897ed3fe96fab60c3078",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "191427efd76dd072ab949347af791933e7116be4b46c66131758860f64f11fd8",
+      "usage": {
+        "prompt_tokens": 315,
+        "completion_tokens": 1335
+      },
+      "cost_usd": 0.006068,
+      "cost_estimated": true,
+      "text": "This shirt has short sleeves and a button front. It is black and grey with a point collar."
+    },
+    {
+      "job_id": "ms2-shirt-zebra",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "211d6a4512f51d01a3a6ba4e7e4a71a4be96b5e7a0e6897ed3fe96fab60c3078",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "3175ec5bfa0a5f4ed082d04cbca8d08765eada2a7efef1d005c0e3b5bae26d03",
+      "usage": {
+        "prompt_tokens": 486,
+        "completion_tokens": 2716
+      },
+      "cost_usd": 0.012151,
+      "cost_estimated": true,
+      "text": "आपकी तस्वीर की जाँच का नतीजा REVIEW है, इसका अर्थ है प्रकाशन से पहले एक व्यक्ति को जाँच करनी होगी। कारण है कि 1-front.jpg के लिए स्रोत मास्क नहीं मिला। रंग, प्रिंट, लोगो, कॉलर, आस्तीन की लंबाई, हेम, जेबों की संख्या, बटन और कपड़े की बनावट सभी मिलते हैं।"
+    },
+    {
+      "job_id": "ms2-shirt-zebra",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "211d6a4512f51d01a3a6ba4e7e4a71a4be96b5e7a0e6897ed3fe96fab60c3078",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "1138fe6367984f8c462b2313370e58f8e688383bb41cc25628ad3e91aa664809",
+      "usage": {
+        "prompt_tokens": 348,
+        "completion_tokens": 1377
+      },
+      "cost_usd": 0.006287,
+      "cost_estimated": true,
+      "text": "यह काली और ग्रे रंग की शर्ट है। इसमें छोटी आस्तीनें और सामने बटन हैं। इसमें पॉइंट कॉलर है।"
+    }
+  ]
+}

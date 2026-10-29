@@ -1,0 +1,73 @@
+{
+  "job_id": "shirt-zebra",
+  "records": [
+    {
+      "job_id": "shirt-zebra",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "ccdc9543d33647b7139d0b37fe68444264bbb2a2d1ce34f317884acbd8ed1c17",
+      "usage": {
+        "prompt_tokens": 400,
+        "completion_tokens": 2401
+      },
+      "cost_usd": 0.010704,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. Verifier found all attributes match the seller description of a shirt with short sleeves and button front in black and grey. No reasons against publishing were given."
+    },
+    {
+      "job_id": "shirt-zebra",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Description: shirt (short sleeves, button front), black and grey. This is fixture data for the demo, not a live listing."
+    },
+    {
+      "job_id": "shirt-zebra",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "bf09e158822cf99ab7f864d522d1c67b18c4d8568217469582c1da5b336ec3ea",
+      "usage": {
+        "prompt_tokens": 434,
+        "completion_tokens": 2272
+      },
+      "cost_usd": 0.010199,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम RELEASE है। इसका मतलब है कि तस्वीर प्रकाशित की जा सकती है। विक्रेता के विवरण के अनुसार यह काले और ग्रे रंग की छोटी आस्तीन वाली बटन वाली शर्ट है। जाँच में रंग, प्रिंट, लोगो, कॉलर, आस्तीन की लंबाई, हेम, जेबों की संख्या, बटन और कपड़े की बनावट सभी मिलान पाए गए।"
+    },
+    {
+      "job_id": "shirt-zebra",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "5a0d1ba31a0c7ee9b65f9ca1801c9636500c713359bbb54ab8f219ad18195b1c",
+      "usage": {
+        "prompt_tokens": 371,
+        "completion_tokens": 4778
+      },
+      "cost_usd": 0.02077,
+      "cost_estimated": true,
+      "text": "यह काले और ग्रे रंग की शर्ट है। इसमें छोटी आस्तीनें और सामने बटन हैं। यह काम fixture डेटा है, लाइव लिस्टिंग नहीं है।"
+    }
+  ]
+}

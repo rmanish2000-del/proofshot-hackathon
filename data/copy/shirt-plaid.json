@@ -1,0 +1,81 @@
+{
+  "job_id": "shirt-plaid",
+  "records": [
+    {
+      "job_id": "shirt-plaid",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "dd2ed0b8c369fcf139a14be86ebc6f2eab6c93041de2c300ed81e77f89f14c26",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "8a392ad30433992c170278824cb08e230feb4e60ae243bc248097b5a9cae0bac",
+      "usage": {
+        "prompt_tokens": 409,
+        "completion_tokens": 1357
+      },
+      "cost_usd": 0.006279,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. All checked attributes match the seller description of shirt with long sleeves, button front, cream with navy, light blue, mustard and maroon checks. No issues found."
+    },
+    {
+      "job_id": "shirt-plaid",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "dd2ed0b8c369fcf139a14be86ebc6f2eab6c93041de2c300ed81e77f89f14c26",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d3e42681613a3be805c9fb064d2669c1f046fa23ffe15b184e0290b3316e233e",
+      "usage": {
+        "prompt_tokens": 347,
+        "completion_tokens": 2954
+      },
+      "cost_usd": 0.012988,
+      "cost_estimated": true,
+      "text": "This job is fixture data, not a live listing. This shirt has long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks."
+    },
+    {
+      "job_id": "shirt-plaid",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "dd2ed0b8c369fcf139a14be86ebc6f2eab6c93041de2c300ed81e77f89f14c26",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e9e6e39b724ef6c0525f78b377685e8e014bddd9612a6c7493f01e3415ce8c43",
+      "usage": {
+        "prompt_tokens": 443,
+        "completion_tokens": 2692
+      },
+      "cost_usd": 0.011995,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम RELEASE है। इसका अर्थ है कि तस्वीर प्रकाशित की जा सकती है। सभी जाँचे गए विवरण मिल गए हैं। विक्रेता के बताए अनुसार कपड़ा शर्ट है।"
+    },
+    {
+      "job_id": "shirt-plaid",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "dd2ed0b8c369fcf139a14be86ebc6f2eab6c93041de2c300ed81e77f89f14c26",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "97b87ff1f03a7116031a10fec4ef649a332b68775fe32623b0e8d6320b391ff1",
+      "usage": {
+        "prompt_tokens": 380,
+        "completion_tokens": 5375
+      },
+      "cost_usd": 0.023319,
+      "cost_estimated": true,
+      "text": "यह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्के नीले, मस्टर्ड और मैरून चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं। यह fixture डेटा है, वास्तविक सूची नहीं है।"
+    }
+  ]
+}

@@ -393,3 +393,12 @@ test("FW2 fix 4: every committed listing describes the garment (no gate, receipt
     }
   }
 });
+
+test("FW2 shirts: 'check' is a garment word when the seller's own description uses it (a plaid shirt), and still off topic otherwise", async () => {
+  const { listingOnTopic } = await import("../src/fireworks-copy.ts");
+  const plaid: CopyFacts = { ...FACTS, claims: [{ field: "Type", value: "shirt (long sleeves, button front)" }, { field: "Main colour", value: "cream with navy, light blue, mustard and maroon checks" }] };
+  assert.equal(listingOnTopic("A long-sleeved shirt in cream with navy, mustard and maroon checks. It has a point collar.", plaid), true);
+  assert.equal(listingOnTopic("A long-sleeved checked shirt. The colour matches the photos.", plaid), false, "match is still a pipeline word");
+  assert.equal(listingOnTopic("A women's kurta in peach. Its colour was checked against the photos.", FACTS), false, "no check in the kurta's description");
+  assert.ok(listingOnTopic(templateText("listing_copy", plaid), plaid), "the plaid template passes");
+});
