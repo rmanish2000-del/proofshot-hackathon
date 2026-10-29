@@ -14,7 +14,7 @@
 // refuse. REVIEW is neither and is counted on its own, as is a case fidelity
 // could not measure (metrics null). Nothing here reads files or calls a model.
 
-import { checkFidelity } from "./fidelity.ts";
+import { checkFidelity, judgeMetrics } from "./fidelity.ts";
 import type { Metrics, Thresholds } from "./fidelity.ts";
 import { decide } from "./gate.ts";
 import type { Mask, RgbImage } from "./png.ts";
@@ -73,6 +73,46 @@ export interface CandidateScore {
 }
 
 export function scoreCalibration(cases: readonly CalibrationCase[], candidates: readonly Candidate[], options: ScoreOptions = {}): CandidateScore[] {
+  return scoreWith(cases, candidates, options, checkFidelity);
+}
+
+/**
+ * A render a committed job already checked: the fidelity values and verifier
+ * findings its receipt recorded, and a label. The values do not depend on the
+ * thresholds, so each candidate is applied to them with judgeMetrics; no image
+ * is decoded and no model is called.
+ */
+export interface RecordedCase {
+  readonly id: string;
+  readonly label: CalibrationLabel;
+  /** null when the job could not measure fidelity: REVIEW under every candidate. */
+  readonly metrics: Metrics | null;
+  /** The receipt's reasons for an unmeasured fidelity, kept as the REVIEW reasons. */
+  readonly unmeasuredReasons?: readonly string[];
+  /** The receipt's verifier findings; absent fails closed at the gate, as in scoreCalibration. */
+  readonly findings?: readonly DecisionInput[];
+}
+
+export function scoreRecorded(cases: readonly RecordedCase[], candidates: readonly Candidate[], options: ScoreOptions = {}): CandidateScore[] {
+  return scoreWith(cases, candidates, options, (c, t) =>
+    c.metrics
+      ? { ...judgeMetrics(c.metrics, t), metrics: c.metrics }
+      : { decision: "REVIEW", reasons: c.unmeasuredReasons ?? ["fidelity was not measured on this job"], metrics: null },
+  );
+}
+
+interface Judged {
+  readonly decision: Decision;
+  readonly reasons: readonly string[];
+  readonly metrics: Metrics | null;
+}
+
+function scoreWith<C extends { readonly id: string; readonly label: CalibrationLabel; readonly findings?: readonly DecisionInput[] }>(
+  cases: readonly C[],
+  candidates: readonly Candidate[],
+  options: ScoreOptions,
+  judge: (c: C, t: Thresholds) => Judged,
+): CandidateScore[] {
   const scope = options.scope ?? "gate";
   if (scope !== "gate" && scope !== "fidelity") throw new Error(`calibration: scope ${JSON.stringify(scope)}, say gate or fidelity`);
   const ids = new Set<string>();
@@ -83,7 +123,7 @@ export function scoreCalibration(cases: readonly CalibrationCase[], candidates: 
   }
   return candidates.map(({ name, thresholds }) => {
     const results = cases.map((c): CaseResult => {
-      const fid = checkFidelity(c, thresholds);
+      const fid = judge(c, thresholds);
       // No findings goes to the gate as none at all, which refuses it as not verified.
       const decision = scope === "fidelity" ? fid.decision : decide(c.findings ?? [], { decision: fid.decision, reasons: fid.reasons }).decision;
       return { id: c.id, label: c.label, fidelity: fid.decision, decision, measured: fid.metrics !== null, metrics: fid.metrics };
@@ -149,6 +189,128 @@ export function labelledPairs<T extends GarmentPhoto>(photos: readonly T[]): Lab
     }
   }
   return pairs;
+}
+
+/**
+ * What one render image shows, keyed by its sha256 (Grok 29 Oct 14:10): the
+ * garment directory (data/garments/<shows>/note.txt) and, when the image
+ * altered it, what changed (e.g. a long kurta come back hip-length). The same
+ * image can be a render in jobs for different garments, so the label is a fact
+ * about the image; recordedRenders compares it with each job's garment. `by`
+ * and `why` say who set it and from what.
+ */
+export interface RenderLabel {
+  readonly shows: string;
+  readonly changed?: string;
+  readonly by: string;
+  readonly why: string;
+}
+
+/** Validates a labels file `{ renders: { <sha256>: RenderLabel } }`; anything else throws. */
+export function parseRenderLabels(value: unknown): Map<string, RenderLabel> {
+  const renders = (value as { renders?: unknown } | null)?.renders;
+  if (typeof renders !== "object" || renders === null || Array.isArray(renders)) throw new Error("calibration labels: need an object `renders`");
+  const text = (v: unknown) => typeof v === "string" && v.trim() !== "";
+  const out = new Map<string, RenderLabel>();
+  for (const [sha, raw] of Object.entries(renders)) {
+    if (!/^[0-9a-f]{64}$/.test(sha)) throw new Error(`calibration labels: ${JSON.stringify(sha)} is not a sha256`);
+    const l = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
+    for (const key of ["shows", "by", "why"] as const) {
+      if (!text(l[key])) throw new Error(`calibration labels: ${sha} needs ${key}`);
+    }
+    if (l.changed !== undefined && !text(l.changed)) throw new Error(`calibration labels: ${sha} changed must say what changed, or be left out`);
+    out.set(sha, { shows: l.shows as string, ...(l.changed !== undefined ? { changed: l.changed as string } : {}), by: l.by as string, why: l.why as string });
+  }
+  return out;
+}
+
+export interface ReceiptLine {
+  readonly kind: string;
+  readonly payload: Record<string, unknown>;
+}
+
+export interface RecordedRender extends RecordedCase {
+  readonly job_id: string;
+  readonly render_sha256: string;
+  readonly garment: string;
+  /** The gate decision the receipt recorded, to check a rerun at the config thresholds against. */
+  readonly recorded: Decision | null;
+}
+
+export interface SkippedRender {
+  readonly id: string;
+  readonly render_sha256: string;
+  readonly reason: string;
+}
+
+/**
+ * The scoreable renders of one receipt: every render entry with a fidelity
+ * entry, its recorded metrics (null when unmeasured) and verifier findings
+ * (absent when no verifier entry, which fails closed). The job's garment is the
+ * one garment directory all its source photos belong to, by sha256 (`photos`:
+ * photo sha256 -> directory, from each intake.json); the case is `same` when
+ * the render's label shows that garment unchanged, else `different`. Skipped
+ * with the reason, never guessed: a fixture job (its fidelity entry was
+ * written, not measured), sources from no or several garment directories, a
+ * render with no label, or no fidelity entry (a job run without the check).
+ */
+export function recordedRenders(
+  lines: readonly ReceiptLine[],
+  labels: ReadonlyMap<string, RenderLabel>,
+  photos: ReadonlyMap<string, string>,
+): { cases: RecordedRender[]; skipped: SkippedRender[] } {
+  const job = lines.find((l) => l.kind === "job")?.payload ?? {};
+  const job_id = String(job.job_id ?? "");
+  const sources = Array.isArray(job.source_images) ? (job.source_images as { sha256?: unknown }[]) : [];
+  const garments = new Set(sources.map((s) => photos.get(String(s.sha256)) ?? null));
+  const garment = garments.size === 1 ? [...garments][0] : null;
+  const jobProblem = job.provenance === "fixture"
+    ? "fixture job: its fidelity entry was written, not measured"
+    : garment
+      ? null
+      : garments.size === 0
+        ? "the job lists no source photos"
+        : `source photos belong to ${[...garments].map((g) => g ?? "no garment directory").join(" and ")}`;
+  const forRender = (kind: string, id: unknown) => lines.find((l) => l.kind === kind && l.payload.render_id === id)?.payload;
+  const cases: RecordedRender[] = [];
+  const skipped: SkippedRender[] = [];
+  for (const { payload: render } of lines.filter((l) => l.kind === "render")) {
+    const id = String(render.render_id);
+    const render_sha256 = String(render.sha256);
+    const skip = (reason: string) => skipped.push({ id, render_sha256, reason });
+    if (jobProblem || !garment) {
+      skip(jobProblem ?? "no garment");
+      continue;
+    }
+    const fidelity = forRender("fidelity", render.render_id);
+    if (!fidelity) {
+      skip("no fidelity entry: the job ran without the fidelity check");
+      continue;
+    }
+    const label = labels.get(render_sha256);
+    if (!label) {
+      skip("no label for this render");
+      continue;
+    }
+    const m =fidelity.metrics as Record<string, unknown> | null | undefined;
+    const metrics = m && ["delta_e", "hist", "texture", "area"].every((k) => typeof m[k] === "number")
+      ? { delta_e: m.delta_e as number, hist: m.hist as number, texture: m.texture as number, area: m.area as number }
+      : null;
+    const verifier = forRender("verifier", render.render_id);
+    const gate = forRender("gate", render.render_id)?.decision;
+    cases.push({
+      id,
+      label: label.shows === garment && label.changed === undefined ? "same" : "different",
+      metrics,
+      ...(metrics ? {} : { unmeasuredReasons: Array.isArray(fidelity.reasons) ? fidelity.reasons.map(String) : [] }),
+      ...(verifier && Array.isArray(verifier.findings) ? { findings: verifier.findings as DecisionInput[] } : {}),
+      job_id,
+      render_sha256,
+      garment,
+      recorded: gate === "RELEASE" || gate === "REVIEW" || gate === "REFUSE" ? gate : null,
+    });
+  }
+  return { cases, skipped };
 }
 
 /** A mask that is garment everywhere: for a whole-frame baseline run only, background included. */

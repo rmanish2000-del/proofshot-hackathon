@@ -1,0 +1,72 @@
+{
+  "about": "What each committed render image shows, keyed by sha256, for npm run calibrate:jobs. shows = the garment directory under data/garments; changed = what the image altered. A render is a 'same' case in a job for the garment it shows unchanged, else 'different'. Labels are not used by the gate. fixture-shirt-01 renders are left unlabelled (synthetic fixture images, not a garment directory).",
+  "renders": {
+    "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe": {
+      "shows": "kurta-01",
+      "by": "autorun 29 Oct 2026",
+      "why": "byte-identical to data/garments/kurta-01/1-front.jpg (intake.json sha256): the owner's photo standing in for a render"
+    },
+    "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425": {
+      "shows": "kurta-02",
+      "by": "autorun 29 Oct 2026",
+      "why": "byte-identical to data/garments/kurta-02/1-front.jpg (intake.json sha256); the live-kurta-01-mismatch jobs use it as the wrong garment on purpose"
+    },
+    "fe94fc7c7a11a463a18aad2860420d1a4145d5bc06ca292063e6ccf62264a7de": {
+      "shows": "kurta-01",
+      "by": "autorun 29 Oct 2026",
+      "why": "composite (live-kurta-01-composite): kurta-01's own cut-out on a mannequin; looked at, colour, yoke, sleeves and hem as photographed"
+    },
+    "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b": {
+      "shows": "kurta-01",
+      "by": "autorun 29 Oct 2026",
+      "why": "composite v2 (live-kurta-01-composite-r2): kurta-01's own cut-out on a mannequin; looked at, colour, yoke, sleeves and hem as photographed"
+    },
+    "20039f1360ac65c0151751206d0441151993428f20414f02a0131aacc7a1a5aa": {
+      "shows": "kurta-02",
+      "by": "autorun 29 Oct 2026",
+      "why": "composite (live-kurta-02-composite): kurta-02's own cut-out on a mannequin; looked at, colour, neckline embroidery and buttis as photographed"
+    },
+    "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33": {
+      "shows": "kurta-01",
+      "changed": "length: below-knee kurta came back hip-length; full sleeves came back three-quarter",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 22:50, NR4c)",
+      "why": "Pruna try-on live-kurta-01-tryon (9b3b226)"
+    },
+    "f5aa1b02e71e7c6aa61734d6c0aacfedc1f33d627500bdf249a5598651730dd3": {
+      "shows": "kurta-01",
+      "changed": "length: below-knee kurta cut at hip or upper thigh",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 23:12, NR4d)",
+      "why": "Pruna try-on live-kurta-01-tryon-s02 on synthetic-02 (4427c81)"
+    },
+    "291a0026c18ed31915bd300c0fd5b7214a48d4f47bf1ee04e6d50b6b467de336": {
+      "shows": "kurta-01",
+      "changed": "length: Pruna still shortened the kurta with the margined full-length cut-out",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 23:50)",
+      "why": "Pruna try-on live-kurta-01-tryon-m on synthetic-02 (ace95ac)"
+    },
+    "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c": {
+      "shows": "kurta-02",
+      "changed": "length: below-knee kurta cut to hip length with shorts drawn below",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 22:30, NR4b)",
+      "why": "Pruna try-on live-kurta-02-tryon (14dad54)"
+    },
+    "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576": {
+      "shows": "kurta-02",
+      "changed": "length: still a hip-length tunic with the length prompt",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 22:50, NR4c)",
+      "why": "Pruna try-on live-kurta-02-tryon-2 (9b3b226)"
+    },
+    "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0": {
+      "shows": "kurta-02",
+      "changed": "length: below-knee kurta cut at hip or upper thigh",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 23:12, NR4d)",
+      "why": "Pruna try-on live-kurta-02-tryon-s02 on synthetic-02 (4427c81)"
+    },
+    "f79bd873c053fd8dffe29edbf63c77c7eb4034a7067808d2dbe191172dc3b973": {
+      "shows": "kurta-02",
+      "changed": "length: Pruna still shortened the kurta with the margined full-length cut-out",
+      "by": "autorun 29 Oct 2026, from Grok on #23 (28 Oct 23:50)",
+      "why": "Pruna try-on live-kurta-02-tryon-m on synthetic-02 (ace95ac)"
+    }
+  }
+}

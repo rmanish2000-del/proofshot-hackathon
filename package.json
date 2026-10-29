@@ -20,6 +20,7 @@
     "demo:replay": "node --experimental-strip-types scripts/replay.ts",
     "demo:record": "node --experimental-strip-types scripts/record.ts",
     "calibrate": "node --experimental-strip-types scripts/calibrate.ts",
+    "calibrate:jobs": "node --experimental-strip-types scripts/calibrate-jobs.ts",
     "demo:canned": "node --experimental-strip-types scripts/demo-recordings.ts",
     "demo:capture": "node --experimental-strip-types scripts/demo-capture.ts",
     "demo:stage": "node --experimental-strip-types scripts/demo-stage.ts",

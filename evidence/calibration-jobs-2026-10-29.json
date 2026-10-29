@@ -1,0 +1,4415 @@
+{
+  "jobs": "data/jobs",
+  "labels": "data/calibration/labels.json",
+  "factors": [
+    0.5,
+    0.75,
+    1,
+    1.5,
+    2
+  ],
+  "cases": [
+    {
+      "id": "live-kurta-01-r0",
+      "label": "same",
+      "metrics": null,
+      "unmeasuredReasons": [
+        "source mask is missing: no segment with mask bytes for 1-front.jpg"
+      ],
+      "job_id": "live-kurta-01",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-01-2-r0",
+      "label": "same",
+      "metrics": null,
+      "unmeasuredReasons": [
+        "source mask is missing: no segment with mask bytes for 1-front.jpg"
+      ],
+      "job_id": "live-kurta-01-2",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "garment": "kurta-01",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "live-kurta-01-composite-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.5934568266144274,
+        "hist": 0.013035481261272542,
+        "texture": 0.921875,
+        "area": 0.46903040800012546
+      },
+      "job_id": "live-kurta-01-composite",
+      "render_sha256": "fe94fc7c7a11a463a18aad2860420d1a4145d5bc06ca292063e6ccf62264a7de",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-01-composite-r2-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.5939530809937311,
+        "hist": 0.013042834969847011,
+        "texture": 0.921875,
+        "area": 0.46903410420918246
+      },
+      "job_id": "live-kurta-01-composite-r2",
+      "render_sha256": "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b",
+      "garment": "kurta-01",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "live-kurta-01-mismatch-r0",
+      "label": "different",
+      "metrics": null,
+      "unmeasuredReasons": [
+        "source mask is missing: no segment with mask bytes for 1-front.jpg"
+      ],
+      "job_id": "live-kurta-01-mismatch",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-01-sam-r0",
+      "label": "same",
+      "metrics": null,
+      "unmeasuredReasons": [
+        "source image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured"
+      ],
+      "job_id": "live-kurta-01-sam",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "garment": "kurta-01",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "live-kurta-01-sam-2-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.00009496937197326497,
+        "hist": 0.000020469588507724442,
+        "texture": 1,
+        "area": 1.0000050346383116
+      },
+      "job_id": "live-kurta-01-sam-2",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "garment": "kurta-01",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "live-kurta-01-tryon-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 12.214712949991911,
+        "hist": 0.12619299230626865,
+        "texture": 0.640625,
+        "area": 0.2058964016450272
+      },
+      "job_id": "live-kurta-01-tryon",
+      "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-01-tryon-m-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 17.521940442672822,
+        "hist": 0.30674459848124275,
+        "texture": 0.8125,
+        "area": 0.3010109718866245
+      },
+      "job_id": "live-kurta-01-tryon-m",
+      "render_sha256": "291a0026c18ed31915bd300c0fd5b7214a48d4f47bf1ee04e6d50b6b467de336",
+      "garment": "kurta-01",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "live-kurta-01-tryon-reverify-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 12.214495205216428,
+        "hist": 0.12618814920342833,
+        "texture": 0.640625,
+        "area": 0.2058953650363342
+      },
+      "job_id": "live-kurta-01-tryon-reverify",
+      "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-01-tryon-s02-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 18.201670381058037,
+        "hist": 0.2616367194391102,
+        "texture": 0.609375,
+        "area": 0.18286144088171338
+      },
+      "job_id": "live-kurta-01-tryon-s02",
+      "render_sha256": "f5aa1b02e71e7c6aa61734d6c0aacfedc1f33d627500bdf249a5598651730dd3",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-02-composite-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.190862160033122,
+        "hist": 0.012534853842550176,
+        "texture": 0.953125,
+        "area": 0.451256309668541
+      },
+      "job_id": "live-kurta-02-composite",
+      "render_sha256": "20039f1360ac65c0151751206d0441151993428f20414f02a0131aacc7a1a5aa",
+      "garment": "kurta-02",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "live-kurta-02-sam-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.00042322521773536186,
+        "hist": 0.00000990079283034173,
+        "texture": 1,
+        "area": 1.0000105840265872
+      },
+      "job_id": "live-kurta-02-sam",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "garment": "kurta-02",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "live-kurta-02-tryon-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 14.199191033312484,
+        "hist": 0.3676534564782653,
+        "texture": 0.6875,
+        "area": 0.2121265317050207
+      },
+      "job_id": "live-kurta-02-tryon",
+      "render_sha256": "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c",
+      "garment": "kurta-02",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "live-kurta-02-tryon-2-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 15.47862386376611,
+        "hist": 0.3834272865108416,
+        "texture": 0.671875,
+        "area": 0.21283508980883495
+      },
+      "job_id": "live-kurta-02-tryon-2",
+      "render_sha256": "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576",
+      "garment": "kurta-02",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-02-tryon-2-reverify-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 15.478885390334247,
+        "hist": 0.3834291994564097,
+        "texture": 0.671875,
+        "area": 0.21283038559146705
+      },
+      "job_id": "live-kurta-02-tryon-2-reverify",
+      "render_sha256": "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576",
+      "garment": "kurta-02",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "live-kurta-02-tryon-m-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 22.687174876537895,
+        "hist": 0.5344108628284288,
+        "texture": 0.703125,
+        "area": 0.1762991318963057
+      },
+      "job_id": "live-kurta-02-tryon-m",
+      "render_sha256": "f79bd873c053fd8dffe29edbf63c77c7eb4034a7067808d2dbe191172dc3b973",
+      "garment": "kurta-02",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "live-kurta-02-tryon-s02-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 20.79862920755119,
+        "hist": 0.5608274646083911,
+        "texture": 0.6875,
+        "area": 0.2097379296806168
+      },
+      "job_id": "live-kurta-02-tryon-s02",
+      "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
+      "garment": "kurta-02",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "ms2-kurta-01-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.0006829853645535035,
+        "hist": 0.00002156749153107628,
+        "texture": 1,
+        "area": 0.9999664359135726
+      },
+      "job_id": "ms2-kurta-01",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "garment": "kurta-01",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "ms2-kurta-02-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.00011769494920560703,
+        "hist": 0.00013940394644856372,
+        "texture": 1,
+        "area": 1.000014112085237
+      },
+      "job_id": "ms2-kurta-02",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "garment": "kurta-02",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "ms3-live-kurta-01-composite-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.20093135900033168,
+        "hist": 0.010969598931134226,
+        "texture": 0.953125,
+        "area": 0.4626582892226403
+      },
+      "job_id": "ms3-live-kurta-01-composite",
+      "render_sha256": "fe94fc7c7a11a463a18aad2860420d1a4145d5bc06ca292063e6ccf62264a7de",
+      "garment": "kurta-01",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "ms3-live-kurta-01-composite-r2-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.2009996093029645,
+        "hist": 0.010971379827889281,
+        "texture": 0.953125,
+        "area": 0.4625616471722913
+      },
+      "job_id": "ms3-live-kurta-01-composite-r2",
+      "render_sha256": "bf1c847f2d5061c7a73646d31f10ceaee8d730aa5e9a612a9caa8c71327c079b",
+      "garment": "kurta-01",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "ms3-live-kurta-01-mismatch-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 37.56614231777012,
+        "hist": 0.4022799268232767,
+        "texture": 0.546875,
+        "area": 0.9513802530421956
+      },
+      "job_id": "ms3-live-kurta-01-mismatch",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "ms3-live-kurta-01-tryon-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 12.214495205216428,
+        "hist": 0.12618814920342833,
+        "texture": 0.640625,
+        "area": 0.2058953650363342
+      },
+      "job_id": "ms3-live-kurta-01-tryon",
+      "render_sha256": "782d5fec4d53bb552d45d49924cc02affe9f88c6cfe54a88a4db664172308b33",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "ms3-live-kurta-01-tryon-m-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 17.52219528258363,
+        "hist": 0.3067433956841094,
+        "texture": 0.8125,
+        "area": 0.3010051852542471
+      },
+      "job_id": "ms3-live-kurta-01-tryon-m",
+      "render_sha256": "291a0026c18ed31915bd300c0fd5b7214a48d4f47bf1ee04e6d50b6b467de336",
+      "garment": "kurta-01",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "ms3-live-kurta-01-tryon-s02-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 18.201764281363428,
+        "hist": 0.26163464115307694,
+        "texture": 0.609375,
+        "area": 0.18285951200425424
+      },
+      "job_id": "ms3-live-kurta-01-tryon-s02",
+      "render_sha256": "f5aa1b02e71e7c6aa61734d6c0aacfedc1f33d627500bdf249a5598651730dd3",
+      "garment": "kurta-01",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "ms3-live-kurta-02-composite-r0",
+      "label": "same",
+      "metrics": {
+        "delta_e": 0.07614194404891426,
+        "hist": 0.010621044066878681,
+        "texture": 0.96875,
+        "area": 0.44591758415031374
+      },
+      "job_id": "ms3-live-kurta-02-composite",
+      "render_sha256": "20039f1360ac65c0151751206d0441151993428f20414f02a0131aacc7a1a5aa",
+      "garment": "kurta-02",
+      "recorded": "RELEASE"
+    },
+    {
+      "id": "ms3-live-kurta-02-tryon-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 14.198771681133897,
+        "hist": 0.36764693783398733,
+        "texture": 0.6875,
+        "area": 0.21212877685787207
+      },
+      "job_id": "ms3-live-kurta-02-tryon",
+      "render_sha256": "4db80da781e23e5268dbb1de2d3de86e99cc803c041e6edc9c6ac869307e2b6c",
+      "garment": "kurta-02",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "ms3-live-kurta-02-tryon-2-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 15.479310117151035,
+        "hist": 0.38343406169133515,
+        "texture": 0.671875,
+        "area": 0.2128300765067763
+      },
+      "job_id": "ms3-live-kurta-02-tryon-2",
+      "render_sha256": "bd26aab8f68046609ae604101b9c2c3957cdf57c0ea8f379be77b1321a810576",
+      "garment": "kurta-02",
+      "recorded": "REVIEW"
+    },
+    {
+      "id": "ms3-live-kurta-02-tryon-m-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 22.687270502913254,
+        "hist": 0.5344124873635872,
+        "texture": 0.703125,
+        "area": 0.17629571099746047
+      },
+      "job_id": "ms3-live-kurta-02-tryon-m",
+      "render_sha256": "f79bd873c053fd8dffe29edbf63c77c7eb4034a7067808d2dbe191172dc3b973",
+      "garment": "kurta-02",
+      "recorded": "REFUSE"
+    },
+    {
+      "id": "ms3-live-kurta-02-tryon-s02-r0",
+      "label": "different",
+      "metrics": {
+        "delta_e": 20.79862920755119,
+        "hist": 0.5608274646083911,
+        "texture": 0.6875,
+        "area": 0.2097379296806168
+      },
+      "job_id": "ms3-live-kurta-02-tryon-s02",
+      "render_sha256": "31e277f52ee3d2a0955129c0a8684d36d85f12e8b5150b855b7ed47b2586e9d0",
+      "garment": "kurta-02",
+      "recorded": "REFUSE"
+    }
+  ],
+  "skipped": [
+    {
+      "id": "fixture-shirt-01-r0",
+      "render_sha256": "47b4348b077ff0fa38a473729b36b81fb26c6854e6a1ca674f4309affcd320f4",
+      "reason": "fixture job: its fidelity entry was written, not measured"
+    },
+    {
+      "id": "fixture-shirt-01-r1",
+      "render_sha256": "f7a43bfd77b926cc0614157fbfa1b278a63668c0a40b27e9a7361a13a63ace39",
+      "reason": "fixture job: its fidelity entry was written, not measured"
+    },
+    {
+      "id": "kurta-01-r0",
+      "render_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "reason": "fixture job: its fidelity entry was written, not measured"
+    },
+    {
+      "id": "kurta-02-r0",
+      "render_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "reason": "fixture job: its fidelity entry was written, not measured"
+    }
+  ],
+  "gate": [
+    {
+      "name": "x0.5",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 7,
+      "review_same": 2,
+      "review_different": 0,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x0.75",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 2,
+      "review_same": 7,
+      "review_different": 0,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x1",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 2,
+      "review_same": 2,
+      "review_different": 6,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x1.5",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 2,
+      "review_same": 2,
+      "review_different": 14,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x2",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 2,
+      "review_same": 2,
+      "review_different": 14,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    }
+  ],
+  "fidelity": [
+    {
+      "name": "x0.5",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 6,
+      "review_same": 3,
+      "review_different": 1,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x0.75",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 9,
+      "review_different": 1,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x1",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 3,
+      "review_different": 8,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x1.5",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 3,
+      "review_different": 17,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REFUSE",
+          "decision": "REFUSE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    },
+    {
+      "name": "x2",
+      "same": 13,
+      "different": 18,
+      "false_match": 0,
+      "false_refuse": 0,
+      "review_same": 3,
+      "review_different": 18,
+      "unmeasured": 4,
+      "cases": [
+        {
+          "id": "live-kurta-01-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-2-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5934568266144274,
+            "hist": 0.013035481261272542,
+            "texture": 0.921875,
+            "area": 0.46903040800012546
+          }
+        },
+        {
+          "id": "live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.5939530809937311,
+            "hist": 0.013042834969847011,
+            "texture": 0.921875,
+            "area": 0.46903410420918246
+          }
+        },
+        {
+          "id": "live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-r0",
+          "label": "same",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
+        },
+        {
+          "id": "live-kurta-01-sam-2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00009496937197326497,
+            "hist": 0.000020469588507724442,
+            "texture": 1,
+            "area": 1.0000050346383116
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214712949991911,
+            "hist": 0.12619299230626865,
+            "texture": 0.640625,
+            "area": 0.2058964016450272
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.521940442672822,
+            "hist": 0.30674459848124275,
+            "texture": 0.8125,
+            "area": 0.3010109718866245
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201670381058037,
+            "hist": 0.2616367194391102,
+            "texture": 0.609375,
+            "area": 0.18286144088171338
+          }
+        },
+        {
+          "id": "live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.190862160033122,
+            "hist": 0.012534853842550176,
+            "texture": 0.953125,
+            "area": 0.451256309668541
+          }
+        },
+        {
+          "id": "live-kurta-02-sam-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00042322521773536186,
+            "hist": 0.00000990079283034173,
+            "texture": 1,
+            "area": 1.0000105840265872
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.199191033312484,
+            "hist": 0.3676534564782653,
+            "texture": 0.6875,
+            "area": 0.2121265317050207
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.47862386376611,
+            "hist": 0.3834272865108416,
+            "texture": 0.671875,
+            "area": 0.21283508980883495
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-2-reverify-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.478885390334247,
+            "hist": 0.3834291994564097,
+            "texture": 0.671875,
+            "area": 0.21283038559146705
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687174876537895,
+            "hist": 0.5344108628284288,
+            "texture": 0.703125,
+            "area": 0.1762991318963057
+          }
+        },
+        {
+          "id": "live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        },
+        {
+          "id": "ms2-kurta-01-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.0006829853645535035,
+            "hist": 0.00002156749153107628,
+            "texture": 1,
+            "area": 0.9999664359135726
+          }
+        },
+        {
+          "id": "ms2-kurta-02-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.00011769494920560703,
+            "hist": 0.00013940394644856372,
+            "texture": 1,
+            "area": 1.000014112085237
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.20093135900033168,
+            "hist": 0.010969598931134226,
+            "texture": 0.953125,
+            "area": 0.4626582892226403
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-composite-r2-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.2009996093029645,
+            "hist": 0.010971379827889281,
+            "texture": 0.953125,
+            "area": 0.4625616471722913
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 37.56614231777012,
+            "hist": 0.4022799268232767,
+            "texture": 0.546875,
+            "area": 0.9513802530421956
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 12.214495205216428,
+            "hist": 0.12618814920342833,
+            "texture": 0.640625,
+            "area": 0.2058953650363342
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 17.52219528258363,
+            "hist": 0.3067433956841094,
+            "texture": 0.8125,
+            "area": 0.3010051852542471
+          }
+        },
+        {
+          "id": "ms3-live-kurta-01-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 18.201764281363428,
+            "hist": 0.26163464115307694,
+            "texture": 0.609375,
+            "area": 0.18285951200425424
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-composite-r0",
+          "label": "same",
+          "fidelity": "RELEASE",
+          "decision": "RELEASE",
+          "measured": true,
+          "metrics": {
+            "delta_e": 0.07614194404891426,
+            "hist": 0.010621044066878681,
+            "texture": 0.96875,
+            "area": 0.44591758415031374
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 14.198771681133897,
+            "hist": 0.36764693783398733,
+            "texture": 0.6875,
+            "area": 0.21212877685787207
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-2-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 15.479310117151035,
+            "hist": 0.38343406169133515,
+            "texture": 0.671875,
+            "area": 0.2128300765067763
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-m-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 22.687270502913254,
+            "hist": 0.5344124873635872,
+            "texture": 0.703125,
+            "area": 0.17629571099746047
+          }
+        },
+        {
+          "id": "ms3-live-kurta-02-tryon-s02-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": true,
+          "metrics": {
+            "delta_e": 20.79862920755119,
+            "hist": 0.5608274646083911,
+            "texture": 0.6875,
+            "area": 0.2097379296806168
+          }
+        }
+      ]
+    }
+  ]
+}
