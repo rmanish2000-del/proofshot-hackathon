@@ -332,6 +332,16 @@ test("over HTTP: the page, the mode, a job from submit to publish, job files, an
     const body = await published.json() as { job_id: string; rows: { job_id: string }[] };
     assert.deepEqual(body.rows.map((r) => r.job_id), [job_id]);
     assert.equal((await fetch(url(`/api/jobs/${job_id}/publish`))).status, 405);
+
+    // The shop page reads /shop/...: it is served from shopDir (a temp dir here, not web/shop),
+    // so the published row and its image are what the page gets.
+    const catalog = await (await fetch(url("/shop/catalog.json"))).json() as { rows: { job_id: string; image: string; image_sha256: string }[] };
+    assert.deepEqual(catalog.rows.map((r) => r.job_id), [job_id]);
+    const shopImage = await fetch(url(`/${catalog.rows[0]!.image}`));
+    assert.equal(shopImage.status, 200);
+    assert.equal(sha256Hex(new Uint8Array(await shopImage.arrayBuffer())), catalog.rows[0]!.image_sha256);
+    assert.equal((await fetch(url("/shop/%2e%2e/package.json"))).status, 404, "nothing outside shopDir");
+    assert.equal((await fetch(url("/shop.html"))).status, 200, "the page itself still comes from web/");
   } finally {
     await new Promise<void>((resolve) => http.close(() => resolve()));
   }
