@@ -87,9 +87,10 @@
     },
     {
       "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
-      "path": "data/jobs/ms2-shirt-zebra/ms2-shirt-zebra-r0.jpg",
+      "path": "data/jobs/live-shirt-plaid-mismatch/live-shirt-plaid-mismatch-r0.jpg",
       "shows": "shirt-zebra",
       "jobs": [
+        "live-shirt-plaid-mismatch",
         "ms2-shirt-zebra",
         "shirt-zebra"
       ]
@@ -241,9 +242,9 @@
     "mean_verdict_agreement": 0.91
   },
   "gate_agreement": {
-    "compared": 108,
-    "agree": 92,
-    "rate": 0.852,
+    "compared": 111,
+    "agree": 95,
+    "rate": 0.856,
     "disagreements": [
       {
         "job_id": "live-kurta-01",
@@ -1438,11 +1439,11 @@
     "batch_usd": 5.395713,
     "batch_calls": 205,
     "estimated": true,
-    "ledger_spent_usd": 5.938343,
-    "ledger_calls": 288,
+    "ledger_spent_usd": 5.990618,
+    "ledger_calls": 294,
     "batch_cap_usd": 80,
-    "batch_left_usd": 74.061657,
+    "batch_left_usd": 74.009382,
     "reserve_used": false
   },
-  "limits": "Small sample: 2 photographed garments (both women's kurtas), one photo set each, 3 repeats per pair. A rate here says how this checker behaved on these pairs, not how it behaves in general."
+  "limits": "Small sample: 4 photographed garments (kurta-01, kurta-02, shirt-plaid, shirt-zebra), one photo set each, 3 repeats per pair. The verifier alone, no fidelity check. A rate here says how this checker behaved on these pairs, not how it behaves in general."
 }

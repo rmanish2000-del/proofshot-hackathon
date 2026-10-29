@@ -155,8 +155,8 @@ export interface MetaVerifierOptions {
  * never read: it is asked once more at the retry limit, and a second cut-off
  * throws VerifierTruncatedError. A request that times out is sent once more
  * with the longer timeout. A request that fails before any answer (a network
- * TypeError such as "fetch failed": the server closed a pooled keep-alive
- * socket, NR3 shirt-plaid, 29 Oct) is sent once more on a new attempt; nothing
+ * TypeError such as "fetch failed", a suspected network failure: NR3
+ * shirt-plaid, 29 Oct) is sent once more on a new attempt; nothing
  * else is retried, a spend-cap refusal included. Every attempt is listed in the usage when more than
  * one was sent.
  */
