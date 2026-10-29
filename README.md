@@ -245,8 +245,8 @@ New in this feature, all written during the event: `src/shop.ts`,
 `data/jobs/fixture-shirt-01/` (generated), `test/shop.test.ts`, SPEC §11, the
 `shaFromFragment` helper in `src/core.js` and the `#sha` prefill in
 `web/verify.html`, and `src/page.ts` / `scripts/page.ts` covering both pages.
-Pre-existing (rebuilt from the spec earlier in this repo, not part of this
-feature): the gate, the receipt chain, the verify-page core (`src/core.js`
+Built earlier in this repository, during the event, and not part of this
+feature: the gate, the receipt chain, the verify-page core (`src/core.js`
 checks) and the intake.
 
 ## Seller upload (built during the hackathon)
@@ -462,13 +462,26 @@ Dated experiment rows (each live run and when it happened) are in
 
 ## Built during the event
 
-Everything in this repository was written from the specification
-(`docs/SPEC.md`) during the hackathon, starting 26 Oct 2026 at 21:30 IST, with
-a new git history. The spec itself was written before the event and carried
-over; it marks every change made here with *(event)*. Config boilerplate
-(`tsconfig.json`, `.gitignore`) mirrors the pre-existing repo. ProofShot's pre-existing
-core stays in a separate private repository. It is not copied here and is
-only called as a hosted service.
+Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
+27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
+IST. Every commit in this repository was made during the event. The code was
+written here from the specification; no code from before the event was copied
+in.
+
+### Prior work used
+
+- `docs/SPEC.md`: the written specification of ProofShot's attributes, gate
+  rules and receipt format, first written on 24 Oct 2026, before the event, and
+  carried over. The code here is rewritten from it, and every change made to it
+  during the event is marked *(event)*.
+- Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
+  private repository.
+
+Nothing else from before the event is used. No pre-existing ProofShot service
+is called: the demo and every committed receipt use only the code in this
+repository and the providers named above (SAM 3.1 and Muse Spark 1.3 on
+`api.meta.ai`, Muse Spark Open on Baseten, muse-spark-open on Fireworks, Pruna
+on Replicate).
 
 ## License
 
