@@ -438,3 +438,33 @@ test("FW2 fix 6: a detail written before '; as in the photos' is kept for the li
     { field: "Buttons", value: "black" },
   ]);
 });
+
+test("zebra preview: a preview job's listing facts come from the garment's full note.txt, so the print is asked for; the receipt's note is used for every other job", async () => {
+  const { garmentClaims, noteFileClaims } = await import("../src/fireworks-copy.ts");
+  const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
+  const note = read("../data/garments/shirt-zebra/note.txt");
+  assert.deepEqual(noteFileClaims("Header line; keep it short.\nType: shirt\nFabric and weave: not recorded\nColour:\n(Written by someone: not a field)\n"), [{ field: "Type", value: "shirt" }]);
+  const entries = parseReceipt(read("../data/jobs/shirt-zebra/receipt.jsonl"));
+  const before = copyFacts("shirt-zebra", entries);
+  assert.equal(before.claims.some((c) => /zebra/.test(c.value)), false, "the receipt's preview note has Type and Main colour only");
+  const f = copyFacts("shirt-zebra", entries, note);
+  assert.equal(f.receipt_head, before.receipt_head);
+  assert.equal(f.aside, before.aside);
+  assert.deepEqual(garmentClaims(f), [
+    { field: "Type", value: "shirt (short sleeves, button front)" },
+    { field: "Main colour", value: "black and grey" },
+    { field: "Print or motif (what, where, size)", value: "zebra-style stripe print all over" },
+    { field: "Collar and cuffs", value: "point collar, short sleeves" },
+    { field: "Buttons", value: "black" },
+  ]);
+  assert.match(copyMessages("listing_copy", f)[1]!.content, /zebra-style stripe print all over/);
+  assert.match(copyMessages("listing_copy", f, "hi")[1]!.content, /zebra-style stripe print all over/);
+  // Not a preview: the note file is ignored.
+  const ms2 = parseReceipt(read("../data/jobs/ms2-shirt-zebra/receipt.jsonl"));
+  assert.deepEqual(copyFacts("ms2-shirt-zebra", ms2, "Type: something else\n").claims, copyFacts("ms2-shirt-zebra", ms2).claims);
+  // The committed preview listings name the print in both languages.
+  const records = (JSON.parse(read("../data/copy/shirt-zebra.json")) as { records: { task: string; lang?: string; text: string }[] }).records;
+  const listing = (lang: string) => records.find((r) => r.task === "listing_copy" && (r.lang ?? "en") === lang)!.text;
+  assert.match(listing("en"), /zebra/i);
+  assert.match(listing("hi"), /ज़ेबरा|जेबरा|zebra/i);
+});

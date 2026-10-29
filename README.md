@@ -449,7 +449,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->342<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->343<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->122<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->225<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->291<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), never used | `evidence/`, counts in `evidence/pack/summary.json` |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |

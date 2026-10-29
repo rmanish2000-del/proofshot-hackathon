@@ -29,15 +29,15 @@
       "model": "accounts/fireworks/models/muse-spark-open",
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
-      "key_source": "user_env",
-      "request_sha256": "0ef45fc9f1c4c62505ea7bb7af525276fb30d0e0fc313979189f09e881e8e7fe",
+      "key_source": "process_env",
+      "request_sha256": "aabedfc99caeed94f0bbd4c04eba0bb43f0e8630610666db6bc0eaada4cc9bcf",
       "usage": {
-        "prompt_tokens": 298,
-        "completion_tokens": 2629
+        "prompt_tokens": 338,
+        "completion_tokens": 1493
       },
-      "cost_usd": 0.011546,
+      "cost_usd": 0.006768,
       "cost_estimated": true,
-      "text": "This shirt has short sleeves and a button front. Its colours are black and grey."
+      "text": "This short sleeve shirt has a button front and point collar. It is black and grey with an all-over zebra-style stripe print and black buttons."
     },
     {
       "job_id": "shirt-zebra",
@@ -67,15 +67,15 @@
       "model": "accounts/fireworks/models/muse-spark-open",
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
-      "key_source": "user_env",
-      "request_sha256": "06d27c6dcfe6275385ddfd6941ef766b70e6c373fb504225cb68c0ca45b6cffc",
+      "key_source": "process_env",
+      "request_sha256": "dab6f56c64a6a19edc442a4742bf021ec2eff36545a7a5e12b86472a6b2eef9e",
       "usage": {
-        "prompt_tokens": 331,
-        "completion_tokens": 1393
+        "prompt_tokens": 371,
+        "completion_tokens": 2010
       },
-      "cost_usd": 0.006334,
+      "cost_usd": 0.009006,
       "cost_estimated": true,
-      "text": "यह शर्ट काले और ग्रे रंग में है। इसमें छोटी आस्तीन और सामने बटन हैं।"
+      "text": "यह काले और ग्रे रंग की शर्ट है। इसमें सामने बटन हैं और पूरे पर ज़ेबरा-स्टाइल धारीदार प्रिंट है। इसमें पॉइंट कॉलर, छोटी आस्तीनें और काले बटन हैं।"
     }
   ]
 }
