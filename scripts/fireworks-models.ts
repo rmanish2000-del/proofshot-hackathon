@@ -1,10 +1,10 @@
 // npm run models:fireworks
 //
-// FW1: lists the Meta Llama model ids Fireworks serves to this key
-// (GET /inference/v1/models, OpenAI-compatible), so FIREWORKS_MODEL names a
-// model that exists. Prints ids only; the key is never printed.
+// Lists the model ids Fireworks serves to this key (GET /inference/v1/models,
+// OpenAI-compatible), Meta ones first, so FIREWORKS_MODEL names a model that
+// exists. Prints ids only; the key is never printed.
 
-import { resolveFireworksKey } from "../src/llama-fireworks.ts";
+import { resolveFireworksKey } from "../src/fireworks-copy.ts";
 
 const found = resolveFireworksKey(process.env);
 if (!found) {
@@ -14,7 +14,9 @@ if (!found) {
 const res = await fetch("https://api.fireworks.ai/inference/v1/models", { headers: { Authorization: `Bearer ${found.key}` } });
 console.log(`HTTP ${res.status} (key from ${found.source})`);
 const body = (await res.json()) as { data?: { id?: unknown }[] };
-const ids = (body.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === "string");
-const llama = ids.filter((x) => /llama/i.test(x)).sort();
-console.log(`${ids.length} models, ${llama.length} Llama${llama.length ? ":" : "; every id:"}`);
-for (const id of llama.length ? llama : ids.sort()) console.log(id);
+const ids = (body.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === "string").sort();
+const meta = ids.filter((x) => /llama|muse/i.test(x));
+console.log(`${ids.length} models, ${meta.length} Meta (Llama or Muse)${meta.length ? ":" : ""}`);
+for (const id of meta) console.log(`  ${id}`);
+console.log("every id:");
+for (const id of ids) console.log(`  ${id}`);

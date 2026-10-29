@@ -5,10 +5,11 @@ import { join } from "node:path";
 import { test } from "node:test";
 
 import {
-  FIREWORKS_MODEL, FIREWORKS_SPEND_CAP_USD, FIREWORKS_URL, copyFacts, copyMessages, fireworksCostUsd, noteClaims, parseRegQuery,
+  FIREWORKS_LLAMA_MODEL, FIREWORKS_MAX_TOKENS, FIREWORKS_MODEL, FIREWORKS_SPEND_CAP_USD, FIREWORKS_URL, answerText, copyFacts, copyMessages, fireworksCostUsd,
+  keepsDecision, noteClaims, parseRegQuery,
   resolveFireworksKey, templateText, writeCopy,
-} from "../src/llama-fireworks.ts";
-import type { CopyFacts, FireworksCallLog, FireworksFetch } from "../src/llama-fireworks.ts";
+} from "../src/fireworks-copy.ts";
+import type { CopyFacts, FireworksCallLog, FireworksFetch } from "../src/fireworks-copy.ts";
 import { parseReceipt } from "../src/receipt.ts";
 import type { Ledger, LedgerEntry } from "../src/render-replicate.ts";
 
@@ -43,7 +44,7 @@ const OK = {
   usage: { prompt_tokens: 300, completion_tokens: 40 },
 };
 
-test("FW1 1: no key in the process or the User env falls back to the template with fallback_reason no_api_token, and nothing is sent", async () => {
+test("FW 1: no key in the process or the User env falls back to the template with fallback_reason no_api_token, and nothing is sent", async () => {
   const { calls, fetch } = fakeFetch(200, OK);
   const ledger = memoryLedger();
   const rec = await writeCopy("receipt_summary", FACTS, { env: {}, fetch, ledger, lookup: { platform: "win32", readUserEnv: () => null } });
@@ -56,7 +57,7 @@ test("FW1 1: no key in the process or the User env falls back to the template wi
   assert.equal(ledger.entries.length, 0);
 });
 
-test("FW1 2: the request is OpenAI chat-completions shape, names the exact Llama model, sends facts only, and the key is only in the header", async () => {
+test("FW 2: the request is OpenAI chat-completions shape, names the exact muse-spark-open model id, sends facts only, and the key is only in the header", async () => {
   const { calls, fetch } = fakeFetch(200, OK);
   const logs: FireworksCallLog[] = [];
   const ledger = memoryLedger();
@@ -67,7 +68,7 @@ test("FW1 2: the request is OpenAI chat-completions shape, names the exact Llama
   assert.equal(calls[0]!.headers.Authorization, `Bearer ${KEY}`);
   const body = JSON.parse(calls[0]!.body);
   assert.deepEqual(Object.keys(body).sort(), ["max_tokens", "messages", "model", "temperature"]);
-  assert.equal(body.model, "accounts/fireworks/models/llama-v3p3-70b-instruct");
+  assert.equal(body.model, "accounts/fireworks/models/muse-spark-open");
   assert.equal(body.temperature, 0);
   assert.deepEqual(body.messages.map((m: { role: string }) => m.role), ["system", "user"]);
   assert.match(body.messages[1].content, /Decision: REVIEW/);
@@ -93,8 +94,8 @@ test("FW1 2: the request is OpenAI chat-completions shape, names the exact Llama
   assert.equal(JSON.stringify(rec).includes(KEY), false, "the record has no key");
 });
 
-test("FW1 3: a key only in the Windows User env scope is used and recorded as user_env; process env wins over it", async () => {
-  const { calls, fetch } = fakeFetch(200, OK);
+test("FW 3: a key only in the Windows User env scope is used and recorded as user_env; process env wins over it", async () => {
+  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "A peach women's kurta." } }] });
   const lookup = { platform: "win32", readUserEnv: (n: string) => (n === "FIREWORKS_API_KEY" ? "fw-user-scope" : null) };
   const rec = await writeCopy("listing_copy", FACTS, { env: {}, fetch, ledger: memoryLedger(), lookup });
   assert.equal(rec.key_source, "user_env");
@@ -106,7 +107,7 @@ test("FW1 3: a key only in the Windows User env scope is used and recorded as us
   assert.equal(parseRegQuery(reg, "OTHER"), null);
 });
 
-test("FW1 4: the 5 USD cap: a ledger near the cap, an unreadable ledger or no ledger falls back with spend_cap before any request", async () => {
+test("FW 4: the spend cap: a ledger near the cap, an unreadable ledger or no ledger falls back with spend_cap before any request", async () => {
   const near = memoryLedger([{ at: "2026-10-29T00:00:00.000Z", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD - 0.0001, estimated: true }]);
   const broken: Ledger = { read: () => { throw new Error("bad"); }, append: () => {} };
   for (const ledger of [near, broken, null]) {
@@ -118,7 +119,7 @@ test("FW1 4: the 5 USD cap: a ledger near the cap, an unreadable ledger or no le
   }
 });
 
-test("FW1 5: an HTTP error or an empty answer falls back with fireworks_failed, and a call that reached the server is still in the ledger", async () => {
+test("FW 5: an HTTP error or an empty answer falls back with fireworks_failed, and a call that reached the server is still in the ledger", async () => {
   for (const [status, body] of [[401, { error: "unauthorized" }], [200, { choices: [{ message: { content: "" } }] }], [200, "not json"]] as const) {
     const { fetch } = fakeFetch(status, body);
     const ledger = memoryLedger();
@@ -134,14 +135,14 @@ test("FW1 5: an HTTP error or an empty answer falls back with fireworks_failed, 
   assert.equal(ledger.entries.length, 0, "nothing reached the server");
 });
 
-test("FW1 6: listing copy is written from the seller's claims only; the template drops 'as in the photos' lines", () => {
+test("FW 6: listing copy is written from the seller's claims only; the template drops 'as in the photos' lines", () => {
   const user = copyMessages("listing_copy", FACTS)[1]!;
   assert.match(user.content, /- Main colour: peach/);
   assert.equal(user.content.includes("REVIEW"), false, "the listing prompt carries no gate decision");
   assert.equal(templateText("listing_copy", FACTS), "Type: kurta (women's). Main colour: peach.");
 });
 
-test("FW1 7: facts from a committed receipt: decision and reasons from the last gate entry, claims from the job note, no bounding boxes", () => {
+test("FW 7: facts from a committed receipt: decision and reasons from the last gate entry, claims from the job note, no bounding boxes", () => {
   const dir = new URL("../data/jobs/live-kurta-02-sam/receipt.jsonl", import.meta.url);
   const entries = parseReceipt(readFileSync(dir, "utf8"));
   const f = copyFacts("live-kurta-02-sam", entries);
@@ -156,7 +157,7 @@ test("FW1 7: facts from a committed receipt: decision and reasons from the last 
   ]);
 });
 
-test("FW1 8: a file ledger outside the repo accumulates Fireworks spend", async () => {
+test("FW 8: a file ledger outside the repo accumulates Fireworks spend", async () => {
   const { fileLedger } = await import("../src/render-replicate.ts");
   const path = join(mkdtempSync(join(tmpdir(), "ps-fw-")), "fireworks-ledger.json");
   const ledger = fileLedger(path);
@@ -165,4 +166,54 @@ test("FW1 8: a file ledger outside the repo accumulates Fireworks spend", async 
   await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger, lookup: NO_USER_ENV });
   assert.equal(ledger.read().length, 2);
   assert.equal(readFileSync(path, "utf8").includes(KEY), false);
+});
+
+test("FW 9: muse-spark-open is the default; the Llama id is only a documented override, and FIREWORKS_MODEL still wins", async () => {
+  assert.equal(FIREWORKS_MODEL, "accounts/fireworks/models/muse-spark-open");
+  assert.equal(FIREWORKS_LLAMA_MODEL, "accounts/fireworks/models/llama-v3p3-70b-instruct");
+  const { calls, fetch } = fakeFetch(200, OK);
+  await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY, FIREWORKS_MODEL: FIREWORKS_LLAMA_MODEL }, fetch, ledger: memoryLedger(), lookup: NO_USER_ENV });
+  assert.equal(JSON.parse(calls[0]!.body).model, FIREWORKS_LLAMA_MODEL);
+  assert.equal(JSON.parse(calls[0]!.body).max_tokens, FIREWORKS_MAX_TOKENS);
+});
+
+test("FW 10: an answer that drops, changes or softens the gate decision falls back to the template with decision_changed", async () => {
+  const answer = (content: string) => ({ ...OK, choices: [{ message: { role: "assistant", content }, finish_reason: "stop" }] });
+  const refuse: CopyFacts = { ...FACTS, decision: "REFUSE", reasons: ["color: mismatch at 0.95 on a hard attribute"] };
+  const cases: [CopyFacts, string][] = [
+    [FACTS, "Decision: RELEASE. The image can be published."], // changed
+    [FACTS, "A person should take a look at this one first."], // dropped
+    [FACTS, "REVIEW, not REFUSE: a person must look first."], // names a second decision
+    [refuse, "REFUSE for now, but the image can be published once the colour is fixed."], // softened
+    [FACTS, "Decision: review. A person must look first."], // not the word as given
+  ];
+  for (const [facts, content] of cases) {
+    const { fetch } = fakeFetch(200, answer(content));
+    const ledger = memoryLedger();
+    const rec = await writeCopy("receipt_summary", facts, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger, lookup: NO_USER_ENV });
+    assert.equal(rec.fallback_reason, "decision_changed", content);
+    assert.equal(rec.provider, "template");
+    assert.equal(rec.model, "none");
+    assert.equal(rec.text, templateText("receipt_summary", facts), "the template quotes the receipt");
+    assert.equal(ledger.entries.length, 1, "the call was still paid for");
+  }
+  assert.equal(keepsDecision("receipt_summary", "REFUSE: the image must not be published.", "REFUSE"), true);
+  assert.equal(keepsDecision("receipt_summary", "RELEASE: the image can be published.", "RELEASE"), true);
+  assert.equal(keepsDecision("listing_copy", "A peach kurta.", "REVIEW"), true);
+  assert.equal(keepsDecision("listing_copy", "A peach kurta, RELEASE ready.", "RELEASE"), false, "listing copy names no decision");
+  const { fetch } = fakeFetch(200, answer("Decision: REVIEW. A person must look before it is published."));
+  const kept = await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger: memoryLedger(), lookup: NO_USER_ENV });
+  assert.equal(kept.generated, true);
+});
+
+test("FW 11: an answer cut off at max_tokens falls back with truncated; a <think> block is never kept as text", async () => {
+  const cut = { ...OK, choices: [{ message: { role: "assistant", content: "Decision: REVIEW. A person" }, finish_reason: "length" }] };
+  const { fetch } = fakeFetch(200, cut);
+  const rec = await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger: memoryLedger(), lookup: NO_USER_ENV });
+  assert.equal(rec.fallback_reason, "truncated");
+  assert.equal(answerText("<think>the hem differs, so REFUSE?</think>\nDecision: REVIEW. A person must look first."), "Decision: REVIEW. A person must look first.");
+  const thinking = { ...OK, choices: [{ message: { role: "assistant", content: "<think>maybe RELEASE</think> Decision: REVIEW. A person must look first.", reasoning_content: "RELEASE?" }, finish_reason: "stop" }] };
+  const f2 = fakeFetch(200, thinking);
+  const kept = await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: f2.fetch, ledger: memoryLedger(), lookup: NO_USER_ENV });
+  assert.equal(kept.text, "Decision: REVIEW. A person must look first.");
 });

@@ -5,21 +5,37 @@
       "job_id": "live-kurta-02-composite-v2",
       "task": "receipt_summary",
       "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "fireworks_failed",
-      "text": "Decision: REVIEW, a person must look before it is published. Reasons: CompositeQualityReview: over- or under-exposed photo."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "3bf9b2a0db31c65ae39cf19236615869c22545cc16b2f2ebe053aebdb2b172e4",
+      "usage": {
+        "prompt_tokens": 370,
+        "completion_tokens": 2281
+      },
+      "cost_usd": 0.010157,
+      "cost_estimated": true,
+      "text": "Decision is REVIEW which means a person must look first. Your image was flagged for over- or under-exposed photo. No verifier findings were recorded. You stated type is kurta women's, main colour peach, and that colour, print and neckline must stay exactly as photographed. Collar, cuffs, buttons and print are as in photos."
     },
     {
       "job_id": "live-kurta-02-composite-v2",
       "task": "listing_copy",
       "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "fireworks_failed",
-      "text": "Type: kurta (women's). Main colour: peach."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "c0f78f17258a48f476a667f693ccb2c81e9ec54559cace9cf835a5118dc9c478",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 2994
+      },
+      "cost_usd": 0.013116,
+      "cost_estimated": true,
+      "text": "Women's kurta in peach."
     }
   ]
 }
