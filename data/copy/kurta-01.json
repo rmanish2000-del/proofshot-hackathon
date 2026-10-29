@@ -1,0 +1,73 @@
+{
+  "job_id": "kurta-01",
+  "records": [
+    {
+      "job_id": "kurta-01",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "1dbb8b7b7b2c102dc247a5dc9cbe298bf0e3db9a377eee2617396913aa23979f",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Decision: RELEASE, the image can be published."
+    },
+    {
+      "job_id": "kurta-01",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "1dbb8b7b7b2c102dc247a5dc9cbe298bf0e3db9a377eee2617396913aa23979f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "3b4aa1050e6e89828a836c90a50658a016c3413bf68df72fe2370f1025f869ba",
+      "usage": {
+        "prompt_tokens": 313,
+        "completion_tokens": 2896
+      },
+      "cost_usd": 0.012699,
+      "cost_estimated": true,
+      "text": "Women's kurta in rust/orange. The preview is the owner's photo standing in for the render. Colour, print, logo or text, collar, sleeve length, hem, pockets, buttons and fabric texture match the seller's photos."
+    },
+    {
+      "job_id": "kurta-01",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "1dbb8b7b7b2c102dc247a5dc9cbe298bf0e3db9a377eee2617396913aa23979f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "862effa1ae75cb7ac492dfe4c985600067754a8470532643d434507820106f63",
+      "usage": {
+        "prompt_tokens": 428,
+        "completion_tokens": 1945
+      },
+      "cost_usd": 0.008801,
+      "cost_estimated": true,
+      "text": "आपकी जाँच पूरी हुई है। निर्णय RELEASE है, इसका अर्थ है कि तस्वीर प्रकाशित की जा सकती है। सभी जाँच बिंदु मिलान हुए हैं। आपके द्वारा बताया गया महिला कुर्ता विवरण सही पाया गया।"
+    },
+    {
+      "job_id": "kurta-01",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "1dbb8b7b7b2c102dc247a5dc9cbe298bf0e3db9a377eee2617396913aa23979f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b26bcdd383486168b5be5917795509067dae40a5f438b9b02cb65e1fe8cf7bf6",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 2995
+      },
+      "cost_usd": 0.013161,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका रंग रस्ट नारंगी है।"
+    }
+  ]
+}

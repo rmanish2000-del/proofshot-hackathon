@@ -1,0 +1,81 @@
+{
+  "job_id": "live-kurta-01-tryon",
+  "records": [
+    {
+      "job_id": "live-kurta-01-tryon",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "c6e2a080dc94d9dd185a957205adaebc52b347a31a891e1a4603c66fb30e5944",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "a61f1a4a64b42500e71ec5c6054a7aaf947ab339c01b067501fd63d670d8748b",
+      "usage": {
+        "prompt_tokens": 548,
+        "completion_tokens": 2707
+      },
+      "cost_usd": 0.01219,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE, which means the image must not be published. No verifier findings were recorded, so colour, print, collar, sleeve length, hem, pocket count, buttons, fabric texture and logo text could not be verified. Fidelity check did not pass: texture 0.641 below 0.650, colour difference 12.215 above 10, area 0.206 below 0.400, garment shrank in frame."
+    },
+    {
+      "job_id": "live-kurta-01-tryon",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "c6e2a080dc94d9dd185a957205adaebc52b347a31a891e1a4603c66fb30e5944",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e2b970fd20057c2eb90454716ae9d43f164b33786308f4b969f52392b72ae292",
+      "usage": {
+        "prompt_tokens": 356,
+        "completion_tokens": 2882
+      },
+      "cost_usd": 0.012694,
+      "cost_estimated": true,
+      "text": "The seller describes this item as a women's kurta. No attributes were verified to match the photos, so no further details can be confirmed."
+    },
+    {
+      "job_id": "live-kurta-01-tryon",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "c6e2a080dc94d9dd185a957205adaebc52b347a31a891e1a4603c66fb30e5944",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "329639f09f67770754acd93fdbdbb2bc2ada7ac8fbf9e3f66666f6502db8ac7f",
+      "usage": {
+        "prompt_tokens": 582,
+        "completion_tokens": 2829
+      },
+      "cost_usd": 0.012751,
+      "cost_estimated": true,
+      "text": "निर्णय REFUSE है, इसका अर्थ है यह छवि प्रकाशित नहीं की जा सकती। रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट की पुष्टि नहीं हुई। विश्वसनीयता जांच में बनावट, रंग अंतर और आकार के मान तय सीमा से बाहर मिले, कपड़ा फ्रेम में छोटा दिखा।"
+    },
+    {
+      "job_id": "live-kurta-01-tryon",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "c6e2a080dc94d9dd185a957205adaebc52b347a31a891e1a4603c66fb30e5944",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "52e9c411c3da9013797880134cc91a403d58e5320463bd4d3fda3d3e35f312c4",
+      "usage": {
+        "prompt_tokens": 389,
+        "completion_tokens": 2166
+      },
+      "cost_usd": 0.009692,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+    }
+  ]
+}

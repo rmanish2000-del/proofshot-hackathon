@@ -1,0 +1,73 @@
+{
+  "job_id": "live-kurta-01-tryon-reverify",
+  "records": [
+    {
+      "job_id": "live-kurta-01-tryon-reverify",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "99c2338a990053f9cf451e272a296e7e37b89b83c8e591686bc4bdf27e1eb48a",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "58aae7ad42f3c017c77791a6f2dcd4d668e0a44519b76225494fb7b3d76620d7",
+      "usage": {
+        "prompt_tokens": 528,
+        "completion_tokens": 2277
+      },
+      "cost_usd": 0.010337,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE which means the image must not be published. The render failed image quality checks as texture and colour difference were outside limits and garment shrank in frame. Sleeve length and hem length did not match the long below knee kurta in photos though colour, print, collar and buttons matched."
+    },
+    {
+      "job_id": "live-kurta-01-tryon-reverify",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "99c2338a990053f9cf451e272a296e7e37b89b83c8e591686bc4bdf27e1eb48a",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "bae0eef8c7f8b30cc1ea7353540430e244838bbaae5428cb2969272685609c53",
+      "usage": {
+        "prompt_tokens": 371,
+        "completion_tokens": 3403
+      },
+      "cost_usd": 0.014927,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. The colour matches the seller's photos."
+    },
+    {
+      "job_id": "live-kurta-01-tryon-reverify",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "99c2338a990053f9cf451e272a296e7e37b89b83c8e591686bc4bdf27e1eb48a",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "निर्णय: REFUSE, तस्वीर प्रकाशित नहीं की जानी चाहिए। कारण: fidelity REFUSE: texture 0.641 below 0.650; delta_e 12.214 above 10; area 0.206 below 0.400: the garment shrank in frame; sleeve_length: mismatch at 0.94 on a soft attribute; hem: mismatch at 0.98 on a soft attribute."
+    },
+    {
+      "job_id": "live-kurta-01-tryon-reverify",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "99c2338a990053f9cf451e272a296e7e37b89b83c8e591686bc4bdf27e1eb48a",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0f04888c39abf0267591ee6d6456a75a446864359ed510214a28585179cd7447",
+      "usage": {
+        "prompt_tokens": 404,
+        "completion_tokens": 3871
+      },
+      "cost_usd": 0.016957,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।"
+    }
+  ]
+}

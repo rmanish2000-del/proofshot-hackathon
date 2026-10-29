@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01",
+  "started_at": "2026-10-29T05:49:32.060Z",
+  "finished_at": "2026-10-29T05:49:59.220Z",
+  "latency_ms": 27160,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\n- fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-6bdf31b4b10349fb94eb3d9d101a73cb",
+      "object": "chat.completion",
+      "created": 1793252973,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REFUSE, which means the image must not be published. No verifier findings were recorded for colour, print, collar, sleeve, hem, pockets, buttons or fabric, so nothing could be verified. The fidelity check was flagged because the source mask is missing for 1-front.jpg with no segment containing mask bytes.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REFUSE\nReasons: list includes fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\n\nWe must not write other decision words. So we can only write REFUSE, not RELEASE or REVIEW. But we need to state what it means: REFUSE = the image must not be published. That's allowed. We must not write RELEASE or REVIEW anywhere else. Even when a reason contains one: describe such a reason in plain words instead.\n\nSo we have a reason that contains REVIEW. We must describe it in plain words instead. So we cannot write the word REVIEW. We need to paraphrase: fidelity check flagged for human check: source mask is missing...\n\nBut we must be careful not to write the word REVIEW. Also not write RELEASE.\n\nWe need to use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts.\n\nWe need to explain in at most 70 words.\n\nWe must state decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published.\n\nWe must not write RELEASE or REVIEW anywhere. So we must avoid those words.\n\nWe need to mention reasons: color: no finding, so not verified etc. But we need to summarize? The reasons list includes many attributes with no finding, so not verified. And fidelity REVIEW: source mask is missing.\n\nWe must describe that reason in plain words instead of using the word REVIEW. So we can say: fidelity check needs a person to look because source mask is missing...\n\nBut we cannot use the word REVIEW. So we need to say \"needs a person to look\" maybe? But that is the definition of REVIEW. Is that allowed? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write the word REVIEW, but we can describe the reason: source mask is missing: no segment with mask bytes for 1-front.jpg\n\nWe should not use the word REVIEW. So we can say \"fidelity check flagged: source mask is missing...\"\n\nWe must be careful not to accidentally write \"review\". Also not \"release\" or \"refuse\" in lowercase? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Likely case-insensitive. So we cannot write those words at all except the one decision word in capitals. So we cannot write \"refuse\" lower case either. We have to write REFUSE once. And not write release or review in any case.\n\nWe need to ensure we don't write \"review\" inside another word? Probably not. But safe to avoid.\n\nWe need to keep under 70 words.\n\nWe need to mention seller's claims? Type: kurta (women's) etc. But we should use only facts given. We can mention that attributes not verified because no findings recorded.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we cannot invent colour? But seller's claims include Main colour: rust / orange. Can we mention that? That's a fact given. But we should not add colours not in facts. We can mention rust/orange if needed, but we must not add new colours.\n\nBetter to keep simple: Decision is REFUSE means image must not be published. Reasons: no verifier findings for colour, print, collar etc., so not verified, and source mask missing for 1-front.jpg.\n\nWe must not write the word REVIEW. So we must phrase fidelity reason without that word.\n\nWe must count words <=70.\n\nLet's draft:\n\n\"Decision is REFUSE, which means the image must not be published. No verifier findings were recorded for colour, print, collar, sleeve, hem, pockets, buttons or fabric, so nothing could be verified. The fidelity check was flagged because the source mask is missing for 1-front.jpg with no segment containing mask bytes.\"\n\nCheck words: Count.\n\nDecision(1) is2 REFUSE,3 which4 means5 the6 image7 must8 not9 be10 published.11 No12 verifier13 findings14 were15 recorded16 for17 colour,18 print,19 collar,20 sleeve,21 hem,22 pockets,23 buttons24 or25 fabric,26 so27 nothing28 could29 be30 verified.31 The32 fidelity33 check34 was35 flagged36 because37 the38 source39 mask40 is41 missing42 for43 1-front.jpg44 with45 no46 segment47 containing48 mask49 bytes50.\n\nThat's 50 words, under 70. Does it contain forbidden words? It contains REFUSE once, which is allowed. It does not contain RELEASE or REVIEW. It contains \"flagged\" not review. Good.\n\nBut we used \"fidelity check was flagged\" - does that describe the reason in plain words? The original reason is \"fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\" We described as flagged because source mask missing. That's okay.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe used \"colour, print, collar, sleeve, hem, pockets, buttons or fabric\" - those are from reasons. That's allowed.\n\nWe should not mention seller's claims about rust/orange? We didn't, but we could. It's okay to not mention all.\n\nWe must ensure we state decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published. We did: \"Decision is REFUSE, which means the image must not be published.\" That satisfies.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe must write short, plain English for Indian clothing seller. That's okay.\n\nWe must not change or soften gate decision. We said REFUSE means must not be published, which is correct, not softened.\n\nWe must ensure we don't accidentally write \"review\" in \"verifier\"? No.\n\nCheck forbidden words case-insensitive: RELEASE, REVIEW, REFUSE. We have REFUSE once. We must not have \"review\" anywhere. We don't.\n\nWe must ensure we don't write \"release\" inside \"released\"? We didn't.\n\nWe should output exactly that paragraph.\n\nPotential nuance: The instruction says \"Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\" So we must not write REVIEW even when describing reason. We didn't.\n\nWe should ensure we don't write \"RELEASE\" or \"REVIEW\" in the explanation of what REFUSE means. We wrote \"which means the image must not be published.\" That's correct per definition: REFUSE = the image must not be published. We didn't write RELEASE or REVIEW there.\n\nWe should ensure we don't write \"review\" as part of \"reviewed\"? We didn't.\n\nWe should deliver final answer within 70 words.\n\nWe must be careful about word count limit: at most 70 words. Our draft is 50, okay.\n\nWe should not add extra sentences that might include forbidden words.\n\nWe should not add \"please\" etc. Keep plain.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't add.\n\nWe should ensure we don't claim anything not in facts. We said \"No verifier findings were recorded\" - that's true per Verifier findings (attribute: verdict): none recorded. Good.\n\nWe said \"so nothing could be verified\" - that's consistent with reasons: no finding, so not verified.\n\nWe said source mask missing for 1-front.jpg with no segment containing mask bytes - that's fact.\n\nWe should output final.\n\nPotential improvement: Use exactly \"REFUSE\" in capitals. We did.\n\nWe must not write \"review\" in any case. Ensure we don't write \"Review\" inadvertently.\n\nWe should not write \"RELEASE\" or \"REVIEW\" in the instruction explanation. We didn't.\n\nWe should ensure we don't write \"refuse\" lower case elsewhere. We only have REFUSE once.\n\nWe should deliver.\n\nWe must not use markdown. So no bold, no bullet.\n\nWe should ensure we don't accidentally include heading.\n\nWe should output plain text.\n\nWe should check for hidden forbidden words: \"verifier\" is okay. \"fidelity\" is okay.\n\nWe should ensure we don't write \"not verified\" is okay.\n\nWe should final answer.\n\nWe need to consider that the seller's claims include \"Anything the render must not change: colour, print and neckline exactly as photographed\" - we could mention that but not needed.\n\nWe should keep answer concise.\n\nWe must ensure we don't exceed 70 words. Our draft is 50, safe.\n\nWe should output final answer as one paragraph.\n\nWe must not add extra explanation about RELEASE or REVIEW definitions. The instruction says State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. So we need to state what REFUSE means. We did.\n\nWe should not state what RELEASE or REVIEW mean, only REFUSE. We didn't.\n\nWe should ensure we don't accidentally write \"a person must look first\" - that contains no forbidden word, but it's the definition of REVIEW. We shouldn't write that because we only need to define REFUSE. Writing that would not contain forbidden word, but it's unnecessary. Better not.\n\nWe should output final.\n\nWe must ensure we don't write \"review\" inside \"review\"? No.\n\nWe should deliver final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 511,
+        "total_tokens": 2723,
+        "completion_tokens": 2212,
+        "prompt_tokens_details": {
+          "cached_tokens": 192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2137
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2137
+        }
+      }
+    }
+  },
+  "error": null
+}

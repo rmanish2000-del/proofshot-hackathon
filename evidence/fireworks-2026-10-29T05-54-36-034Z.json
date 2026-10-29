@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-2",
+  "started_at": "2026-10-29T05:54:36.034Z",
+  "finished_at": "2026-10-29T05:55:09.301Z",
+  "latency_ms": 33267,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REVIEW\nReasons:\n- fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-0fddf75eaf1a4fad84d044be4879d187",
+      "object": "chat.completion",
+      "created": 1793253277,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REVIEW, which means a person must look first. This is because the source mask is missing for 1-front.jpg with no segment containing mask bytes. All checked attributes matched: colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REVIEW\nReasons:\n- fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\n\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n\nWe must write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REVIEW once, in capitals. Must not include RELEASE or REFUSE anywhere. Also must not include REVIEW a second time. So we need to be careful: we can only write REVIEW once. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write RELEASE or REFUSE at all. And we must write REVIEW exactly once.\n\nBut we also need to explain reason: fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg\n\nWe need to describe such a reason in plain words instead, without using the words RELEASE, REVIEW, REFUSE. So we cannot say \"fidelity REVIEW\". We need to paraphrase: e.g., \"the source mask is missing for 1-front.jpg\" or \"no segment with mask bytes for 1-front.jpg\". But we must not use the word REVIEW again. So we must avoid repeating it.\n\nWe need to ensure we don't accidentally write \"review\" in lowercase either? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Likely case-insensitive. So we must not write \"review\" in any case except the one decision word. So we must avoid the word entirely elsewhere.\n\nWe need to explain check result in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. So we need to include that definition.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention seller's claims: Type kurta (women's), main colour rust/orange, etc. But we must not add new colours etc.\n\nVerifier findings: all match. So we can say all attributes matched: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture all match.\n\nWe need to keep under 70 words. Let's craft ~60 words.\n\nWe need to include decision word REVIEW once. Example: \"Decision is REVIEW, which means a person must look first.\" That counts as one occurrence.\n\nWe must not use RELEASE or REFUSE. So avoid those words.\n\nWe must not use REVIEW again. So we must be careful not to say \"review\" again.\n\nWe need to describe reason: source mask is missing: no segment with mask bytes for 1-front.jpg. We can say: \"This is because the source mask is missing for 1-front.jpg with no segment containing mask bytes.\"\n\nWe must not add extra claims.\n\nWe should mention verifier findings: all checked attributes matched.\n\nWe must keep plain English for Indian clothing seller.\n\nWe must not use markdown, emoji, headings.\n\nWe must ensure we don't accidentally include the word \"review\" in \"reviewed\" etc. So avoid.\n\nWe need to count words. Let's draft:\n\n\"Decision is REVIEW, which means a person must look first. This is because the source mask is missing for 1-front.jpg with no segment containing mask bytes. All checked attributes matched: colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture.\"\n\nNow count words:\n\nDecision(1) is2 REVIEW,3 which4 means5 a6 person7 must8 look9 first.10 This11 is12 because13 the14 source15 mask16 is17 missing18 for19 1-front.jpg20 with21 no22 segment23 containing24 mask25 bytes.26 All27 checked28 attributes29 matched:30 colour,31 print32 pattern,33 logo34 text,35 collar,36 sleeve37 length,38 hem,39 pocket40 count,41 buttons42 and43 fabric44 texture45.\n\n45 words, under 70. Good.\n\nWe have used REVIEW once. We have not used RELEASE or REFUSE. We have not used review again. We have described reason in plain words instead of using fidelity REVIEW label. We have not added colours beyond facts? We mentioned colour but that's okay, we said colour matched. We didn't add new colour like rust/orange? We could mention seller's claims but not necessary. The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. We didn't add new colours. We mentioned colour as attribute. That's allowed.\n\nWe should ensure we don't add fabric_texture claim beyond match. We said fabric texture matched, which is fact.\n\nWe should not add care advice.\n\nWe should ensure we state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. We did: \"which means a person must look first.\" That's correct.\n\nWe must not change or soften gate decision. We said decision is REVIEW, which is correct.\n\nWe must write short, plain English for Indian clothing seller. That's okay.\n\nWe must ensure we don't use markdown. No headings, no bullet points. We used plain sentences.\n\nWe must ensure we don't accidentally include the word \"RELEASE\" or \"REFUSE\" inside other words? No.\n\nWe must ensure we don't include \"REVIEW\" inside \"REVIEW,\" with comma? That's still REVIEW. That's the one occurrence. That's okay. We have REVIEW, with comma. That's considered the word REVIEW. Should be okay. Might need to ensure exactly REVIEW in capitals. We have REVIEW, - that's REVIEW with punctuation, still counts as the word. Probably okay. Safer to write REVIEW without punctuation? But \"REVIEW,\" still is REVIEW. The instruction says write that one decision word in capitals. So we have it.\n\nWe must ensure we don't write \"REVIEW\" again in any other case. We didn't.\n\nWe should output final answer.\n\nPotential pitfalls: The seller's claims include \"Anything the render must not change: colour, print and neckline exactly as photographed\" - we could mention that but not needed. We have covered verifier findings.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't add rust/orange? We could but not needed. If we add rust/orange, that's fact from seller's claims, so allowed. But we didn't, which is okay. Use only facts given - means we can use them but not required to use all.\n\nWe should ensure we don't add \"kurta\" etc. Not needed.\n\nWe must keep at most 70 words. We are at 45, good.\n\nWe must ensure we don't use the word \"review\" in \"reviewed\" etc. We didn't.\n\nWe should output exactly the paragraph.\n\nWe must not include extra explanation like \"Here is...\" That would add words but okay as long as under 70 and not violating constraints. But better to keep concise.\n\nWe must ensure we don't accidentally include the word \"RELEASE\" when we say \"can be published\" etc. The instruction says state what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. We need to state what REVIEW means. We did. We must not include the other definitions. So we should not mention RELEASE or REFUSE definitions. We only mention REVIEW definition. Good.\n\nWe must ensure we don't use the words RELEASE or REFUSE anywhere, even in definitions. So we must not write \"RELEASE = ...\" So we correctly only wrote REVIEW definition.\n\nWe should ensure we don't accidentally write \"refuse\" or \"release\" in lower case. We didn't.\n\nWe should deliver final answer.\n\nWe need to double-check we didn't use \"REVIEW\" twice via \"REVIEW,\" counts as one, but we have only one. Good.\n\nWe should ensure we don't use \"review\" inside \"reviewed\" etc. No.\n\nWe should output final answer as plain text.\n\nPotential edge: The instruction says \"Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\" So we must describe reason without using those words. We did: we said source mask is missing... We didn't say \"fidelity REVIEW\". Good.\n\nWe should ensure we don't use the word \"fidelity\" maybe okay, but we can include it? The reason is fidelity REVIEW: source mask is missing... We described as source mask is missing. That's plain words. We didn't use fidelity? We could include fidelity but not needed. We said \"This is because the source mask is missing...\" That's accurate.\n\nWe should ensure we don't add \"fidelity\" incorrectly? It's allowed, it's a fact. But we omitted it, okay.\n\nWe should ensure we don't add \"gate\" etc.\n\nWe should output final answer.\n\nWe must not use markdown, no emoji, no headings. So just plain paragraph.\n\nWe should ensure we don't start with heading like \"Decision:\"? That might be considered heading? Better to just write sentence. \"Decision is REVIEW...\" That's okay. Not a heading.\n\nWe should not use bullet points.\n\nWe should ensure we don't use colon? Colon is okay, not markdown.\n\nWe should deliver.\n\nWe need to ensure we don't exceed 70 words. We are at 45.\n\nWe should final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 461,
+        "total_tokens": 2791,
+        "completion_tokens": 2330,
+        "prompt_tokens_details": {
+          "cached_tokens": 192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2260
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2260
+        }
+      }
+    }
+  },
+  "error": null
+}

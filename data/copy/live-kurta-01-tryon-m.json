@@ -1,0 +1,65 @@
+{
+  "job_id": "live-kurta-01-tryon-m",
+  "records": [
+    {
+      "job_id": "live-kurta-01-tryon-m",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Decision: REVIEW, a person must look before it is published. Reasons: fidelity REVIEW: delta_e 17.522 above 10; area 0.301 below 0.400: the garment shrank in frame."
+    },
+    {
+      "job_id": "live-kurta-01-tryon-m",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Type: kurta (women's). Main colour: rust / orange. Length: long, below the knee (as photographed). Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture."
+    },
+    {
+      "job_id": "live-kurta-01-tryon-m",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "f3f929c60a4697a1bf5fa1387c76578a596ca96d554ad4154d2a9c5996af2556",
+      "usage": {
+        "prompt_tokens": 520,
+        "completion_tokens": 2579
+      },
+      "cost_usd": 0.011611,
+      "cost_estimated": true,
+      "text": "आपकी कुर्ता की जाँच का परिणाम REVIEW है, इसका अर्थ है प्रकाशन से पहले एक व्यक्ति को देखना होगा। रंग का अंतर 17.522 जो सीमा 10 से अधिक है और कपड़ा फ्रेम में छोटा दिखा, क्षेत्र 0.301 जो 0.400 से कम है। रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और बनावट मिलते हैं।"
+    },
+    {
+      "job_id": "live-kurta-01-tryon-m",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "fbca040d7184cdc35bd16299e1841fe81580b87e792b06068d44a20a343d4f0a",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "6570dbc73254f0e68090dda04ebae67de8cd29704b7c900fedc897722e05dbd4",
+      "usage": {
+        "prompt_tokens": 409,
+        "completion_tokens": 3741
+      },
+      "cost_usd": 0.016411,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+    }
+  ]
+}

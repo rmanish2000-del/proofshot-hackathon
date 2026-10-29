@@ -1,0 +1,81 @@
+{
+  "job_id": "fixture-shirt-01",
+  "records": [
+    {
+      "job_id": "fixture-shirt-01",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "f6150f9f2d5285815da5a10288be5a431dfe72190f855c172a793acdd450c37f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "6f2df0dbe9297625ae3b8f711fe94ca3e2393291ee189ba4463107d0f0b5ef0f",
+      "usage": {
+        "prompt_tokens": 404,
+        "completion_tokens": 3018
+      },
+      "cost_usd": 0.013332,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE which means the image must not be published. The check found color mismatch on a hard attribute. Other attributes like print pattern, collar, sleeve length matched. Your claim was indigo cotton shirt with white placket and spread collar but the image is synthetic with no garment photographed."
+    },
+    {
+      "job_id": "fixture-shirt-01",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "f6150f9f2d5285815da5a10288be5a431dfe72190f855c172a793acdd450c37f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "5d9810548c80b68ff12f01fe02bed0bf914c4a657e19c805449f3f15268714c4",
+      "usage": {
+        "prompt_tokens": 309,
+        "completion_tokens": 4306
+      },
+      "cost_usd": 0.018687,
+      "cost_estimated": true,
+      "text": "Seller describes this as a shirt with spread collar. The check found collar, sleeve length, hem, pockets, buttons, print, logo or text and fabric texture matching, but photos are synthetic and no garment was photographed."
+    },
+    {
+      "job_id": "fixture-shirt-01",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "f6150f9f2d5285815da5a10288be5a431dfe72190f855c172a793acdd450c37f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d12438330daa38c8b6b79870102b1fb572642c8469984db66a186a1ec3467dc8",
+      "usage": {
+        "prompt_tokens": 438,
+        "completion_tokens": 2973
+      },
+      "cost_usd": 0.013183,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम REFUSE है। इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। कारण रंग में अंतर है जो कठिन विशेषता पर 0.95 पर मिला है। बाकी विशेषताएँ मिल रही हैं।"
+    },
+    {
+      "job_id": "fixture-shirt-01",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "f6150f9f2d5285815da5a10288be5a431dfe72190f855c172a793acdd450c37f",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "e6bb86100072e9564173badd82722d8315168a574bc6787546c1aaa8243c876c",
+      "usage": {
+        "prompt_tokens": 342,
+        "completion_tokens": 6391
+      },
+      "cost_usd": 0.027589,
+      "cost_estimated": true,
+      "text": "यह कॉटन शर्ट है। इसमें स्प्रेड कॉलर है।"
+    }
+  ]
+}

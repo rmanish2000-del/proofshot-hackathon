@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-tryon-s02",
+  "started_at": "2026-10-29T06:38:53.758Z",
+  "finished_at": "2026-10-29T06:39:22.978Z",
+  "latency_ms": 29220,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, using only the seller's claims and the attributes the check found matching the seller's photos. Where a claim says \"as in the photos\", say nothing about that detail. Write the text in Hindi (Devanagari script).\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)\nAttributes checked and matching the photos: colour, print, logo or text, collar, pockets, buttons, fabric texture"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-348d4041004d4a6caaa3ecfe998903f0",
+      "object": "chat.completion",
+      "created": 1793255935,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।",
+            "reasoning_content": "We need to write product listing of 2-3 full sentences, at most 60 words, using only seller's claims and attributes the check found matching seller's photos. Where a claim says \"as in the photos\", say nothing about that detail. Write text in Hindi Devanagari script.\n\nWe have seller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)\nAttributes checked and matching the photos: colour, print, logo or text, collar, pockets, buttons, fabric texture\n\nWe must use only seller's claims and attributes the check found matching seller's photos. Where a claim says \"as in the photos\", say nothing about that detail.\n\nSo we need to interpret constraints.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short, plain Hindi in Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe have to be careful: Where a claim says \"as in the photos\", say nothing about that detail.\n\nSo:\n- Print or motif: as in the photos -> say nothing about that detail. So we cannot describe print.\n- Collar and cuffs: as in the photos -> say nothing.\n- Buttons: as in the photos -> say nothing.\n- Anything the render must not change: colour, print and neckline exactly as photographed -> This is instruction, not to be included? Probably not.\n- Length: long, below the knee (as photographed) -> This says as photographed, so should we say nothing? The instruction: Where a claim says \"as in the photos\", say nothing about that detail. Length says \"long, below the knee (as photographed)\" - does that count as \"as in the photos\"? It says as photographed. Probably we should not mention length? But it's ambiguous. The phrase \"as in the photos\" exactly. Length says \"(as photographed)\" - similar. Should we interpret as we should not mention length? The safe interpretation: If claim says \"as in the photos\", say nothing about that detail. Length claim includes \"as photographed\" parenthetically, but also gives description \"long, below the knee\". Might be allowed to say long? However instruction says where a claim says \"as in the photos\", say nothing about that detail. So for Print, Collar and cuffs, Buttons, we must say nothing. For Length, it says \"as photographed\" - maybe also say nothing. But then what can we say?\n\nAllowed facts:\n- Type: kurta (women's) -> can say women's kurta\n- Main colour: rust / orange -> can say rust/orange\n- Attributes checked and matching: colour, print, logo or text, collar, pockets, buttons, fabric texture -> But we can only use seller's claims and attributes the check found matching. Does that mean we can mention those attributes? But we must not add details not in facts. The attributes checked are colour, print, logo or text, collar, pockets, buttons, fabric texture. But we don't have details about pockets, logo, fabric texture from seller. So we cannot invent.\n\nWe need to write 2-3 full sentences, at most 60 words, using only seller's claims and attributes the check found matching.\n\nWe must not mention print, collar, pockets, buttons, fabric texture details because seller said \"as in the photos\" and we have no verbal description. So we should not describe them.\n\nWhat can we say? We can say: This is women's kurta. Its main colour is rust/orange. That's it? Need 2-3 sentences.\n\nWe must be careful not to add colours, fabrics, sizes, prices, care advice.\n\nWe must write in Hindi Devanagari script.\n\nWe should not mention check, decision, approval.\n\nWe must not add claim not in facts. So we cannot say \"comfortable\", \"stylish\", \"cotton\", etc.\n\nWe can say: यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट / नारंगी है।\n\nThat's 2 sentences. Is that within 60 words? Yes.\n\nBut we need to ensure we use only seller's claims. Type: kurta (women's) -> women's kurta. Main colour: rust / orange -> rust / orange.\n\nWe should not mention length if it's considered \"as in the photos\". The instruction says Where a claim says \"as in the photos\", say nothing about that detail. Length says \"long, below the knee (as photographed)\" - that is arguably \"as in the photos\" so we should say nothing about length. So we omit length.\n\nWe also must not mention print, collar, cuffs, buttons.\n\nWe should not mention pockets, logo, fabric texture because we have no description.\n\nWe must not mention \"colour, print and neckline exactly as photographed\" - that's internal instruction.\n\nSo final listing is very minimal.\n\nWe need to ensure we don't add extra claims like \"सुंदर\" maybe considered extra claim? The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Does \"सुंदर\" count as claim not in facts? Probably yes, we should avoid adjectives that are claims. Keep plain.\n\nWe should write short, plain Hindi.\n\nWe must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE.\n\nWe should ensure we don't accidentally include English words? Kurta is okay but in Hindi it's कुर्ता. Rust maybe English but seller's claim is rust / orange. In Hindi we can write रस्ट / नारंगी. That's okay.\n\nWe need 2 to 3 full sentences, at most 60 words.\n\nWe have 2 sentences. Let's count words: यह(1) महिलाओं(2) के(3) लिए(4) कुर्ता(5) है(6)। इसका(7) मुख्य(8) रंग(9) रस्ट(10) नारंगी(11) है(12)। That's 12 words, under 60.\n\nWe should ensure we use Devanagari script only. The slash maybe allowed? But we can write \"रस्ट नारंगी\" without slash. Better to write \"रस्ट नारंगी\" to stay in Devanagari. The seller's claim is rust / orange. We can translate to रस्ट नारंगी.\n\nWe must not add anything else.\n\nPotential nuance: The attributes checked and matching the photos: colour, print, logo or text, collar, pockets, buttons, fabric texture. Does that allow us to mention those attributes exist? But we have no details. We should not mention them because we have no verbal description. The instruction: using only the seller's claims and the attributes the check found matching the seller's photos. Where a claim says \"as in the photos\", say nothing about that detail.\n\nInterpretation: We can only mention attributes that were checked and matching? Or we can use seller's claims plus those attributes? The phrase \"using only the seller's claims and the attributes the check found matching\" suggests we are limited to those sources. But we still must not describe \"as in the photos\" details.\n\nSo we cannot describe print, collar, pockets, buttons, fabric texture, logo.\n\nThus minimal listing is correct.\n\nWe must ensure we don't mention \"लंबा\" because length is as photographed.\n\nWe should not mention \"प्रिंट\" at all.\n\nWe should not mention \"कॉलर\" etc.\n\nWe should produce final answer in Hindi Devanagari script, 2-3 sentences.\n\nWe must not add markdown, emoji, headings.\n\nWe should output just the listing.\n\nWe need to be careful not to accidentally add English.\n\nWe should ensure we don't write \"women's\" in English.\n\nWe should write plain Hindi.\n\nPotential final output:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।\n\nThat's 2 sentences.\n\nCheck if we need to include \"Type: kurta (women's)\" - we did.\n\nWe should not add \"लंबा\" etc.\n\nWe must ensure we don't violate \"Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" We didn't.\n\nWe should not mention fabric texture.\n\nWe should not mention pockets.\n\nWe should not mention logo.\n\nWe should ensure we don't mention \"फोटो जैसा\" - Where a claim says \"as in the photos\", say nothing about that detail. So we must not say \"फोटो जैसा\" etc.\n\nWe should not mention neckline.\n\nWe should output exactly that.\n\nWe need to ensure we don't accidentally include extra sentence about delivery etc.\n\nWe should keep it simple.\n\nWe must ensure we don't write RELEASE etc.\n\nWe should output in Devanagari.\n\nWe should double-check word count: at most 60 words. We are under.\n\nWe should ensure we have 2 to 3 full sentences. We have 2.\n\nWe should not add extra punctuation that creates extra sentence.\n\nWe should ensure we use Hindi period \"।\" which counts as sentence terminator. That's fine.\n\nWe should not use English period.\n\nWe should produce final answer.\n\nWe must not add any explanation.\n\nWe should just output the listing.\n\nPotential edge: The seller's claims include \"Main colour: rust / orange\" - we can mention that. We did.\n\nWe should not mention \"orange\" as \"नारंगी\" is translation, okay.\n\nWe should ensure we don't add \"सुंदर\" etc.\n\nWe should output.\n\nWe must ensure we don't mention \"check found matching\" - do not mention any check.\n\nWe should not mention \"attributes checked\".\n\nWe should just output product listing.\n\nWe should ensure we don't add \"धोने\" etc.\n\nWe should output final.\n\nWe should consider if we need to include \"कुर्ता\" is correct Hindi.\n\nWe should ensure we use Devanagari script for all words. \"रस्ट\" is transliteration but in Devanagari, okay.\n\nWe should not use slash \"/\" maybe it's okay but better avoid non-Devanagari? The instruction says write in Hindi (Devanagari script). Slash is not Devanagari but maybe allowed. Safer to avoid slash and just write \"रस्ट नारंगी\".\n\nWe should output:\n\nयह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।\n\nThat's good.\n\nWe should ensure we don't add extra claims like \"आरामदायक\".\n\nWe should not add \"घुटने से नीचे\" because length is as photographed, so we must say nothing.\n\nWe should not add \"प्रिंट\" etc.\n\nWe should finalize.\n\nWe must ensure we don't accidentally write in English.\n\nWe should output exactly 2 sentences.\n\nWe should not add heading.\n\nWe should not add bullet points.\n\nWe should just output plain text.\n\nWe should ensure we don't add \"धन्यवाद\" etc.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 404,
+        "total_tokens": 2803,
+        "completion_tokens": 2399,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2370
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2370
+        }
+      }
+    }
+  },
+  "error": null
+}
