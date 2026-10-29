@@ -148,6 +148,19 @@ Checked against: `git log --reverse` (first commit and the dates of all
 commits), the `provider` fields of every receipt in `data/jobs`, and every
 endpoint URL in `src/` and `scripts/`.
 
+**Judge Q and A on the prior-work boundary:**
+
+- *What was built during the event?* Everything in this repository: the gate,
+  the receipt chain, the verify page, the providers' code, the demo and the
+  evidence. Its first commit is `4aa99f9`, 27 Oct 2026 at 11:10 IST, after the
+  26 Oct 21:30 IST opening, and every later commit is in its public history.
+- *What existed before the event?* Only `docs/SPEC.md` (the written
+  specification, with event changes marked *(event)*) and the config
+  boilerplate (`tsconfig.json`, `.gitignore`). No code was copied in.
+- *Does the demo call anything built before the event?* No. It uses only this
+  repository's code and the hosted models named under Built with; no
+  pre-existing ProofShot service exists or is called.
+
 ## What's next
 
 These are plans, not results:
