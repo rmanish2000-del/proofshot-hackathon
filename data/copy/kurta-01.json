@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "c17d04f984b64c86fb9f66a49c2c7f07d4d908acf4e37778164541cbee254619",
+      "request_sha256": "f7eaaf47bd4a8aaead49b67606452928ca0f269ec49edccaf14969d7e1c42481",
       "usage": {
-        "prompt_tokens": 336,
-        "completion_tokens": 3877
+        "prompt_tokens": 296,
+        "completion_tokens": 2209
       },
-      "cost_usd": 0.016897,
+      "cost_usd": 0.009758,
       "cost_estimated": true,
-      "text": "This women's kurta is in rust orange. This job is fixture data, not a live listing, and the owner's photo stands in for the preview image."
+      "text": "This is a women's kurta. Its colour is rust / orange."
     },
     {
       "job_id": "kurta-01",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "ffc60c3285f073ea11b8fdf858f992f67bba3691b1651b5cf620a71468ebfdbf",
+      "request_sha256": "206fd577700e4a04a85df0ef60165ed0bf7dd9e9d59b5bdf165955e07dd0a760",
       "usage": {
-        "prompt_tokens": 369,
-        "completion_tokens": 3597
+        "prompt_tokens": 329,
+        "completion_tokens": 1253
       },
-      "cost_usd": 0.015748,
+      "cost_usd": 0.005737,
       "cost_estimated": true,
-      "text": "यह महिलाओं का कुर्ता है। इसका रंग रस्ट नारंगी है। यह fixture डेटा है, लाइव लिस्टिंग नहीं है और मालिक की फोटो पूर्वावलोकन के लिए है।"
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका रंग रस्ट नारंगी है।"
     }
   ]
 }

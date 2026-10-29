@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms2-shirt-zebra",
+  "started_at": "2026-10-29T14:28:59.264Z",
+  "finished_at": "2026-10-29T14:29:17.769Z",
+  "latency_ms": 18505,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: shirt (short sleeves, button front)\n- Main colour: black and grey\n- Print or motif (what, where, size): zebra-style stripe print all over\n- Collar and cuffs: point collar, short sleeves\n- Buttons: black"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-c3ef6999f5ee43aa9c0b39f680b8d8c0",
+      "object": "chat.completion",
+      "created": 1793284140,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह काले और ग्रे रंग की शर्ट है। इसमें सामने बटन हैं और छोटी आस्तीनें हैं। पूरी शर्ट पर ज़ेबरा-स्टाइल धारीदार प्रिंट है और इसमें पॉइंट कॉलर और काले बटन हैं।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length, any detail stated. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nUse short, plain Hindi in Devanagari script.\n\nFacts:\n- Type: shirt (short sleeves, button front)\n- Main colour: black and grey\n- Print or motif: zebra-style stripe print all over\n- Collar and cuffs: point collar, short sleeves\n- Buttons: black\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need to write 2-3 full sentences, at most 60 words, describing garment itself.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need to ensure Hindi Devanagari script.\n\nWe must not mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe must not write RELEASE, REVIEW or REFUSE.\n\nNo markdown, no emoji, no headings.\n\nWe need to produce 2-3 sentences.\n\nPotential text:\n\n\"यह काले और ग्रे रंग की शर्ट है। इसमें सामने बटन हैं और छोटी आस्तीनें हैं। पूरी शर्ट पर ज़ेबरा-स्टाइल धारीदार प्रिंट है और इसमें पॉइंट कॉलर और काले बटन हैं।\"\n\nCheck word count: Need at most 60 words. Let's count words.\n\nयह(1) काले(2) और(3) ग्रे(4) रंग(5) की(6) शर्ट(7) है।(8) इसमें(9) सामने(10) बटन(11) हैं(12) और(13) छोटी(14) आस्तीनें(15) हैं।(16) पूरी(17) शर्ट(18) पर(19) ज़ेबरा-स्टाइल(20) धारीदार(21) प्रिंट(22) है(23) और(24) इसमें(25) पॉइंट(26) कॉलर(27) और(28) काले(29) बटन(30) हैं।(31)\n\n31 words, within 60. 3 sentences. Good.\n\nWe must ensure we didn't add extra claims. We used type shirt short sleeves button front - yes. Main colour black and grey - yes. Print zebra-style stripe print all over - yes. Collar and cuffs point collar short sleeves - yes. Buttons black - yes.\n\nWe didn't add fabric, sizes, prices, care advice.\n\nWe used plain Hindi.\n\nWe must ensure we don't add length? Seller description says length? Not given. So we don't mention length.\n\nWe should not add colours beyond black and grey. We said काले and ग्रे - correct. We said काले बटन - that's given: buttons black.\n\nWe should ensure we don't add any extra detail like \"stylish\" etc? That might be considered claim not in facts. The instruction: Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So avoid adjectives like \"सुंदर\", \"आकर्षक\", \"आरामदायक\". Keep plain.\n\nOur text is plain.\n\nWe must ensure we use Devanagari script only. We have Hindi.\n\nWe must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. We didn't.\n\nNo markdown, no emoji, no headings. We have plain text.\n\nWe need to ensure 2 to 3 full sentences. We have 3 sentences.\n\nAt most 60 words - we have 31.\n\nWe should output only the Hindi text.\n\nPotential nuance: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nWe must follow that.\n\nWe should not add English words? But \"ग्रे\", \"शर्ट\", \"पॉइंट कॉलर\", \"ज़ेबरा-स्टाइल\" are transliterations but okay. Could use Hindi equivalents. But seller description is in English, we translate to Hindi. Using transliteration is okay as long as it's Hindi script. But maybe better to keep as is.\n\nWe should ensure we don't accidentally add \"short sleeves\" twice? We did: \"छोटी आस्तीनें\" appears once in second sentence, but also implied? Actually we said \"छोटी आस्तीनें हैं\" in second sentence, and not repeat. Third sentence we didn't repeat short sleeves. Good.\n\nWe said \"पॉइंट कॉलर\" - that's correct.\n\nWe should ensure we don't add \"length\" if not given. We didn't.\n\nWe should output final answer.\n\nWe must be careful not to add extra punctuation that could be considered markdown. Simple sentences.\n\nWe should not add bullet points.\n\nWe should just output the Hindi paragraph.\n\nMake sure not to add English explanation.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe are good.\n\nWe should consider alternative: The user wants product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write text in Hindi (Devanagari script).\n\nWe have done.\n\nWe should ensure we mention type: shirt (short sleeves, button front) - we did.\n\nMain colour black and grey - we did.\n\nPrint zebra-style stripe print all over - we did.\n\nCollar and cuffs point collar short sleeves - we did.\n\nButtons black - we did.\n\nWe should not add length if not stated. The seller description doesn't have length. So we don't mention length.\n\nWe should ensure we don't hallucinate length like \"लंबी\" etc.\n\nWe are good.\n\nWe should output final answer in Hindi.\n\nPotential improvement: Use \"काले और स्लेटी\" vs \"ग्रे\"? Both okay. \"ग्रे\" is transliteration but in Devanagari it's okay. Better to use \"ग्रे\" as seller said grey.\n\nWe used \"ग्रे\". Good.\n\nWe should ensure we use Devanagari for \"ग्रे\" - we did.\n\nWe should ensure we don't add extra claim like \"all over\" we translated as \"पूरी शर्ट पर\" - correct.\n\nWe should deliver.\n\nWe must not add any English.\n\nWe should not add \"Seller's description\" etc.\n\nJust the Hindi text.\n\nWe should ensure we don't exceed 60 words. We are at 31.\n\nWe should ensure we have 2-3 full sentences. We have 3.\n\nWe should ensure plain Hindi.\n\nWe should output.\n\nWe must not add any prefix like \"Here is...\".\n\nJust the Hindi sentences.\n\nWe should be careful about word count: Hindi words separated by spaces. Our count is okay.\n\nWe should output final.\n\nPotential edge: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\"\n\nWe must not add fabric like \"कॉटन\" etc. We didn't.\n\nWe must not add sizes like \"M, L\" etc. We didn't.\n\nWe must not add prices. We didn't.\n\nWe must not add care advice like \"धोने में आसान\". We didn't.\n\nWe must not add any claim not in facts like \"ट्रेंडी\" etc. We didn't.\n\nWe are good.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 371,
+        "total_tokens": 2156,
+        "completion_tokens": 1785,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1717
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1717
+        }
+      }
+    }
+  },
+  "error": null
+}

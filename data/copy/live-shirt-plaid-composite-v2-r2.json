@@ -6,11 +6,19 @@
       "task": "receipt_summary",
       "lang": "en",
       "receipt_head": "208fd4d31d578600f8df94e83022ab6f2a0d48eea0a40c48cbe58b56e12ab331",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Decision: REFUSE, the image must not be published. Reasons: color: no finding, so not verified; print_pattern: no finding, so not verified; logo_text: no finding, so not verified; collar: no finding, so not verified; sleeve_length: no finding, so not verified; hem: no finding, so not verified; pocket_count: no finding, so not verified; buttons: no finding, so not verified; fabric_texture: no finding, so not verified."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "13c44ebfdadf47cfc859e0e9efaa42c5d4faf1fb5bd73c847d0dcf68c40d10e7",
+      "usage": {
+        "prompt_tokens": 549,
+        "completion_tokens": 2734
+      },
+      "cost_usd": 0.012306,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE, which means the image must not be published. No verifier findings were recorded so garment details could not be compared. The seller's description says the garment is a shirt with checks and other features, but this is not a check result and the details were not verified."
     },
     {
       "job_id": "live-shirt-plaid-composite-v2-r2",
@@ -22,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "0ea8091dd212af3c2144fa92b6778c3cd150ca2a67ca00b92a237c6b6300a938",
+      "request_sha256": "8bf1bb4e8feab99417be009450e84b247d02728520a1807e9f41ff8d9c3ec815",
       "usage": {
-        "prompt_tokens": 326,
-        "completion_tokens": 2028
+        "prompt_tokens": 349,
+        "completion_tokens": 4371
       },
-      "cost_usd": 0.009027,
+      "cost_usd": 0.019013,
       "cost_estimated": true,
-      "text": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks and has a point collar and buttoned cuffs."
+      "text": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks in a large plaid check all over. It has a point collar, buttoned cuffs and white buttons."
     },
     {
       "job_id": "live-shirt-plaid-composite-v2-r2",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "b020701794b365b294bdd3be0afe0b4eb93a32c239a047c2836beb249ec50c9f",
+      "request_sha256": "f7e915a49892a0b4fef8794a382df2a17b458954dc96c23e78d45b8ac261d3a9",
       "usage": {
-        "prompt_tokens": 359,
-        "completion_tokens": 1806
+        "prompt_tokens": 382,
+        "completion_tokens": 1287
       },
-      "cost_usd": 0.008124,
+      "cost_usd": 0.005947,
       "cost_estimated": true,
-      "text": "यह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, सरसों और मैरून रंग के चेक हैं और इसमें पॉइंट कॉलर और बटन वाले कफ हैं।"
+      "text": "यह क्रीम रंग की लंबी आस्तीन वाली शर्ट है जिसमें सामने बटन हैं। इसमें नेवी, हल्के नीले, सरसों और मैरून रंग के बड़े प्लेड चेक पूरे कपड़े पर हैं। इसमें पॉइंट कॉलर, बटन वाले कफ और सफेद बटन हैं।"
     }
   ]
 }

@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "d3e42681613a3be805c9fb064d2669c1f046fa23ffe15b184e0290b3316e233e",
+      "request_sha256": "4cd25caced9b397500d509d976ad08188aad96d21ffe8ed4810333b02f61d4e7",
       "usage": {
-        "prompt_tokens": 347,
-        "completion_tokens": 2954
+        "prompt_tokens": 307,
+        "completion_tokens": 2316
       },
-      "cost_usd": 0.012988,
+      "cost_usd": 0.010227,
       "cost_estimated": true,
-      "text": "This job is fixture data, not a live listing. This shirt has long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks."
+      "text": "This shirt has long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks."
     },
     {
       "job_id": "shirt-plaid",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "97b87ff1f03a7116031a10fec4ef649a332b68775fe32623b0e8d6320b391ff1",
+      "request_sha256": "d9d25befccc0fcdcaa15f6251918c9b81a557262e1fef8fcd54877d5490f758b",
       "usage": {
-        "prompt_tokens": 380,
-        "completion_tokens": 5375
+        "prompt_tokens": 340,
+        "completion_tokens": 2066
       },
-      "cost_usd": 0.023319,
+      "cost_usd": 0.009206,
       "cost_estimated": true,
-      "text": "यह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्के नीले, मस्टर्ड और मैरून चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं। यह fixture डेटा है, वास्तविक सूची नहीं है।"
+      "text": "यह क्रीम रंग की चेक शर्ट है जिसमें नेवी, हल्का नीला, मस्टर्ड और मैरून रंग के चेक हैं। इसमें लंबी आस्तीनें और सामने बटन हैं।"
     }
   ]
 }

@@ -25,11 +25,19 @@
       "task": "listing_copy",
       "lang": "en",
       "receipt_head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "truncated",
-      "text": "Description: shirt (short sleeves, button front), black and grey. This is fixture data for the demo, not a live listing."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0ef45fc9f1c4c62505ea7bb7af525276fb30d0e0fc313979189f09e881e8e7fe",
+      "usage": {
+        "prompt_tokens": 298,
+        "completion_tokens": 2629
+      },
+      "cost_usd": 0.011546,
+      "cost_estimated": true,
+      "text": "This shirt has short sleeves and a button front. Its colours are black and grey."
     },
     {
       "job_id": "shirt-zebra",
@@ -60,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "5a0d1ba31a0c7ee9b65f9ca1801c9636500c713359bbb54ab8f219ad18195b1c",
+      "request_sha256": "06d27c6dcfe6275385ddfd6941ef766b70e6c373fb504225cb68c0ca45b6cffc",
       "usage": {
-        "prompt_tokens": 371,
-        "completion_tokens": 4778
+        "prompt_tokens": 331,
+        "completion_tokens": 1393
       },
-      "cost_usd": 0.02077,
+      "cost_usd": 0.006334,
       "cost_estimated": true,
-      "text": "यह काले और ग्रे रंग की शर्ट है। इसमें छोटी आस्तीनें और सामने बटन हैं। यह काम fixture डेटा है, लाइव लिस्टिंग नहीं है।"
+      "text": "यह शर्ट काले और ग्रे रंग में है। इसमें छोटी आस्तीन और सामने बटन हैं।"
     }
   ]
 }

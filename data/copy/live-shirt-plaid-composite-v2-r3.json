@@ -30,14 +30,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "0ea8091dd212af3c2144fa92b6778c3cd150ca2a67ca00b92a237c6b6300a938",
+      "request_sha256": "8bf1bb4e8feab99417be009450e84b247d02728520a1807e9f41ff8d9c3ec815",
       "usage": {
-        "prompt_tokens": 326,
-        "completion_tokens": 1919
+        "prompt_tokens": 349,
+        "completion_tokens": 1744
       },
-      "cost_usd": 0.008563,
+      "cost_usd": 0.007848,
       "cost_estimated": true,
-      "text": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks and has a point collar and buttoned cuffs."
+      "text": "This is a long sleeve shirt with a button front. It is cream with navy, light blue, mustard and maroon checks in a large plaid check all over. It has a point collar, buttoned cuffs and white buttons."
     },
     {
       "job_id": "live-shirt-plaid-composite-v2-r3",
@@ -68,14 +68,14 @@
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "b020701794b365b294bdd3be0afe0b4eb93a32c239a047c2836beb249ec50c9f",
+      "request_sha256": "f7e915a49892a0b4fef8794a382df2a17b458954dc96c23e78d45b8ac261d3a9",
       "usage": {
-        "prompt_tokens": 359,
-        "completion_tokens": 1563
+        "prompt_tokens": 382,
+        "completion_tokens": 1484
       },
-      "cost_usd": 0.007092,
+      "cost_usd": 0.006785,
       "cost_estimated": true,
-      "text": "यह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, सरसों और मैरून चेक हैं और इसमें पॉइंट कॉलर और बटन वाले कफ हैं।"
+      "text": "यह क्रीम रंग की लंबी आस्तीन वाली शर्ट है जिसमें सामने बटन हैं। इसमें नेवी, हल्के नीले, सरसों और मैरून रंग के बड़े प्लेड चेक पूरी शर्ट पर हैं। इसमें पॉइंट कॉलर, बटन वाले कफ और सफेद बटन हैं।"
     }
   ]
 }

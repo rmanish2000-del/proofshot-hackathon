@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "shirt-zebra",
+  "started_at": "2026-10-29T14:27:50.759Z",
+  "finished_at": "2026-10-29T14:28:04.905Z",
+  "latency_ms": 14146,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Description: shirt (short sleeves, button front), black and grey"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-febcfb43baba4dc699fbbd9fb03da561",
+      "object": "chat.completion",
+      "created": 1793284071,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह शर्ट काले और ग्रे रंग में है। इसमें छोटी आस्तीन और सामने बटन हैं।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. Write text in Hindi Devanagari script.\n\nSeller's description: shirt (short sleeves, button front), black and grey\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need short plain Hindi in Devanagari script.\n\nWe need to describe: shirt, short sleeves, button front, black and grey.\n\nWe must not add length? The description says length? Not given. So just type, colour, length and any detail stated. So we have type: shirt, colour: black and grey, detail: short sleeves, button front.\n\nWe need 2-3 full sentences, at most 60 words.\n\nWe must write in Hindi Devanagari.\n\nExample: यह शर्ट काले और ग्रे रंग में है। इसमें छोटे आस्तीन और सामने बटन हैं।\n\nThat's 2 sentences. Need to ensure plain Hindi.\n\nWe must not add extra claims like fabric etc.\n\nWe should ensure we don't exceed 60 words. 2 sentences is fine.\n\nWe must not mention photos being compared etc.\n\nWe must ensure we use only facts given. Don't add length if not given. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, don't invent.\n\nWe should write in Hindi Devanagari script.\n\nPotential output: यह काले और स्लेटी रंग की शर्ट है। इसमें छोटी आस्तीन और सामने बटन हैं।\n\nCheck words: Need to ensure black and grey translation: काला और ग्रे? Use काले और ग्रे? Better use काला और ग्रे. The seller says black and grey. So we can say काले और ग्रे रंग की.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe should keep plain.\n\nWe must not use markdown, emoji, headings.\n\nWe need to ensure we don't accidentally write English words? Hindi Devanagari script only. So we should not write \"shirt\" in English. Use शर्ट which is Hindi transliteration but in Devanagari. That's allowed? The instruction says write in Hindi (Devanagari script). So शर्ट is okay.\n\nWe should avoid English words like black and grey in English. Use Hindi.\n\nWe need 2-3 full sentences. Let's do 2 sentences.\n\nExample:\n\nयह शर्ट काले और ग्रे रंग में है। इसमें छोटी आस्तीन और सामने बटन हैं।\n\nCount words: यह(1) शर्ट(2) काले(3) और(4) ग्रे(5) रंग(6) में(7) है।(8) इसमें(9) छोटी(10) आस्तीन(11) और(12) सामने(13) बटन(14) हैं।(15) That's under 60 words.\n\nWe must ensure we don't add length. We didn't.\n\nWe should ensure we use plain Hindi.\n\nWe must not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE.\n\nWe should output just the Hindi text.\n\nWe must not add markdown.\n\nWe should ensure we don't add extra sentences.\n\nWe need to be careful: The seller's description: shirt (short sleeves, button front), black and grey\n\nWe should not add \"sleeves\" incorrectly? It's short sleeves.\n\nWe should ensure we use correct Hindi.\n\nPotential final answer: यह काले और ग्रे रंग की शर्ट है। इसमें छोटी आस्तीनें और सामने बटन हैं।\n\nThat's good.\n\nWe must ensure we don't add \"sleeves\" plural? छोटी आस्तीनें is okay.\n\nWe should not add any extra detail like length.\n\nWe should ensure we don't exceed 60 words.\n\nWe should output in Devanagari.\n\nWe must not mention photos being compared etc.\n\nWe should comply.\n\nWe need to ensure we don't add colours, fabrics, sizes, prices, care advice.\n\nWe are good.\n\nWe should produce final answer in Hindi.\n\nWe must not add English.\n\nWe should ensure we use Devanagari script fully. \"ग्रे\" is Devanagari? Yes, ग्रे is Devanagari transliteration of grey. That's okay. Could also use स्लेटी. But ग्रे is okay as it's Devanagari script. Better to use ग्रे to match seller's description.\n\nWe should not add any extra punctuation like bullet points.\n\nJust plain sentences.\n\nWe should ensure we have 2-3 full sentences. Provide 2.\n\nWe must not add headings.\n\nWe should output final.\n\nWe need to consider that the system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nWe must follow.\n\nWe should not add \"Indian clothing seller\" etc.\n\nWe should just write product listing.\n\nWe should ensure we don't accidentally write \"RELEASE\" etc.\n\nWe are good.\n\nWe should produce final answer.\n\nWe need to ensure we don't add length like \"short\" etc. But short sleeves is detail.\n\nWe should not add \"length\" if not given.\n\nWe should output.\n\nPotential final: यह काले और ग्रे रंग की शर्ट है। इसमें छोटी आस्तीन और सामने बटन हैं।\n\nThat's 2 sentences.\n\nWe should ensure we use correct Hindi grammar.\n\nWe could also say: यह शर्ट काले और ग्रे रंग में है। इसमें छोटी आस्तीनें और सामने बटन हैं।\n\nBoth are fine.\n\nWe should choose one.\n\nWe must ensure we don't add extra words like \"सुंदर\" etc. That's a claim not in facts. So avoid adjectives like सुंदर, आरामदायक, etc. Just plain description.\n\nWe should not add \"स्टाइलिश\" etc.\n\nWe should keep plain.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 331,
+        "total_tokens": 1724,
+        "completion_tokens": 1393,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1359
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1359
+        }
+      }
+    }
+  },
+  "error": null
+}

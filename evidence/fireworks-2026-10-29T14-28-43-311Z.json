@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms2-shirt-zebra",
+  "started_at": "2026-10-29T14:28:43.311Z",
+  "finished_at": "2026-10-29T14:28:58.903Z",
+  "latency_ms": 15592,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: shirt (short sleeves, button front)\n- Main colour: black and grey\n- Print or motif (what, where, size): zebra-style stripe print all over\n- Collar and cuffs: point collar, short sleeves\n- Buttons: black"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-1aa5777d3d9d48c488ca63c5ce3c51d9",
+      "object": "chat.completion",
+      "created": 1793284124,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This shirt has short sleeves and a button front in black and grey. It has an all-over zebra-style stripe print with a point collar and black buttons.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, describing garment itself from seller's description: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: shirt (short sleeves, button front)\n- Main colour: black and grey\n- Print or motif (what, where, size): zebra-style stripe print all over\n- Collar and cuffs: point collar, short sleeves\n- Buttons: black\n\nWe need 2 to 3 full sentences, at most 60 words, describing garment itself.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we must include type: shirt (short sleeves, button front), main colour black and grey, print zebra-style stripe print all over, collar and cuffs: point collar, short sleeves, buttons: black.\n\nWe must not add length? The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. But seller description doesn't have length. So we shouldn't invent length. Just describe what is given.\n\nWe need to ensure we don't add extra details. Use plain English.\n\nWe need to ensure we don't mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. So avoid those words.\n\nWe need to write 2-3 sentences, at most 60 words.\n\nExample: \"This is a black and grey short sleeve shirt with a button front. It features an all-over zebra-style stripe print, a point collar and black buttons.\"\n\nThat's 2 sentences. Count words: This(1) is2 a3 black4 and5 grey6 short7 sleeve8 shirt9 with10 a11 button12 front13. It14 features15 an16 all-over17 zebra-style18 stripe19 print,20 a21 point22 collar23 and24 black25 buttons26. That's 26 words, under 60. Good.\n\nWe must ensure we don't add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe must not add length if not given. We didn't.\n\nWe should ensure we use only facts given. We used all facts.\n\nWe need to be careful: \"short sleeves\" is given, \"button front\" given, \"black and grey\" given, \"zebra-style stripe print all over\" given, \"point collar\" given, \"black buttons\" given.\n\nWe should not add \"length\" - we didn't.\n\nWe should ensure we don't add any claim not in facts. Like \"stylish\" or \"comfortable\" might be considered extra claim? The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So avoid adjectives like \"stylish\", \"beautiful\", \"comfortable\". Keep plain.\n\nWe should not use markdown, emoji, headings. Just plain text.\n\nWe need to write short, plain English for Indian clothing seller.\n\nWe should ensure we don't change or soften gate decision. There's no gate decision mentioned here? But we must not mention gate etc.\n\nWe should produce final answer with 2-3 sentences.\n\nPotential nuance: The user wants us to write product listing. We must not add anything else. So just the listing.\n\nWe must ensure we don't mention photos being compared etc. We won't.\n\nWe should ensure we don't use markdown. So no bullet points, no bold.\n\nWe should ensure we use only facts given. So we must not add \"length\" if not provided. The instruction says describing garment itself from seller's description below: its type, colour, length and any detail stated. Use nothing else. So if length not stated, we don't mention length.\n\nWe should ensure we don't add \"fabric\" etc.\n\nWe should produce final output.\n\nWe need to consider that the system says \"You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings.\"\n\nWe must follow that.\n\nWe should output 2-3 sentences, at most 60 words.\n\nWe should double-check word count.\n\nWe should ensure we don't accidentally add \"short sleeves\" twice? It's okay but we can mention once.\n\nWe should ensure we don't add \"cuffs\" if not given? The seller says collar and cuffs: point collar, short sleeves. So we can mention point collar and short sleeves.\n\nWe should ensure we don't add \"long\" or \"short\" length incorrectly.\n\nWe should produce final answer.\n\nWe should not add any extra sentence about gate decision.\n\nWe should just output the listing.\n\nWe should ensure we don't use markdown like ** or #.\n\nWe should ensure we don't use emoji.\n\nWe should ensure we use plain English.\n\nWe should ensure we don't mention \"AI\" etc.\n\nWe should output exactly the listing.\n\nWe should consider if we need to mention \"shirt\" type correctly.\n\nWe should ensure we don't add \"men's\" or \"women's\" if not given. The seller description doesn't say men's or women's. So don't add.\n\nWe should not add \"casual\" or \"formal\".\n\nWe should keep it simple.\n\nWe should produce final answer in 2 sentences.\n\nWe should ensure we don't exceed 60 words.\n\nWe should do final check.\n\nPotential final answer: \"This shirt has short sleeves and a button front in black and grey. It has an all-over zebra-style stripe print with a point collar and black buttons.\"\n\nCount words: This1 shirt2 has3 short4 sleeves5 and6 a7 button8 front9 in10 black11 and12 grey13. It14 has15 an16 all-over17 zebra-style18 stripe19 print20 with21 a22 point23 collar24 and25 black26 buttons27. That's 27 words, under 60, 2 sentences. Good.\n\nWe should ensure we include all details: type shirt (short sleeves, button front) - yes, main colour black and grey - yes, print zebra-style stripe print all over - yes, collar point collar - yes, buttons black - yes.\n\nWe should not add extra.\n\nWe should output that.\n\nWe must ensure we don't add \"length\" - we didn't.\n\nWe should ensure we don't add \"fabric\" - we didn't.\n\nWe should ensure we don't add \"size\" - we didn't.\n\nWe should ensure we don't add \"price\" - we didn't.\n\nWe should ensure we don't add \"care advice\" - we didn't.\n\nWe should ensure we don't add any claim not in facts - we didn't add \"stylish\" etc.\n\nWe should output.\n\nWe should not add any preamble like \"Here is the listing:\" That might be considered extra? The instruction says write a product listing of 2 to 3 full sentences. So we should just write the listing, not add extra explanation. Adding \"Here is...\" would be extra sentence and might violate. So just output the listing sentences.\n\nWe should ensure we don't add any extra text beyond the listing.\n\nWe should output exactly 2-3 sentences.\n\nWe should do that.\n\nWe should ensure we don't use markdown.\n\nWe should output plain text.\n\nWe should ensure we don't mention gate etc.\n\nWe should proceed to final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 338,
+        "total_tokens": 1986,
+        "completion_tokens": 1648,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1607
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1607
+        }
+      }
+    }
+  },
+  "error": null
+}
