@@ -117,7 +117,7 @@ export function segmenterName(payload: unknown): string | null {
   return /sam-3\.1/i.test(model) ? `SAM 3.1 segmentation (${model})` : `segmenter ${model}`;
 }
 
-/** The verifier as the verifier entry records it; Muse Spark Open only when that model id says so. */
+/** The verifier as the verifier entry records it; a Muse Spark name only when that model id says so. */
 export function verifierName(payload: unknown): string | null {
   const v = obj(obj(payload).verifier);
   const model = str(v.model);
@@ -125,6 +125,9 @@ export function verifierName(payload: unknown): string | null {
   if (model === null) return null;
   if (provider === "fixture") return "fixture verifier (no model judged the image)";
   if (/muse-spark-open/i.test(model)) return `Muse Spark Open via ${provider === "baseten" ? "Baseten" : provider ?? "unknown provider"} (${model})`;
+  // MS2: Muse Spark on the Meta Model API (src/verifier-meta.ts), named by the exact id it recorded.
+  const spark = /^muse-spark-(\d+(?:\.\d+)*)$/i.exec(model);
+  if (spark) return `Muse Spark ${spark[1]} via ${provider === "meta" ? "the Meta Model API" : provider ?? "unknown provider"} (${model})`;
   return `verifier ${model}${provider ? ` via ${provider}` : ""}`;
 }
 

@@ -7,8 +7,10 @@
 //
 // One real pipeline job (P6): the garment's intake photos go through the
 // providers the environment names (src/serve.ts providersFromEnv), which must
-// include the live verifier, Muse Spark Open on Baseten, read from
-// BASETEN_API_KEY. The renderer is the stand-in (the owner's front photo), or
+// include the live verifier: Muse Spark Open on Baseten, read from
+// BASETEN_API_KEY, or with VERIFIER_PROVIDER=meta (MS2) Muse Spark on the Meta
+// Model API, read from MODEL_API_KEY in the process or the Windows User env;
+// both are booked in their spend ledgers (src/spend-meta.ts). The renderer is the stand-in (the owner's front photo), or
 // with RENDER_PROVIDER=composite (NR1) the seller's garment cut out by the SAM
 // mask and placed on the RENDER_TEMPLATE template (default mannequin-01), no
 // image model; with no mask the composite refuses (render_failed). With
@@ -37,6 +39,7 @@ import { fileRenderer } from "../src/render.ts";
 import { providersFromEnv } from "../src/serve.ts";
 import { shopAfterJob } from "../src/shop.ts";
 import { BASETEN_LIMIT, META_LIMIT, accountLedger, meteredFetch, spendSummary, summaryLine } from "../src/spend-meta.ts";
+import { META_KEY_ENV, resolveUserEnvKey } from "../src/verifier-meta.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
@@ -62,14 +65,19 @@ const samLogs: string[] = [];
 // CAP1b: SAM 3.1 on the Meta Model API books to the Meta ledger, the verifier on Baseten to its own.
 const metaLedger = accountLedger("meta", process.env);
 const basetenLedger = accountLedger("baseten", process.env);
-const providers = providersFromEnv(process.env, {
+// MS2: MODEL_API_KEY may live only in the Windows User env; it is copied into this
+// process's own env object for the transports and never printed.
+const metaKey = resolveUserEnvKey(process.env, META_KEY_ENV);
+const env = metaKey ? { ...process.env, [META_KEY_ENV]: metaKey.key } : process.env;
+const providers = providersFromEnv(env, {
   sam: { fetch: meteredFetch((url, init) => fetch(url, init), { kind: "sam", account: "meta", ledger: metaLedger, env: process.env }), onCall: (log) => samLogs.push(writeSamLog("evidence", log)) },
   verifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "verifier", account: "baseten", ledger: basetenLedger, env: process.env }),
+  metaVerifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "muse", account: "meta", ledger: metaLedger, env: process.env }),
   onVerifierCall: (log) => logs.push(writeVerifierLog("evidence", log)),
   replicate: { fetch: (url, init) => fetch(url, init) },
 });
 if (providers.mode.fixture) {
-  console.error(`the verifier is not live (${providers.mode.labels.verify}): no job run. Set BASETEN_API_KEY in this process.`);
+  console.error(`the verifier is not live (${providers.mode.labels.verify}): no job run. Set BASETEN_API_KEY in this process, or VERIFIER_PROVIDER=meta with MODEL_API_KEY in the process or User env.`);
   process.exit(2);
 }
 const runProviders = renderPath
