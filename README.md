@@ -1,11 +1,47 @@
 # ProofShot (hackathon build)
 
-A boutique takes three or four phone photos of a garment and gets on-model
-product photos back. Every photo comes with a receipt: a hash-chained record of
-what was segmented, rendered and checked, and why it was released, sent for
-review or refused. The models do the work, but they don't decide what ships. A
-deterministic code gate does, from structured findings only, and the receipt
-can be checked offline by anyone holding it.
+ProofShot checks a candidate listing image against the seller's own phone
+photos of the garment (three or four of them) before the image goes on sale. A
+verifier model compares the garment attribute by attribute. A deterministic
+code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
+from those structured findings and a measured fidelity check. Every step is
+written into a hash-chained receipt that anyone can check offline in
+`web/verify.html`: a single page that makes no network request and needs no
+account (checked in a browser over local HTTP; opening it from disk is not yet
+checked).
+
+The candidate images in the committed runs come from two paths. The composite
+path cuts the seller's own garment pixels out with a SAM 3.1 mask and places
+them on a ghost mannequin, in deterministic code. The try-on path is an AI
+try-on (Pruna on Replicate). No Meta image generator is used anywhere, and
+Muse Image is refused at runtime. No committed run has released a generated
+on-model photo: all 7 try-on images were held by the gate (5 REFUSE, 2
+REVIEW).
+
+## What each Meta model does
+
+| Model | Served by | What it does in ProofShot | Logged calls (committed) |
+|---|---|---|---|
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | 117, `evidence/sam-*.json` |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | 224, `evidence/verifier-*.json`, `evidence/ms4/` |
+| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | 291, `evidence/fireworks-*.json`, texts in `data/copy/` |
+| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | 19, `evidence/verifier-*.json` |
+
+Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
+
+## Limits
+
+- **Small sample.** Four real garments (two women's kurtas, two shirts), all
+  from one household. Every rate in this README describes those pairs, not
+  ProofShot in general.
+- **Verifier accuracy is not measured in general.** The Muse Spark cross-check
+  (MS4) refused 153 of 153 wrong-garment runs and released 24 of 30
+  same-garment runs, on these four garments only.
+- **Thresholds are provisional.** Calibration over the committed receipts finds
+  0 false matches and 4 false refusals, all four where the verifier gave no
+  answer; that is a self-check on few garments, not an error rate.
+- **No generated on-model photo has been released**, and nothing here claims an
+  effect on returns or sales. No public deploy.
 
 ## Quick start
 
