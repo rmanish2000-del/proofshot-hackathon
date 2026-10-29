@@ -296,6 +296,18 @@
       "recorded": "REVIEW"
     },
     {
+      "id": "live-shirt-plaid-mismatch-r0",
+      "label": "different",
+      "metrics": null,
+      "unmeasuredReasons": [
+        "render mask is missing: the segmenter found no garment in the render"
+      ],
+      "job_id": "live-shirt-plaid-mismatch",
+      "render_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "garment": "shirt-plaid",
+      "recorded": "REFUSE"
+    },
+    {
       "id": "ms2-kurta-01-r0",
       "label": "same",
       "metrics": {
@@ -540,12 +552,12 @@
     {
       "name": "x0.5",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 10,
       "review_same": 3,
       "review_different": 0,
-      "unmeasured": 5,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -799,6 +811,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -995,12 +1015,12 @@
     {
       "name": "x0.75",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 5,
       "review_same": 8,
       "review_different": 0,
-      "unmeasured": 5,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -1254,6 +1274,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -1450,12 +1478,12 @@
     {
       "name": "x1",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 4,
       "review_same": 4,
       "review_different": 6,
-      "unmeasured": 5,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -1709,6 +1737,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -1905,12 +1941,12 @@
     {
       "name": "x1.5",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 4,
       "review_same": 4,
       "review_different": 14,
-      "unmeasured": 5,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -2164,6 +2200,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -2360,12 +2404,12 @@
     {
       "name": "x2",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 4,
       "review_same": 4,
       "review_different": 14,
-      "unmeasured": 5,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -2619,6 +2663,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REFUSE",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -2817,12 +2869,12 @@
     {
       "name": "x0.5",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 9,
       "review_same": 4,
-      "review_different": 1,
-      "unmeasured": 5,
+      "review_different": 2,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -3076,6 +3128,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -3272,12 +3332,12 @@
     {
       "name": "x0.75",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 3,
       "review_same": 10,
-      "review_different": 1,
-      "unmeasured": 5,
+      "review_different": 2,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -3531,6 +3591,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -3727,12 +3795,12 @@
     {
       "name": "x1",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 0,
       "review_same": 4,
-      "review_different": 8,
-      "unmeasured": 5,
+      "review_different": 9,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -3986,6 +4054,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -4182,12 +4258,12 @@
     {
       "name": "x1.5",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 0,
       "review_same": 4,
-      "review_different": 17,
-      "unmeasured": 5,
+      "review_different": 18,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -4441,6 +4517,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",
@@ -4637,12 +4721,12 @@
     {
       "name": "x2",
       "same": 18,
-      "different": 18,
+      "different": 19,
       "false_match": 0,
       "false_refuse": 0,
       "review_same": 4,
-      "review_different": 18,
-      "unmeasured": 5,
+      "review_different": 19,
+      "unmeasured": 6,
       "cases": [
         {
           "id": "live-kurta-01-r0",
@@ -4896,6 +4980,14 @@
             "texture": 0.84375,
             "area": 0.5965753864822845
           }
+        },
+        {
+          "id": "live-shirt-plaid-mismatch-r0",
+          "label": "different",
+          "fidelity": "REVIEW",
+          "decision": "REVIEW",
+          "measured": false,
+          "metrics": null
         },
         {
           "id": "ms2-kurta-01-r0",

@@ -6,9 +6,9 @@
     "museum_samples": "not used (the Met / Rijksmuseum fetch was dropped on 29 Oct; no museum image is in this pack)"
   },
   "receipts": {
-    "jobs": 41,
-    "renders": 42,
-    "chains_ok": 41,
+    "jobs": 42,
+    "renders": 43,
+    "chains_ok": 42,
     "garments_with_receipts": [
       "kurta-01",
       "kurta-02",
@@ -16,11 +16,11 @@
       "shirt-zebra"
     ],
     "decisions": {
-      "REFUSE": 17,
+      "REFUSE": 18,
       "RELEASE": 15,
       "REVIEW": 10
     },
-    "live_renders": 36,
+    "live_renders": 37,
     "verifier_errors": 6
   },
   "stages": [
@@ -59,13 +59,13 @@
     },
     {
       "stage": "segment: SAM 3.1 (api.meta.ai)",
-      "calls": 117,
-      "answered": 117,
+      "calls": 122,
+      "answered": 122,
       "failed": 0,
-      "latency_ms_median": 2885,
-      "latency_ms_p90": 4353,
+      "latency_ms_median": 2925,
+      "latency_ms_p90": 4381,
       "usd_per_call_median": 0.0025,
-      "usd_total": 0.2925,
+      "usd_total": 0.305,
       "usd_basis": "flat 0.0025 USD per call (secondary sources)"
     },
     {
@@ -81,13 +81,13 @@
     },
     {
       "stage": "verify: muse-spark-1.3 (meta)",
-      "calls": 224,
-      "answered": 222,
+      "calls": 225,
+      "answered": 223,
       "failed": 2,
-      "latency_ms_median": 19054,
+      "latency_ms_median": 19099,
       "latency_ms_p90": 32847,
-      "usd_per_call_median": 0.023302,
-      "usd_total": 5.773343,
+      "usd_per_call_median": 0.024821,
+      "usd_total": 5.813118,
       "usd_basis": "logged tokens x the price table (estimate)"
     }
   ],
@@ -149,10 +149,10 @@
   "calibration": {
     "factor": "x1 (config/fidelity.json)",
     "same": 18,
-    "different": 18,
+    "different": 19,
     "false_match": 0,
     "false_refuse": 4,
-    "unmeasured": 5
+    "unmeasured": 6
   },
   "copy": {
     "jobs": 42,
