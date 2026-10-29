@@ -237,6 +237,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
 export interface UploadServerOptions {
   readonly webDir: string;
   readonly jobsRoot: string;
+  /** Where publish builds the shop; `/shop/...` is served from here, so the shop page shows what publish wrote. */
   readonly shopDir: string;
   /** data/garments: where the source photos of committed jobs are found, by recorded hash (NR5 side-by-side). */
   readonly garmentsDir?: string;
@@ -482,6 +483,9 @@ export class UploadServer {
       if (path === "/judge") return sendFile(res, safeJoin(this.opts.webDir, "judge.html"));
       const jobFile = /^\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})\/([^/]+)$/.exec(path);
       if (jobFile) return sendFile(res, safeJoin(join(this.opts.jobsRoot, jobFile[1]!), jobFile[2]!));
+      // The shop page fetches shop/catalog.json and the rows' shop/<job>/ files: serve them from
+      // shopDir, not web/shop, or a server run with --shop <dir> publishes where the page never looks.
+      if (path.startsWith("/shop/")) return sendFile(res, safeJoin(this.opts.shopDir, path.slice("/shop".length)));
       return sendFile(res, safeJoin(this.opts.webDir, path === "/" ? "upload.html" : path));
     } catch (err) {
       if (err instanceof UploadError) return sendJson(res, err.status, { error: err.message });
