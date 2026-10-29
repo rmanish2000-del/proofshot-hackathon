@@ -15,7 +15,7 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 
 import { UploadServer, providersFromEnv } from "../src/serve.ts";
-import { meteredFetch, metaLedger } from "../src/spend-meta.ts";
+import { accountLedger, meteredFetch } from "../src/spend-meta.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
@@ -30,11 +30,12 @@ if (!Number.isInteger(port) || port < 0 || port > 65535) {
   process.exit(2);
 }
 
-// CAP1: live Meta calls (SAM, the Baseten verifier) are capped and booked in the Meta ledger.
-const ledger = metaLedger(process.env);
+// CAP1b: SAM 3.1 on the Meta Model API books to the Meta ledger, the verifier on Baseten to its own.
+const metaLedger = accountLedger("meta", process.env);
+const basetenLedger = accountLedger("baseten", process.env);
 const providers = providersFromEnv(process.env, {
-  sam: { fetch: meteredFetch((url, init) => fetch(url, init), { kind: "sam", ledger }), onCall: (log) => console.log(`  SAM call logged: ${writeSamLog(`${root}evidence`, log)}`) },
-  verifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "verifier", ledger }),
+  sam: { fetch: meteredFetch((url, init) => fetch(url, init), { kind: "sam", account: "meta", ledger: metaLedger, env: process.env }), onCall: (log) => console.log(`  SAM call logged: ${writeSamLog(`${root}evidence`, log)}`) },
+  verifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "verifier", account: "baseten", ledger: basetenLedger, env: process.env }),
   onVerifierCall: (log) => console.log(`  verifier call logged: ${writeVerifierLog(`${root}evidence`, log)}`),
 });
 const server = new UploadServer({
