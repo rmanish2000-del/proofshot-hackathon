@@ -444,7 +444,7 @@ The renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 202 tests pass, 0 fail | `npm test`, run on 28 Oct 2026 at 15:12 IST, tree of 01770c7 plus N10 (per-pair calibrate values) |
+| Test suite green | 317 tests pass, 0 fail | `npm test`, run on 29 Oct 2026 at 18:32 IST on master b54374c (MS4), clean tree |
 | Typecheck clean | yes | `npm run typecheck`, same run |
 | CI green | on 2859cde: [run 40654848955](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40654848955); on 00fe261: [run 40641160204](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40641160204) (run ids given by Grok, 28 Oct 13:50 IST) | earlier: [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
