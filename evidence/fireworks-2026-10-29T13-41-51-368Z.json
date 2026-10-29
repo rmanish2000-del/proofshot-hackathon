@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "shirt-plaid",
+  "started_at": "2026-10-29T13:41:51.368Z",
+  "finished_at": "2026-10-29T13:42:05.874Z",
+  "latency_ms": 14506,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result.\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Description: shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-159c9ee630224e2fa57c57393fb1973c",
+      "object": "chat.completion",
+      "created": 1793281312,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is RELEASE which means the image can be published. All checked attributes match the seller description of shirt with long sleeves, button front, cream with navy, light blue, mustard and maroon checks. No issues found.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Seller's description says what garment is; it is not a check result.\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Description: shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks\n\nWe must write at most 70 words. State decision word exactly as given (RELEASE) and what it means: RELEASE = the image can be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe have reasons: none. So no need to describe reasons containing those words.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need to write short, plain English for Indian clothing seller.\n\nWe must include decision word RELEASE in capitals. And not include REVIEW or REFUSE anywhere. So we must ensure we don't write those words. The instruction says: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include RELEASE, but not include REVIEW or REFUSE. Be careful not to accidentally write \"review\" or \"refuse\". Also need to explain what it means: RELEASE = the image can be published.\n\nWe must not add colours etc. But we can mention seller's description? The seller's description says what garment is; it is not a check result. So we should not treat it as check result. We can mention it? Probably we should not add extra claims. Use only facts given. So we can say the garment is shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks - that's allowed because it's in seller's claims. But we must not add colours not in facts. So if we mention colours, we must use exactly those given.\n\nWe need to keep under 70 words.\n\nWe need to state verifier findings? Probably should summarize: all attributes match.\n\nWe must not add care advice etc.\n\nWe need to write plain English.\n\nPotential output: \"Decision is RELEASE which means the image can be published. All checked attributes match the description: shirt with long sleeves, button front, cream with navy, light blue, mustard and maroon checks. No issues found.\"\n\nCheck word count: Decision(1) is2 RELEASE3 which4 means5 the6 image7 can8 be9 published.10 All11 checked12 attributes13 match14 the15 description:16 shirt17 with18 long19 sleeves,20 button21 front,22 cream23 with24 navy,25 light26 blue,27 mustard28 and29 maroon30 checks.31 No32 issues33 found34.\n\nThat's 34 words, under 70. Does it contain REVIEW or REFUSE? No. Does it contain RELEASE only once? It contains once, that's allowed. Need to ensure we don't accidentally include \"review\" substring? No.\n\nWe must not use markdown, emoji, headings. Plain text.\n\nWe must ensure we don't add fabrics, sizes, prices, care advice. We didn't.\n\nWe must use only facts given. We used facts.\n\nWe should ensure we don't add \"color: match\" etc. But we summarized.\n\nWe must not change or soften gate decision. We said RELEASE means image can be published, which is correct.\n\nWe need to ensure we don't include other decision words. We didn't.\n\nWe should ensure we don't write \"REVIEW\" or \"REFUSE\" even in lower case? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Likely case-insensitive. So avoid those strings entirely. We have not.\n\nWe should output exactly that.\n\nPotential nuance: The seller's description says what garment is; it is not a check result. So we should not say \"check result says shirt...\" We should treat it as seller claim.\n\nWe should ensure we don't add \"fabric_texture: match\" as extra claim? That's allowed as verifier finding.\n\nWe must not add colours beyond given. We listed colours exactly as given.\n\nWe should ensure we don't add \"light blue\" incorrectly? It's in description: navy, light blue, mustard and maroon checks. So okay.\n\nWe must keep plain English for Indian clothing seller.\n\nWe should not use markdown bullet points.\n\nWe should ensure we don't exceed 70 words.\n\nWe should provide final answer.\n\nWe must not include headings.\n\nWe should ensure we don't accidentally include the word \"review\" inside another word? Like \"reviewed\"? That would contain review. Safer to avoid.\n\nWe should not include \"refuse\" substring.\n\nWe should output final.\n\nWe need to ensure we state decision word exactly as given (RELEASE) and what it means. We did.\n\nWe should ensure we don't add extra decision words in explanation of meaning. The meaning is \"the image can be published\" - we used that phrase. Good.\n\nWe should not add \"REVIEW = a person must look first\" etc. Only explain the given decision's meaning.\n\nWe did.\n\nWe should ensure we don't mention \"Verifier findings\" as heading? No heading. We can mention findings in sentence.\n\nWe should ensure we don't use markdown.\n\nWe should output final answer in plain text.\n\nWe should double-check word count limit: at most 70 words. We are at 34, okay.\n\nWe should ensure we don't add any disallowed content.\n\nWe should not add care advice like \"wash gently\".\n\nWe should not add price.\n\nWe should not add fabric.\n\nWe should not add size.\n\nWe should ensure we don't hallucinate.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 409,
+        "total_tokens": 1766,
+        "completion_tokens": 1357,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1303
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1303
+        }
+      }
+    }
+  },
+  "error": null
+}

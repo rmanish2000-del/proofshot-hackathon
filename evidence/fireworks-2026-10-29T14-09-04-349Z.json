@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-shirt-plaid-composite-v2-r3",
+  "started_at": "2026-10-29T14:09:04.349Z",
+  "finished_at": "2026-10-29T14:09:30.913Z",
+  "latency_ms": 26564,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result. Write the text in Hindi (Devanagari script).\n\nDecision: REVIEW\nReasons:\n- logo_text: match at 0.80, below the 0.85 floor\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-835f8f136daf460daecb90afd5a0ff76",
+      "object": "chat.completion",
+      "created": 1793282945,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपकी शर्ट की जाँच का परिणाम REVIEW है, इसका अर्थ है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा। रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट मिलान में हैं। लोगो टेक्स्ट का स्कोर 0.80 है जो 0.85 की सीमा से कम है, इसलिए मानवीय जाँच जरूरी है।",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe must write in Hindi Devanagari script. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nWe need to use short plain Hindi in Devanagari.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can only use facts given.\n\nDecision: REVIEW\nReasons:\n- logo_text: match at 0.80, below the 0.85 floor\n\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\n\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed\n\nWe need to explain in at most 70 words. Must include decision word REVIEW exactly. And explain what it means: a person must look first. In Hindi.\n\nWe must not include other decision words RELEASE or REFUSE anywhere. So we must avoid those words. The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write RELEASE or REFUSE. Only REVIEW.\n\nWe must describe reason in plain words instead. The reason is logo_text: match at 0.80, below the 0.85 floor. But we must not use the other decision words. The reason does not contain those words, so fine. But we need to describe it.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we cannot add extra colours. But we can mention the seller's claims? The seller's description says what garment is; it is not a check result. So we should not present seller's claims as check result. We can mention them as seller's description.\n\nWe need to be careful: Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. So we cannot invent new colours. But we can repeat colours given: cream with navy, light blue, mustard and maroon checks. That's allowed because it's in facts.\n\nWe need to write in Hindi Devanagari script. But decision word must be in English capitals: REVIEW. That's allowed. The rest in Hindi Devanagari.\n\nWe must keep under 70 words. Let's count words. Hindi words count? Probably words separated by spaces. Need at most 70 words.\n\nWe need to explain verifier findings: all match. But reason says logo_text match at 0.80 below 0.85 floor. So even though verifier says match, the score is below threshold, so needs human review.\n\nWe must not add markdown, headings, emoji.\n\nWe need to write short plain Hindi.\n\nPotential text:\n\n\"आपकी शर्ट की जाँच का परिणाम REVIEW है, इसका अर्थ है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा। रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट मिलान में हैं। लोगो टेक्स्ट का स्कोर 0.80 है जो 0.85 की सीमा से कम है, इसलिए मानवीय जाँच जरूरी है।\"\n\nCheck word count: Let's count.\n\nआपकी(1) शर्ट(2) की(3) जाँच(4) का(5) परिणाम(6) REVIEW(7) है,(8) इसका(9) अर्थ(10) है(11) कि(12) प्रकाशित(13) करने(14) से(15) पहले(16) एक(17) व्यक्ति(18) को(19) देखना(20) होगा।(21) रंग,(22) प्रिंट,(23) कॉलर,(24) आस्तीन,(25) हेम,(26) जेब,(27) बटन(28) और(29) कपड़े(30) की(31) बनावट(32) मिलान(33) में(34) हैं।(35) लोगो(36) टेक्स्ट(37) का(38) स्कोर(39) 0.80(40) है(41) जो(42) 0.85(43) की(44) सीमा(45) से(46) कम(47) है,(48) इसलिए(49) मानवीय(50) जाँच(51) जरूरी(52) है।(53)\n\n53 words, under 70. Good.\n\nBut we need to ensure we didn't add colours etc. We didn't add extra colours. We mentioned attributes that are in verifier findings. That's allowed.\n\nWe must ensure we didn't add fabrics, sizes, prices, care advice. We didn't.\n\nWe used Hindi Devanagari script, but we have English word REVIEW. That's required.\n\nWe must not include RELEASE or REFUSE. We didn't.\n\nWe should ensure we didn't accidentally include English words that are not allowed? The instruction says use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. We used \"शर्ट\" which is in seller's claims: Type: shirt. That's okay. We used attributes like रंग, प्रिंट etc. Those are in verifier findings.\n\nWe should also mention seller's description? The seller's description says what garment is; it is not a check result. So we should not present seller's claims as check result. We didn't. We presented verifier findings as check result.\n\nWe need to ensure we state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. We did: \"एक व्यक्ति को देखना होगा\" which translates to a person must look first. Good.\n\nWe should ensure we don't use markdown. No headings.\n\nWe need to keep plain Hindi.\n\nPotential improvement: Mention that seller asked that check pattern, colours and collar exactly as photographed. Should we include that? The seller's claims include that. But we can include if needed, but not required. The instruction says use only facts given. Do not add ... We can include seller's claims but not as check result. Might be good to acknowledge seller's request.\n\nBut we have limited words. We already have 53 words. We could add a sentence about seller's request, but not necessary. The instruction says seller's description says what garment is; it is not a check result. So we should not confuse.\n\nWe should ensure we don't add any claim not in facts. Our sentence \"रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट मिलान में हैं।\" This is based on verifier findings: color: match, print_pattern: match, collar: match, sleeve_length: match, hem: match, pocket_count: match, buttons: match, fabric_texture: match. We translated sleeve_length to आस्तीन, pocket_count to जेब, etc. That's accurate.\n\nWe also said logo_text score 0.80 below 0.85 floor. That's in reasons.\n\nWe should ensure we don't add extra interpretation like \"मानवीय जाँच जरूरी है\" is okay, it's the meaning of REVIEW.\n\nWe must ensure we write in Hindi Devanagari script. Our text is in Devanagari except REVIEW and numbers. Numbers are okay.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe should output only the explanation, no extra English.\n\nWe need to ensure we don't accidentally include the word \"REVIEW\" twice? The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Does that mean we should only write REVIEW once? It says write that one decision word in capitals and no other ... anywhere. So we should include REVIEW exactly once. We have it once. Good.\n\nWe must not include REVIEW again in any other form. So we must not repeat it.\n\nWe should ensure we don't include \"REVIEW\" in lower case. We have it once in capitals.\n\nWe should deliver final answer.\n\nWe need to ensure at most 70 words. We have 53, okay.\n\nWe should double-check we didn't add colours like \"cream with navy...\" We didn't mention those colours. That's okay, but we could mention them if we want, but we didn't. That's not required. The instruction says do not add colours ... not in facts. So we can mention colours that are in facts, but we don't have to. It's okay to omit.\n\nWe should ensure we use plain Hindi.\n\nWe should output final text.\n\nPotential final text as above.\n\nWe need to ensure we don't add extra punctuation that might be considered markdown. No.\n\nWe should ensure we don't add heading like \"निर्णय:\" That's maybe considered heading? The instruction says no headings. So avoid using heading markers like # or **. But using \"निर्णय:\" might be considered heading? Safer to not use headings. Just plain sentences.\n\nOur text starts with \"आपकी शर्ट की जाँच का परिणाम REVIEW है...\" That's fine.\n\nWe should ensure we don't use markdown like ** or #.\n\nWe should output exactly the Hindi text.\n\nWe need to ensure we don't add English words other than REVIEW. We have \"0.80\" and \"0.85\" which are numbers, okay. We have no other English.\n\nWe should ensure we don't add \"logo_text\" in English? We used \"लोगो टेक्स्ट\" in Hindi transliteration, which is okay. But we could also say \"लोगो पाठ\". Better to use Hindi. We used \"लोगो टेक्स्ट\" which is transliteration but in Devanagari. That's okay. Could also be \"लोगो लेख\". But \"लोगो टेक्स्ट\" is okay.\n\nWe should ensure we don't add extra claims like \"प्रकाशित करने से पहले\" is the meaning of REVIEW, that's allowed.\n\nWe should deliver.\n\nWe must ensure we don't exceed 70 words. We are at 53.\n\nWe should output final answer in Hindi Devanagari.\n\nWe should not add extra explanation in English.\n\nWe should ensure we don't add \"Seller\" etc.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 498,
+        "total_tokens": 2913,
+        "completion_tokens": 2415,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2312
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2312
+        }
+      }
+    }
+  },
+  "error": null
+}

@@ -347,7 +347,11 @@ const FIXTURE_WORD = /fixture|फ़िक्स्चर|फिक्स्च�
 
 /** Listing copy describes the garment (no pipeline word in either language), and a fixture job's listing says it is fixture data. */
 export function listingOnTopic(text: string, f: CopyFacts): boolean {
-  if (LISTING_PIPELINE_WORDS.test(text) || LISTING_PIPELINE_WORDS_HI.test(text)) return false;
+  // A plaid garment's own description says "checks" or "check pattern": that word describes the garment
+  // there, so it is not read as the pipeline's check (shirt-plaid, 29 Oct).
+  const own = /\bcheck(?:s|ed)?\b/i.test(garmentClaims(f).map((c) => c.value).join(" "));
+  const t = own ? text.replace(/\bcheck(?:s|ed)?\b/gi, "") : text;
+  if (LISTING_PIPELINE_WORDS.test(t) || LISTING_PIPELINE_WORDS_HI.test(t)) return false;
   return !isFixture(f) || FIXTURE_WORD.test(text);
 }
 

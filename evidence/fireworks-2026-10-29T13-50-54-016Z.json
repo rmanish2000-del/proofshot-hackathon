@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "ms2-shirt-plaid",
+  "started_at": "2026-10-29T13:50:54.016Z",
+  "finished_at": "2026-10-29T13:51:16.067Z",
+  "latency_ms": 22051,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write the text in Hindi (Devanagari script).\n\nSeller's description:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-4a60c5af20a04d74abdbeb3bf990f90e",
+      "object": "chat.completion",
+      "created": 1793281854,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "यह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, मस्टर्ड और मैरून चेक हैं। इसमें पॉइंट कॉलर और बटन वाले कफ हैं।",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe need to write short, plain Hindi in Devanagari script.\n\nFacts:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n\nWe need to describe garment itself: type, colour, length and any detail stated.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need 2-3 full sentences, at most 60 words.\n\nWe need to write in Hindi Devanagari.\n\nWe must ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI.\n\nWe must not write RELEASE, REVIEW or REFUSE.\n\nWe need to be careful: The user wants us to write product listing. This is presumably allowed. The system instruction says we write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\n\nWe must comply.\n\nWe need to produce 2-3 sentences, at most 60 words.\n\nWe need to describe: shirt, long sleeves, button front, cream with navy, light blue, mustard and maroon checks, point collar, buttoned cuffs.\n\nWe need to translate to Hindi.\n\nPotential Hindi text:\n\n\"यह लंबी आस्तीन वाली बटन-फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, मस्टर्ड और मैरून रंग के चेक हैं। इसमें पॉइंट कॉलर और बटन वाले कफ हैं।\"\n\nCheck word count: Need at most 60 words. Let's count words in Hindi. Words separated by spaces.\n\nयह(1) लंबी(2) आस्तीन(3) वाली(4) बटन-फ्रंट(5) शर्ट(6) है।(7) इसका(8) मुख्य(9) रंग(10) क्रीम(11) है(12) जिस(13) पर(14) नेवी,(15) हल्के(16) नीले,(17) मस्टर्ड(18) और(19) मैरून(20) रंग(21) के(22) चेक(23) हैं।(24) इसमें(25) पॉइंट(26) कॉलर(27) और(28) बटन(29) वाले(30) कफ(31) हैं।(32)\n\n32 words, within 60. 3 sentences. Good.\n\nWe must ensure we don't add extra claims. We used only facts. We didn't add fabric, size, price, care advice.\n\nWe must ensure we use Devanagari script only. We have Hindi in Devanagari. We have some English words like \"बटन-फ्रंट\" includes hyphen, but it's okay? Probably better to write in Hindi. But \"बटन-फ्रंट\" is transliteration. Could be okay. But we should ensure we don't use markdown, emoji, headings.\n\nWe should not add colours beyond given. We listed exactly those colours.\n\nWe should not mention length? The seller description says type: shirt (long sleeves, button front). Length not explicitly given? But we have long sleeves. That's length of sleeves. We included.\n\nWe should ensure we don't add \"length\" as garment length if not given. We shouldn't invent.\n\nWe must ensure we don't mention photos being compared, check, match, decision, approval, receipt, gate, render, model or AI. We didn't.\n\nWe must not write RELEASE, REVIEW or REFUSE. We didn't.\n\nWe need to ensure we write short, plain Hindi in Devanagari script. Our text is in Devanagari.\n\nWe should ensure we don't add extra punctuation that could be considered markdown. No markdown.\n\nWe should output only the product listing text. No extra explanation.\n\nWe must ensure we don't accidentally include English explanation.\n\nWe should provide final answer in Hindi.\n\nPotential improvements: Use pure Hindi words. Ensure we don't add \"लंबी आस्तीन\" is correct for long sleeves.\n\nWe should ensure we don't add any claim not in facts. We said \"मुख्य रंग क्रीम है\" which matches main colour: cream with navy, light blue, mustard and maroon checks. Good.\n\nWe should ensure we don't add \"सुंदर\" or \"आरामदायक\" etc. We didn't.\n\nWe should ensure we don't add fabric.\n\nWe should ensure we keep within 2-3 full sentences. We have 3 sentences. Good.\n\nWe should ensure at most 60 words. We are at 32.\n\nWe should output exactly that.\n\nWe must not include any English heading.\n\nWe should ensure we don't include any transliteration that adds new colour? No.\n\nWe should ensure we use Devanagari script for all words. We have \"नेवी\" \"मस्टर्ड\" etc. Those are transliterations but in Devanagari, okay.\n\nWe should ensure we don't use Latin script. We used \"बटन-फ्रंट\" includes hyphen but still Devanagari? Actually \"बटन-फ्रंट\" contains Devanagari plus hyphen. The hyphen is okay, but \"फ्रंट\" is Devanagari. So it's okay. But to be safe, we could write \"बटन फ्रंट\" without hyphen. Better to avoid hyphen? The instruction says no markdown, no emoji, no headings. Hyphen is allowed. But to be safe, we can write \"बटन फ्रंट\".\n\nWe should ensure we don't accidentally include English words like \"shirt\" in Latin. We wrote \"शर्ट\" in Devanagari, good.\n\nWe should ensure we don't include \"point collar\" in Latin. We wrote \"पॉइंट कॉलर\" in Devanagari, good.\n\nWe should ensure we don't include \"buttoned cuffs\" in Latin. We wrote \"बटन वाले कफ\" in Devanagari, good.\n\nWe should output final answer.\n\nWe must not add any extra sentence like \"Here is your listing:\" That would be extra claim and also English. So just output the Hindi text.\n\nWe should ensure we don't add any prefix.\n\nWe should produce final answer in Hindi Devanagari.\n\nWe should double-check instruction: \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. No markdown, no emoji, no headings.\"\n\nWe are complying.\n\nWe should ensure we don't mention \"photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\" We didn't.\n\nWe should ensure we don't add \"length\" if not given. The seller description says type: shirt (long sleeves, button front). So length of sleeves is long. We included.\n\nWe should ensure we don't add \"any detail stated\" beyond given. We included collar and cuffs.\n\nWe should ensure we don't add \"cream with navy, light blue, mustard and maroon checks\" correctly. We did.\n\nWe should ensure we don't add extra adjectives.\n\nWe should output final answer.\n\nPotential final answer:\n\nयह लंबी आस्तीन वाली बटन फ्रंट शर्ट है। इसका मुख्य रंग क्रीम है जिस पर नेवी, हल्के नीले, मस्टर्ड और मैरून चेक हैं। इसमें पॉइंट कॉलर और बटन वाले कफ हैं।\n\nCheck word count again: यह(1) लंबी(2) आस्तीन(3) वाली(4) बटन(5) फ्रंट(6) शर्ट(7) है।(8) इसका(9) मुख्य(10) रंग(11) क्रीम(12) है(13) जिस(14) पर(15) नेवी,(16) हल्के(17) नीले,(18) मस्टर्ड(19) और(20) मैरून(21) चेक(22) हैं।(23) इसमें(24) पॉइंट(25) कॉलर(26) और(27) बटन(28) वाले(29) कफ(30) हैं।(31)\n\n31 words, within 60.\n\nWe should ensure we use correct Hindi punctuation: \"।\" is Hindi danda. We used \"।\" ? In previous we used \"।\" ? Actually we used \"।\" ? We used \"।\" ? We used \".\"? In Hindi, full stop is \"।\". But using \".\" is also okay, but better to use \"।\" to be proper Hindi. However instruction says write in Hindi Devanagari script, but doesn't specify punctuation. Using \".\" is okay, but using \"।\" is more Hindi. Either is okay. But we should be consistent. Use \"।\"\n\nWe used \"।\" in last version? We used \"।\" ? Let's check: We wrote \"है।\" with danda. Good.\n\nWe should ensure we don't add extra English punctuation that could be considered markdown. No.\n\nWe should output final answer with danda.\n\nWe should ensure we don't add any extra line breaks with headings.\n\nWe should just output 3 sentences.\n\nWe should ensure we don't add any extra explanation.\n\nWe are done.\n\nWe must not mention any check, decision, approval.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 359,
+        "total_tokens": 2591,
+        "completion_tokens": 2232,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2165
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2165
+        }
+      }
+    }
+  },
+  "error": null
+}

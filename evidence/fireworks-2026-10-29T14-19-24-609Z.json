@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-shirt-plaid-composite-v2-r3",
+  "started_at": "2026-10-29T14:19:24.609Z",
+  "finished_at": "2026-10-29T14:19:49.165Z",
+  "latency_ms": 24556,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. The seller's description says what the garment is; it is not a check result.\n\nDecision: REVIEW\nReasons:\n- logo_text: match at 0.80, below the 0.85 floor\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-e3f39f52bada4f49a9e441cc28f224db",
+      "object": "chat.completion",
+      "created": 1793283565,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REVIEW which means a person must look first before publishing. All checked attributes matched but the logo text score was 0.80 below the required 0.85 floor so manual check is needed.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe have decision REVIEW. Reasons: logo_text: match at 0.80, below 0.85 floor. Verifier findings: all match.\n\nSeller's claims: Type shirt etc. Main colour cream with navy etc. Collar and cuffs point collar buttoned cuffs. The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not add colours, fabrics, sizes, prices, care advice. Use only facts given. Do not add colours... So we must not invent.\n\nWe need to write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe must state decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REVIEW once. Must not include RELEASE or REFUSE anywhere. Also must not include REVIEW again? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nInterpretation: We should write the decision word REVIEW exactly once, in capitals. We must not write RELEASE or REFUSE at all. And we must not write REVIEW a second time. So only one occurrence of REVIEW.\n\nAlso need to handle reason contains one: describe such a reason in plain words instead. The reasons given: logo_text: match at 0.80, below 0.85 floor. That does not contain RELEASE/REVIEW/REFUSE. So fine.\n\nBut we must be careful not to accidentally write the words release, review, refuse in any case. The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. Does that mean case-insensitive? Likely yes. So we cannot write \"review\" lowercase either. We must avoid using those words at all except the one decision word. So we must not use the word \"review\" in explanation. But we need to explain what REVIEW means: a person must look first. We can say that without using the word review again.\n\nWe must also not use \"release\" or \"refuse\". So avoid those words.\n\nWe need to explain check result in at most 70 words.\n\nWe need to mention verifier findings? Probably summarize.\n\nWe must not add colours, fabrics, sizes, prices, care advice. But seller's claims include colours: cream with navy etc. Can we mention them? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can mention colours that are in facts, but not add new ones. So we can mention the seller's claims.\n\nWe need to be careful: The seller's description says what the garment is; it is not a check result. So we should not treat seller's claims as check result.\n\nWe need to explain decision REVIEW: a person must look first. And reasons: logo_text match at 0.80 below 0.85 floor. Verifier findings all match.\n\nWe must write in plain English, short.\n\nWe must not use markdown, emoji, headings.\n\nWe must keep under 70 words.\n\nWe must include decision word REVIEW exactly once.\n\nPotential text:\n\n\"Decision is REVIEW, which means a person must look first before publishing. All checked attributes matched, but the logo text score was 0.80, below the required 0.85 floor, so manual check is needed.\"\n\nCount words: Decision(1) is2 REVIEW,3 which4 means5 a6 person7 must8 look9 first10 before11 publishing.12 All13 checked14 attributes15 matched,16 but17 the18 logo19 text20 score21 was22 0.80,23 below24 the25 required26 0.85 floor,27 so28 manual29 check30 is31 needed32.\n\nThat's 32 words, under 70. Does it contain forbidden words? It contains \"REVIEW\" once. Does it contain \"release\" or \"refuse\"? No. Does it contain \"review\" again? No. Good.\n\nBut does it violate \"Do not add colours, fabrics, sizes, prices, care advice\"? No.\n\nDoes it use only facts given? Yes.\n\nWe should mention seller's claims? The instruction says seller's description says what the garment is; it is not a check result. Maybe we should not present seller's claims as verification. But we can mention them as seller's claims.\n\nThe prompt says: Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means... The seller's description says what the garment is; it is not a check result.\n\nSo we need to ensure we don't say seller's claims are verified? But verifier findings say all match, including color, print_pattern etc. So we can say verifier found matches.\n\nWe should include that the seller asked that check pattern, colours and collar exactly as photographed - but verifier says they match. So we can reassure.\n\nWe must not add colours beyond facts. If we mention colours, we must use exactly as given: cream with navy, light blue, mustard and maroon checks. But we can avoid mentioning colours to stay safe. The instruction says do not add colours... but we can mention given colours. Safer to not mention colours to avoid error.\n\nWe need to ensure we don't accidentally write \"review\" again in \"manual check is needed\" - that's okay, check is not review.\n\nWe must ensure we don't write \"RELEASE\" or \"REFUSE\". We didn't.\n\nWe must ensure we write decision word in capitals: REVIEW - we did.\n\nWe must ensure we don't write \"review\" lowercase elsewhere. We didn't.\n\nWe must ensure plain English for Indian clothing seller.\n\nWe should maybe add reference to shirt? Could be helpful.\n\nBut we must keep under 70 words.\n\nPotential final answer: as above.\n\nCheck for forbidden words: The phrase \"a person must look first\" is required definition. We used that.\n\nWe must not use markdown. No headings.\n\nWe should not add extra explanation that softens gate decision. We said manual check is needed, which is accurate.\n\nWe must not change or soften gate decision. We didn't.\n\nWe should ensure we don't use the word \"refuse\" inside \"refused\"? No.\n\nWe should ensure we don't use \"release\" inside another word? Probably not counted, but safe.\n\nWe must ensure we don't accidentally include \"REVIEW\" twice. We have it once.\n\nWe should output final answer with exactly that sentence.\n\nWe need to consider that the system says \"Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\" The reasons given do not contain those words, so fine.\n\nWe should ensure we don't write \"REVIEW\" with punctuation that might be considered not exactly? It's okay: \"REVIEW,\" includes comma but word is still REVIEW. Probably okay. Safer to write \"REVIEW\" without punctuation attached? But \"REVIEW,\" still counts as word REVIEW. Might be safer to write \"REVIEW\" isolated. Example: Decision is REVIEW which means... But we need comma? Could write \"Decision is REVIEW which means a person must look first before publishing.\" That avoids punctuation attached.\n\nLet's craft final: \"Decision is REVIEW which means a person must look first before publishing. All checked attributes matched but the logo text score was 0.80 below the required 0.85 floor so manual check is needed.\"\n\nCount words again: Decision1 is2 REVIEW3 which4 means5 a6 person7 must8 look9 first10 before11 publishing12. All13 checked14 attributes15 matched16 but17 the18 logo19 text20 score21 was22 0.8023 below24 the25 required26 0.8527 floor28 so29 manual30 check31 is32 needed33.\n\n33 words, under 70.\n\nWe didn't mention seller's claims. Should we? The instruction says seller's description says what garment is; it is not a check result. Might be to prevent us from saying seller's claims are verified. But we can still mention them as context? The safest is to not present seller's claims as check result. We have not.\n\nWe should ensure we don't add colours, fabrics etc. We didn't.\n\nWe should output that.\n\nWe must ensure no markdown, no emoji, no headings. Just plain text.\n\nWe should not add extra sentences that contain forbidden words.\n\nWe must ensure we don't accidentally write \"review\" in \"reviewed\"? No.\n\nWe should deliver final answer.\n\nPotential nuance: The verifier findings include color: match, print_pattern: match etc. So we say all checked attributes matched - that's accurate.\n\nWe should not claim anything about fabric_texture beyond match.\n\nWe are good.\n\nWe must ensure we use only facts given. We used logo_text score 0.80 below 0.85 floor - that's fact.\n\nWe should not invent.\n\nWe should output final answer exactly as plain text.\n\nWe must ensure we don't exceed 70 words. We are at 33.\n\nWe should not include extra explanation like \"Thank you\" that might add words but still under 70, but okay. Keep minimal.\n\nWe should ensure we don't use the word \"release\" in \"publishing\" - no.\n\nWe should ensure we don't use \"refuse\" anywhere.\n\nWe are good.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 464,
+        "total_tokens": 2630,
+        "completion_tokens": 2166,
+        "prompt_tokens_details": {
+          "cached_tokens": 448
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2115
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2115
+        }
+      }
+    }
+  },
+  "error": null
+}

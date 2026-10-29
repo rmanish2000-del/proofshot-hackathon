@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-shirt-plaid-composite-v2-r2",
+  "started_at": "2026-10-29T14:02:41.868Z",
+  "finished_at": "2026-10-29T14:03:04.622Z",
+  "latency_ms": 22754,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. The seller's description says what the garment is; it is not a check result. Write the text in Hindi (Devanagari script).\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-ea26929201534be4b58125f5fd8c5ade",
+      "object": "chat.completion",
+      "created": 1793282562,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपकी जाँच का परिणाम REFUSE है। इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। सत्यापन में कोई निष्कर्ष दर्ज नहीं हुआ, इसलिए परिधान के विवरणों की तुलना नहीं हो सकी। विक्रेता के अनुसार यह लंबी आस्तीन और बटन वाली शर्ट है। यह केवल विवरण है, जाँच का नतीजा नहीं।",
+            "reasoning_content": "We need to write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nReasoning strength 1.\n\nWe need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = image can be published, REVIEW = person must look first, REFUSE = image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when reason contains one: describe such reason in plain words instead. No verifier findings were recorded: say garment details could not be compared, and do not say that any detail matched, did not match or was kept. Seller's description says what garment is; it is not a check result. Write text in Hindi (Devanagari script).\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed\n\nWe must produce Hindi text <=70 words. Must include decision word REFUSE exactly once, in capitals. Must not include RELEASE or REVIEW anywhere. Must explain what REFUSE means: image must not be published. Must say garment details could not be compared. Must not say any detail matched, did not match or was kept. Must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. But we can mention seller's claims? The seller's description says what garment is; it is not a check result. So we should mention seller's claims as description, not as check result. We need to be careful not to add colours etc beyond facts? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can mention colours that are in facts? The seller's claims include main colour: cream with navy, light blue, mustard and maroon checks. But we should not add colours not in facts. Can we mention those colours? Probably allowed because they are in facts. But the instruction says do not add colours... maybe means do not invent new colours. We can mention the seller's description.\n\nWe must not say any detail matched, did not match or was kept. So avoid saying \"मेल खाया\" etc.\n\nWe need to say garment details could not be compared.\n\nWe need to keep decision word REFUSE in English capitals exactly as given. And no other of RELEASE, REVIEW or REFUSE anywhere, even when reason contains one: describe such reason in plain words instead. The reasons list includes no finding, so not verified. We need to describe reasons in plain words instead. But we must not use the words RELEASE, REVIEW, REFUSE elsewhere. Since decision is REFUSE, we will have REFUSE once. We must not use RELEASE or REVIEW at all. That's fine.\n\nWe need to write in Hindi Devanagari script. But decision word is in English capitals. So text will be mostly Hindi, with REFUSE in English.\n\nWe must keep at most 70 words. Let's count words. Hindi words count? Need to ensure <=70 words.\n\nWe need to state what REFUSE means: image must not be published. In Hindi: इसका मतलब है कि तस्वीर प्रकाशित नहीं की जा सकती।\n\nWe need to say garment details could not be compared. In Hindi: परिधान के विवरण की तुलना नहीं हो सकी। Or सत्यापन के लिए कोई निष्कर्ष दर्ज नहीं हुआ, इसलिए विवरणों की तुलना नहीं हो सकी।\n\nWe should mention seller's description: विक्रेता के अनुसार यह लंबी आस्तीन वाली बटन वाली शर्ट है। But we must not say it's a check result. So phrase like \"विक्रेता ने बताया कि...\" That's description.\n\nWe must not add colours? But we can mention? The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So if we mention colours from facts, it's okay. But maybe safer to not mention colours at all to avoid violating? However seller's claims include colours, we could mention them as part of seller's description. But we must be careful not to add extra.\n\nWe need to keep plain Hindi.\n\nWe must not use markdown, emoji, headings.\n\nWe need to ensure we don't accidentally include the English words RELEASE or REVIEW. So avoid them.\n\nWe need to ensure we include REFUSE exactly once. So we must write REFUSE once, capital letters.\n\nWe need to ensure we don't write REFUSE in Hindi translation. Only once.\n\nWe need to ensure we don't say any detail matched, did not match or was kept. So avoid words like मिलान, मेल, रखा गया, etc. Use \"तुलना नहीं हो सकी\" is allowed. Must not say \"मैच\" etc.\n\nWe need to keep under 70 words. Let's draft about 50 words.\n\nDraft in Hindi:\n\nआपकी जाँच का परिणाम REFUSE है। इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। सत्यापन में कोई निष्कर्ष दर्ज नहीं हुआ, इसलिए परिधान के विवरणों की तुलना नहीं हो सकी। विक्रेता के अनुसार यह लंबी आस्तीन और बटन वाली शर्ट है। यह केवल विवरण है, जाँच का नतीजा नहीं।\n\nNow count words. Let's count:\n\nआपकी(1) जाँच(2) का(3) परिणाम(4) REFUSE(5) है।(6) इसका(7) अर्थ(8) है(9) यह(10) तस्वीर(11) प्रकाशित(12) नहीं(13) की(14) जा(15) सकती।(16) सत्यापन(17) में(18) कोई(19) निष्कर्ष(20) दर्ज(21) नहीं(22) हुआ,(23) इसलिए(24) परिधान(25) के(26) विवरणों(27) की(28) तुलना(29) नहीं(30) हो(31) सकी।(32) विक्रेता(33) के(34) अनुसार(35) यह(36) लंबी(37) आस्तीन(38) और(39) बटन(40) वाली(41) शर्ट(42) है।(43) यह(44) केवल(45) विवरण(46) है,(47) जाँच(48) का(49) नतीजा(50) नहीं।(51)\n\n51 words, under 70. Good.\n\nWe need to ensure we didn't add colours etc not in facts? We didn't add colours. We mentioned shirt type which is in facts. That's allowed. We didn't add fabric texture etc.\n\nWe said \"परिधान के विवरणों की तुलना नहीं हो सकी\" which satisfies requirement: say garment details could not be compared.\n\nWe did not say any detail matched, did not match or was kept. We avoided.\n\nWe stated decision word exactly as given and what it means.\n\nWe wrote in Hindi Devanagari script, with REFUSE in English capitals.\n\nWe must ensure we didn't include RELEASE or REVIEW. We didn't.\n\nWe must ensure we didn't change or soften gate decision. We kept REFUSE.\n\nWe must ensure we didn't add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe should ensure we didn't add claim not in facts. We said \"लंबी आस्तीन और बटन वाली शर्ट\" which is in facts: Type: shirt (long sleeves, button front). That's okay.\n\nWe should not mention check pattern, colours and collar exactly as photographed? The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed. Could mention but not necessary. We have limited words. We could optionally mention but not required. The instruction says seller's description says what garment is; it is not a check result. So we clarified that.\n\nWe must ensure we don't say \"रंग\" etc? We didn't.\n\nWe need to ensure we use plain Hindi.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe need to ensure we keep decision word in capitals exactly as given: REFUSE. Yes.\n\nWe should output only the Hindi text, no extra explanation.\n\nPotential pitfalls: The word \"प्रकाशित\" is okay. The meaning of REFUSE is image must not be published. We conveyed.\n\nWe must ensure we don't accidentally include the word REFUSE twice. We have it once.\n\nWe must ensure we don't include the English word \"REVIEW\" or \"RELEASE\" inside Hindi words? No.\n\nWe should ensure we don't use the word \"REFUSE\" in Hindi transliteration.\n\nWe should deliver final answer.\n\nWe need to ensure we don't exceed 70 words. We are at 51, okay.\n\nWe should ensure we use Devanagari script for Hindi parts. Yes.\n\nWe should ensure we don't add extra English words besides REFUSE. We have no other English.\n\nWe should ensure we don't add punctuation that might be considered markdown. Simple period is fine.\n\nWe should output final text exactly as drafted.\n\nPotential improvement: Use \"तस्वीर प्रकाशित नहीं होगी\" vs \"नहीं की जा सकती\" Both mean must not be published. The instruction says REFUSE = the image must not be published. So \"प्रकाशित नहीं की जा सकती\" is accurate.\n\nWe should ensure we mention \"विक्रेता के अनुसार\" to indicate seller's claims are not check result.\n\nWe have that.\n\nWe should ensure we say \"कोई निष्कर्ष दर्ज नहीं हुआ\" which reflects no verifier findings were recorded.\n\nWe should ensure we don't say \"सत्यापित नहीं हुआ\" maybe okay but we said तुलना नहीं हो सकी. That's required.\n\nWe should ensure we don't say \"मैच\" etc.\n\nWe are good.\n\nWe should output final answer in Hindi.\n\nWe must not add extra explanation like \"Word count: ...\" No.\n\nJust the Hindi paragraph.\n\nWe should ensure we don't accidentally include the word \"REFUSE\" with extra punctuation like \"REFUSE है।\" That's okay, still counts as REFUSE word.\n\nWe should ensure we don't include \"REFUSE\" inside quotes.\n\nWe should deliver.\n\n",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 560,
+        "total_tokens": 2966,
+        "completion_tokens": 2406,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2314
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2314
+        }
+      }
+    }
+  },
+  "error": null
+}

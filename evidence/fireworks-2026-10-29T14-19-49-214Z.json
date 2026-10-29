@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-shirt-plaid-composite-v2-r3",
+  "started_at": "2026-10-29T14:19:49.214Z",
+  "finished_at": "2026-10-29T14:20:11.774Z",
+  "latency_ms": 22560,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nSeller's description:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-906cbe9a88db4d0e8dddfd0f62564ff5",
+      "object": "chat.completion",
+      "created": 1793283590,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a shirt with long sleeves and a button front. It is cream with navy, light blue, mustard and maroon checks and has a point collar and buttoned cuffs.",
+            "reasoning_content": "We need to write product listing 2-3 full sentences, at most 60 words, describing garment itself from seller's description: type, colour, length and any detail stated. Use nothing else. Never mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given.\n\nSeller's description:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n\nWe need to describe garment itself. Type, colour, length and any detail stated. Use nothing else.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need 2-3 full sentences, at most 60 words.\n\nWe should produce something like: \"This is a long sleeve shirt with a button front. It is cream with navy, light blue, mustard and maroon checks and features a point collar and buttoned cuffs.\"\n\nThat's 2 sentences. Count words: This(1) is2 a3 long4 sleeve5 shirt6 with7 a8 button9 front10. It11 is12 cream13 with14 navy,15 light16 blue,17 mustard18 and19 maroon20 checks21 and22 features23 a24 point25 collar26 and27 buttoned28 cuffs29. That's 29 words, under 60.\n\nWe must ensure we don't add extra claims. \"long sleeves\" is given. \"button front\" given. \"cream with navy, light blue, mustard and maroon checks\" given. \"point collar, buttoned cuffs\" given.\n\nWe must not add length? The seller description says type: shirt (long sleeves, button front). There's no length like knee-length etc. But we should include what is given.\n\nWe must not mention photos being compared, a check, a match, a decision, an approval, a receipt, a gate, a render, a model or AI.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe should keep plain English.\n\nWe must not use markdown, emoji, headings.\n\nWe should ensure 2-3 full sentences.\n\nWe must not change or soften gate decision. What gate decision? Probably not relevant here. But we must not mention gate.\n\nWe should just output the product listing.\n\nWe need to be careful: \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\"\n\nSo we must not invent fabric like cotton. Don't say \"comfortable\" maybe? Is that a claim not in facts? Probably avoid subjective claims. Stick to facts.\n\nWe should not add \"perfect for...\" That's extra claim.\n\nJust describe garment.\n\nWe should ensure we don't add \"length\" if not given? The instruction says describing the garment itself from the seller's description below: its type, colour, length and any detail stated. But if length not stated, we just describe what is stated. The seller description includes long sleeves, which is length of sleeves.\n\nWe should not add extra length like \"full length\".\n\nWe must ensure at most 60 words.\n\nWe should produce final answer in plain text.\n\nWe must not use markdown. So no bullet points, no bold.\n\nWe should ensure we don't accidentally include markdown.\n\nWe should write 2-3 sentences.\n\nPotential final: \"This long sleeve shirt has a button front. It is cream with navy, light blue, mustard and maroon checks, with a point collar and buttoned cuffs.\"\n\nCount words: This1 long2 sleeve3 shirt4 has5 a6 button7 front8. It9 is10 cream11 with12 navy,13 light14 blue,15 mustard16 and17 maroon18 checks,19 with20 a21 point22 collar23 and24 buttoned25 cuffs26. That's 26 words.\n\nThat's good.\n\nWe must ensure we use plain English for Indian clothing seller. That's fine.\n\nWe must not add anything else.\n\nWe should not mention \"seller's description\" etc.\n\nWe should just output the listing.\n\nWe must ensure we don't add \"Type: shirt\" as heading. Just sentences.\n\nWe should avoid adding \"Main colour:\".\n\nWe should ensure we don't add extra details like \"stylish\".\n\nWe should keep it simple.\n\nWe must not mention photos being compared etc. We won't.\n\nWe should ensure we don't accidentally include \"AI\" etc.\n\nWe should output exactly 2-3 sentences.\n\nWe should ensure we don't add extra period.\n\nWe should ensure we don't exceed 60 words.\n\nWe should ensure we don't add markdown like **.\n\nWe should ensure we don't add emoji.\n\nWe should ensure we don't add headings like \"Product Listing:\" That would be a heading. The instruction says No markdown, no emoji, no headings. So we should not add \"Product Listing:\" heading. Just the sentences.\n\nWe should just output the sentences.\n\nWe should be careful to not add \"Here is...\" That's extra? But maybe okay? But better to just describe garment.\n\nThe instruction: Write a product listing of 2 to 3 full sentences, at most 60 words, describing the garment itself from the seller's description below: its type, colour, length and any detail stated. Use nothing else.\n\nSo we should just describe garment.\n\nWe should not add introductory phrase like \"Here is a product listing:\" That's extra and maybe considered heading.\n\nWe should just output the description.\n\nWe should ensure we include all facts: type shirt (long sleeves, button front), main colour cream with navy, light blue, mustard and maroon checks, collar and cuffs point collar, buttoned cuffs.\n\nWe have included all.\n\nWe should ensure we don't miss \"long sleeves\" vs \"long sleeve\". Both okay. But we should use \"long sleeves\" as given.\n\nWe should ensure we don't add \"light blue\" incorrectly. It's given.\n\nWe should ensure we don't add extra colours.\n\nWe should ensure we don't add fabric.\n\nWe should ensure we don't add sizes.\n\nWe should ensure we don't add prices.\n\nWe should ensure we don't add care advice.\n\nWe should ensure we don't add any claim not in facts. So avoid \"high quality\", \"comfortable\", \"trendy\", etc.\n\nWe should just state facts.\n\nWe should produce final answer.\n\nWe must ensure we don't change or soften gate decision. There's no gate decision mentioned in this prompt, but we must not mention gate.\n\nWe should output plain text.\n\nWe should ensure we don't use markdown bullet points.\n\nWe should ensure we don't use headings.\n\nWe should ensure we use plain English.\n\nWe should output 2 sentences.\n\nWe should ensure we don't exceed 60 words.\n\nWe should ensure we don't add extra sentences.\n\nWe should ensure we don't add extra whitespace.\n\nWe should ensure we don't add quotes? Probably not needed.\n\nWe should just output the sentences.\n\nWe should ensure we don't add \"cream with navy, light blue, mustard and maroon checks\" exactly as given. That's good.\n\nWe should ensure we don't add \"mustard and maroon checks\" vs \"mustard and maroon checks\" correct.\n\nWe should ensure we don't add \"point collar, buttoned cuffs\" correct.\n\nWe should ensure we don't add \"button front\" correct.\n\nWe should ensure we don't add \"long sleeves\" correct.\n\nWe should ensure we don't add \"shirt\" correct.\n\nWe should ensure we don't add \"type: shirt\" etc.\n\nWe should ensure we don't add \"Main colour:\".\n\nWe should ensure we don't add \"Collar and cuffs:\".\n\nWe should ensure we don't add any extra.\n\nWe should output final answer.\n\nWe should ensure we don't add \"Indian clothing seller\" etc.\n\nWe should just output description.\n\nWe should ensure we don't add \"Use only facts given.\" etc.\n\nWe should just output description.\n\nWe should ensure we don't add \"Never mention photos...\" etc.\n\nWe should just output description.\n\nWe should ensure we don't add any extra explanation.\n\nWe should just output 2-3 sentences.\n\nWe should ensure we don't add \"This is a...\" That's okay, it's describing garment.\n\nWe should ensure we don't add \"The garment is...\" That's also okay.\n\nWe should ensure we don't add \"The shirt is...\" That's okay.\n\nWe should ensure we don't add \"The product is...\" That's okay.\n\nWe should ensure we don't add \"The item is...\" That's okay.\n\nWe should ensure we don't add \"The listing is...\" That's not needed.\n\nWe should just output description.\n\nWe should ensure we don't add \"At most 60 words\" etc.\n\nWe should just output description.\n\nWe should ensure we don't add \"2 to 3 full sentences\" etc.\n\nWe should just output description.\n\nWe should ensure we don't add any extra.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 326,
+        "total_tokens": 2245,
+        "completion_tokens": 1919,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1872
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1872
+        }
+      }
+    }
+  },
+  "error": null
+}

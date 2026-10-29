@@ -1,0 +1,34 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-shirt-plaid-composite-v2",
+  "started_at": "2026-10-29T13:52:52.704Z",
+  "finished_at": "2026-10-29T13:55:52.718Z",
+  "latency_ms": 180014,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. No verifier findings were recorded: say the garment details could not be compared, and do not say that any detail matched, did not match or was kept. The seller's description says what the garment is; it is not a check result.\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: shirt (long sleeves, button front)\n- Main colour: cream with navy, light blue, mustard and maroon checks\n- Collar and cuffs: point collar, buttoned cuffs\n- The seller asked that these stay as photographed: check pattern, colours and collar exactly as photographed"
+        }
+      ],
+      "max_tokens": 16384,
+      "temperature": 0
+    }
+  },
+  "response": null,
+  "error": "TimeoutError: The operation was aborted due to timeout"
+}
