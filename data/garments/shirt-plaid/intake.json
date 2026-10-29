@@ -1,0 +1,33 @@
+{
+  "garment": "shirt-plaid",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "removed": []
+    },
+    {
+      "source_name": "2-back.jpg",
+      "name": "2-back.jpg",
+      "source_sha256": "aefd97f75b730741b43575ef848ef5a1943cb6ea3e3aacafcb4a2833137d0f17",
+      "sha256": "aefd97f75b730741b43575ef848ef5a1943cb6ea3e3aacafcb4a2833137d0f17",
+      "removed": []
+    },
+    {
+      "source_name": "3-collar.jpg",
+      "name": "3-collar.jpg",
+      "source_sha256": "65cfdbfbd520135572e9a24271c91339b94dc04e0c4cc13e2d9e57e3cd26e47f",
+      "sha256": "65cfdbfbd520135572e9a24271c91339b94dc04e0c4cc13e2d9e57e3cd26e47f",
+      "removed": []
+    },
+    {
+      "source_name": "4-print.jpg",
+      "name": "4-print.jpg",
+      "source_sha256": "aa3673738331762d852add2a319919e22b57bcc471a4a3a983a82dd2ed884567",
+      "sha256": "aa3673738331762d852add2a319919e22b57bcc471a4a3a983a82dd2ed884567",
+      "removed": []
+    }
+  ]
+}

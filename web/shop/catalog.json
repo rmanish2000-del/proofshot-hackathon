@@ -179,6 +179,36 @@
       "render_model": "file:data/jobs/live-kurta-02-composite/live-kurta-02-composite-r0.png",
       "approved_by_human": false,
       "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "shirt-plaid",
+      "render_id": "shirt-plaid-r0",
+      "scene": "studio",
+      "image_sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd",
+      "head": "dd2ed0b8c369fcf139a14be86ebc6f2eab6c93041de2c300ed81e77f89f14c26",
+      "receipt": "shop/shirt-plaid/receipt.jsonl",
+      "image": "shop/shirt-plaid/shirt-plaid-r0.jpg",
+      "garment_note": "shirt (long sleeves, button front), cream with navy, light blue, mustard and maroon checks (preview: the owner's photo of the garment stands in for the render)",
+      "provenance": "fixture",
+      "render_provider": "stand-in",
+      "render_model": "owner-photo",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "shirt-zebra",
+      "render_id": "shirt-zebra-r0",
+      "scene": "studio",
+      "image_sha256": "689f4c8e6ed158581ad268d2b38a1da9c4d350e4d0031a941fdd2f6cda81612e",
+      "head": "2a88b3962d64b5a9bc7cd5b502bd91450edc0a156950d2fad067d541b8c85d48",
+      "receipt": "shop/shirt-zebra/receipt.jsonl",
+      "image": "shop/shirt-zebra/shirt-zebra-r0.jpg",
+      "garment_note": "shirt (short sleeves, button front), black and grey (preview: the owner's photo of the garment stands in for the render)",
+      "provenance": "fixture",
+      "render_provider": "stand-in",
+      "render_model": "owner-photo",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
     }
   ]
 }

@@ -107,3 +107,26 @@ test("MS2 6: the judge view names Muse Spark on the Meta Model API only from the
   assert.equal(verifierName({ verifier: { provider: "baseten", model: "meta-models/muse-spark-open-1026" } }), "Muse Spark Open via Baseten (meta-models/muse-spark-open-1026)");
   assert.equal(verifierName({ verifier: { provider: "meta", model: "some-other-model" } }), "verifier some-other-model via meta");
 });
+
+test("MS2 7: a request that fails before any answer (fetch failed) is sent once more; twice fails; a spend-cap refusal is never retried", async () => {
+  let n = 0;
+  const flaky: VerifierFetch = async () => {
+    if (n++ === 0) throw new TypeError("fetch failed");
+    return { status: 200, text: async () => answer(JSON.stringify(FINDINGS)) };
+  };
+  const logs: VerifierCallLog[] = [];
+  const out = await metaVerifier({ key: KEY, env: {}, fetch: flaky, onCall: (l) => logs.push(l) }).verify(req);
+  assert.equal(n, 2);
+  assert.equal(logs.length, 2, "both attempts are logged");
+  assert.match(logs[0]!.error ?? "", /fetch failed/);
+  assert.equal(out.usage?.attempts?.length, 2);
+  let m = 0;
+  const down: VerifierFetch = async () => { m++; throw new TypeError("fetch failed"); };
+  await assert.rejects(metaVerifier({ key: KEY, env: {}, fetch: down }).verify(req), VerifierTransportError);
+  assert.equal(m, 2, "one retry, not more");
+  let c = 0;
+  class SpendCapError extends Error { override name = "SpendCapError"; }
+  const capped: VerifierFetch = async () => { c++; throw new SpendCapError("meta spend would pass 80.00 USD"); };
+  await assert.rejects(metaVerifier({ key: KEY, env: {}, fetch: capped }).verify(req), VerifierTransportError);
+  assert.equal(c, 1, "a spend-cap refusal is not sent again");
+});
