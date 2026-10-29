@@ -40,7 +40,8 @@ Checked against:
   with an explicit opt-in.
 - A verifier call with large photos failed before any answer came back, a
   suspected network failure. It is now retried once, and the two failed runs
-  stay on record as refusals.
+  stay on record as refusals; they are two of the 4 not_verified false
+  refusals under Calibration.
 - With only four garments so far, calibration is a self-check rather than a
   true error rate.
 
@@ -49,7 +50,9 @@ Checked against:
 - No stored mask: `data/jobs/live-kurta-01-mismatch` has no segment with mask
   bytes; the judge view line is from a13273f.
 - Copy audit and fix: 86cffe1, 3f891ec (`data/copy`: <!--f:copy_texts-->168<!--/f--> texts,
-  <!--f:copy_model-->164<!--/f--> by the model, <!--f:copy_template-->4<!--/f--> template, from `evidence/pack/summary.json`).
+  <!--f:copy_model-->164<!--/f--> by the model, <!--f:copy_template-->4<!--/f--> template, from `evidence/pack/summary.json`). These
+  are final copy texts, not model calls; the Fireworks call count under Built
+  with is higher because retries and rewrites are logged too.
 - Caps and reserve: README spend section (Fireworks 60 USD batch + 40 reserve,
   Meta Model API 80 USD batch + 70 reserve).
 - Network retry: `live-shirt-plaid-composite-v2` and `-r2` (REFUSE
@@ -64,9 +67,15 @@ Checked against:
 reproduces the recorded gate decision on <!--f:cal_reproduced-->37 of 37<!--/f-->. The gate reports <!--f:cal_false_match-->0<!--/f--> false
 matches at 1x (0 at every factor in the report). At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them renders
 where the verifier gave no answer (not_verified), so they are not a threshold
-effect; <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped because
-their fidelity values were written, not measured. No threshold changed. Four
-garments and many repeated images: this is not a calibrated error rate.
+effect (two of them, `live-shirt-plaid-composite-v2` and `-r2`, are the two
+failed runs under Challenges; the other two are `live-kurta-01` and
+`live-kurta-01-composite`, whose verifier answered with output that was not
+JSON); <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. The 37 includes those 6 unmeasured
+renders; the <!--f:cal_skipped-->6<!--/f--> fixture renders are not in the 37: they are skipped because
+their fidelity values were written, not measured. No threshold changed: the
+0.5x to 2x factor sweep only reports, and the configured thresholds in
+`config/fidelity.json` were not edited after it. Four garments and many
+repeated images: this is not a calibrated error rate.
 
 Checked against `evidence/calibration-jobs-2026-10-29.json` (gate table: same
 18, different 19, false_match 0 at every factor, false_refuse 10, 5, 4, 4, 4
@@ -84,9 +93,9 @@ chain in the browser with WebCrypto.
 
 | Model | Served by | Role | Logged calls |
 |---|---|---|---|
-| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | <!--f:sam_calls-->122<!--/f--> |
-| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->225<!--/f--> |
-| muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->291<!--/f--> |
+| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | <!--f:sam_calls-->130<!--/f--> |
+| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
+| muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->293<!--/f--> |
 | Muse Spark Open | Baseten | The first verifier (27 to 28 Oct) | <!--f:baseten_calls-->19<!--/f--> |
 
 Candidate images come from a composite v2 renderer (the seller's own garment
@@ -95,9 +104,19 @@ try-on (Pruna on Replicate). No Meta image generator is used; Muse Image is
 refused at runtime. The Muse Spark cross-check (MS4) ran <!--f:ms4_runs-->204<!--/f--> checks over <!--f:ms4_pairs-->68<!--/f-->
 (garment, image) pairs: <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs refused, <!--f:ms4_same_released-->24 of 30<!--/f-->
 same-garment runs released, <!--f:ms4_consistent-->65 of 68<!--/f--> pairs gave the same decision three times.
+The other 21 of the 204 are the shortened try-on checks (7 try-on images
+against their own garment, 3 runs each, `changed` in
+`evidence/ms4-summary.json`): Muse Spark alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the
+fidelity check is what held all 7 try-ons in the gate. All 204 runs were
+answered; none is a not_verified run.
 
 Spend from the ledgers: Meta Model API 5.99 USD of the 80 USD cap, Fireworks
 4.83 USD of 60, Replicate 0.105 USD, Baseten 0 on its ledger; no reserve used.
+The Baseten 0 is not a charge of zero: the spend ledgers were added on 29 Oct
+at 10:53 IST (dd7d280), and every one of the 19 Baseten calls is logged
+earlier (`evidence/verifier-*.json`, 28 Oct 09:25 IST to 29 Oct 06:13 IST), so none has a ledger entry. Their token
+estimate is 0.30 USD (`evidence/pack/README.md`); Baseten's own bill was not
+read, so the amount actually charged is UNVERIFIED.
 
 Checked against: README "What each Meta model does" and "Limits",
 `evidence/pack/summary.json` (call counts), `evidence/ms4-summary.json`,
@@ -126,8 +145,9 @@ every committed try-on a kurta job).
 Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
 IST. Every commit in this repository was made during the event. The code was
-written here from the specification; no code from before the event was copied
-in.
+written here from the specification; no product code from before the event
+was copied in. The written specification and the config boilerplate were
+carried over, as listed under Prior work used below.
 
 **Prior work used:**
 
@@ -148,18 +168,25 @@ Checked against: `git log --reverse` (first commit and the dates of all
 commits), the `provider` fields of every receipt in `data/jobs`, and every
 endpoint URL in `src/` and `scripts/`.
 
-**Judge Q and A on the prior-work boundary:**
+## Questions a judge may ask
 
-- *What was built during the event?* Everything in this repository: the gate,
-  the receipt chain, the verify page, the providers' code, the demo and the
-  evidence. Its first commit is `4aa99f9`, 27 Oct 2026 at 11:10 IST, after the
-  26 Oct 21:30 IST opening, and every later commit is in its public history.
-- *What existed before the event?* Only `docs/SPEC.md` (the written
-  specification, with event changes marked *(event)*) and the config
-  boilerplate (`tsconfig.json`, `.gitignore`). No code was copied in.
-- *Does the demo call anything built before the event?* No. It uses only this
-  repository's code and the hosted models named under Built with; no
-  pre-existing ProofShot service exists or is called.
+- *What is the first commit, and is pre-event code in it?* `4aa99f9`, 27 Oct
+  2026 at 11:10 IST, after the 26 Oct 21:30 IST opening (`git log --reverse`).
+  No product code from before the event is in it or in any later commit: the
+  gate, receipt chain, verify page, provider code, demo and evidence were all
+  written here.
+- *What was carried over?* Only `docs/SPEC.md` (the written specification,
+  with event changes marked *(event)*) and the config boilerplate
+  (`tsconfig.json`, `.gitignore`), as listed under Prior work used.
+- *Is any pre-existing service called?* No. The demo and every receipt use
+  only this repository's code and the hosted models named under Built with
+  (the `provider` field of each receipt in `data/jobs`); no pre-existing
+  ProofShot service exists or is called.
+- *Why does the demo show no AI on-model image?* All <!--f:tryon_total-->7<!--/f--> committed try-on
+  receipts are kurta jobs, and the gate held every one (<!--f:tryon_refuse-->5<!--/f--> REFUSE,
+  <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`); the demo shows the two
+  shirts only, no shirt try-on exists, and no new paid call was made for the
+  video (`docs/DEMO.md`, `test/demo-capture.test.ts`).
 
 ## What's next
 

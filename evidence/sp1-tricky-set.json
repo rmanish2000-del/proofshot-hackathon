@@ -139,7 +139,7 @@
       "expected": "REVIEW",
       "expected_rule": "render_quality (correction)",
       "status": "not_run",
-      "note": "needs real photo, not run: white balance runs only on a near-neutral garment (C* <= 8) and no committed garment is that neutral, so it needs a grey or white garment shot under coloured light; a light ramp on shirt-plaid trips the shadow check before the correction check (offline: ramp to 0.5 passes with correction dE 3.27, ramp to 0.4 fails on shadow 0.61)"
+      "note": "needs real photo, not run: white balance runs only on a near-neutral garment (C* <= 8) and no committed garment is that neutral, so it needs a grey or white garment shot under coloured light; a light ramp on shirt-plaid trips the shadow check before the correction check (offline synthetic check in test/sp1.test.ts, not a run case: ramp to 0.5 passes with correction dE 3.27, ramp to 0.4 fails on shadow 0.61)"
     }
   ],
   "stopped": [],

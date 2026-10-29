@@ -22,13 +22,18 @@ REVIEW). The verifier alone would not have held them all: in the Muse Spark
 cross-check it passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> checks of those shortened try-ons; the measured
 fidelity check is what held every one.
 
+That is why the demo video shows no AI on-model image: every committed
+try-on receipt (<!--f:tryon_total-->7<!--/f-->, <!--f:tryon_review-->2<!--/f--> REVIEW and <!--f:tryon_refuse-->5<!--/f--> REFUSE) is a kurta job held by
+the gate, the demo shows the two shirts only, and there is no shirt try-on.
+No new paid call was made for the video.
+
 ## What each Meta model does
 
 | Model | Served by | What it does in ProofShot | Logged calls (committed) |
 |---|---|---|---|
-| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | <!--f:sam_calls-->122<!--/f-->, `evidence/sam-*.json` |
-| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | <!--f:muse13_calls-->225<!--/f-->, `evidence/verifier-*.json`, `evidence/ms4/` |
-| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | <!--f:fireworks_calls-->291<!--/f-->, `evidence/fireworks-*.json`, texts in `data/copy/` |
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | <!--f:sam_calls-->130<!--/f-->, `evidence/sam-*.json` |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | <!--f:muse13_calls-->226<!--/f-->, `evidence/verifier-*.json`, `evidence/ms4/` |
+| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | <!--f:fireworks_calls-->293<!--/f-->, `evidence/fireworks-*.json`, texts in `data/copy/` |
 | Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | <!--f:baseten_calls-->19<!--/f-->, `evidence/verifier-*.json` |
 
 Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
@@ -410,7 +415,7 @@ committed.
   1000 images (secondary sources, not read on dev.meta.ai).
 
 **Built with Muse Spark.** The verifier today is Muse Spark 1.3 on the Meta Model
-API (`api.meta.ai`, <!--f:muse13_calls-->225<!--/f--> logged calls); the first verifier was Muse Spark Open
+API (`api.meta.ai`, <!--f:muse13_calls-->226<!--/f--> logged calls); the first verifier was Muse Spark Open
 (`meta-models/muse-spark-open-1026`) on Baseten (<!--f:baseten_calls-->19<!--/f--> logged calls). Every call
 log is under `evidence/` with the key replaced and the images replaced by
 their size and hash. The verifier sends `max_tokens` 8192 and asks once more
@@ -450,9 +455,9 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->343<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->344<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
-| Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->122<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->225<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->291<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), never used | `evidence/`, counts in `evidence/pack/summary.json` |
+| Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), never used | `evidence/`, counts in `evidence/pack/summary.json` |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |
 | Verifier accuracy | **not measured in general.** The Muse Spark cross-check (MS4, verifier alone, no fidelity check): <!--f:ms4_pairs-->68<!--/f--> pairs, <!--f:ms4_runs-->204<!--/f--> runs; wrong garment refused <!--f:ms4_wrong_refused-->153 of 153<!--/f-->; same garment released <!--f:ms4_same_released-->24 of 30<!--/f-->; shortened try-ons held <!--f:ms4_changed_held-->17 of 21<!--/f-->, so the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the gate's fidelity check is what held those try-ons; the same decision on all 3 runs for <!--f:ms4_consistent-->65 of 68<!--/f--> pairs. Four garments only | `evidence/ms4-summary.json` |
 | Calibration | <!--f:cal_cases-->37<!--/f--> labelled renders (<!--f:cal_same-->18<!--/f--> same, <!--f:cal_different-->19<!--/f--> different) at the shipped thresholds: <!--f:cal_false_match-->0<!--/f--> false matches, <!--f:cal_false_refuse-->4<!--/f--> false refusals (all where the verifier gave no answer), <!--f:cal_unmeasured-->6<!--/f--> unmeasured; recorded decisions reproduced <!--f:cal_reproduced-->37 of 37<!--/f-->. A self-check, not an error rate | `evidence/calibration-jobs-2026-10-29.json` |

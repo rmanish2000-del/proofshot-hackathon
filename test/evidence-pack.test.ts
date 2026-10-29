@@ -60,6 +60,22 @@ test("#10 pack 2: nearest-rank percentiles; per-stage stats read latency and usa
   assert.equal(st!.latency_ms_median, 2000, "a failed call's latency is not a latency sample");
 });
 
+test("#10 pack 4 (SUB14): a spend ledger beside the call logs is not a call; verifier failures split into failed calls and unusable answers", () => {
+  assert.equal(sampleFromLog("fireworks-ledger-20261029.json", { entries: [] }), null);
+  const dir = mkdtempSync(join(tmpdir(), "ps-logs-"));
+  writeFileSync(join(dir, "fireworks-a.json"), JSON.stringify({ provider: "fireworks", model: "m", latency_ms: 5, response: { status: 200, body: {} }, error: null }));
+  writeFileSync(join(dir, "fireworks-ledger-20261029.json"), JSON.stringify({ entries: [{ cost_usd: 0.001 }] }));
+  assert.deepEqual(callStats([dir]).map((s) => [s.stage, s.calls]), [["copy: m (fireworks)", 1]]);
+  const root = mkdtempSync(join(tmpdir(), "ps-pack-"));
+  writeJob(root, "a-job", "REFUSE", "VerifierProtocolError: verifier output: not JSON");
+  writeJob(root, "b-job", "REFUSE", "VerifierTransportError: fetch failed");
+  writeJob(root, "c-job", "REFUSE", "VerifierTransportError: TimeoutError: aborted");
+  writeJob(root, "d-job", "RELEASE");
+  const s = summarize(jobRows(root));
+  assert.equal(s.verifier_errors, 3);
+  assert.deepEqual(s.verifier_errors_by_kind, { VerifierProtocolError: 1, VerifierTransportError: 2 });
+});
+
 test("#10 pack 3: the committed pack is current: results.csv and the receipts summary equal what the committed receipts give", () => {
   const pack = new URL("../evidence/pack/", import.meta.url);
   assert.ok(existsSync(new URL("results.csv", pack)), "run npm run evidence:pack");
