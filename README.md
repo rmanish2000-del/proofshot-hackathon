@@ -15,30 +15,30 @@ path cuts the seller's own garment pixels out with a SAM 3.1 mask and places
 them on a ghost mannequin, in deterministic code. The try-on path is an AI
 try-on (Pruna on Replicate). No Meta image generator is used anywhere, and
 Muse Image is refused at runtime. No committed run has released a generated
-on-model photo: all 7 try-on images were held by the gate (5 REFUSE, 2
+on-model photo: all <!--f:tryon_total-->7<!--/f--> try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f-->
 REVIEW).
 
 ## What each Meta model does
 
 | Model | Served by | What it does in ProofShot | Logged calls (committed) |
 |---|---|---|---|
-| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | 117, `evidence/sam-*.json` |
-| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | 224, `evidence/verifier-*.json`, `evidence/ms4/` |
-| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | 291, `evidence/fireworks-*.json`, texts in `data/copy/` |
-| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | 19, `evidence/verifier-*.json` |
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | <!--f:sam_calls-->122<!--/f-->, `evidence/sam-*.json` |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | <!--f:muse13_calls-->225<!--/f-->, `evidence/verifier-*.json`, `evidence/ms4/` |
+| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | <!--f:fireworks_calls-->291<!--/f-->, `evidence/fireworks-*.json`, texts in `data/copy/` |
+| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | <!--f:baseten_calls-->19<!--/f-->, `evidence/verifier-*.json` |
 
 Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
 
 ## Limits
 
-- **Small sample.** Four real garments (two women's kurtas, two shirts), all
+- **Small sample.** <!--f:garments-->4<!--/f--> real garments (two women's kurtas, two shirts), all
   from one household. Every rate in this README describes those pairs, not
   ProofShot in general.
 - **Verifier accuracy is not measured in general.** The Muse Spark cross-check
-  (MS4) refused 153 of 153 wrong-garment runs and released 24 of 30
+  (MS4) refused <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f-->
   same-garment runs, on these four garments only.
 - **Thresholds are provisional.** Calibration over the committed receipts finds
-  0 false matches and 4 false refusals, all four where the verifier gave no
+  <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them where the verifier gave no
   answer; that is a self-check on few garments, not an error rate.
 - **No generated on-model photo has been released**, and nothing here claims an
   effect on returns or sales. No public deploy.
@@ -145,7 +145,7 @@ npm run serve -- --jobs out/ui-jobs --shop out/ui-shop
 - Live jobs on `kurta-01`: `REFUSE not_verified` (first answer cut off), `REVIEW` (no mask), `REFUSE mismatch` (kurta-02 front as the render, colour hard mismatch, n=1), `live-kurta-01-sam` (3 segments 0.957/0.949/0.973, gate `REVIEW`, fidelity could not decode JPEG then), and `live-kurta-01-sam-2` (4 logged SAM calls, verifier matched, fidelity measured, gate `RELEASE`).
 - Live job `live-kurta-02-sam` on `kurta-02`: 3 logged SAM 3.1 calls and 1 logged verifier call, gate `RELEASE`, but the render is the stand-in kurta-02 front photo so it is photo-vs-itself and proves the measured path, not accuracy.
 - Calibration (fidelity only, not a gate decision) has SAM masks for 5 of 5 photos of two garments and measured 20 of 20 photo pairs, including the different-garment pairs: at the current thresholds 0 false matches and 6 of 8 same-garment pairs refused; at 1.5x looser 0 false matches, 0 false refusals, 2 same-garment pairs sent to review. Only two garments, so this is a small sample, not a calibrated false-match rate; thresholds are unchanged.
-- Calibration over recorded jobs (29 Oct, `npm run calibrate:jobs`, evidence/calibration-jobs-2026-10-29.json): the fidelity values and verifier findings already on 31 committed receipts, re-judged at 0.5x to 2x the thresholds, gate and fidelity alone. Labels in data/calibration/labels.json say what each render image shows (the owner's photo, a composite, or a try-on that shortened the kurta); a render is `same` only in a job for the garment it shows unchanged. At the current thresholds the rerun gives the gate decision each receipt recorded, 31 of 31; 0 false matches at every factor; 2 false refusals (both verifier-side, not thresholds: no findings came back for live-kurta-01 and live-kurta-01-composite, so the gate refused them as not verified), 4 unmeasured. Still two garments and many renders of the same images, so not a calibrated rate; thresholds are unchanged. The 4 fixture-job renders are skipped (their fidelity entries were written, not measured).
+- Calibration over recorded jobs (29 Oct, `npm run calibrate:jobs`, evidence/calibration-jobs-2026-10-29.json): the fidelity values and verifier findings already on <!--f:cal_cases-->37<!--/f--> labelled renders of committed receipts (<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different), re-judged at 0.5x to 2x the thresholds, gate and fidelity alone. Labels in data/calibration/labels.json say what each render image shows (the owner's photo, a composite, or a try-on that shortened the kurta); a render is `same` only in a job for the garment it shows unchanged. At the current thresholds the rerun gives the gate decision each receipt recorded, <!--f:cal_reproduced-->37 of 37<!--/f-->; <!--f:cal_false_match-->0<!--/f--> false matches; <!--f:cal_false_refuse-->4<!--/f--> false refusals, all verifier-side, not thresholds (no findings came back, so the gate refused them as not verified); <!--f:cal_unmeasured-->6<!--/f--> unmeasured. Few garments and many renders of the same images, so not a calibrated rate; thresholds are unchanged. The <!--f:cal_skipped-->6<!--/f--> fixture-job renders are skipped (their fidelity entries were written, not measured).
 - No public deploy.
 
 ### Optional: live providers
@@ -484,8 +484,8 @@ The renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 317 tests pass, 0 fail | `npm test`, run on 29 Oct 2026 at 18:32 IST on master b54374c (MS4), clean tree |
-| Typecheck clean | yes | `npm run typecheck`, same run |
+| Test suite | <!--f:tests-->332<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | CI green | on 2859cde: [run 40654848955](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40654848955); on 00fe261: [run 40641160204](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40641160204) (run ids given by Grok, 28 Oct 13:50 IST) | earlier: [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
 | Live verifier call with images (4 JPEGs, 715×1600) | 2 calls, both HTTP 200: the first cut off at max_tokens 1500 (finish_reason length, 1338 reasoning tokens), the second complete at 4096 (finish_reason stop, 1808 completion tokens, 9 findings all `match`) | `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `evidence/verifier-2026-10-28T03-59-30-015Z.json` (key placeholder, images as size and hash) |
