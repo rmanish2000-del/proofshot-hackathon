@@ -19,6 +19,7 @@
 // Jobs this server names start with `upload-`; data/jobs/upload-*/ is in
 // .gitignore so a seller's photos can never be committed by a sync.
 
+import { META_KEY_ENV, META_VERIFIER_PROVIDER, metaVerifier } from "./verifier-meta.ts";
 import { randomBytes } from "node:crypto";
 import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -154,6 +155,8 @@ export interface ProvidersFromEnvOptions {
   readonly verifierFetch?: VerifierFetch;
   /** Receives the redacted log of every live verifier call. */
   readonly onVerifierCall?: (log: VerifierCallLog) => void;
+  /** MS2: with VERIFIER_PROVIDER=meta, the fetch the Muse Spark verifier calls api.meta.ai with (MODEL_API_KEY). */
+  readonly metaVerifierFetch?: VerifierFetch;
   /**
    * For PROOFSHOT_RENDER=replicate-pruna-tryon (NR4): the fetch it calls
    * Replicate with, and overrides for the spend ledger (default
@@ -216,10 +219,15 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
 
   let verifier: Verifier = fixtureVerifier();
   let fidelity: FidelityChecker = base.fidelity;
-  const hasKey = (env.BASETEN_API_KEY ?? "").trim() !== "";
-  const live = hasKey && opts.verifierFetch !== undefined;
+  // MS2: VERIFIER_PROVIDER=meta puts Muse Spark on the Meta Model API in place of Baseten.
+  const wantsMeta = (env.VERIFIER_PROVIDER ?? "").trim() === META_VERIFIER_PROVIDER;
+  const hasKey = wantsMeta ? (env[META_KEY_ENV] ?? "").trim() !== "" : (env.BASETEN_API_KEY ?? "").trim() !== "";
+  const verifierFetch = wantsMeta ? opts.metaVerifierFetch : opts.verifierFetch;
+  const live = hasKey && verifierFetch !== undefined;
   if (live) {
-    verifier = basetenVerifier({ env, fetch: opts.verifierFetch!, ...(opts.onVerifierCall ? { onCall: opts.onVerifierCall } : {}) });
+    verifier = wantsMeta
+      ? metaVerifier({ key: env[META_KEY_ENV] ?? "", env, fetch: verifierFetch!, ...(opts.onVerifierCall ? { onCall: opts.onVerifierCall } : {}) })
+      : basetenVerifier({ env, fetch: verifierFetch!, ...(opts.onVerifierCall ? { onCall: opts.onVerifierCall } : {}) });
     labels.verify = `${verifier.identity.provider} / ${verifier.identity.model}: the model judges every attribute`;
     // Masks come from the segmenter's segments; the render is segmented only by a live segmenter.
     fidelity = maskedFidelityChecker(segmenter.identity ? { segmenter } : {});
@@ -227,7 +235,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
       ? "masked metrics (SPEC §10): delta_e, hist, texture, area against config/fidelity.json"
       : "masked metrics (SPEC §10): REVIEW with no metrics, since no segmenter ran and there is no mask";
   } else if (hasKey) {
-    labels.verify = "fixture: BASETEN_API_KEY is set but no fetch was given to providersFromEnv, so no verifier ran";
+    labels.verify = `fixture: ${wantsMeta ? META_KEY_ENV : "BASETEN_API_KEY"} is set but no fetch was given to providersFromEnv, so no verifier ran`;
   }
 
   const providers: Providers = { segmenter, renderer, verifier, fidelity };

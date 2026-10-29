@@ -104,6 +104,36 @@
       "render_model": "owner-photo",
       "approved_by_human": false,
       "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "ms2-kurta-01",
+      "render_id": "ms2-kurta-01-r0",
+      "scene": "studio",
+      "image_sha256": "12c00767fb1895e387d8bcb3768f628ccccd4a693a786f70ee20bcbe6b6c12fe",
+      "head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
+      "receipt": "shop/ms2-kurta-01/receipt.jsonl",
+      "image": "shop/ms2-kurta-01/ms2-kurta-01-r0.jpg",
+      "garment_note": "kurta-01: Type: kurta (women's); Fabric and weave: not recorded; Main colour: rust / orange; Print or motif (what, where, size): as in the photos; not recorded in words; Collar and cuffs: as in the photos; Buttons: as in the photos; Anything the render must not change: colour, print and neckline exactly as photographed; Length: long, below the knee (as photographed)",
+      "provenance": "live",
+      "render_provider": "stand-in",
+      "render_model": "owner-photo",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
+    },
+    {
+      "job_id": "ms2-kurta-02",
+      "render_id": "ms2-kurta-02-r0",
+      "scene": "studio",
+      "image_sha256": "9ef0a85dcca76f310c283672093ee6e28f80148c37516ebd832c70042e1c2425",
+      "head": "b13f2b47256010edf0d3ab2ff9bd105b048c556c9eefbf3e991fd571588f0d23",
+      "receipt": "shop/ms2-kurta-02/receipt.jsonl",
+      "image": "shop/ms2-kurta-02/ms2-kurta-02-r0.jpg",
+      "garment_note": "kurta-02: Type: kurta (women's); Fabric and weave: not recorded; Main colour: peach; Print or motif (what, where, size): as in the photos; not recorded in words; Collar and cuffs: as in the photos; Buttons: as in the photos; Anything the render must not change: colour, print and neckline exactly as photographed; Length: long, below the knee (as photographed)",
+      "provenance": "live",
+      "render_provider": "stand-in",
+      "render_model": "owner-photo",
+      "approved_by_human": false,
+      "gate_reason": "RELEASE: no rule fired, every attribute matched at or above its floor"
     }
   ]
 }

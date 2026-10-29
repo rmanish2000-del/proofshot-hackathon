@@ -103,7 +103,8 @@ export type VerifierFetch = (
 ) => Promise<{ status: number; text(): Promise<string> }>;
 
 export interface VerifierCallLog {
-  readonly provider: typeof VERIFIER_PROVIDER;
+  /** baseten, or meta for the MS2 verifier on api.meta.ai (src/verifier-meta.ts). */
+  readonly provider: typeof VERIFIER_PROVIDER | "meta";
   readonly model: string;
   readonly url: string;
   readonly render_id: string;
