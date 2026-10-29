@@ -296,3 +296,12 @@ test("FW2 4: listing copy under two sentences is asked once more; still short fa
   assert.equal(sentenceCount("गहरे नारंगी रंग का कुर्ता। रंग तस्वीरों से मेल खाता है।"), 2);
   assert.equal(listingLongEnough(templateText("listing_copy", FACTS)), true, "the template itself has two sentences");
 });
+
+test("FW2 5: Hindi listing copy gets a system prompt that names no decision word; the Hindi summary keeps its own", async () => {
+  const { COPY_SYSTEM_PROMPT_HI_LISTING } = await import("../src/fireworks-copy.ts");
+  const listing = copyMessages("listing_copy", FACTS, "hi")[0]!.content;
+  assert.equal(listing, COPY_SYSTEM_PROMPT_HI_LISTING);
+  assert.match(listing, /never write RELEASE, REVIEW or REFUSE/);
+  assert.doesNotMatch(listing, /in English capital letters exactly as given/);
+  assert.equal(copyMessages("receipt_summary", FACTS, "hi")[0]!.content, COPY_SYSTEM_PROMPT_HI);
+});

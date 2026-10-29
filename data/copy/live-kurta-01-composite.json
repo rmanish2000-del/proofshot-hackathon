@@ -1,0 +1,73 @@
+{
+  "job_id": "live-kurta-01-composite",
+  "records": [
+    {
+      "job_id": "live-kurta-01-composite",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "d4ec3410e8b74c20437080c1bf4fd83d70df3ed3a16bd175e2e416ff9bb3ca51",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "2038a79acd1effea0c97a5a36d352d95bbe5632272c3877d91615951c2776a21",
+      "usage": {
+        "prompt_tokens": 491,
+        "completion_tokens": 2710
+      },
+      "cost_usd": 0.012131,
+      "cost_estimated": true,
+      "text": "Decision is REFUSE which means the image must not be published. None of the checked attributes like colour, print, logo text, collar, sleeves, hem, pockets, buttons or fabric could be verified as no findings were recorded. Your claims about women's kurta, rust/orange colour, print and neckline as photographed were not verified."
+    },
+    {
+      "job_id": "live-kurta-01-composite",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "d4ec3410e8b74c20437080c1bf4fd83d70df3ed3a16bd175e2e416ff9bb3ca51",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "7e288b5235e43464ea338a1aa8c30caaead772dbb3afc77b7d327dfa025070c1",
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 3303
+      },
+      "cost_usd": 0.014468,
+      "cost_estimated": true,
+      "text": "This is a women's kurta. The seller describes the main colour as rust/orange. The check found no attributes matching the photos."
+    },
+    {
+      "job_id": "live-kurta-01-composite",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "d4ec3410e8b74c20437080c1bf4fd83d70df3ed3a16bd175e2e416ff9bb3ca51",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "ae2e41945a1c3fb061551e1f46d8ed447786ee62e12734b2261c7c5dd1bf18a7",
+      "usage": {
+        "prompt_tokens": 525,
+        "completion_tokens": 2589
+      },
+      "cost_usd": 0.01166,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम REFUSE है, इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। कारण यह है कि रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट में से किसी की भी पुष्टि नहीं हुई है। सत्यापन में कोई जानकारी दर्ज नहीं है।"
+    },
+    {
+      "job_id": "live-kurta-01-composite",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "d4ec3410e8b74c20437080c1bf4fd83d70df3ed3a16bd175e2e416ff9bb3ca51",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: rust / orange."
+    }
+  ]
+}

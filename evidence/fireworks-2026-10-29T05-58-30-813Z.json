@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-composite",
+  "started_at": "2026-10-29T05:58:30.813Z",
+  "finished_at": "2026-10-29T05:59:08.146Z",
+  "latency_ms": 37333,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write the text in Hindi (Devanagari script).\n\nDecision: REFUSE\nReasons:\n- color: no finding, so not verified\n- print_pattern: no finding, so not verified\n- logo_text: no finding, so not verified\n- collar: no finding, so not verified\n- sleeve_length: no finding, so not verified\n- hem: no finding, so not verified\n- pocket_count: no finding, so not verified\n- buttons: no finding, so not verified\n- fabric_texture: no finding, so not verified\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-c9cd411c36c7448b9b5d429a472b3ad9",
+      "object": "chat.completion",
+      "created": 1793253512,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपकी जाँच का परिणाम REFUSE है, इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। कारण यह है कि रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट में से किसी की भी पुष्टि नहीं हुई है। सत्यापन में कोई जानकारी दर्ज नहीं है।",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = image can be published, REVIEW = a person must look first, REFUSE = image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write text in Hindi (Devanagari script).\n\nDecision: REFUSE\nReasons: all no finding, so not verified. Verifier findings none recorded. Seller's claims: Type kurta women's, Main colour rust/orange, Print motif as in photos not recorded in words, Collar and cuffs as in photos, Buttons as in photos, Anything render must not change: colour, print and neckline exactly as photographed.\n\nWe must write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nWe need to include decision word REFUSE exactly. And explain what it means: REFUSE = image must not be published. In Hindi.\n\nWe must not include other decision words RELEASE, REVIEW anywhere. So we must not write RELEASE or REVIEW. Only REFUSE. Need to be careful: The instruction says \"Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\" So we must not write RELEASE or REVIEW. Only REFUSE.\n\nWe need to write in Hindi Devanagari script, but decision word in English capitals. So we will have Hindi text with REFUSE embedded.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention seller's claims? The facts given: Type kurta women's, Main colour rust/orange, Print motif as in photos not recorded, etc. We can use those facts. But we must not add colours, fabrics, sizes, prices, care advice. So we should not invent.\n\nWe need to explain check result: REFUSE means image must not be published.\n\nReasons: all attributes no finding, so not verified. Verifier findings none recorded. So we need to say that verification could not be done because no findings recorded.\n\nWe must keep at most 70 words. In Hindi, word count? Probably Hindi words count. Need to keep short.\n\nWe must use plain Hindi in Devanagari script.\n\nWe must not add markdown, emoji, headings.\n\nWe need to ensure we don't accidentally include English words RELEASE or REVIEW. Also need to avoid adding colours? But we can mention seller's claims? The instruction: \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we can mention colour rust/orange if it's in facts. That's allowed because it's given. But we should not add new colours.\n\nWe should mention that colour, print, neckline etc not verified.\n\nWe need to be careful to not add extra claims.\n\nWe need to write at most 70 words. Let's aim for ~50 words.\n\nExample in Hindi:\n\n\"आपकी जाँच का परिणाम REFUSE है, इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती। कारण यह है कि रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट में से किसी की भी पुष्टि नहीं हुई है। सत्यापन में कोई जानकारी दर्ज नहीं है।\"\n\nCheck word count: Let's count words.\n\nआपकी(1) जाँच(2) का(3) परिणाम(4) REFUSE(5) है,(6) इसका(7) अर्थ(8) है(9) यह(10) तस्वीर(11) प्रकाशित(12) नहीं(13) की(14) जा(15) सकती।(16) कारण(17) यह(18) है(19) कि(20) रंग,(21) प्रिंट,(22) कॉलर,(23) आस्तीन,(24) हेम,(25) जेब,(26) बटन(27) और(28) कपड़े(29) की(30) बनावट(31) में(32) से(33) किसी(34) की(35) भी(36) पुष्टि(37) नहीं(38) हुई(39) है।(40) सत्यापन(41) में(42) कोई(43) जानकारी(44) दर्ज(45) नहीं(46) है।(47)\n\nThat's 47 words, under 70. Good.\n\nWe need to ensure we didn't include RELEASE or REVIEW. We didn't.\n\nWe used only facts given. We mentioned attributes listed in reasons. That's allowed.\n\nWe should not add fabric_texture? We said कपड़े की बनावट - that's fabric_texture.\n\nWe should ensure we don't add extra claims like sizes, prices.\n\nWe need to keep decision word exactly as given: REFUSE in capitals. We did.\n\nWe need to ensure we explain what it means: REFUSE = image must not be published. We did: \"इसका अर्थ है यह तस्वीर प्रकाशित नहीं की जा सकती।\"\n\nWe should not use markdown.\n\nWe need to ensure we write in Hindi Devanagari script. We did, except REFUSE.\n\nWe must not add colours? We mentioned रंग but not specific rust/orange. Could mention but not necessary. The instruction says do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. So mentioning रंग is okay, but mentioning rust/orange is also okay because it's in seller's claims. But we didn't mention rust/orange. That's okay. We could mention but not required. Better to keep simple.\n\nWe should ensure we don't add \"women's kurta\" etc? Could add but not needed. The reasons are about verification failure.\n\nWe must not change or soften gate decision; keep decision word.\n\nWe should ensure we don't accidentally include English word \"REVIEW\" inside Hindi? No.\n\nWe need to ensure we don't include \"RELEASE\" anywhere. We didn't.\n\nWe should output only the Hindi text.\n\nWe must ensure at most 70 words. We are at 47, okay.\n\nWe should ensure plain Hindi.\n\nPotential pitfalls: The system says \"Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" Does mentioning \"कपड़े की बनावट\" count as adding fabric? But it's in reasons: fabric_texture: no finding. So it's allowed. It's a fact given.\n\nWe should not add care advice.\n\nWe should ensure we don't add \"as in photos\" etc? That's seller's claims. Could include but not needed.\n\nWe should ensure we don't add markdown like bullet points.\n\nWe should output final answer.\n\nWe need to ensure we don't include extra English words besides REFUSE? The instruction says write decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere. It doesn't forbid other English words, but better to keep Hindi only plus REFUSE.\n\nWe should ensure we don't accidentally write \"REFUSE\" twice? That's okay, but we should write once. The instruction says write that one decision word in capitals. Could be once. Writing twice might be okay but better once.\n\nWe should ensure we don't include period after REFUSE that might be considered part of word? It's okay.\n\nWe should ensure we use Devanagari script for Hindi. We did.\n\nWe should ensure we don't use headings.\n\nWe should output final.\n\nWe need to consider word count limit: at most 70 words. Our count 47 is okay.\n\nWe should ensure we don't exceed.\n\nWe should ensure we don't include extra explanation that adds unverified claims.\n\nWe should ensure we mention verifier findings none recorded: \"सत्यापन में कोई जानकारी दर्ज नहीं है।\" That's accurate.\n\nWe should ensure we don't add \"logo_text\" etc? We covered.\n\nWe should ensure we don't add \"print_pattern\" etc? We did.\n\nWe should ensure we don't add \"collar\" etc? We did.\n\nWe should ensure we don't add \"sleeve_length\" etc? We did आस्तीन.\n\nWe should ensure we don't add \"hem\" etc? We did हेम.\n\nWe should ensure we don't add \"pocket_count\" etc? We did जेब.\n\nWe should ensure we don't add \"buttons\" etc? We did बटन.\n\nWe should ensure we don't add \"fabric_texture\" etc? We did.\n\nWe should ensure we don't add \"color\" etc? We did रंग.\n\nWe should ensure we don't add \"logo_text\" - we missed logo_text. We should include लोगो/टेक्स्ट. Our list missed logo_text. We should add it. Let's add \"लोगो\" to be complete.\n\nWe said रंग, प्रिंट, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट. Missing logo_text. Should add लोगो/अक्षर.\n\nLet's revise to include all 9 reasons: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture.\n\nSo we need to include logo_text.\n\nRevised sentence: \"कारण यह है कि रंग, प्रिंट, लोगो, कॉलर, आस्तीन, हेम, जेब, बटन और कपड़े की बनावट में से किसी की भी पुष्टि नहीं हुई है।\"\n\nCount again.\n\nआपकी(1) जाँच(2) का(3) परिणाम(4) REFUSE(5) है,(6) इसका(7) अर्थ(8) है(9) यह(10) तस्वीर(11) प्रकाशित(12) नहीं(13) की(14) जा(15) सकती।(16) कारण(17) यह(18) है(19) कि(20) रंग,(21) प्रिंट,(22) लोगो,(23) कॉलर,(24) आस्तीन,(25) हेम,(26) जेब,(27) बटन(28) और(29) कपड़े(30) की(31) बनावट(32) में(33) से(34) किसी(35) की(36) भी(37) पुष्टि(38) नहीं(39) हुई(40) है।(41) सत्यापन(42) में(43) कोई(44) जानकारी(45) दर्ज(46) नहीं(47) है।(48)\n\n48 words, still under 70.\n\nGood.\n\nWe should output this.\n\nWe must ensure no markdown, no emoji, no headings.\n\nWe should ensure we don't add extra English.\n\nWe should output final answer in Hindi.\n\nWe should ensure we don't accidentally include \"REVIEW\" or \"RELEASE\" in explanation of what REFUSE means. We explained correctly.\n\nWe should ensure we don't use the word \"प्रकाशित\" incorrectly? It's okay.\n\nWe should ensure we use plain Hindi.\n\nWe should output.\n\nPotential nuance: The instruction says \"Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\" So if a reason contains RELEASE etc, we must describe in plain words. But our reasons don't contain those words. So fine.\n\nWe should ensure we don't include \"REFUSE\" inside Hindi explanation of meaning? We already have REFUSE once, that's the decision word. That's allowed. We should not write REFUSE again? But we have it once, okay.\n\nWe should ensure we don't write \"REFUSE\" in Hindi transliteration.\n\nWe should output final.\n\nWe should ensure we don't add extra punctuation that might be considered markdown.\n\nWe should ensure we don't add bullet points.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 525,
+        "total_tokens": 3114,
+        "completion_tokens": 2589,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2500
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2500
+        }
+      }
+    }
+  },
+  "error": null
+}

@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-sam",
+  "started_at": "2026-10-29T06:19:25.247Z",
+  "finished_at": "2026-10-29T06:19:50.079Z",
+  "latency_ms": 24832,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write the text in Hindi (Devanagari script).\n\nDecision: REVIEW\nReasons:\n- fidelity REVIEW: source image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-f5034620bdec4dcfb229dc6131c18e6e",
+      "object": "chat.completion",
+      "created": 1793254766,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपकी जाँच का परिणाम REVIEW है, इसका मतलब है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा। स्रोत चित्र पीएनजी नहीं है, यह सिस्टम केवल पीएनजी पढ़ता है इसलिए माप नहीं हो सका। रंग, प्रिंट, कॉलर, बटन आदि मिलते हैं।",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REVIEW) and what it means: REVIEW = a person must look first. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write text in Hindi Devanagari script.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given.\n\nWe need to write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. No markdown, no emoji, no headings.\n\nWe must include decision word REVIEW exactly once? The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REVIEW once. And not include RELEASE or REFUSE anywhere. Also not include REVIEW again. So only one occurrence of REVIEW.\n\nBut reasons contain fidelity REVIEW: source image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured. We must describe such a reason in plain words instead. So we cannot write REVIEW again. We already have one REVIEW for decision. So we must paraphrase reason without using the word REVIEW.\n\nWe need to explain that source image is not PNG, this build decodes only PNG (no JPEG decoder), so it cannot be measured. We need to describe in Hindi.\n\nAlso verifier findings: all match. Seller's claims: Type kurta women's, main colour rust/orange, print as in photos, collar and cuffs as in photos, buttons as in photos, anything render must not change: colour, print and neckline exactly as photographed.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention rust/orange? That's in seller's claims. So we can mention.\n\nWe need at most 70 words. In Hindi Devanagari script. Must include decision word REVIEW in English capitals.\n\nWe must ensure we don't accidentally include RELEASE or REFUSE. Also not include REVIEW second time.\n\nWe need to write in Hindi Devanagari, but decision word is English capitals REVIEW. That's allowed.\n\nWe must not use markdown, emoji, headings.\n\nWe need to be careful: The text must be in Hindi Devanagari script. Does that mean entirely Hindi? But we need to include REVIEW in English. That's exception. Probably okay.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we should not invent.\n\nWe need to explain what REVIEW means: a person must look first.\n\nWe need to keep decision word exactly as given.\n\nWe need to describe reason: source image is not PNG, cannot be measured because only PNG decoder.\n\nWe should also mention verifier findings? Possibly summarize: all attributes match? But we must not add extra claims. The verifier findings say all match. We can mention that.\n\nWe must keep under 70 words. Let's count.\n\nWe need to produce Hindi text.\n\nPotential text:\n\n\"आपकी जाँच का परिणाम REVIEW है, इसका मतलब है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा। स्रोत चित्र पीएनजी नहीं है, यह सिस्टम केवल पीएनजी पढ़ता है इसलिए माप नहीं हो सका। रंग, प्रिंट, कॉलर, बटन आदि मिलते हैं।\"\n\nNow count words. Need to count Hindi words. Let's count:\n\nआपकी(1) जाँच(2) का(3) परिणाम(4) REVIEW(5) है,(6) इसका(7) मतलब(8) है(9) कि(10) प्रकाशित(11) करने(12) से(13) पहले(14) एक(15) व्यक्ति(16) को(17) देखना(18) होगा।(19) स्रोत(20) चित्र(21) पीएनजी(22) नहीं(23) है,(24) यह(25) सिस्टम(26) केवल(27) पीएनजी(28) पढ़ता(29) है(30) इसलिए(31) माप(32) नहीं(33) हो(34) सका।(35) रंग,(36) प्रिंट,(37) कॉलर,(38) बटन(39) आदि(40) मिलते(41) हैं।(42)\n\n42 words, under 70. Good.\n\nBut we need to ensure we didn't include RELEASE or REFUSE. We didn't.\n\nWe included REVIEW once. Good.\n\nWe described reason without using REVIEW again. We said \"माप नहीं हो सका\" which captures cannot be measured.\n\nWe mentioned verifier findings: color, print_pattern, logo_text, collar, sleeve_length, hem, pocket_count, buttons, fabric_texture all match. We summarized as रंग, प्रिंट, कॉलर, बटन आदि मिलते हैं. That's okay, but we should be accurate: we said all match. That's allowed? We are using facts given. We should not add colours, fabrics etc. But we can mention attributes.\n\nWe should ensure we don't add colours like rust/orange? We didn't mention rust/orange, but we could. It's okay to mention seller's claims? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we can mention rust/orange if we want, but not necessary. Better to keep simple.\n\nWe must ensure we don't add care advice.\n\nWe need to write short plain Hindi in Devanagari script. Our text is in Devanagari, with REVIEW in English. That's okay.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe need to ensure we don't accidentally include the word REVIEW in reason description. We didn't.\n\nWe should check that we didn't include RELEASE or REFUSE as substrings? The words RELEASE, REVIEW, REFUSE must not appear elsewhere. We have REVIEW once. That's the decision word. We must not have RELEASE or REFUSE anywhere. We don't.\n\nWe should ensure we don't write \"REVIEW\" in Hindi transliteration? No.\n\nWe need to ensure we state what it means: REVIEW = a person must look first. We did: \"इसका मतलब है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा।\" That's correct.\n\nWe should also ensure we don't soften gate decision. We kept decision word.\n\nWe need to ensure we don't add extra claims like \"image can be published\" etc. We correctly described REVIEW meaning.\n\nWe should output final answer.\n\nPotential improvements: Use plain Hindi. Our Hindi is plain.\n\nWe must ensure at most 70 words. We are at 42, okay.\n\nWe should ensure we don't exceed 70 words. Good.\n\nWe should ensure we don't use English words other than REVIEW? The instruction says write text in Hindi (Devanagari script). But we have \"REVIEW\" in English, and \"पीएनजी\" is transliteration but in Devanagari. That's okay. We used \"सिस्टम\" which is okay, but it's Hindi written in Devanagari. That's allowed. Should we avoid English words like PNG? But PNG is a file format, we wrote पीएनजी in Devanagari, which is okay. The reason says source image is not a PNG. So we need to convey that.\n\nWe should ensure we don't use English \"PNG\" in Latin script? We used Devanagari पीएनजी, which is better to stay in Devanagari script. The instruction says write text in Hindi (Devanagari script). So ideally all words should be Devanagari except REVIEW. Using PNG in Latin might violate. So using पीएनजी is better.\n\nWe used \"सिस्टम\" which is okay.\n\nWe should ensure we don't accidentally include \"REVIEW\" twice. We have once.\n\nWe should deliver final answer.\n\nWe need to be careful about punctuation: The decision word must be in capitals exactly as given: REVIEW. We have it.\n\nWe should not add any other capital English words that could be considered RELEASE etc. No.\n\nWe should output only the Hindi text, no extra explanation.\n\nWe must ensure we don't add markdown.\n\nWe should produce final answer in Hindi.\n\nPotential final text as above.\n\nWe should double-check word count limit: at most 70 words. We are within.\n\nWe should ensure we don't add extra sentences that add claims not in facts. For example, we said \"रंग, प्रिंट, कॉलर, बटन आदि मिलते हैं।\" That's based on verifier findings: color match, print_pattern match, logo_text match, collar match, sleeve_length match, hem match, pocket_count match, buttons match, fabric_texture match. So saying they match is accurate. We summarized. That's allowed.\n\nWe could also mention seller's claims? Not necessary, but we could. The instruction: Use only the facts given. Do not add ... So we can include seller's claims if relevant, but not required. Our current text uses only facts.\n\nWe should ensure we don't add \"rust / orange\" incorrectly. We didn't.\n\nWe should ensure we don't add \"kurta (women's)\" etc. Not needed.\n\nWe should ensure we don't add care advice.\n\nWe should output.\n\nWe need to ensure we don't include any heading.\n\nWe should output final answer exactly as Hindi text.\n\nWe should ensure we don't include extra English explanation.\n\nWe should produce final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 503,
+        "total_tokens": 2571,
+        "completion_tokens": 2068,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1991
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1991
+        }
+      }
+    }
+  },
+  "error": null
+}

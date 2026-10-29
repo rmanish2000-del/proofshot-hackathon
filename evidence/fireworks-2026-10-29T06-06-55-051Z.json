@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01",
+  "started_at": "2026-10-29T06:06:55.051Z",
+  "finished_at": "2026-10-29T06:07:19.908Z",
+  "latency_ms": 24857,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of 2 to 3 full sentences, at most 60 words, using only the seller's claims and the attributes the check found matching the seller's photos. Where a claim says \"as in the photos\", say nothing about that detail.\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\nAttributes checked and matching the photos: none"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-9cabf9dcd5874ee0951a5def55cf55f3",
+      "object": "chat.completion",
+      "created": 1793254015,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This is a women's kurta. The seller describes the main colour as rust orange.",
+            "reasoning_content": "We need to write product listing of 2 to 3 full sentences, at most 60 words, using only seller's claims and attributes the check found matching seller's photos. Where a claim says \"as in the photos\", say nothing about that detail.\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n\nAttributes checked and matching the photos: none\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision.\n\nWe have gate decision? Not explicitly given but attributes checked and matching: none. So we must not claim anything about print, collar, cuffs, buttons, neckline? The instruction: Where a claim says \"as in the photos\", say nothing about that detail.\n\nSo we can only say: Type: kurta (women's), Main colour: rust / orange. That's it. Also we must not add other details.\n\nWe need 2 to 3 full sentences, at most 60 words, using only seller's claims and attributes the check found matching.\n\nBut we have very limited info. We can say: This is a women's kurta. The main colour is rust / orange.\n\nThat's 2 sentences. That's within 60 words. Must not mention print, collar, cuffs, buttons, neckline.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe should not mention \"as in the photos\" details.\n\nWe must not change or soften gate decision. Gate decision is presumably fail? Attributes checked and matching: none. So we should not imply verification passed? The instruction says use only seller's claims and attributes the check found matching. Since none matched, we cannot claim verification. We should just list product.\n\nWe must ensure we don't add extra claims like \"exactly as photographed\" ? The seller says anything the render must not change: colour, print and neckline exactly as photographed. But we cannot claim that? The instruction says use only seller's claims and attributes the check found matching. But also \"Where a claim says 'as in the photos', say nothing about that detail.\" The \"Anything the render must not change: colour, print and neckline exactly as photographed\" - does that count as claim? Probably we should not mention print and neckline. Colour is allowed because main colour is rust/orange. But we should not say \"exactly as photographed\" maybe? The gate decision is none matching, so we cannot assert colour matches? Wait main colour is rust/orange is a seller claim, not a verified attribute. We can still state seller's claim? The instruction: \"using only the seller's claims and the attributes the check found matching the seller's photos.\" So we can use seller's claims. So we can say main colour rust/orange as seller claims.\n\nWe must not add colours beyond that.\n\nWe need to be careful not to add fabric, sizes, etc.\n\nWe should produce 2-3 sentences, at most 60 words.\n\nPotential output: \"This listing is for a women's kurta. The seller describes the main colour as rust/orange.\"\n\nThat's 2 sentences, 14 words. That uses only seller's claims. Does not mention unverified details.\n\nWe must not add \"as in photos\" details.\n\nWe should not mention print, collar, cuffs, buttons, neckline.\n\nWe must ensure plain English.\n\nWe must not use markdown, emoji, headings.\n\nWe should not add care advice.\n\nWe should not soften gate decision. Gate decision is none matching. Should we explicitly state that? The instruction: \"Do not change or soften the gate decision.\" Means we must not imply it passed. But do we need to state gate decision? The product listing should reflect that nothing was verified? Perhaps we should not claim verification. The safest is to just present seller's claims without implying verification.\n\nBut maybe we need to indicate that no attributes were verified? The instruction says use only seller's claims and attributes the check found matching. Since none matched, we just use seller's claims. We should not claim verification.\n\nWe must not add extra info.\n\nWe should ensure we don't say \"exactly as photographed\" because that would be adding claim about print and neckline.\n\nWe should keep it simple.\n\nWe must ensure we don't add colours, fabrics, sizes, prices.\n\nWe should not mention \"rust / orange\" as two colours? It's one claim: rust / orange. We can phrase as rust orange or rust/orange.\n\nWe need to ensure we don't add \"beautiful\" etc? That might be considered extra claim? Probably avoid adjectives not in facts. Use plain.\n\nWe should not add \"comfortable\" etc.\n\nWe should produce final answer with 2-3 sentences.\n\nWe must not use markdown.\n\nWe should ensure we don't accidentally mention print.\n\nWe should not mention neckline.\n\nWe should not mention buttons.\n\nWe should not mention collar and cuffs.\n\nWe should ensure we don't mention \"as in the photos\" phrase. The instruction says where a claim says \"as in the photos\", say nothing about that detail. So we must not say \"as in the photos\".\n\nWe should just output the listing.\n\nPotential final: \"This is a women's kurta. The seller lists the main colour as rust orange.\"\n\nThat's 13 words.\n\nWe need to ensure we don't add \"seller lists\" is okay? It's using seller's claims. That's allowed.\n\nWe should not add \"verified\" etc.\n\nWe must ensure we don't add any claim not in facts. \"This is a women's kurta.\" That's from seller's claims: Type: kurta (women's). That's allowed.\n\nWe should not add \"long\" or \"short\" etc.\n\nWe should output exactly 2 sentences.\n\nWe must ensure at most 60 words. Yes.\n\nWe should not add heading.\n\nWe should not add bullet points.\n\nWe should ensure plain English.\n\nWe should not add care advice.\n\nWe should not add price.\n\nWe should not add fabric.\n\nWe should not add size.\n\nWe should not add colour beyond rust/orange.\n\nWe should not add print description.\n\nWe should ensure we don't accidentally add \"orange\" as separate? It's okay.\n\nWe should produce final answer.\n\nWe must consider if we need to mention gate decision explicitly? The instruction says \"Do not change or soften the gate decision.\" That implies we must not misrepresent verification status. Since attributes checked and matching: none, we must not imply any attribute matched. Our listing does not imply matching, so it's fine. We could also explicitly say no attributes were verified, but that might be considered gate decision disclosure. However the instruction says write product listing using only seller's claims and attributes the check found matching. It doesn't say to disclose gate decision in listing. But \"Do not change or soften the gate decision.\" Means we must not claim something passed when it didn't. So just not claiming verification is correct.\n\nWe should not add \"verified\" language.\n\nWe should ensure we don't add \"exactly as photographed\" for colour, print, neckline. The seller says anything the render must not change: colour, print and neckline exactly as photographed. But we should not repeat that because print and neckline are \"as in photos\" details we must not mention. Colour we already mention as rust/orange, but we should not say \"exactly as photographed\" because that would imply verification? The instruction says use only seller's claims and attributes matching. The seller's claim includes that colour must not change exactly as photographed. But we can mention colour as rust/orange, but should we add \"exactly as photographed\"? That would be adding claim about print and neckline if we include them. Safer to not include that phrase at all. Just state colour.\n\nWe should not mention neckline.\n\nWe should not mention print.\n\nWe should ensure we don't mention buttons, collar, cuffs.\n\nWe should produce final answer with 2 sentences.\n\nWe must ensure we don't use markdown like **.\n\nWe should not use emoji.\n\nWe should not use headings like \"Product Listing:\".\n\nWe should just write sentences.\n\nWe should ensure we don't add extra sentence about \"Please refer to photos\" because that would be referencing \"as in photos\" detail? The instruction says where a claim says \"as in the photos\", say nothing about that detail. So we should not say \"see photos for print\" etc. That would be mentioning that detail. So avoid.\n\nWe should just give minimal listing.\n\nWe should ensure we don't add \"100% cotton\" etc.\n\nWe should output final.\n\nWe need to be careful about word count: at most 60 words. Our 2 sentences are well under.\n\nWe should ensure we use plain English for Indian clothing seller. That's fine.\n\nWe should not add \"Namaste\" etc.\n\nWe should produce final answer.\n\nPotential final answer: \"This is a women's kurta. The seller describes the main colour as rust orange.\"\n\nThat's good.\n\nWe should ensure we don't add \"rust / orange\" with slash? We can write rust orange.\n\nWe should not add extra adjectives.\n\nWe should ensure we don't claim \"matching the photos\" for colour. We just say seller describes.\n\nWe should not say \"verified\".\n\nWe should output.\n\nWe must ensure we don't add any other info.\n\nWe should consider if we need to mention that no attributes matched? The instruction says \"Attributes checked and matching the photos: none\" - we should not invent attributes. So we just not mention any verified attributes.\n\nWe should ensure we don't add \"Type: kurta\" with colon? That's okay but maybe better as sentence.\n\nWe should not use markdown.\n\nWe should produce final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 344,
+        "total_tokens": 2457,
+        "completion_tokens": 2113,
+        "prompt_tokens_details": {
+          "cached_tokens": 320
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2086
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2086
+        }
+      }
+    }
+  },
+  "error": null
+}

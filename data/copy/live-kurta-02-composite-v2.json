@@ -22,20 +22,59 @@
     {
       "job_id": "live-kurta-02-composite-v2",
       "task": "listing_copy",
+      "lang": "en",
       "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
       "provider": "fireworks",
       "model": "accounts/fireworks/models/muse-spark-open",
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "c0f78f17258a48f476a667f693ccb2c81e9ec54559cace9cf835a5118dc9c478",
+      "request_sha256": "2f8e37f313ff05557a6783baefcd9efb7b5042fd064470444621afc02f4a4f42",
       "usage": {
-        "prompt_tokens": 313,
-        "completion_tokens": 2994
+        "prompt_tokens": 342,
+        "completion_tokens": 4666
       },
-      "cost_usd": 0.013116,
+      "cost_usd": 0.020258,
       "cost_estimated": true,
-      "text": "Women's kurta in peach."
+      "text": "The seller describes this as a women's kurta. The seller lists the main colour as peach."
+    },
+    {
+      "job_id": "live-kurta-02-composite-v2",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "89baa2a5aaed8699ce368983ad17d58ab4734f38c1708704c60299ae32faa695",
+      "usage": {
+        "prompt_tokens": 440,
+        "completion_tokens": 3364
+      },
+      "cost_usd": 0.014847,
+      "cost_estimated": true,
+      "text": "आपकी पीच रंग की कुर्ता (महिला) के लिए निर्णय REVIEW है, इसका अर्थ है प्रकाशन से पहले एक व्यक्ति जाँच करेगा। कारण फोटो का एक्सपोज़र सही नहीं है, बहुत ज्यादा या बहुत कम रोशनी है। रंग, प्रिंट और गले का डिज़ाइन फोटो जैसा ही रखना जरूरी है।"
+    },
+    {
+      "job_id": "live-kurta-02-composite-v2",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "880bcac8117abe5f50f2d0fe197225857efdeda396c6d68fbbd41e8d6cdf6223",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "3254b702f09be1a55a46e987009daec7ad76c63cd9e98dc995d05906fffe5130",
+      "usage": {
+        "prompt_tokens": 375,
+        "completion_tokens": 1554
+      },
+      "cost_usd": 0.007073,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
     }
   ]
 }

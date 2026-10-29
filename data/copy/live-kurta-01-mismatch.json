@@ -22,20 +22,59 @@
     {
       "job_id": "live-kurta-01-mismatch",
       "task": "listing_copy",
+      "lang": "en",
       "receipt_head": "3604695a9f6202aa548ffd9fc507730df1685edaca5ff741ab27386f112e62a2",
       "provider": "fireworks",
       "model": "accounts/fireworks/models/muse-spark-open",
       "response_model": "accounts/fireworks/models/muse-spark-open",
       "generated": true,
       "key_source": "user_env",
-      "request_sha256": "375b1859086d515203f76498e0063b02cdbcd4c17fc4e2a7cd6c8faf8b7aae99",
+      "request_sha256": "0ef81278ced6c510558888e67f1f0acdc5d5dc94b97bd6aa6d28bbfb5b200087",
       "usage": {
-        "prompt_tokens": 315,
-        "completion_tokens": 2720
+        "prompt_tokens": 355,
+        "completion_tokens": 4949
       },
-      "cost_usd": 0.011954,
+      "cost_usd": 0.021477,
       "cost_estimated": true,
-      "text": "Women's kurta in rust/orange."
+      "text": "This is a women's kurta described by the seller as rust orange. Colour, print and neckline were required to be exactly as photographed and were not confirmed, so the listing cannot be approved."
+    },
+    {
+      "job_id": "live-kurta-01-mismatch",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "3604695a9f6202aa548ffd9fc507730df1685edaca5ff741ab27386f112e62a2",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "09a4137bde7e64d1c7a3366dde6b62369eea187cc5b64cdb99cb98c9e8dabcb1",
+      "usage": {
+        "prompt_tokens": 554,
+        "completion_tokens": 2871
+      },
+      "cost_usd": 0.012894,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम REFUSE है। इसका मतलब है यह छवि प्रकाशित नहीं होगी। कारण: रंग और प्रिंट में बड़ा अंतर, आस्तीन की लंबाई और हेम में अंतर, और स्रोत मास्क गायब होने से जाँच अधूरी रही।"
+    },
+    {
+      "job_id": "live-kurta-01-mismatch",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "3604695a9f6202aa548ffd9fc507730df1685edaca5ff741ab27386f112e62a2",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "39de2f555dbd5d250bf311b1a0497c3374e2d27253c86114e1a14d9e3159b5f3",
+      "usage": {
+        "prompt_tokens": 388,
+        "completion_tokens": 2279
+      },
+      "cost_usd": 0.010171,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
     }
   ]
 }

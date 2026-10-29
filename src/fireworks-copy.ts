@@ -228,13 +228,25 @@ export const COPY_SYSTEM_PROMPT_HI =
   "Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. " +
   "No markdown, no emoji, no headings.";
 
+/**
+ * For Hindi listing copy. It must not mention decision words: with the summary
+ * prompt above, the FW2 run's first Hindi listings ended in RELEASE or REFUSE,
+ * one of them a word the listing request never carried, and the guard refused them.
+ */
+export const COPY_SYSTEM_PROMPT_HI_LISTING =
+  "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. " +
+  "Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. " +
+  "This is product listing copy: do not mention any check, decision or approval, and never write RELEASE, REVIEW or REFUSE. " +
+  "No markdown, no emoji, no headings.";
+
 const HINDI_ASK = " Write the text in Hindi (Devanagari script).";
 
 /** The two messages for one task. Only the facts are sent: no image, no hash other than the receipt head. */
 export function copyMessages(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"): ChatMessage[] {
   if (lang === "hi") {
     // The English request with the Hindi system prompt, and the ask to write in Hindi before the facts.
-    return copyMessages(task, f, "en").map((m): ChatMessage => (m.role === "system" ? { role: "system", content: COPY_SYSTEM_PROMPT_HI } : { role: "user", content: m.content.replace("\n\n", `${HINDI_ASK}\n\n`) }));
+    const system = task === "listing_copy" ? COPY_SYSTEM_PROMPT_HI_LISTING : COPY_SYSTEM_PROMPT_HI;
+    return copyMessages(task, f, "en").map((m): ChatMessage => (m.role === "system" ? { role: "system", content: system } : { role: "user", content: m.content.replace("\n\n", `${HINDI_ASK}\n\n`) }));
   }
   const claims = f.claims.map((c) => `- ${c.field}: ${c.value}`).join("\n") || "- none recorded";
   if (task === "listing_copy") {

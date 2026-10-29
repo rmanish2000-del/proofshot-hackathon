@@ -1,0 +1,81 @@
+{
+  "job_id": "live-kurta-01-sam-2",
+  "records": [
+    {
+      "job_id": "live-kurta-01-sam-2",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "ecfbfbea8a43f76643d84fcc88d7105ed6f520cc4923b557f1bc4d5fa6579dc3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "1ec852c10c55edaed6ce11e5c6bf122c1a97942d6207d179067dedba6ec1bdf0",
+      "usage": {
+        "prompt_tokens": 444,
+        "completion_tokens": 1633
+      },
+      "cost_usd": 0.007495,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. All checked attributes matched the photos including colour, print, collar, sleeve length, hem, pocket count, buttons and fabric texture. Your kurta details were kept as photographed."
+    },
+    {
+      "job_id": "live-kurta-01-sam-2",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "ecfbfbea8a43f76643d84fcc88d7105ed6f520cc4923b557f1bc4d5fa6579dc3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "ff7176e36f463e27fac9d2d042264cd246f90946a2c32ab2d32de98be511a1f1",
+      "usage": {
+        "prompt_tokens": 364,
+        "completion_tokens": 3369
+      },
+      "cost_usd": 0.014773,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust / orange. The colour matches the photos."
+    },
+    {
+      "job_id": "live-kurta-01-sam-2",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "ecfbfbea8a43f76643d84fcc88d7105ed6f520cc4923b557f1bc4d5fa6579dc3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "6fe2711b533511b1cdc4e99e2dd19d2d242ba787871d51eb5cebef8ad5953fb4",
+      "usage": {
+        "prompt_tokens": 478,
+        "completion_tokens": 2712
+      },
+      "cost_usd": 0.012124,
+      "cost_estimated": true,
+      "text": "निर्णय RELEASE है, इसका मतलब तस्वीर प्रकाशित की जा सकती है। जाँच में रंग, प्रिंट, लोगो पाठ, कॉलर, आस्तीन की लंबाई, हेम, जेब संख्या, बटन और कपड़े की बनावट सभी फोटो जैसे मिले। आपका कुर्ता महिला रस्ट/नारंगी रंग में फोटो जैसा ही है।"
+    },
+    {
+      "job_id": "live-kurta-01-sam-2",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "ecfbfbea8a43f76643d84fcc88d7105ed6f520cc4923b557f1bc4d5fa6579dc3",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "1084e2db27898763d30a221161b35f15b6960cdc1b61bf2965a2bff4e70b32c2",
+      "usage": {
+        "prompt_tokens": 397,
+        "completion_tokens": 2494
+      },
+      "cost_usd": 0.011096,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+    }
+  ]
+}

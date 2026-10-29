@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-tryon-reverify",
+  "started_at": "2026-10-29T06:31:46.428Z",
+  "finished_at": "2026-10-29T06:32:20.262Z",
+  "latency_ms": 33834,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REFUSE\nReasons:\n- fidelity REFUSE: texture 0.641 below 0.650; delta_e 12.214 above 10; area 0.206 below 0.400: the garment shrank in frame\n- sleeve_length: mismatch at 0.94 on a soft attribute\n- hem: mismatch at 0.98 on a soft attribute\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: mismatch\n- hem: mismatch\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-0831d1c0b1d346518f72d9557b912532",
+      "object": "chat.completion",
+      "created": 1793255507,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REFUSE which means the image must not be published. The render failed image quality checks as texture and colour difference were outside limits and garment shrank in frame. Sleeve length and hem length did not match the long below knee kurta in photos though colour, print, collar and buttons matched.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REFUSE\nReasons:\n- fidelity REFUSE: texture 0.641 below 0.650; delta_e 12.214 above 10; area 0.206 below 0.400: the garment shrank in frame\n- sleeve_length: mismatch at 0.94 on a soft attribute\n- hem: mismatch at 0.98 on a soft attribute\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: mismatch\n- hem: mismatch\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)\n\nWe must write short plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to state decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published.\n\nWrite that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REFUSE once. Must not include RELEASE or REVIEW anywhere. Also must not include REFUSE a second time. So we need to be careful: we can only write REFUSE once. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write RELEASE or REVIEW at all. And we must write REFUSE exactly once.\n\nWe need to describe reasons in plain words instead. The reasons include fidelity REFUSE: texture 0.641 below 0.650; delta_e 12.214 above 10; area 0.206 below 0.400: the garment shrank in frame. We need to describe such a reason in plain words instead. So we cannot say \"fidelity REFUSE\". We need to paraphrase: e.g., \"image quality check failed\" etc. But we must not use the word REFUSE again. So we need to avoid that.\n\nAlso sleeve_length mismatch, hem mismatch.\n\nVerifier findings: color match, print_pattern match, logo_text match, collar match, sleeve_length mismatch, hem mismatch, pocket_count match, buttons match, fabric_texture match.\n\nSeller's claims: Type kurta women's, main colour rust/orange, print motif as in photos, collar and cuffs as in photos, buttons as in photos, anything render must not change: colour, print and neckline exactly as photographed, length long below knee as photographed.\n\nWe need to explain check result in at most 70 words. Must be short plain English.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention rust/orange? That's in facts. We can mention kurta women's. We can mention long below knee. We can mention colour, print, neckline exactly as photographed.\n\nWe must not add new colours etc.\n\nWe need to ensure we don't accidentally include RELEASE or REVIEW words. So avoid those strings. The phrase \"the image must not be published\" is the meaning for REFUSE. We must include that.\n\nWe must ensure we don't write \"RELEASE\" or \"REVIEW\" even as part of another word? Probably exact word. Safer to avoid those substrings.\n\nWe need to count words <=70.\n\nWe need to include decision word exactly as given: REFUSE. So we need a sentence like \"Decision is REFUSE which means the image must not be published.\"\n\nBut we must be careful not to include REFUSE again. So only once.\n\nWe need to describe reasons: texture below threshold, delta_e above, area below, garment shrank in frame, sleeve_length mismatch, hem mismatch.\n\nWe should mention verifier findings: color match, print_pattern match etc. But we have limited words.\n\nWe need to be concise.\n\nPotential text:\n\n\"Decision is REFUSE which means the image must not be published. The render failed image quality checks as texture and colour difference were outside limits and garment shrank in frame. Sleeve length and hem length did not match the long below knee kurta in photos though colour, print, collar and buttons matched.\"\n\nLet's count words.\n\nDecision(1) is2 REFUSE3 which4 means5 the6 image7 must8 not9 be10 published.11 The12 render13 failed14 image15 quality16 checks17 as18 texture19 and20 colour21 difference22 were23 outside24 limits25 and26 garment27 shrank28 in29 frame.30 Sleeve31 length32 and33 hem34 length35 did36 not37 match38 the39 long40 below41 knee42 kurta43 in44 photos45 though46 colour,47 print,48 collar49 and50 buttons51 matched52.\n\nThat's 52 words, under 70. Does it include forbidden words? It includes REFUSE once. It does not include RELEASE or REVIEW. Good.\n\nBut we need to ensure we didn't add claims not in facts. We said \"texture and colour difference were outside limits\" - that's based on texture 0.641 below 0.650; delta_e 12.214 above 10. That's okay. We said garment shrank in frame - that's in facts: area 0.206 below 0.400: the garment shrank in frame. Good.\n\nWe said sleeve length and hem length did not match the long below knee kurta in photos - that's based on sleeve_length mismatch, hem mismatch, and seller's claim length long below knee as photographed. That's allowed.\n\nWe said colour, print, collar and buttons matched - that's from verifier findings: color match, print_pattern match, collar match, buttons match. Good.\n\nWe should also maybe mention fabric_texture match? But we have limited words. We included buttons matched. Could also mention pocket_count etc. But okay.\n\nWe must ensure we use only facts given. We said \"image quality checks\" - is that allowed? The reason is fidelity REFUSE. Describing it as image quality checks is plain words instead. That's allowed? The instruction: describe such a reason in plain words instead. So we should not say \"fidelity REFUSE\". We said \"image quality checks\" - that's a plain description. That's okay.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We mentioned colour - but that's in facts. We didn't add new colours.\n\nWe must not change or soften gate decision. We said decision is REFUSE which means image must not be published. That's correct.\n\nWe need to ensure we don't accidentally include the word \"REFUSE\" inside \"REFUSE\"? We have it once. Good.\n\nWe must ensure we don't include \"RELEASE\" or \"REVIEW\" as substrings. Our text doesn't.\n\nWe need to ensure we write short plain English for Indian clothing seller. Our text is plain.\n\nWe must ensure no markdown, no emoji, no headings. We have plain text.\n\nWe must ensure at most 70 words. We have 52.\n\nWe should double-check we didn't include \"rust / orange\" - we didn't, but we could. It's okay to not include.\n\nWe should ensure we mention seller's claims? The instruction says use only facts given. It doesn't say we must include all. But we should be accurate.\n\nPotential improvement: mention that colour, print and neckline exactly as photographed was required, but we can say colour and print matched. That's okay.\n\nWe should ensure we don't add \"fabric_texture\" incorrectly. We said colour, print, collar and buttons matched - that's true per verifier findings. Fabric_texture also matched, but we didn't mention. That's okay, we didn't add false claim.\n\nWe should ensure we don't claim sleeve_length mismatch at 0.94 on soft attribute - we can mention mismatch, but not need to give numbers? We can give numbers? The facts include numbers, we can use them. But we said outside limits - that's okay. We could include numbers, but not required.\n\nWe must be careful not to use the word \"REFUSE\" again in \"fidelity REFUSE\". We avoided.\n\nWe must ensure we don't use \"REVIEW\" or \"RELEASE\" in any form. Our text doesn't.\n\nWe should output final answer.\n\nWe need to ensure we don't accidentally include \"REFUSE\" in punctuation? We have it once.\n\nWe should ensure we don't include \"REFUSE\" in lower case? The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere. So we must not write \"refuse\" lower case either? Probably they mean those words in any case. Safer to avoid \"refuse\" lower case. Our text has \"REFUSE\" once, no other.\n\nWe should ensure we don't write \"refused\" - that contains refuse? Might be considered violation. Avoid.\n\nWe should deliver final answer with exactly one REFUSE.\n\nWe should double-check word count and content.\n\nPotential final text: \"Decision is REFUSE which means the image must not be published. The render failed image quality checks as texture and colour difference were outside limits and garment shrank in frame. Sleeve length and hem length did not match the long below knee kurta in photos though colour, print, collar and buttons matched.\"\n\nThat's good.\n\nWe should ensure we didn't add \"soft attribute\" - we omitted, but that's okay. We used only facts.\n\nWe should ensure we didn't add care advice.\n\nWe should output that.\n\nWe must ensure no extra heading.\n\nWe should not add extra explanation beyond 70 words.\n\nWe should ensure we don't accidentally include \"RELEASE\" in \"released\"? No.\n\nWe should output final answer.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 528,
+        "total_tokens": 2805,
+        "completion_tokens": 2277,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2206
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2206
+        }
+      }
+    }
+  },
+  "error": null
+}

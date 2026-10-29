@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-02-sam",
+  "started_at": "2026-10-29T06:46:51.527Z",
+  "finished_at": "2026-10-29T06:47:20.641Z",
+  "latency_ms": 29114,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write the text in Hindi (Devanagari script).\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-e639b5da21ec40a3b1072cbefe421a04",
+      "object": "chat.completion",
+      "created": 1793256412,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "आपके कुर्ता (महिला) का विवरण जाँचा गया। मुख्य रंग पीच, प्रिंट, कॉलर और कफ, बटन सब फोटो जैसे मिले। निर्णय RELEASE है, इसका अर्थ है छवि प्रकाशित की जा सकती है।",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead. Write text in Hindi (Devanagari script).\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Type kurta women's, Main colour peach, Print as in photos, Collar and cuffs as in photos, Buttons as in photos, Anything render must not change: colour, print and neckline exactly as photographed\n\nWe must write short plain Hindi in Devanagari script for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision; keep decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\n\nWe need to include decision word RELEASE in capitals. And explain what it means: RELEASE = the image can be published. So we need to say in Hindi that image can be published.\n\nWe must not include other decision words REVIEW or REFUSE anywhere. So avoid those words. The instruction: Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSince reasons = none, we don't need to describe reasons. But we must ensure we don't accidentally write REVIEW or REFUSE. So only RELEASE appears.\n\nWe need to write in Hindi Devanagari script, but decision word RELEASE is in English capitals. That's allowed. The rest in Hindi.\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we can mention: kurta women's, peach colour, print as in photos, collar and cuffs as in photos, buttons as in photos, colour, print and neckline exactly as photographed. And verifier findings: color match, print_pattern match, logo_text match, collar match, sleeve_length match, hem match, pocket_count match, buttons match, fabric_texture match. We can say all attributes matched.\n\nWe must keep at most 70 words. Short plain Hindi.\n\nWe need to ensure we don't add colours beyond peach? We can mention peach as given. Don't add other colours.\n\nWe must not add fabrics, sizes, prices, care advice.\n\nWe need to write in Hindi Devanagari. Let's craft ~50 words.\n\nExample: \"आपके द्वारा दिया गया कुर्ता (महिला) का विवरण जाँचा गया। मुख्य रंग पीच, प्रिंट, कॉलर और कफ, बटन सब फोटो जैसे पाए गए। निर्णय RELEASE है, इसका अर्थ है कि छवि प्रकाशित की जा सकती है।\"\n\nCount words: Need to count Hindi words. Let's count: आपके(1) द्वारा(2) दिया(3) गया(4) कुर्ता(5) (महिला)(6) का(7) विवरण(8) जाँचा(9) गया।(10) मुख्य(11) रंग(12) पीच,(13) प्रिंट,(14) कॉलर(15) और(16) कफ,(17) बटन(18) सब(19) फोटो(20) जैसे(21) पाए(22) गए।(23) निर्णय(24) RELEASE(25) है,(26) इसका(27) अर्थ(28) है(29) कि(30) छवि(31) प्रकाशित(32) की(33) जा(34) सकती(35) है।(36)\n\nThat's 36 words, under 70. Good.\n\nWe need to ensure we mention verifier findings? We did: all matched. That's okay.\n\nWe must not add extra claims. We said \"सब फोटो जैसे पाए गए\" which aligns with match verdicts. That's okay.\n\nWe should not add \"fabric_texture\" etc? We can summarize.\n\nWe must ensure we don't use English words other than RELEASE? The instruction says write short plain Hindi in Devanagari script. But decision word must be in English capitals. Probably okay to have some English terms like kurta? But better keep Hindi. The seller's claims include \"kurta (women's)\" - we translated to कुर्ता (महिला). That's fine.\n\nWe must not add markdown, emoji, headings. Just plain text.\n\nWe must ensure we don't accidentally include REVIEW or REFUSE. We didn't.\n\nWe must ensure we state what RELEASE means: the image can be published. We did: \"इसका अर्थ है कि छवि प्रकाशित की जा सकती है।\" That's correct translation.\n\nWe should ensure we use Devanagari script for Hindi. We did.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't add extra.\n\nWe should ensure we don't add \"fabric_texture: match\" as fabric claim? We didn't mention fabric.\n\nWe should ensure we keep decision word exactly RELEASE in capitals. Yes.\n\nWe need to ensure we don't soften gate decision. We said it can be published, which is correct.\n\nWe should output only the explanation.\n\nPotential nuance: The instruction says \"Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts.\" So we must not invent. Our sentence is okay.\n\nWe must ensure we don't add \"logo_text: match\" etc? We summarized as all matched, which is okay, but we didn't mention logo_text specifically. Is that allowed? We said \"सब फोटो जैसे पाए गए\" which is generic. Might be okay. But to be safe, we could list attributes: रंग, प्रिंट, लोगो टेक्स्ट, कॉलर, आस्तीन की लंबाई, हेम, जेब की संख्या, बटन, कपड़े की बनावट - all matched. However that might be considered adding facts? But those are verifier findings, so we can mention them. The instruction says use only facts given. So we can mention those attributes. It's allowed.\n\nBut we must not add colours beyond peach. So listing attributes is okay.\n\nWe should keep word count under 70. If we list all attributes, word count increases but still under 70.\n\nLet's craft final answer with concise Hindi, including all verifier findings maybe summarized as \"सभी जाँचे गए बिंदु मिले\" to stay safe and not add extra.\n\nWe have 36 words, good.\n\nWe must ensure we don't use English word \"REVIEW\" or \"REFUSE\" inside explanation of meaning. We used Hindi explanation, not English.\n\nWe must ensure we don't write \"RELEASE = the image can be published\" in English. We wrote Hindi meaning. That's correct per instruction: Write that one decision word in capitals and what it means: RELEASE = the image can be published ... So we need to convey meaning in Hindi.\n\nWe should output final answer.\n\nCheck for any hidden violation: The system says \"You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. No markdown, no emoji, no headings.\"\n\nWe must ensure we don't add markdown. No bullet points.\n\nWe should ensure we don't add extra punctuation that could be considered markdown? No.\n\nWe should ensure we write in Devanagari script. Our text is in Devanagari except RELEASE. That's allowed as per instruction to keep decision word in English capitals.\n\nWe should ensure we don't add any other English words. We have \"RELEASE\" only. Good.\n\nWe should ensure we don't add \"women's\" in English. We translated.\n\nWe should ensure we don't add \"peach\" in English; we wrote \"पीच\" in Devanagari, which is transliteration, okay. Could also write \"पीच\" as colour. That's given as peach, so okay.\n\nWe should ensure we don't add fabric_texture claim.\n\nWe should deliver final answer.\n\nPotential improvement: Include that reasons = none, so no issues. We could say \"कोई समस्या नहीं मिली\" - is that allowed? Reasons none means no reasons for refusal. Saying no problem is okay, it's implied by verifier findings all match. But is that adding claim not in facts? The facts say reasons: none, verifier findings all match. So saying \"कोई समस्या नहीं मिली\" is a summary, not adding new fact. Should be okay.\n\nBut to be safe, we can say \"सभी बिंदु फोटो से मिले\" which covers verifier findings.\n\nWe should not mention \"logo_text\" if not relevant? But it's in verifier findings, so we can mention.\n\nWe should keep simple.\n\nFinal answer: Provide Hindi text with RELEASE.\n\nLet's output:\n\nआपके कुर्ता (महिला) का विवरण जाँचा गया। मुख्य रंग पीच, प्रिंट, कॉलर, बटन सब फोटो जैसे मिले। निर्णय RELEASE है, इसका अर्थ है छवि प्रकाशित की जा सकती है।\n\nCount words: आपके(1) कुर्ता(2) (महिला)(3) का(4) विवरण(5) जाँचा(6) गया।(7) मुख्य(8) रंग(9) पीच,(10) प्रिंट,(11) कॉलर,(12) बटन(13) सब(14) फोटो(15) जैसे(16) मिले।(17) निर्णय(18) RELEASE(19) है,(20) इसका(21) अर्थ(22) है(23) छवि(24) प्रकाशित(25) की(26) जा(27) सकती(28) है।(29)\n\nUnder 70, good.\n\nWe should ensure we mention \"कफ\" also? Seller claims collar and cuffs as in photos. We omitted cuffs. Could add \"कफ\" to be complete. Let's add.\n\nRevised: \"मुख्य रंग पीच, प्रिंट, कॉलर और कफ, बटन सब फोटो जैसे मिले।\"\n\nCount again: मुख्य(8) रंग(9) पीच,(10) प्रिंट,(11) कॉलर(12) और(13) कफ,(14) बटन(15) सब(16) फोटो(17) जैसे(18) मिले।(19) निर्णय(20) RELEASE(21) है,(22) इसका(23) अर्थ(24) है(25) छवि(26) प्रकाशित(27) की(28) जा(29) सकती(30) है।(31)\n\nStill under 70.\n\nWe should output that.\n\nMake sure no extra English.\n\nWe should not add period after RELEASE? It's okay.\n\nWe must ensure we don't accidentally include the word \"REVIEW\" or \"REFUSE\" in Hindi transliteration? No.\n\nWe should output final answer in Hindi Devanagari.\n\n",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 476,
+        "total_tokens": 2896,
+        "completion_tokens": 2420,
+        "prompt_tokens_details": {
+          "cached_tokens": 448
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2353
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2353
+        }
+      }
+    }
+  },
+  "error": null
+}

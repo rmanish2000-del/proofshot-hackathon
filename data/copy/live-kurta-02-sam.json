@@ -1,0 +1,73 @@
+{
+  "job_id": "live-kurta-02-sam",
+  "records": [
+    {
+      "job_id": "live-kurta-02-sam",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "737eb7ca3fcdd796ec8393f706a63e7f5373b35cdac20ef0c01469b117919181",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "c93378c15288fe33bd6995c79ff270044b05b9976753d675e243a167f3696ff8",
+      "usage": {
+        "prompt_tokens": 442,
+        "completion_tokens": 1805
+      },
+      "cost_usd": 0.008224,
+      "cost_estimated": true,
+      "text": "The decision is RELEASE which means the image can be published. All checks matched: colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture. Your kurta women's peach listing kept colour, print and neckline as photographed."
+    },
+    {
+      "job_id": "live-kurta-02-sam",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "737eb7ca3fcdd796ec8393f706a63e7f5373b35cdac20ef0c01469b117919181",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "b4500e95376a12205363d8b4fc8d057cb7427ead96e7222f2591305bcac4e43f",
+      "usage": {
+        "prompt_tokens": 362,
+        "completion_tokens": 3829
+      },
+      "cost_usd": 0.016726,
+      "cost_estimated": true,
+      "text": "This is a women's kurta. The main colour is peach."
+    },
+    {
+      "job_id": "live-kurta-02-sam",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "737eb7ca3fcdd796ec8393f706a63e7f5373b35cdac20ef0c01469b117919181",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "06d000d2488f55b158ce9bdf1ae4fd5e1942961562d9b4cf2aa6e027840f266d",
+      "usage": {
+        "prompt_tokens": 476,
+        "completion_tokens": 2420
+      },
+      "cost_usd": 0.01088,
+      "cost_estimated": true,
+      "text": "आपके कुर्ता (महिला) का विवरण जाँचा गया। मुख्य रंग पीच, प्रिंट, कॉलर और कफ, बटन सब फोटो जैसे मिले। निर्णय RELEASE है, इसका अर्थ है छवि प्रकाशित की जा सकती है।"
+    },
+    {
+      "job_id": "live-kurta-02-sam",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "737eb7ca3fcdd796ec8393f706a63e7f5373b35cdac20ef0c01469b117919181",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: peach. तस्वीरों से जाँचा गया और मेल खाता है: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture।"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "job_id": "live-kurta-02-tryon",
+  "records": [
+    {
+      "job_id": "live-kurta-02-tryon",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "0af4bc4f2b9a8da98addbb7f499ef7f1dae8ef499960473360b9863cede20c06",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "11bf5efdf5dcf18f4ecf19c910f76977aad22373c3a8ee0902481ece713898ac",
+      "usage": {
+        "prompt_tokens": 507,
+        "completion_tokens": 2987
+      },
+      "cost_usd": 0.013329,
+      "cost_estimated": true,
+      "text": "Decision is REVIEW which means a person must look first. Hem did not match at 0.98 on soft attribute and garment shrank in frame with delta_e 14.199, hist 0.368, texture 0.688 and area 0.212. Colour, print, collar, sleeve, pocket, buttons, logo and fabric texture matched."
+    },
+    {
+      "job_id": "live-kurta-02-tryon",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "0af4bc4f2b9a8da98addbb7f499ef7f1dae8ef499960473360b9863cede20c06",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "0f938d6b3347e09bbd00264d35453baec5189b596ae9b641a9a6e513731206f6",
+      "usage": {
+        "prompt_tokens": 360,
+        "completion_tokens": 3746
+      },
+      "cost_usd": 0.016371,
+      "cost_estimated": true,
+      "text": "This is a women's kurta. Its main colour is peach."
+    },
+    {
+      "job_id": "live-kurta-02-tryon",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "0af4bc4f2b9a8da98addbb7f499ef7f1dae8ef499960473360b9863cede20c06",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "d5ba2851b08407504ed9451e75dcf7896fb960b2d539604890a6536defe78fe4",
+      "usage": {
+        "prompt_tokens": 541,
+        "completion_tokens": 5599
+      },
+      "cost_usd": 0.024472,
+      "cost_estimated": true,
+      "text": "आपके महिला कुर्ता (पीच रंग) की जाँच का नतीजा REVIEW है, इसका मतलब है प्रकाशन से पहले एक व्यक्ति जाँच करेगा। रंग, प्रिंट, कॉलर, बटन, जेब संख्या सही मिले, पर हेम में अंतर है और पोशाक फ्रेम में छोटी दिखी, रंग अंतर और हिस्टोग्राम सीमा से ऊपर और टेक्सचर व क्षेत्र सीमा से नीचे हैं।"
+    },
+    {
+      "job_id": "live-kurta-02-tryon",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "0af4bc4f2b9a8da98addbb7f499ef7f1dae8ef499960473360b9863cede20c06",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "2c1930aa65471011b113bff532644cf14f147935063c48ded8d85e7b397c0e02",
+      "usage": {
+        "prompt_tokens": 393,
+        "completion_tokens": 2955
+      },
+      "cost_usd": 0.01305,
+      "cost_estimated": true,
+      "text": "यह महिलाओं के लिए कुर्ता है। इसका मुख्य रंग पीच है।"
+    }
+  ]
+}

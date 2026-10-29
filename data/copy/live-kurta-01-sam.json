@@ -1,0 +1,65 @@
+{
+  "job_id": "live-kurta-01-sam",
+  "records": [
+    {
+      "job_id": "live-kurta-01-sam",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Decision: REVIEW, a person must look before it is published. Reasons: fidelity REVIEW: source image is not a PNG: this build decodes only PNG (no JPEG decoder), so it cannot be measured."
+    },
+    {
+      "job_id": "live-kurta-01-sam",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "Type: kurta (women's). Main colour: rust / orange. Checked against the seller's photos and matching: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture."
+    },
+    {
+      "job_id": "live-kurta-01-sam",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "62eb45920fb8532e05eb8397338054e159f165d9cc1cadb72fa41293f08076c7",
+      "usage": {
+        "prompt_tokens": 503,
+        "completion_tokens": 2068
+      },
+      "cost_usd": 0.009418,
+      "cost_estimated": true,
+      "text": "आपकी जाँच का परिणाम REVIEW है, इसका मतलब है कि प्रकाशित करने से पहले एक व्यक्ति को देखना होगा। स्रोत चित्र पीएनजी नहीं है, यह सिस्टम केवल पीएनजी पढ़ता है इसलिए माप नहीं हो सका। रंग, प्रिंट, कॉलर, बटन आदि मिलते हैं।"
+    },
+    {
+      "job_id": "live-kurta-01-sam",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "7ec60ef490315a320eebf3c0e2b78abbd294564bf767c58e7f6e647b51ea1f82",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "1084e2db27898763d30a221161b35f15b6960cdc1b61bf2965a2bff4e70b32c2",
+      "usage": {
+        "prompt_tokens": 397,
+        "completion_tokens": 2717
+      },
+      "cost_usd": 0.012044,
+      "cost_estimated": true,
+      "text": "यह महिलाओं का कुर्ता है। इसका मुख्य रंग रस्ट नारंगी है।"
+    }
+  ]
+}
