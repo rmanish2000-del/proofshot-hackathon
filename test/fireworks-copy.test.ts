@@ -7,7 +7,7 @@ import { test } from "node:test";
 import {
   FIREWORKS_LLAMA_MODEL, FIREWORKS_MAX_TOKENS, FIREWORKS_MODEL, FIREWORKS_RESERVE_USD, FIREWORKS_SPEND_CAP_USD, FIREWORKS_URL, answerText, copyFacts, copyMessages, fireworksCostUsd,
   keepsDecision, noteClaims, parseRegQuery,
-  resolveFireworksKey, templateText, writeCopy,
+  COPY_SYSTEM_PROMPT_HI, listingLongEnough, matchedAttributes, resolveFireworksKey, sentenceCount, templateText, writeCopy,
 } from "../src/fireworks-copy.ts";
 import type { CopyFacts, FireworksCallLog, FireworksFetch } from "../src/fireworks-copy.ts";
 import { parseReceipt } from "../src/receipt.ts";
@@ -95,7 +95,7 @@ test("FW 2: the request is OpenAI chat-completions shape, names the exact muse-s
 });
 
 test("FW 3: a key only in the Windows User env scope is used and recorded as user_env; process env wins over it", async () => {
-  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "A peach women's kurta." } }] });
+  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "A peach women's kurta. Its colour was checked against the photos." } }] });
   const lookup = { platform: "win32", readUserEnv: (n: string) => (n === "FIREWORKS_API_KEY" ? "fw-user-scope" : null) };
   const rec = await writeCopy("listing_copy", FACTS, { env: {}, fetch, ledger: memoryLedger(), lookup });
   assert.equal(rec.key_source, "user_env");
@@ -107,8 +107,8 @@ test("FW 3: a key only in the Windows User env scope is used and recorded as use
   assert.equal(parseRegQuery(reg, "OTHER"), null);
 });
 
-test("FW 4: the spend cap: a ledger near cap - reserve (60 - 40 USD), an unreadable ledger or no ledger falls back with spend_cap before any request", async () => {
-  const near = memoryLedger([{ at: "2026-10-29T00:00:00.000Z", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD - FIREWORKS_RESERVE_USD - 0.0001, estimated: true }]);
+test("FW 4: the spend cap: a ledger at the 60 USD batch cap, past 100 USD with the reserve opt-in, unreadable or missing falls back with spend_cap before any request", async () => {
+  const near = memoryLedger([{ at: "2026-10-29T00:00:00.000Z", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD - 0.0001, estimated: true }]);
   const broken: Ledger = { read: () => { throw new Error("bad"); }, append: () => {} };
   for (const ledger of [near, broken, null]) {
     const { calls, fetch } = fakeFetch(200, OK);
@@ -117,6 +117,14 @@ test("FW 4: the spend cap: a ledger near cap - reserve (60 - 40 USD), an unreada
     assert.equal(rec.generated, false);
     assert.equal(calls.length, 0);
   }
+  // The 40 USD reserve: only PROOFSHOT_USE_RESERVE=1 may spend past the cap, and never past cap + reserve.
+  const reserve = { env: { FIREWORKS_API_KEY: KEY, PROOFSHOT_USE_RESERVE: "1" }, lookup: NO_USER_ENV };
+  const opted = await writeCopy("receipt_summary", FACTS, { ...reserve, fetch: fakeFetch(200, OK).fetch, ledger: near });
+  assert.equal(opted.generated, true, "the opt-in reaches the reserve");
+  const full = memoryLedger([{ at: "t", prediction_id: "old", cost_usd: FIREWORKS_SPEND_CAP_USD + FIREWORKS_RESERVE_USD - 0.0001, estimated: true }]);
+  const past = fakeFetch(200, OK);
+  assert.equal((await writeCopy("receipt_summary", FACTS, { ...reserve, fetch: past.fetch, ledger: full })).fallback_reason, "spend_cap");
+  assert.equal(past.calls.length, 0);
 });
 
 test("FW 5: an HTTP error or an empty answer falls back with fireworks_failed, and a call that reached the server is still in the ledger", async () => {
@@ -139,7 +147,7 @@ test("FW 6: listing copy is written from the seller's claims only; the template 
   const user = copyMessages("listing_copy", FACTS)[1]!;
   assert.match(user.content, /- Main colour: peach/);
   assert.equal(user.content.includes("REVIEW"), false, "the listing prompt carries no gate decision");
-  assert.equal(templateText("listing_copy", FACTS), "Type: kurta (women's). Main colour: peach.");
+  assert.equal(templateText("listing_copy", FACTS), "Type: kurta (women's). Main colour: peach. Checked against the seller's photos and matching: colour.");
 });
 
 test("FW 7: facts from a committed receipt: decision and reasons from the last gate entry, claims from the job note, no bounding boxes", () => {
@@ -216,4 +224,75 @@ test("FW 11: an answer cut off at max_tokens falls back with truncated; a <think
   const f2 = fakeFetch(200, thinking);
   const kept = await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: f2.fetch, ledger: memoryLedger(), lookup: NO_USER_ENV });
   assert.equal(kept.text, "Decision: REVIEW. A person must look first.");
+});
+
+test("FW2 1: Hindi asks for Devanagari with the decision word in English capitals; the record says lang hi; English records are unchanged", async () => {
+  const msgs = copyMessages("receipt_summary", FACTS, "hi");
+  assert.equal(msgs[0]!.content, COPY_SYSTEM_PROMPT_HI);
+  assert.match(msgs[0]!.content, /Devanagari/);
+  assert.match(msgs[0]!.content, /RELEASE, REVIEW or REFUSE in English capital letters/);
+  assert.match(msgs[1]!.content, /Write the text in Hindi \(Devanagari script\)\.\n\nDecision: REVIEW/);
+  assert.deepEqual(copyMessages("receipt_summary", FACTS), copyMessages("receipt_summary", FACTS, "en"), "English is the default");
+  const { calls, fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content: "निर्णय REVIEW है: प्रकाशित करने से पहले किसी व्यक्ति को देखना होगा।" }, finish_reason: "stop" }] });
+  const rec = await writeCopy("receipt_summary", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger: memoryLedger(), lookup: NO_USER_ENV, lang: "hi" });
+  assert.equal(rec.lang, "hi");
+  assert.equal(rec.generated, true);
+  assert.match(JSON.parse(calls[0]!.body).messages[0].content, /Hindi/);
+  const en = await writeCopy("receipt_summary", FACTS, { env: {}, fetch: null, ledger: null, lookup: NO_USER_ENV });
+  assert.equal("lang" in en, false, "an English record without lang keeps the FW1 shape");
+});
+
+test("FW2 2: the Hindi template frames the receipt's facts in Hindi and keeps the decision word", () => {
+  assert.equal(templateText("receipt_summary", FACTS, "hi"), "निर्णय: REVIEW, प्रकाशित करने से पहले किसी व्यक्ति को इसे देखना होगा। कारण: hem: mismatch (soft).");
+  assert.equal(templateText("listing_copy", FACTS, "hi"), "विक्रेता का विवरण: Type: kurta (women's). Main colour: peach. तस्वीरों से जाँचा गया और मेल खाता है: colour।");
+  assert.ok(keepsDecision("receipt_summary", templateText("receipt_summary", { ...FACTS, decision: "REFUSE" }, "hi"), "REFUSE"), "the REFUSE template passes its own guard");
+});
+
+test("FW2 3: a Hindi answer that softens REVIEW or REFUSE, or drops the English word, falls back with decision_changed", async () => {
+  const refuse: CopyFacts = { ...FACTS, decision: "REFUSE" };
+  const cases: [CopyFacts, string][] = [
+    [refuse, "निर्णय REFUSE है, पर रंग ठीक करने के बाद तस्वीर प्रकाशित की जा सकती है।"],
+    [FACTS, "निर्णय REVIEW है, तस्वीर मंज़ूर है।"],
+    [FACTS, "निर्णय समीक्षा है: किसी व्यक्ति को देखना होगा।"],
+  ];
+  for (const [facts, content] of cases) {
+    const { fetch } = fakeFetch(200, { ...OK, choices: [{ message: { role: "assistant", content }, finish_reason: "stop" }] });
+    const rec = await writeCopy("receipt_summary", facts, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger: memoryLedger(), lookup: NO_USER_ENV, lang: "hi" });
+    assert.equal(rec.fallback_reason, "decision_changed", content);
+    assert.equal(rec.text, templateText("receipt_summary", facts, "hi"));
+  }
+  assert.equal(keepsDecision("receipt_summary", "निर्णय REFUSE है: तस्वीर प्रकाशित नहीं की जा सकती।", "REFUSE"), true, "a negated 'can be published' is not softening");
+});
+
+test("FW2 4: listing copy under two sentences is asked once more; still short falls back with too_short; both calls are logged and paid", async () => {
+  const one = { ...OK, choices: [{ message: { role: "assistant", content: "Women's kurta in rust/orange." }, finish_reason: "stop" }] };
+  const two = { ...OK, choices: [{ message: { role: "assistant", content: "A women's kurta in peach. Its colour and hem were checked against the seller's photos." }, finish_reason: "stop" }] };
+  const answers = [one, two];
+  let n = 0;
+  const retried: FireworksFetch = async () => ({ status: 200, text: async () => JSON.stringify(answers[n++]) });
+  const logs: FireworksCallLog[] = [];
+  const ledger = memoryLedger();
+  const rec = await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch: retried, ledger, lookup: NO_USER_ENV, onCall: (l) => logs.push(l), lang: "en" });
+  assert.equal(rec.generated, true);
+  assert.equal(rec.attempts, 2);
+  assert.equal(rec.text, "A women's kurta in peach. Its colour and hem were checked against the seller's photos.");
+  assert.equal(logs.length, 2);
+  assert.equal(ledger.entries.length, 2);
+  assert.equal(rec.cost_usd, Math.round(2 * fireworksCostUsd(300, 40) * 1e6) / 1e6);
+
+  const { fetch } = fakeFetch(200, one);
+  const short = memoryLedger();
+  const fell = await writeCopy("listing_copy", FACTS, { env: { FIREWORKS_API_KEY: KEY }, fetch, ledger: short, lookup: NO_USER_ENV });
+  assert.equal(fell.fallback_reason, "too_short");
+  assert.equal(fell.text, templateText("listing_copy", FACTS));
+  assert.equal(short.entries.length, 2, "one retry, not more");
+
+  const user = copyMessages("listing_copy", FACTS)[1]!.content;
+  assert.match(user, /2 to 3 full sentences/);
+  assert.match(user, /Attributes checked and matching the photos: colour/);
+  assert.equal(user.includes("hem"), false, "a mismatched attribute is not offered for the listing");
+  assert.deepEqual(matchedAttributes(FACTS), ["colour"]);
+  assert.equal(sentenceCount("Women's kurta in rust/orange."), 1);
+  assert.equal(sentenceCount("गहरे नारंगी रंग का कुर्ता। रंग तस्वीरों से मेल खाता है।"), 2);
+  assert.equal(listingLongEnough(templateText("listing_copy", FACTS)), true, "the template itself has two sentences");
 });

@@ -17,9 +17,9 @@
 // Windows, from the User env scope (HKCU\Environment) when the process did not
 // inherit it, so a shell started before the key was set does not silently fall
 // back. It goes in the Authorization header and nowhere else. With no key, or
-// a spend ledger that would pass the cap less the reserve (CAP1: 60 USD cap,
-// 40 USD kept back), the text comes from a fixed template and the record says
-// why (`fallback_reason`), never silently.
+// a spend ledger that would pass the limit (CAP1b: a 60 USD batch cap; the 40
+// USD reserve on top only with PROOFSHOT_USE_RESERVE=1), the text comes from a
+// fixed template and the record says why (`fallback_reason`), never silently.
 
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
@@ -27,6 +27,8 @@ import { join } from "node:path";
 import { fileLedger } from "./render-replicate.ts";
 import type { Ledger } from "./render-replicate.ts";
 import type { ReceiptEntry } from "./receipt.ts";
+import { spendLimitUsd } from "./spend-meta.ts";
+import type { SpendLimit } from "./spend-meta.ts";
 import { sha256Hex } from "./util.ts";
 
 export const FIREWORKS_PROVIDER = "fireworks";
@@ -38,10 +40,11 @@ export const FIREWORKS_LLAMA_MODEL = "accounts/fireworks/models/llama-v3p3-70b-i
 export const FIREWORKS_KEY_ENV = "FIREWORKS_API_KEY";
 /** USD per million tokens for muse-spark-open, serverless, from fireworks.ai/models/fireworks/muse-spark-open (read 29 Oct). Output includes reasoning tokens. */
 export const FIREWORKS_PRICE_PER_MTOK = Object.freeze({ input: 1.25, output: 4.25 });
-/** CAP1 (Grok 29 Oct 10:25 IST, Manish approved): hard cap on the Fireworks ledger, raised from 5. */
+/** CAP1b (Grok 29 Oct 10:55 IST, Manish approved): the Fireworks credit, 100 USD = a 60 USD batch cap + 40 USD reserve. */
 export const FIREWORKS_SPEND_CAP_USD = 60;
-/** CAP1: left unspent; calls stop at cap - reserve. */
+/** Above the cap, for the live judge demo and re-runs; only PROOFSHOT_USE_RESERVE=1 may spend it. */
 export const FIREWORKS_RESERVE_USD = 40;
+export const FIREWORKS_LIMIT: SpendLimit = Object.freeze({ cap_usd: FIREWORKS_SPEND_CAP_USD, reserve_usd: FIREWORKS_RESERVE_USD });
 /** A reasoning model spends output tokens thinking before it answers: 400 cut most answers off, and 4096 cut the live-kurta-01-mismatch summary (FW1b, 29 Oct). */
 export const FIREWORKS_MAX_TOKENS = 8192;
 /** muse-spark-open reasons for 30 s or more before answering (FW1b run, 29 Oct); one listing call passed 60 s. */
@@ -49,12 +52,15 @@ export const FIREWORKS_TIMEOUT_MS = 180_000;
 export const TEMPLATE_PROVIDER = "template";
 
 export type CopyTask = "receipt_summary" | "listing_copy";
+/** FW2: English, or Hindi in Devanagari with the decision word kept in English capitals. */
+export type CopyLang = "en" | "hi";
 /**
  * no_api_token: no key; spend_cap: the ledger would pass the cap, or cannot be read;
  * fireworks_failed: an error or empty answer; truncated: the answer stopped at max_tokens;
- * decision_changed: the answer drops, changes or softens the gate decision.
+ * decision_changed: the answer drops, changes or softens the gate decision;
+ * too_short: listing copy under two sentences, twice (FW2: one retry).
  */
-export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed" | "truncated" | "decision_changed";
+export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed" | "truncated" | "decision_changed" | "too_short";
 
 export type FireworksFetch = (
   url: string,
@@ -79,6 +85,8 @@ export interface CopyFacts {
 export interface CopyRecord {
   readonly job_id: string;
   readonly task: CopyTask;
+  /** Absent on FW1/FW1b records, which are all English. */
+  readonly lang?: CopyLang;
   /** The receipt's last hash when the text was written: the text describes that receipt and no later entry. */
   readonly receipt_head: string;
   readonly provider: typeof FIREWORKS_PROVIDER | typeof TEMPLATE_PROVIDER;
@@ -94,6 +102,8 @@ export interface CopyRecord {
   readonly usage?: { prompt_tokens: number; completion_tokens: number };
   readonly cost_usd?: number;
   readonly cost_estimated?: boolean;
+  /** Calls made for this text when more than one (FW2 listing retry); cost_usd covers all of them. */
+  readonly attempts?: number;
   readonly text: string;
 }
 
@@ -212,15 +222,30 @@ export const COPY_SYSTEM_PROMPT =
   "Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. " +
   "Do not change or soften the gate decision. No markdown, no emoji, no headings.";
 
+export const COPY_SYSTEM_PROMPT_HI =
+  "You write short, plain Hindi in Devanagari script for an Indian clothing seller. Use only the facts given. " +
+  "Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. " +
+  "Do not change or soften the gate decision; keep the decision word RELEASE, REVIEW or REFUSE in English capital letters exactly as given. " +
+  "No markdown, no emoji, no headings.";
+
+const HINDI_ASK = " Write the text in Hindi (Devanagari script).";
+
 /** The two messages for one task. Only the facts are sent: no image, no hash other than the receipt head. */
-export function copyMessages(task: CopyTask, f: CopyFacts): ChatMessage[] {
+export function copyMessages(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"): ChatMessage[] {
+  if (lang === "hi") {
+    // The English request with the Hindi system prompt, and the ask to write in Hindi before the facts.
+    return copyMessages(task, f, "en").map((m): ChatMessage => (m.role === "system" ? { role: "system", content: COPY_SYSTEM_PROMPT_HI } : { role: "user", content: m.content.replace("\n\n", `${HINDI_ASK}\n\n`) }));
+  }
   const claims = f.claims.map((c) => `- ${c.field}: ${c.value}`).join("\n") || "- none recorded";
   if (task === "listing_copy") {
+    const matched = matchedAttributes(f).join(", ") || "none";
     return [
       { role: "system", content: COPY_SYSTEM_PROMPT },
       {
         role: "user",
-        content: `Write a product listing of at most 60 words from the seller's claims below. Where a claim says "as in the photos", say nothing about that detail.\n\nSeller's claims:\n${claims}`,
+        content:
+          `Write a product listing of 2 to 3 full sentences, at most 60 words, using only the seller's claims and the attributes the check found matching the seller's photos. ` +
+          `Where a claim says "as in the photos", say nothing about that detail.\n\nSeller's claims:\n${claims}\nAttributes checked and matching the photos: ${matched}`,
       },
     ];
   }
@@ -238,11 +263,52 @@ export function copyMessages(task: CopyTask, f: CopyFacts): ChatMessage[] {
   ];
 }
 
-/** The text used when no model call is made: the facts, word for word. */
-export function templateText(task: CopyTask, f: CopyFacts): string {
+const ATTRIBUTE_WORDS: Readonly<Record<string, string>> = {
+  color: "colour", print_pattern: "print", logo_text: "logo or text", collar: "collar", sleeve_length: "sleeve length",
+  hem: "hem", pocket_count: "pockets", buttons: "buttons", fabric_texture: "fabric texture",
+};
+
+/** The attributes the verifier found matching, in plain words, in vocabulary order. */
+export function matchedAttributes(f: CopyFacts): string[] {
+  return f.findings.filter((x) => x.verdict === "match").map((x) => ATTRIBUTE_WORDS[x.attribute] ?? x.attribute.replace(/_/g, " "));
+}
+
+/** Sentences in a text, by full stops (., !, ?, Devanagari ।); a text with none counts as one. */
+export function sentenceCount(text: string): number {
+  const t = text.trim();
+  if (!t) return 0;
+  const ended = t.match(/[^.!?।]+[.!?।]+/g)?.filter((x) => x.trim().split(/\s+/).length >= 2).length ?? 0;
+  const tail = /[.!?।]\s*$/.test(t) ? 0 : 1;
+  return Math.max(1, ended + tail);
+}
+
+/** FW2: listing copy is at least two sentences. */
+export function listingLongEnough(text: string): boolean {
+  return sentenceCount(text) >= 2;
+}
+
+const MEANING_HI: Readonly<Record<string, string>> = {
+  RELEASE: "तस्वीर प्रकाशित की जा सकती है",
+  REVIEW: "प्रकाशित करने से पहले किसी व्यक्ति को इसे देखना होगा",
+  REFUSE: "तस्वीर प्रकाशित नहीं की जानी चाहिए",
+};
+
+/** The text used when no model call is made: the facts, word for word (in Hindi, only the frame is translated). */
+export function templateText(task: CopyTask, f: CopyFacts, lang: CopyLang = "en"): string {
   if (task === "listing_copy") {
     const parts = f.claims.filter((c) => !/as in the photos/i.test(c.value) && !/must not change/i.test(c.field)).map((c) => `${c.field}: ${c.value}.`);
-    return parts.join(" ") || "No seller claims recorded.";
+    const matched = matchedAttributes(f);
+    if (lang === "hi") {
+      const said = parts.length ? `विक्रेता का विवरण: ${parts.join(" ")}` : "विक्रेता का कोई विवरण दर्ज नहीं है।";
+      return matched.length ? `${said} तस्वीरों से जाँचा गया और मेल खाता है: ${matched.join(", ")}।` : said;
+    }
+    const said = parts.join(" ") || "No seller claims recorded.";
+    return matched.length ? `${said} Checked against the seller's photos and matching: ${matched.join(", ")}.` : said;
+  }
+  if (lang === "hi") {
+    const d = f.decision ?? "दर्ज नहीं";
+    const why = f.reasons.length ? ` कारण: ${f.reasons.join("; ")}.` : "";
+    return `निर्णय: ${d}${MEANING_HI[d] ? `, ${MEANING_HI[d]}` : ""}।${why}`;
   }
   const meaning: Record<string, string> = {
     RELEASE: "the image can be published",
@@ -263,6 +329,8 @@ export interface FireworksCopyOptions {
   readonly onCall?: (log: FireworksCallLog) => void;
   readonly now?: () => number;
   readonly timeoutMs?: number;
+  /** FW2: the language to write in; English when absent. */
+  readonly lang?: CopyLang;
 }
 
 export function fireworksLedger(env: Env): Ledger | null {
@@ -273,6 +341,8 @@ export function fireworksLedger(env: Env): Ledger | null {
 const DECISIONS = ["RELEASE", "REVIEW", "REFUSE"] as const;
 /** Wording that says a held image can go out anyway. */
 const SOFTENED = /\b(?:can|may|could|will|should) (?:now )?be (?:published|listed|sold|shown)\b|\bready to (?:publish|list|sell)\b|\b(?:is|was) approved\b/i;
+/** The same in Hindi: "can be published / sold / shown", "approved". The REFUSE meaning puts नहीं in between, so it does not match. */
+const SOFTENED_HI = /प्रकाशित (?:की|किया|हो) (?:जा )?सकत|(?:बेचा|बेची|दिखाया|दिखाई) जा सकत|मंज़ूर|मंजूर|स्वीकृत/;
 
 /**
  * True when a model's text keeps the gate's word: a receipt summary states the
@@ -285,7 +355,7 @@ export function keepsDecision(task: CopyTask, text: string, decision: string | n
   if (task === "listing_copy") return named.length === 0;
   if (decision === null || !(DECISIONS as readonly string[]).includes(decision)) return named.length === 0;
   if (named.length !== 1 || named[0] !== decision) return false;
-  return decision === "RELEASE" || !SOFTENED.test(text);
+  return decision === "RELEASE" || (!SOFTENED.test(text) && !SOFTENED_HI.test(text));
 }
 
 /** The answer text without a leading <think>...</think> block some reasoning models put in content. */
@@ -295,19 +365,20 @@ export function answerText(content: string): string {
 
 /** One text for one task, by the Fireworks model when it can run, by the template otherwise. */
 export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: FireworksCopyOptions): Promise<CopyRecord> {
-  const base = { job_id: facts.job_id, task, receipt_head: facts.receipt_head };
+  const lang = opts.lang ?? "en";
+  const base = { job_id: facts.job_id, task, ...(opts.lang ? { lang } : {}), receipt_head: facts.receipt_head };
   const fallback = (reason: CopyFallbackReason): CopyRecord => ({
     ...base,
     provider: TEMPLATE_PROVIDER,
     model: "none",
     generated: false,
     fallback_reason: reason,
-    text: templateText(task, facts),
+    text: templateText(task, facts, lang),
   });
   const found = resolveFireworksKey(opts.env, opts.lookup);
   if (!found || !opts.fetch) return fallback("no_api_token");
   const model = (opts.env.FIREWORKS_MODEL ?? "").trim() || FIREWORKS_MODEL;
-  const body = JSON.stringify({ model, messages: copyMessages(task, facts), max_tokens: FIREWORKS_MAX_TOKENS, temperature: 0 });
+  const body = JSON.stringify({ model, messages: copyMessages(task, facts, lang), max_tokens: FIREWORKS_MAX_TOKENS, temperature: 0 });
   let spent: number;
   try {
     if (!opts.ledger) return fallback("spend_cap");
@@ -315,70 +386,91 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
   } catch {
     return fallback("spend_cap");
   }
-  if (spent + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > FIREWORKS_SPEND_CAP_USD - FIREWORKS_RESERVE_USD + 1e-9) return fallback("spend_cap");
+  if (spent + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > spendLimitUsd(FIREWORKS_LIMIT, opts.env) + 1e-9) return fallback("spend_cap");
 
   const now = opts.now ?? Date.now;
-  const started = now();
-  let status = 0;
-  let parsed: unknown = null;
-  let error: string | null = null;
-  try {
-    const res = await opts.fetch(FIREWORKS_URL, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${found.key}`, "Content-Type": "application/json" },
-      body,
-      signal: AbortSignal.timeout(opts.timeoutMs ?? FIREWORKS_TIMEOUT_MS),
-    });
-    status = res.status;
-    const raw = await res.text();
+  // Listing copy shorter than two sentences is asked once more (FW2); each attempt is logged and paid for.
+  const attempts = task === "listing_copy" ? 2 : 1;
+  let paid = 0;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const started = now();
+    let status = 0;
+    let parsed: unknown = null;
+    let error: string | null = null;
     try {
-      parsed = JSON.parse(raw);
-    } catch {
-      parsed = { unparsed_bytes: raw.length };
+      const res = await opts.fetch(FIREWORKS_URL, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${found.key}`, "Content-Type": "application/json" },
+        body,
+        signal: AbortSignal.timeout(opts.timeoutMs ?? FIREWORKS_TIMEOUT_MS),
+      });
+      status = res.status;
+      const raw = await res.text();
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = { unparsed_bytes: raw.length };
+      }
+      if (status !== 200) error = `HTTP ${status}`;
+    } catch (e) {
+      error = e instanceof Error ? `${e.name}: ${e.message}` : "request failed";
     }
-    if (status !== 200) error = `HTTP ${status}`;
-  } catch (e) {
-    error = e instanceof Error ? `${e.name}: ${e.message}` : "request failed";
-  }
-  const finished = now();
-  opts.onCall?.({
-    provider: FIREWORKS_PROVIDER,
-    model,
-    url: FIREWORKS_URL,
-    task,
-    job_id: facts.job_id,
-    started_at: new Date(started).toISOString(),
-    finished_at: new Date(finished).toISOString(),
-    latency_ms: finished - started,
-    request: { method: "POST", headers: { Authorization: `Bearer [${FIREWORKS_KEY_ENV}]`, "Content-Type": "application/json" }, body: JSON.parse(body) },
-    response: status ? { status, body: parsed } : null,
-    error,
-  });
+    const finished = now();
+    opts.onCall?.({
+      provider: FIREWORKS_PROVIDER,
+      model,
+      url: FIREWORKS_URL,
+      task,
+      job_id: facts.job_id,
+      started_at: new Date(started).toISOString(),
+      finished_at: new Date(finished).toISOString(),
+      latency_ms: finished - started,
+      request: { method: "POST", headers: { Authorization: `Bearer [${FIREWORKS_KEY_ENV}]`, "Content-Type": "application/json" }, body: JSON.parse(body) },
+      response: status ? { status, body: parsed } : null,
+      error,
+    });
 
-  const out = parsed as { model?: unknown; choices?: { message?: { content?: unknown }; finish_reason?: unknown }[]; usage?: { prompt_tokens?: unknown; completion_tokens?: unknown } } | null;
-  // Only the answer is kept: reasoning (a separate field, or a <think> block) is never stored as text.
-  const text = typeof out?.choices?.[0]?.message?.content === "string" ? answerText(out.choices[0].message.content as string) : "";
-  const finish = out?.choices?.[0]?.finish_reason;
-  const pt = typeof out?.usage?.prompt_tokens === "number" ? out.usage.prompt_tokens : null;
-  const ct = typeof out?.usage?.completion_tokens === "number" ? out.usage.completion_tokens : null;
-  // A call that reached the server is paid for even when its answer is unusable.
-  const cost = pt !== null && ct !== null ? fireworksCostUsd(pt, ct) : status ? estimateCallUsd(body, FIREWORKS_MAX_TOKENS) : 0;
-  if (cost > 0) opts.ledger.append({ at: new Date(finished).toISOString(), prediction_id: `fireworks:${facts.job_id}:${task}`, cost_usd: cost, estimated: true });
-  if (error) return fallback("fireworks_failed");
-  if (finish === "length") return fallback("truncated");
-  if (!text) return fallback("fireworks_failed");
-  if (!keepsDecision(task, text, facts.decision)) return fallback("decision_changed");
-  return {
-    ...base,
-    provider: FIREWORKS_PROVIDER,
-    model,
-    ...(typeof out?.model === "string" ? { response_model: out.model } : {}),
-    generated: true,
-    key_source: found.source,
-    request_sha256: sha256Hex(new TextEncoder().encode(body)),
-    ...(pt !== null && ct !== null ? { usage: { prompt_tokens: pt, completion_tokens: ct } } : {}),
-    cost_usd: cost,
-    cost_estimated: true,
-    text,
-  };
+    const out = parsed as { model?: unknown; choices?: { message?: { content?: unknown }; finish_reason?: unknown }[]; usage?: { prompt_tokens?: unknown; completion_tokens?: unknown } } | null;
+    // Only the answer is kept: reasoning (a separate field, or a <think> block) is never stored as text.
+    const text = typeof out?.choices?.[0]?.message?.content === "string" ? answerText(out.choices[0].message.content as string) : "";
+    const finish = out?.choices?.[0]?.finish_reason;
+    const pt = typeof out?.usage?.prompt_tokens === "number" ? out.usage.prompt_tokens : null;
+    const ct = typeof out?.usage?.completion_tokens === "number" ? out.usage.completion_tokens : null;
+    // A call that reached the server is paid for even when its answer is unusable.
+    const cost = pt !== null && ct !== null ? fireworksCostUsd(pt, ct) : status ? estimateCallUsd(body, FIREWORKS_MAX_TOKENS) : 0;
+    const id = `fireworks:${facts.job_id}:${task}${lang === "en" ? "" : `:${lang}`}${attempt > 1 ? `:attempt${attempt}` : ""}`;
+    if (cost > 0) opts.ledger.append({ at: new Date(finished).toISOString(), prediction_id: id, cost_usd: cost, estimated: true });
+    paid += cost;
+    if (error) return fallback("fireworks_failed");
+    if (finish === "length") return fallback("truncated");
+    if (!text) return fallback("fireworks_failed");
+    if (!keepsDecision(task, text, facts.decision)) return fallback("decision_changed");
+    if (task === "listing_copy" && !listingLongEnough(text)) {
+      if (attempt >= attempts) return fallback("too_short");
+      // The ledger must still allow the retry.
+      let total: number;
+      try {
+        total = opts.ledger.read().reduce((sum, e) => sum + e.cost_usd, 0);
+      } catch {
+        return fallback("spend_cap");
+      }
+      if (total + estimateCallUsd(body, FIREWORKS_MAX_TOKENS) > spendLimitUsd(FIREWORKS_LIMIT, opts.env) + 1e-9) return fallback("spend_cap");
+      continue;
+    }
+    return {
+      ...base,
+      provider: FIREWORKS_PROVIDER,
+      model,
+      ...(typeof out?.model === "string" ? { response_model: out.model } : {}),
+      generated: true,
+      key_source: found.source,
+      request_sha256: sha256Hex(new TextEncoder().encode(body)),
+      ...(pt !== null && ct !== null ? { usage: { prompt_tokens: pt, completion_tokens: ct } } : {}),
+      ...(attempt > 1 ? { attempts: attempt } : {}),
+      cost_usd: Math.round(paid * 1e6) / 1e6,
+      cost_estimated: true,
+      text,
+    };
+  }
+  return fallback("fireworks_failed");
 }

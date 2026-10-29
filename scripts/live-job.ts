@@ -36,7 +36,7 @@ import { runJob } from "../src/pipeline.ts";
 import { fileRenderer } from "../src/render.ts";
 import { providersFromEnv } from "../src/serve.ts";
 import { shopAfterJob } from "../src/shop.ts";
-import { META_RESERVE_USD, META_SPEND_CAP_USD, meteredFetch, metaLedger, spendSummary } from "../src/spend-meta.ts";
+import { BASETEN_LIMIT, META_LIMIT, accountLedger, meteredFetch, spendSummary, summaryLine } from "../src/spend-meta.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const args = process.argv.slice(2);
@@ -59,11 +59,12 @@ if (existsSync(join(jobsRoot, jobId))) {
 
 const logs: string[] = [];
 const samLogs: string[] = [];
-// CAP1: every Meta call (SAM on the Meta Model API, the verifier on Baseten) is capped and booked.
-const ledger = metaLedger(process.env);
+// CAP1b: SAM 3.1 on the Meta Model API books to the Meta ledger, the verifier on Baseten to its own.
+const metaLedger = accountLedger("meta", process.env);
+const basetenLedger = accountLedger("baseten", process.env);
 const providers = providersFromEnv(process.env, {
-  sam: { fetch: meteredFetch((url, init) => fetch(url, init), { kind: "sam", ledger }), onCall: (log) => samLogs.push(writeSamLog("evidence", log)) },
-  verifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "verifier", ledger }),
+  sam: { fetch: meteredFetch((url, init) => fetch(url, init), { kind: "sam", account: "meta", ledger: metaLedger, env: process.env }), onCall: (log) => samLogs.push(writeSamLog("evidence", log)) },
+  verifierFetch: meteredFetch((url, init) => fetch(url, init), { kind: "verifier", account: "baseten", ledger: basetenLedger, env: process.env }),
   onVerifierCall: (log) => logs.push(writeVerifierLog("evidence", log)),
   replicate: { fetch: (url, init) => fetch(url, init) },
 });
@@ -102,10 +103,8 @@ if (result.refused) {
 for (const r of result.renders) {
   console.log(`${r.render_id}: ${r.decision}${r.cited ? ` (${r.cited.rule}: ${r.cited.reason})` : ""}`);
 }
-if (ledger) {
-  const s = spendSummary(ledger, META_SPEND_CAP_USD, META_RESERVE_USD);
-  console.log(`Meta spend: ${s.spent_usd} USD in ${s.calls} call(s); cap ${s.cap_usd}, reserve ${s.reserve_usd}, ${s.available_usd} USD left before the reserve`);
-}
+if (metaLedger) console.log(summaryLine("Meta spend", spendSummary(metaLedger, META_LIMIT)));
+if (basetenLedger) console.log(summaryLine("Baseten spend", spendSummary(basetenLedger, BASETEN_LIMIT)));
 
 // N6: a job in data/jobs feeds the committed shop, so rebuild it here rather
 // than leave web/shop/catalog.json stale for the shop test in CI.

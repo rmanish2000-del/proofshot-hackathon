@@ -393,14 +393,19 @@ committed.
   is not served to this key (404, 3097a7b), so no text here is from Llama. An
   answer that drops, changes or softens the gate's decision word, or is cut
   off, is not used: the record holds the template text and says why.
-- Spend caps (CAP1, 29 Oct, enforced in code with a ledger entry per call,
-  ledgers in `%LOCALAPPDATA%\ProofShot`, `npm run ledger` prints them):
-  Fireworks 60 USD with 40 kept back (`src/fireworks-copy.ts`); Meta 80 USD
-  with 70 kept back, covering the Baseten verifier and SAM 3.1 calls
-  (`src/spend-meta.ts`; a call over the limit is refused before it is sent,
-  so the step fails closed); Replicate 5 USD. Prices: muse-spark-open 1.25 /
-  4.25 USD per million tokens in / out (Fireworks and Baseten pages); SAM 3.1
-  2.50 USD per 1000 images (secondary sources, not read on dev.meta.ai).
+- Spend caps (CAP1 / CAP1b, 29 Oct, enforced in code with a ledger entry per
+  call, one ledger per account in `%LOCALAPPDATA%\ProofShot`; `npm run ledger`
+  prints spent, batch left and reserve left). A batch stops at the cap; the
+  reserve above it is for the live judge demo and re-runs and is spent only
+  by a call made with `PROOFSHOT_USE_RESERVE=1`, never past cap + reserve.
+  Fireworks: 60 USD batch + 40 reserve (`src/fireworks-copy.ts`). Meta Model
+  API credit (`api.meta.ai`: SAM 3.1, Muse Spark): 80 USD batch + 70 reserve
+  (`src/spend-meta.ts`). Baseten (the muse-spark-open verifier, billed by
+  Baseten, not the Meta credit): its own ledger, 5 USD, no reserve, until a
+  figure is set. Replicate 5 USD. A call over its limit is refused before it is
+  sent, so the step fails closed. Prices: muse-spark-open 1.25 / 4.25 USD per
+  million tokens in / out (Fireworks and Baseten pages); SAM 3.1 2.50 USD per
+  1000 images (secondary sources, not read on dev.meta.ai).
 
 **Built with Muse Spark Open.** The verifier calls `meta-models/muse-spark-open-1026`
 on Baseten. Four real calls are logged under `evidence/` with the key redacted
