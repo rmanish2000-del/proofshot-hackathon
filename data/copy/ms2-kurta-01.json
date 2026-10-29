@@ -1,0 +1,73 @@
+{
+  "job_id": "ms2-kurta-01",
+  "records": [
+    {
+      "job_id": "ms2-kurta-01",
+      "task": "receipt_summary",
+      "lang": "en",
+      "receipt_head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "7ee965eb899260830ad37c595d344c5b650de00fc6809c0bf476e717136d6312",
+      "usage": {
+        "prompt_tokens": 457,
+        "completion_tokens": 3298
+      },
+      "cost_usd": 0.014588,
+      "cost_estimated": true,
+      "text": "RELEASE means the image can be published. All checks matched: colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture. No issues found."
+    },
+    {
+      "job_id": "ms2-kurta-01",
+      "task": "listing_copy",
+      "lang": "en",
+      "receipt_head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "061a73f1946d7504b3249c417daf9744b4aa3d1b68c3ea358b6c857af0d406f2",
+      "usage": {
+        "prompt_tokens": 376,
+        "completion_tokens": 2671
+      },
+      "cost_usd": 0.011822,
+      "cost_estimated": true,
+      "text": "This is a women's kurta in rust orange. It is long and falls below the knee as photographed."
+    },
+    {
+      "job_id": "ms2-kurta-01",
+      "task": "receipt_summary",
+      "lang": "hi",
+      "receipt_head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "a957b03e8ecaefed25970649e0c8e28dc86fa7a54685bffe218d7fd5b7363926",
+      "usage": {
+        "prompt_tokens": 491,
+        "completion_tokens": 2658
+      },
+      "cost_usd": 0.01191,
+      "cost_estimated": true,
+      "text": "निर्णय RELEASE है। इसका मतलब है कि तस्वीर प्रकाशित की जा सकती है। जाँच में रंग, प्रिंट, लोगो टेक्स्ट, कॉलर, आस्तीन की लंबाई, हेम, जेब की संख्या, बटन और कपड़े की बनावट सभी मिले। आपका दावा महिला कुर्ता, मुख्य रंग रस्ट/नारंगी, प्रिंट और कॉलर कफ बटन फोटो जैसे, लंबाई घुटने के नीचे, रंग प्रिंट नेकलाइन बिल्कुल फोटो जैसी सही पाई गई।"
+    },
+    {
+      "job_id": "ms2-kurta-01",
+      "task": "listing_copy",
+      "lang": "hi",
+      "receipt_head": "a592cc47404454612cbc263518b461a7fff07cec9470bbed354fbf5546dfe8e0",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "truncated",
+      "text": "विक्रेता का विवरण: Type: kurta (women's). Main colour: rust / orange. Length: long, below the knee (as photographed). तस्वीरों से जाँचा गया और मेल खाता है: colour, print, logo or text, collar, sleeve length, hem, pockets, buttons, fabric texture।"
+    }
+  ]
+}

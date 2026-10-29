@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-02-tryon-s02",
+  "started_at": "2026-10-29T07:04:36.375Z",
+  "finished_at": "2026-10-29T07:04:54.910Z",
+  "latency_ms": 18535,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nDecision: REFUSE\nReasons:\n- fidelity REFUSE: delta_e 20.799 above 20; hist 0.561 above 0.350; texture 0.688 below 0.800; area 0.210 below 0.400: the garment shrank in frame\n- hem: mismatch at 0.92 on a soft attribute\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: mismatch\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n- Length: long, below the knee (as photographed)"
+        }
+      ],
+      "max_tokens": 8192,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-56e3386b3ecd4341996a9c640e1191c7",
+      "object": "chat.completion",
+      "created": 1793257477,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REFUSE which means the image must not be published. The render failed fidelity checks as the garment shrank in frame and colour and texture scores were outside limits, and the hem did not match the photo.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published. Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe need to explain in at most 70 words. State decision word exactly as given (REFUSE) and what it means.\n\nWe must write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must include REFUSE once, in capitals. Must not include RELEASE or REVIEW anywhere. Also must not include REFUSE a second time. So we need to be careful: we can only write REFUSE once. The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\nSo we must not write RELEASE or REVIEW at all. And we must write REFUSE exactly once.\n\nWe need to describe reasons in plain words instead. The reasons include fidelity REFUSE: delta_e 20.799 above 20; hist 0.561 above 0.350; texture 0.688 below 0.800; area 0.210 below 0.400: the garment shrank in frame, and hem mismatch at 0.92 on a soft attribute.\n\nWe need to explain to seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe must not add colours? But we can mention facts given: Type: kurta (women's), Main colour: peach, etc. But instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So we cannot invent new colours. But we can mention peach if needed? Probably allowed because it's in facts. But we should be careful not to add extra.\n\nWe need to write short, plain English for Indian clothing seller.\n\nWe need to state decision word exactly as given (REFUSE) and what it means: REFUSE = the image must not be published.\n\nSo we need to include phrase \"the image must not be published\" or similar.\n\nWe must not use markdown, emoji, headings.\n\nWe must keep under 70 words.\n\nWe must describe reasons: fidelity issue: garment shrank in frame, delta_e, hist, texture, area thresholds failed. And hem mismatch.\n\nBut we must not use the words RELEASE, REVIEW, REFUSE again. So when describing fidelity REFUSE, we should say fidelity check failed, or did not pass, etc. Not use the word REFUSE again.\n\nWe must ensure we only have one instance of REFUSE. So we need to count.\n\nWe need to write plain English.\n\nPotential text: \"Decision is REFUSE, which means the image must not be published. The render failed fidelity checks as the garment shrank in frame and colour and texture scores were outside limits, and the hem did not match the photo.\"\n\nCheck word count: Let's count words.\n\nDecision(1) is2 REFUSE,3 which4 means5 the6 image7 must8 not9 be10 published.11 The12 render13 failed14 fidelity15 checks16 as17 the18 garment19 shrank20 in21 frame22 and23 colour24 and25 texture26 scores27 were28 outside29 limits,30 and31 the32 hem33 did34 not35 match36 the37 photo38.\n\nThat's 38 words, under 70. Contains REFUSE once. Does not contain RELEASE or REVIEW. Good.\n\nBut we need to ensure we didn't add claims not in facts. We said colour and texture scores were outside limits - that's in facts: delta_e 20.799 above 20; hist 0.561 above 0.350; texture 0.688 below 0.800; area 0.210 below 0.400. So that's accurate. We said hem did not match photo - that's in verifier findings: hem mismatch. Good.\n\nWe should not add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe used only facts given. We didn't add extra.\n\nWe need to ensure we state decision word exactly as given (REFUSE) and what it means. We did.\n\nWe must not use markdown, emoji, headings. We didn't.\n\nWe need to ensure we don't accidentally include RELEASE or REVIEW inside other words? The instruction says no other of RELEASE, REVIEW or REFUSE anywhere. So we must not have those substrings? Probably means exact words. But to be safe, avoid words containing those. Our text doesn't contain them.\n\nWe must ensure we don't write \"REFUSE\" twice. We have it once.\n\nWe should also ensure we don't write \"release\" in lowercase? The instruction says write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere. Likely case-insensitive. So we must not write release, review, refuse in any case. We didn't.\n\nWe should provide final answer.\n\nWe need to be careful about plain English for Indian clothing seller. Our text is okay.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't add.\n\nWe should ensure we don't mention peach? Not needed.\n\nWe should ensure we don't add care advice.\n\nWe should output just the explanation.\n\nWe must keep at most 70 words. We are at 38.\n\nWe should ensure we don't accidentally include the word \"REFUSE\" in the explanation of meaning? We already used it once. The meaning phrase is \"the image must not be published.\" That's correct per instruction.\n\nWe should not include extra decision words.\n\nWe should deliver final answer.\n\nPotential improvement: mention seller's claims? The seller's claims include colour, print and neckline exactly as photographed, length long below knee. But we don't need to mention all. But we should maybe reference that fidelity failed.\n\nWe must not add claim not in facts. So we must not say something like \"fabric is cotton\" etc.\n\nWe are good.\n\nWe should ensure we don't use markdown. No bullet points.\n\nWe should output plain text.\n\nWe need to ensure we don't accidentally write \"REVIEW\" or \"RELEASE\" when describing meaning. The instruction says state decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. So for REFUSE we must say the image must not be published. We did.\n\nWe should not mention the other meanings.\n\nWe should ensure we don't write \"RELEASE\" or \"REVIEW\" when explaining. We didn't.\n\nWe should final answer.\n\nWe must ensure we don't add extra punctuation that creates markdown. Simple sentence is fine.\n\nWe should not include heading.\n\nWe should output final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 522,
+        "total_tokens": 2095,
+        "completion_tokens": 1573,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1520
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1520
+        }
+      }
+    }
+  },
+  "error": null
+}
