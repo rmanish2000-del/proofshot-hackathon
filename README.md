@@ -486,7 +486,7 @@ The renderer takes an injected transport.
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->332<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->333<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | CI green | on 2859cde: [run 40654848955](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40654848955); on 00fe261: [run 40641160204](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40641160204) (run ids given by Grok, 28 Oct 13:50 IST) | earlier: [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
 | Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
