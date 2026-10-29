@@ -181,11 +181,18 @@ export function estimateCallUsd(body: string, maxTokens: number): number {
   return fireworksCostUsd(Math.ceil(body.length / 3), maxTokens);
 }
 
-/** The facts from a parsed receipt and the seller's note. Bounding boxes, scores and notes from the verifier are left out. */
-export function copyFacts(jobId: string, entries: readonly ReceiptEntry[]): CopyFacts {
+/**
+ * The facts from a parsed receipt and the seller's note. Bounding boxes, scores and notes from the verifier are left out.
+ * `noteFile` is the garment's data/garments/<id>/note.txt: a preview job's receipt carries only Type and
+ * Main colour (src/shop.ts garmentNoteFrom), so its claims come from the full note when it is given
+ * (shirt-zebra, 29 Oct: the preview listing dropped the zebra print). The receipt is not changed.
+ */
+export function copyFacts(jobId: string, entries: readonly ReceiptEntry[], noteFile?: string): CopyFacts {
   const head = entries.at(-1)?.hash ?? "";
   const job = entries.find((e) => e.kind === "job")?.payload as { garment_note?: string; provenance?: string } | undefined;
   const aside = noteAside(job?.garment_note ?? "");
+  const preview = job?.provenance === "fixture" && /^preview:/i.test(aside ?? "");
+  const fileClaims = preview && noteFile !== undefined ? noteFileClaims(noteFile) : [];
   const gates = entries.filter((e) => e.kind === "gate");
   const gate = gates.at(-1)?.payload as { decision?: string; reasons?: readonly unknown[] } | undefined;
   const verifier = entries.filter((e) => e.kind === "verifier").at(-1)?.payload as { findings?: readonly { attribute?: unknown; verdict?: unknown }[] } | undefined;
@@ -197,7 +204,7 @@ export function copyFacts(jobId: string, entries: readonly ReceiptEntry[]): Copy
     findings: (verifier?.findings ?? [])
       .filter((f) => typeof f.attribute === "string" && typeof f.verdict === "string")
       .map((f) => ({ attribute: f.attribute as string, verdict: f.verdict as string })),
-    claims: noteClaims(job?.garment_note ?? ""),
+    claims: fileClaims.length > 0 ? fileClaims : noteClaims(job?.garment_note ?? ""),
     ...(typeof job?.provenance === "string" ? { provenance: job.provenance } : {}),
     ...(aside ? { aside } : {}),
   };
@@ -245,6 +252,20 @@ export function noteClaims(note: string): { field: string; value: string }[] {
     if (i < 1) continue;
     const field = part.slice(0, i).trim();
     const value = part.slice(i + 1).trim();
+    if (!value || /^not recorded$/i.test(value)) continue;
+    out.push({ field, value });
+  }
+  return out;
+}
+
+/** `Field: value` lines of a note.txt (one per line), minus empty and "not recorded" values; the header and the closing "(Written by ...)" line have no field. */
+export function noteFileClaims(text: string): { field: string; value: string }[] {
+  const out: { field: string; value: string }[] = [];
+  for (const line of text.split(/\r?\n/)) {
+    const m = /^([A-Z][^:;()]*(?:\([^()]*\))?[^:;()]*):[^\S\r\n]*(.*?)\s*$/.exec(line);
+    if (!m) continue;
+    const field = m[1]!.trim();
+    const value = m[2]!;
     if (!value || /^not recorded$/i.test(value)) continue;
     out.push({ field, value });
   }

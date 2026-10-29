@@ -81,7 +81,9 @@ for (const job of jobs) {
     process.exitCode = 1;
     continue;
   }
-  const facts = copyFacts(job, entries);
+  // A preview job's claims come from its garment's full note.txt (copyFacts uses it for previews only).
+  const note = join(ROOT, "data", "garments", job, "note.txt");
+  const facts = copyFacts(job, entries, existsSync(note) ? readFileSync(note, "utf8") : undefined);
   const file = join(ROOT, "data", "copy", `${job}.json`);
   const before: CopyRecord[] = existsSync(file) ? (JSON.parse(readFileSync(file, "utf8")) as { records: CopyRecord[] }).records : [];
   const records: CopyRecord[] = [];
