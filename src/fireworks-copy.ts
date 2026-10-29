@@ -1,9 +1,17 @@
-// FW1 (Grok 29 Oct 08:24 IST on proofshot #23): a Meta Llama model on
-// Fireworks (OpenAI-compatible chat completions) writes two pieces of plain
+// FW1 / FW1b (Grok 29 Oct 08:24 and 10:21 IST on proofshot #23): a Meta model
+// on Fireworks (OpenAI-compatible chat completions) writes two pieces of plain
 // text from facts the pipeline already recorded: a receipt summary a seller
 // can read, and listing copy from the seller's own claims. It never decides
 // anything: the gate decision is read from the receipt and quoted, and the
-// text is stored beside the receipt (data/copy/), never inside the chain.
+// text is stored beside the receipt (data/copy/), never inside the chain. An
+// answer that drops, changes or softens the decision word is not used: the
+// record falls back to the template with fallback_reason decision_changed.
+//
+// The model is Meta's muse-spark-open, the only Meta model Fireworks lists for
+// this key (npm run models:fireworks, 29 Oct). It is not Llama. FW1 first tried
+// Llama 3.3 70B; Fireworks answered 404 to all 6 calls (proofshot-hackathon
+// 3097a7b, evidence/fireworks-2026-10-29T04-39-*.json), so that id is kept only
+// as FIREWORKS_LLAMA_MODEL, an override that does not work for this key.
 //
 // The key is FIREWORKS_API_KEY. It is read from the process env first and, on
 // Windows, from the User env scope (HKCU\Environment) when the process did not
@@ -22,18 +30,27 @@ import { sha256Hex } from "./util.ts";
 
 export const FIREWORKS_PROVIDER = "fireworks";
 export const FIREWORKS_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
-/** Meta Llama 3.3 70B Instruct as served by Fireworks; FIREWORKS_MODEL overrides it. */
-export const FIREWORKS_MODEL = "accounts/fireworks/models/llama-v3p3-70b-instruct";
+/** Meta muse-spark-open, the id `npm run models:fireworks` printed on 29 Oct; FIREWORKS_MODEL overrides it. */
+export const FIREWORKS_MODEL = "accounts/fireworks/models/muse-spark-open";
+/** Meta Llama 3.3 70B Instruct: Fireworks answers 404 "Model not found" for this key (3097a7b). Documented, not used. */
+export const FIREWORKS_LLAMA_MODEL = "accounts/fireworks/models/llama-v3p3-70b-instruct";
 export const FIREWORKS_KEY_ENV = "FIREWORKS_API_KEY";
-/** USD per million tokens, input and output, from the Fireworks price page for 16B+ models (used when the API reports no cost). */
-export const FIREWORKS_PRICE_PER_MTOK = Object.freeze({ input: 0.9, output: 0.9 });
+/** USD per million tokens for muse-spark-open, serverless, from fireworks.ai/models/fireworks/muse-spark-open (read 29 Oct). Output includes reasoning tokens. */
+export const FIREWORKS_PRICE_PER_MTOK = Object.freeze({ input: 1.25, output: 4.25 });
 export const FIREWORKS_SPEND_CAP_USD = 5;
-export const FIREWORKS_MAX_TOKENS = 400;
-export const FIREWORKS_TIMEOUT_MS = 60_000;
+/** A reasoning model spends output tokens thinking before it answers: 400 cut most answers off, and 4096 cut the live-kurta-01-mismatch summary (FW1b, 29 Oct). */
+export const FIREWORKS_MAX_TOKENS = 8192;
+/** muse-spark-open reasons for 30 s or more before answering (FW1b run, 29 Oct); one listing call passed 60 s. */
+export const FIREWORKS_TIMEOUT_MS = 180_000;
 export const TEMPLATE_PROVIDER = "template";
 
 export type CopyTask = "receipt_summary" | "listing_copy";
-export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed";
+/**
+ * no_api_token: no key; spend_cap: the ledger would pass the cap, or cannot be read;
+ * fireworks_failed: an error or empty answer; truncated: the answer stopped at max_tokens;
+ * decision_changed: the answer drops, changes or softens the gate decision.
+ */
+export type CopyFallbackReason = "no_api_token" | "spend_cap" | "fireworks_failed" | "truncated" | "decision_changed";
 
 export type FireworksFetch = (
   url: string,
@@ -210,7 +227,8 @@ export function copyMessages(task: CopyTask, f: CopyFacts): ChatMessage[] {
     {
       role: "user",
       content:
-        `Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\n` +
+        `Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published. ` +
+        `Write that one decision word in capitals and no other of RELEASE, REVIEW or REFUSE anywhere, even when a reason contains one: describe such a reason in plain words instead.\n\n` +
         `Decision: ${f.decision ?? "none recorded"}\nReasons:\n${reasons}\nVerifier findings (attribute: verdict):\n${findings}\nSeller's claims:\n${claims}`,
     },
   ];
@@ -248,7 +266,30 @@ export function fireworksLedger(env: Env): Ledger | null {
   return path ? fileLedger(path) : null;
 }
 
-/** One text for one task, by Llama on Fireworks when it can run, by the template otherwise. */
+const DECISIONS = ["RELEASE", "REVIEW", "REFUSE"] as const;
+/** Wording that says a held image can go out anyway. */
+const SOFTENED = /\b(?:can|may|could|will|should) (?:now )?be (?:published|listed|sold|shown)\b|\bready to (?:publish|list|sell)\b|\b(?:is|was) approved\b/i;
+
+/**
+ * True when a model's text keeps the gate's word: a receipt summary states the
+ * decision in capitals, names no other decision in capitals, and for REVIEW or
+ * REFUSE does not say the image can be published; listing copy names no decision.
+ * Anything else falls back to the template, which quotes the receipt.
+ */
+export function keepsDecision(task: CopyTask, text: string, decision: string | null): boolean {
+  const named = DECISIONS.filter((d) => new RegExp(`\\b${d}\\b`).test(text));
+  if (task === "listing_copy") return named.length === 0;
+  if (decision === null || !(DECISIONS as readonly string[]).includes(decision)) return named.length === 0;
+  if (named.length !== 1 || named[0] !== decision) return false;
+  return decision === "RELEASE" || !SOFTENED.test(text);
+}
+
+/** The answer text without a leading <think>...</think> block some reasoning models put in content. */
+export function answerText(content: string): string {
+  return content.replace(/^\s*<think>[\s\S]*?<\/think>/i, "").trim();
+}
+
+/** One text for one task, by the Fireworks model when it can run, by the template otherwise. */
 export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: FireworksCopyOptions): Promise<CopyRecord> {
   const base = { job_id: facts.job_id, task, receipt_head: facts.receipt_head };
   const fallback = (reason: CopyFallbackReason): CopyRecord => ({
@@ -310,14 +351,19 @@ export async function writeCopy(task: CopyTask, facts: CopyFacts, opts: Firework
     error,
   });
 
-  const out = parsed as { model?: unknown; choices?: { message?: { content?: unknown } }[]; usage?: { prompt_tokens?: unknown; completion_tokens?: unknown } } | null;
-  const text = typeof out?.choices?.[0]?.message?.content === "string" ? (out.choices[0].message.content as string).trim() : "";
+  const out = parsed as { model?: unknown; choices?: { message?: { content?: unknown }; finish_reason?: unknown }[]; usage?: { prompt_tokens?: unknown; completion_tokens?: unknown } } | null;
+  // Only the answer is kept: reasoning (a separate field, or a <think> block) is never stored as text.
+  const text = typeof out?.choices?.[0]?.message?.content === "string" ? answerText(out.choices[0].message.content as string) : "";
+  const finish = out?.choices?.[0]?.finish_reason;
   const pt = typeof out?.usage?.prompt_tokens === "number" ? out.usage.prompt_tokens : null;
   const ct = typeof out?.usage?.completion_tokens === "number" ? out.usage.completion_tokens : null;
   // A call that reached the server is paid for even when its answer is unusable.
   const cost = pt !== null && ct !== null ? fireworksCostUsd(pt, ct) : status ? estimateCallUsd(body, FIREWORKS_MAX_TOKENS) : 0;
   if (cost > 0) opts.ledger.append({ at: new Date(finished).toISOString(), prediction_id: `fireworks:${facts.job_id}:${task}`, cost_usd: cost, estimated: true });
-  if (error || !text) return fallback("fireworks_failed");
+  if (error) return fallback("fireworks_failed");
+  if (finish === "length") return fallback("truncated");
+  if (!text) return fallback("fireworks_failed");
+  if (!keepsDecision(task, text, facts.decision)) return fallback("decision_changed");
   return {
     ...base,
     provider: FIREWORKS_PROVIDER,

@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "listing_copy",
+  "job_id": "live-kurta-01-mismatch",
+  "started_at": "2026-10-29T05:06:48.167Z",
+  "finished_at": "2026-10-29T05:07:08.017Z",
+  "latency_ms": 19850,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Write a product listing of at most 60 words from the seller's claims below. Where a claim says \"as in the photos\", say nothing about that detail.\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 4096,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-0c6cf61e52cc4b68be60fb1487581c14",
+      "object": "chat.completion",
+      "created": 1793250408,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Women's kurta in rust orange.",
+            "reasoning_content": "We need to write product listing at most 60 words from seller's claims. Where claim says \"as in the photos\", say nothing about that detail.\n\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed\n\nWe must use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts.\n\nWe must not mention details where claim says \"as in the photos\". So we cannot mention print or motif, collar and cuffs, buttons. Also \"Anything the render must not change: colour, print and neckline exactly as photographed\" - this is instruction for render, not for product listing? Probably we should not mention? But we can mention colour, print and neckline? The gate decision: Do not change or soften gate decision. No markdown etc.\n\nWe need to produce product listing at most 60 words.\n\nWe have Type: kurta (women's) and Main colour: rust / orange. That's it. We cannot add other details.\n\nSo listing: \"Women's kurta in rust / orange.\" That's very short. Must be at most 60 words. Should we include anything else? We cannot mention print, collar, cuffs, buttons. We can mention colour and type.\n\nWe must not add colours, fabrics, sizes, prices, care advice.\n\nWe should write plain English.\n\nPotentially we need to avoid hallucinating. So just: Women's kurta in rust orange.\n\nWe must ensure we don't say \"as in the photos\" details.\n\nWe should not mention print, neckline? But neckline is mentioned in \"Anything the render must not change: colour, print and neckline exactly as photographed\" - Does that count as a claim to include? Probably not, it's instruction for render. We should not mention neckline? The instruction says where claim says \"as in the photos\", say nothing about that detail. The last claim says colour, print and neckline exactly as photographed - that is also \"as photographed\" so we should say nothing about print and neckline? But colour is given as rust/orange, so we can say colour.\n\nWe need to be careful: The seller's claims include \"Anything the render must not change: colour, print and neckline exactly as photographed\" - This is not a product attribute to list, it's a constraint. We should not include it in listing? Or we should not soften gate decision. Probably we should not mention it.\n\nWe must write product listing of at most 60 words from seller's claims. So we can only use Type and Main colour.\n\nWe should not add extra adjectives.\n\nWe need to ensure we don't add fabric like cotton, etc.\n\nWe should produce something like: Women's kurta in rust orange.\n\nThat's 5 words. Under 60 words.\n\nWe must not use markdown, emoji, headings.\n\nWe should use plain English.\n\nWe must not add colours beyond rust/orange.\n\nWe should not mention print.\n\nWe should not mention collar, cuffs, buttons.\n\nWe should ensure we don't hallucinate.\n\nWe should also not mention sizes.\n\nWe should keep it simple.\n\nPotential nuance: The user wants us to not mention details where claim says \"as in the photos\". So we must omit those.\n\nWe should not mention \"print or motif\", \"collar and cuffs\", \"buttons\".\n\nWe should also not mention neckline? The last claim says neckline exactly as photographed, so we should not describe neckline.\n\nWe should just mention type and colour.\n\nWe should ensure we don't add \"beautiful\", \"elegant\" etc? Those are not facts but are they allowed? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So adding subjective adjectives like \"beautiful\" might be considered adding claim not in facts. Better to avoid.\n\nWe should keep it factual.\n\nWe should write: Women's kurta in rust orange.\n\nWe need to ensure we don't exceed 60 words.\n\nWe should not add extra sentences.\n\nWe should not mention \"as in the photos\".\n\nWe should not add \"exactly as photographed\".\n\nWe should be careful to not add \"rust / orange\" maybe we should write \"rust orange\" or \"rust/orange\". The claim says rust / orange. We can say rust orange.\n\nWe should not add any other colour.\n\nWe should not mention fabric.\n\nWe should produce final answer.\n\nWe must ensure we don't use markdown. So no bold, italics, bullet points, headings.\n\nWe should just output plain text.\n\nWe should not add \"Product listing:\" heading. That would be heading. So just the listing itself.\n\nWe should ensure we don't add extra explanation.\n\nWe should output one sentence.\n\nWe should ensure we don't violate policy.\n\nWe should not add \"100% cotton\" etc.\n\nWe should comply.\n\nWe should also consider that the user might be testing for hallucination. We must not describe print, collar, cuffs, buttons.\n\nWe should not mention neckline.\n\nWe should just mention kurta women's and rust orange.\n\nWe should ensure we don't add \"long\", \"short\", \"knee-length\" etc.\n\nWe should keep it minimal.\n\nWe should output: Women's kurta in rust orange.\n\nWe should ensure we don't add period? Period is fine.\n\nWe should not add extra words like \"Available\" etc.\n\nWe should keep it under 60 words.\n\nWe should do that.\n\nWe must not change or soften gate decision. What is gate decision? Probably the decision to not mention certain details. We must not soften it.\n\nWe should not add disclaimer.\n\nWe should just output listing.\n\nWe should ensure we don't use markdown.\n\nWe should not use emoji.\n\nWe should not use headings.\n\nWe should output plain English.\n\nWe should do that.\n\nWe should consider if we need to mention \"kurta (women's)\" exactly. We can say \"Women's kurta\".\n\nWe should not add \"Type: kurta\".\n\nWe should write natural listing.\n\nWe should ensure we don't add \"Main colour: rust / orange\" as label. Just describe.\n\nWe should write: Women's kurta in rust orange.\n\nThat's good.\n\nWe should not add \"colour\" word? We can say \"in rust orange colour\" but that's okay. But better to keep simple.\n\nWe should not add \"print\" etc.\n\nWe should output final answer.\n\nWe should ensure we don't exceed 60 words. We are at 5 words.\n\nWe should not add any other sentence.\n\nWe should comply with instruction to write short, plain English for Indian clothing seller.\n\nWe should do that.\n\nWe should not add \"for women\" extra.\n\nWe should just output.\n\nWe should ensure we don't hallucinate.\n\nWe should proceed to final.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 315,
+        "total_tokens": 1834,
+        "completion_tokens": 1519,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1501
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1501
+        }
+      }
+    }
+  },
+  "error": null
+}

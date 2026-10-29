@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-02-composite-v2",
+  "started_at": "2026-10-29T05:05:03.613Z",
+  "finished_at": "2026-10-29T05:05:33.697Z",
+  "latency_ms": 30084,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\nDecision: REVIEW\nReasons:\n- CompositeQualityReview: over- or under-exposed photo\nVerifier findings (attribute: verdict):\n- none recorded\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: peach\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 4096,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-143ecdfbb38740daae2838bef7cabeee",
+      "object": "chat.completion",
+      "created": 1793250304,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision is REVIEW which means a person must look first. Your image was flagged for over- or under-exposed photo. No verifier findings were recorded. You stated type is kurta women's, main colour peach, and that colour, print and neckline must stay exactly as photographed. Collar, cuffs, buttons and print are as in photos.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = image can be published, REVIEW = person must look first, REFUSE = image must not be published.\n\nDecision: REVIEW\nReasons: CompositeQualityReview: over- or under-exposed photo\nVerifier findings: none recorded\nSeller's claims: Type: kurta (women's), Main colour: peach, Print or motif: as in photos; not recorded in words, Collar and cuffs: as in photos, Buttons: as in photos, Anything render must not change: colour, print and neckline exactly as photographed\n\nWe must write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to explain in at most 70 words. Must state decision word exactly as given: REVIEW and what it means: a person must look first.\n\nWe must not add colours? But we can mention seller's claims? The instruction: Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in facts. So we can mention peach because it's given. But we must not add other colours.\n\nWe need to be careful: Verifier findings: none recorded. So we should not invent verifier findings.\n\nReasons: over- or under-exposed photo.\n\nWe need to explain to seller.\n\nWe must not add markdown, no emoji, no headings.\n\nWe need to keep under 70 words.\n\nWe need to state decision word exactly as given: REVIEW\n\nWe need to explain what it means: a person must look first.\n\nWe should mention that image flagged for over- or under-exposed photo.\n\nWe should also mention seller's claims? Possibly need to mention that colour, print and neckline must not change? The seller's claims include anything render must not change: colour, print and neckline exactly as photographed. Should we mention that? Probably relevant.\n\nWe must use plain English.\n\nWe must not soften gate decision. So we must be clear that REVIEW means person must look first, not can be published.\n\nWe must not add care advice.\n\nWe need to count words. At most 70 words.\n\nLet's draft:\n\nDecision is REVIEW which means a person must look first. Your image was flagged for over- or under-exposed photo. It cannot be published automatically. No verifier findings were recorded. You stated type is kurta women's, main colour peach, and that colour, print and neckline must stay exactly as photographed.\n\nCount words:\n\nDecision(1) is2 REVIEW3 which4 means5 a6 person7 must8 look9 first.10 Your11 image12 was13 flagged14 for15 over-16 or17 under-exposed18 photo.19 It20 cannot21 be22 published23 automatically.24 No25 verifier26 findings27 were28 recorded.29 You30 stated31 type32 is33 kurta34 women's,35 main36 colour37 peach,38 and39 that40 colour,41 print42 and43 neckline44 must45 stay46 exactly47 as48 photographed49.\n\n49 words, under 70. Good.\n\nWe need to ensure we didn't add anything not in facts. We said \"It cannot be published automatically.\" Is that allowed? The meaning of REVIEW is a person must look first. Saying it cannot be published automatically is interpretation but probably okay, but to be safe, we should stick to exact definition: REVIEW = a person must look first. Adding \"cannot be published automatically\" might be considered softening or adding? But it's essentially same. Safer to just say what it means as given.\n\nWe should ensure we state decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\nSo we must include that phrase.\n\nWe did.\n\nWe should not add markdown.\n\nWe should not add headings.\n\nWe should ensure plain English.\n\nWe must not add colours beyond peach. We didn't.\n\nWe must not add fabrics, sizes, prices, care advice. We didn't.\n\nWe must not change or soften gate decision. We didn't.\n\nWe should ensure we don't say RELEASE or REFUSE incorrectly.\n\nWe should ensure we mention CompositeQualityReview reason.\n\nWe did: over- or under-exposed photo.\n\nWe should ensure we don't add extra reasons.\n\nWe should ensure we mention verifier findings none recorded. We did.\n\nWe should ensure we mention seller's claims accurately. We did: Type kurta women's, main colour peach, print or motif as in photos not recorded in words, collar and cuffs as in photos, buttons as in photos, anything render must not change colour print neckline exactly as photographed. We summarized but we omitted some details: print or motif as in photos not recorded in words, collar and cuffs as in photos, buttons as in photos. Should we include those? The instruction says use only facts given. Do not add ... We can include them but not required to include all? But to be thorough, we might want to include them. However word limit 70 words. We have room to add more but must stay under 70.\n\nWe currently have 49 words, we could add more details but not necessary. The seller's claims include those, but we summarized partially. Is it okay to omit some? The instruction says \"Use only the facts given.\" It doesn't say you must include all facts. But better to include relevant ones.\n\nWe should ensure we don't misrepresent. We said \"You stated type is kurta women's, main colour peach\" That's accurate.\n\nWe said \"colour, print and neckline must stay exactly as photographed.\" That's accurate per \"Anything the render must not change: colour, print and neckline exactly as photographed\"\n\nWe omitted collar and cuffs as in photos, buttons as in photos, print or motif as in photos not recorded in words. Could add but not required. Might be better to include to show we considered seller's claims.\n\nBut we have limited words. We could add a sentence: Collar, cuffs, buttons and print are as in photos.\n\nLet's see if we can add without exceeding 70.\n\nAdd: Collar, cuffs, buttons and print are as in photos.\n\nCount words: Collar(1), cuffs,(2) buttons3 and4 print5 are6 as7 in8 photos9. That's 9 words. Adding to 49 gives 58 words, still under 70.\n\nLet's revise final text to include that.\n\nNew draft:\n\nDecision is REVIEW which means a person must look first. Your image was flagged for over- or under-exposed photo. No verifier findings were recorded. You stated type is kurta women's, main colour peach, and that colour, print and neckline must stay exactly as photographed. Collar, cuffs, buttons and print are as in photos.\n\nCount again:\n\nDecision1 is2 REVIEW3 which4 means5 a6 person7 must8 look9 first.10 Your11 image12 was13 flagged14 for15 over-16 or17 under-exposed18 photo.19 No20 verifier21 findings22 were23 recorded.24 You25 stated26 type27 is28 kurta29 women's,30 main31 colour32 peach,33 and34 that35 colour,36 print37 and38 neckline39 must40 stay41 exactly42 as43 photographed.44 Collar,45 cuffs,46 buttons47 and48 print49 are50 as51 in52 photos53.\n\n53 words, under 70. Good.\n\nWe must ensure no markdown, no emoji, no headings. Just plain text.\n\nWe should not add extra punctuation that could be considered markdown? No.\n\nWe should ensure we don't use headings like \"Decision:\"? That might be considered heading? The instruction says no headings. Probably means no markdown headings like # or ##. Using \"Decision is...\" is okay. But to be safe, avoid colon heading style? The instruction says no markdown, no emoji, no headings. So we should not use markdown headings. Plain sentence is fine.\n\nWe should ensure we state decision word exactly as given: REVIEW in uppercase. We did.\n\nWe should ensure we explain what it means exactly as given: a person must look first. We did.\n\nWe should ensure we don't soften: We didn't say it will be released.\n\nWe should ensure we don't add colours, fabrics, sizes, prices, care advice. We didn't.\n\nWe should ensure we use only facts given. We did.\n\nWe should ensure we write short, plain English for Indian clothing seller. We did.\n\nWe should ensure at most 70 words. We are at 53.\n\nWe should output final answer.\n\nPotential nuance: The seller's claims: Print or motif (what, where, size): as in the photos; not recorded in words. So saying \"print are as in photos\" is accurate.\n\nCollar and cuffs: as in the photos - we said collar, cuffs ... are as in photos. Good.\n\nButtons: as in the photos - we included.\n\nAnything the render must not change: colour, print and neckline exactly as photographed - we included.\n\nWe should ensure we don't add claim about fabric etc.\n\nWe should ensure we don't add care advice.\n\nWe should ensure we don't change gate decision.\n\nWe should ensure we don't add markdown.\n\nWe should output final text as one paragraph? Probably.\n\nWe should not add extra explanation beyond 70 words.\n\nWe should ensure we don't use bullet points (markdown). We didn't.\n\nWe should ensure we don't use bold or italics.\n\nWe should ensure we don't use emoji.\n\nWe should ensure we don't use headings.\n\nWe should output final answer.\n\nWe should consider if we need to mention CompositeQualityReview name? We mentioned reason: over- or under-exposed photo. That's sufficient. Could also mention CompositeQualityReview but not required. The reasons include CompositeQualityReview: over- or under-exposed photo. We mentioned the reason.\n\nWe should ensure we don't add extra interpretation like \"image quality issue\". We said flagged for over- or under-exposed photo. That's accurate.\n\nWe should ensure we don't add \"please fix\" advice? That might be considered care advice? Probably not allowed to add advice not in facts. So we should not tell them to retake photo with better lighting, as that's advice not in facts. So we should not add that.\n\nWe should keep as is.\n\nWe should ensure we don't add \"thank you\" etc? That's okay but not needed. Keep plain.\n\nWe should output final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 370,
+        "total_tokens": 2651,
+        "completion_tokens": 2281,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2201
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 2201
+        }
+      }
+    }
+  },
+  "error": null
+}

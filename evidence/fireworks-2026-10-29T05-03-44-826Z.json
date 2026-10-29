@@ -1,0 +1,68 @@
+{
+  "provider": "fireworks",
+  "model": "accounts/fireworks/models/muse-spark-open",
+  "url": "https://api.fireworks.ai/inference/v1/chat/completions",
+  "task": "receipt_summary",
+  "job_id": "live-kurta-01-composite-r2",
+  "started_at": "2026-10-29T05:03:44.826Z",
+  "finished_at": "2026-10-29T05:04:03.168Z",
+  "latency_ms": 18342,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer [FIREWORKS_API_KEY]",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You write short, plain English for an Indian clothing seller. Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. Do not change or soften the gate decision. No markdown, no emoji, no headings."
+        },
+        {
+          "role": "user",
+          "content": "Explain this check result to the seller in at most 70 words. State the decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\nDecision: RELEASE\nReasons:\n- none\nVerifier findings (attribute: verdict):\n- color: match\n- print_pattern: match\n- logo_text: match\n- collar: match\n- sleeve_length: match\n- hem: match\n- pocket_count: match\n- buttons: match\n- fabric_texture: match\nSeller's claims:\n- Type: kurta (women's)\n- Main colour: rust / orange\n- Print or motif (what, where, size): as in the photos; not recorded in words\n- Collar and cuffs: as in the photos\n- Buttons: as in the photos\n- Anything the render must not change: colour, print and neckline exactly as photographed"
+        }
+      ],
+      "max_tokens": 4096,
+      "temperature": 0
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": "chatcmpl-fcfac21b53654046b66b66b53de298ca",
+      "object": "chat.completion",
+      "created": 1793250226,
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Decision: RELEASE. This means the image can be published. The verifier checked color, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture and all were match. No reasons were given.",
+            "reasoning_content": "We need to explain check result to seller in at most 70 words. State decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means: RELEASE = the image can be published, REVIEW = a person must look first, REFUSE = the image must not be published.\n\nDecision: RELEASE\nReasons: none\nVerifier findings: all match\nSeller's claims: Type kurta women's, main colour rust/orange, print as in photos not recorded in words, collar and cuffs as in photos, buttons as in photos, anything render must not change: colour, print and neckline exactly as photographed\n\nWe must write short, plain English for Indian clothing seller. Use only facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim not in facts. Do not change or soften gate decision. No markdown, no emoji, no headings.\n\nWe need to state decision word exactly as given RELEASE and what it means: RELEASE = the image can be published.\n\nWe must not add colours, fabrics, sizes, prices, care advice or any claim not in facts. So we cannot invent. We can mention seller's claims? We should explain check result. Use only facts given. So we can say verifier found color match, print_pattern match, etc. But we must not add extra.\n\nWe need at most 70 words. Plain English.\n\nWe must not add colours, fabrics, sizes, prices, care advice. But seller's claims include colour rust/orange. Can we mention that? That's in facts. So we can mention.\n\nWe must not add colours not in facts. So we should not add new colours.\n\nWe need to be careful: Do not add claim not in facts. So we should stick to verifier findings.\n\nWe need to explain decision RELEASE means image can be published.\n\nWe should mention that all attributes matched? The verifier findings: color match, print_pattern match, logo_text match, collar match, sleeve_length match, hem match, pocket_count match, buttons match, fabric_texture match.\n\nWe can summarize: all checks matched.\n\nWe must not add care advice.\n\nWe need to keep under 70 words. Let's craft ~50 words.\n\nExample: \"Decision: RELEASE. This means the image can be published. The verifier checked colour, print pattern, logo text, collar, sleeve length, hem, pocket count, buttons and fabric texture and all were match. No reasons for concern were found.\"\n\nCount words: Decision:(1) RELEASE.(2) This3 means4 the5 image6 can7 be8 published.9 The10 verifier11 checked12 colour,13 print14 pattern,15 logo16 text,17 collar,18 sleeve19 length,20 hem,21 pocket22 count,23 buttons24 and25 fabric26 texture27 and28 all29 were30 match.31 No32 reasons33 for34 concern35 were36 found37.\n\nThat's 37 words, under 70. Good.\n\nWe must ensure we use plain English for Indian clothing seller. That's okay.\n\nWe must not add markdown, emoji, headings. So plain text.\n\nWe must state decision word exactly as given (RELEASE, REVIEW or REFUSE) and what it means. We did.\n\nWe must not change or soften gate decision. We said RELEASE = image can be published. That's correct.\n\nWe must not add colours, fabrics, sizes, prices, care advice. We didn't add new colours. We mentioned colour but that's from verifier findings. That's allowed? The instruction: Use only the facts given. Do not add colours, fabrics, sizes, prices, care advice or any claim that is not in the facts. So mentioning colour as attribute is okay, but not adding a specific colour value beyond facts? We said \"colour\" generically, not \"rust/orange\". That's okay. But we could mention rust/orange as it's in seller's claims. But we didn't. That's fine.\n\nWe should not add fabric_texture claim beyond match. We said fabric texture and all were match. That's accurate.\n\nWe should ensure we don't add \"no reasons for concern\" is that adding claim? Reasons: none. So saying no reasons found is accurate.\n\nWe must ensure we don't add extra interpretation.\n\nWe should provide final answer in plain text, no markdown.\n\nWe must not use bullet points? That might be considered markdown. Better to use sentences.\n\nWe need to keep at most 70 words. We are good.\n\nWe should not add headings.\n\nWe should ensure we don't use bold or italics.\n\nWe should output final answer.\n\nPotential nuance: The seller's claims include \"Anything the render must not change: colour, print and neckline exactly as photographed\" - we could mention that those were preserved. But we already said colour and print pattern match. Neckline corresponds to collar? Verifier says collar match. So we could say collar match covers neckline. But we shouldn't infer beyond facts. Better to just report verifier findings.\n\nWe must not add care advice.\n\nWe should ensure we use plain English.\n\nWe should not add \"congratulations\" etc. Keep neutral.\n\nWe should ensure we state decision word exactly as given: RELEASE in caps.\n\nWe did.\n\nWe should ensure we don't add extra decision words.\n\nWe should output final.\n\nWe must not exceed 70 words. We are at 37.\n\nWe should double-check no disallowed content: No colours added? We didn't add rust/orange, but we mentioned colour generically. That's not adding a colour value. That's okay.\n\nWe didn't add fabrics, sizes, prices, care advice.\n\nWe didn't add claim not in facts. We said all were match - that's in facts.\n\nWe should ensure we don't hallucinate.\n\nWe should provide final answer succinctly.\n\nWe must not use markdown, no emoji, no headings. So just paragraph.\n\nWe should ensure we don't use bullet list dash.\n\nWe should output.\n\nWe need to consider that the user wants explanation to seller in at most 70 words. So we should be concise.\n\nWe should maybe include seller's claims? But not necessary. The instruction says use only facts given. We can include seller's claims if relevant, but not required. We should not add extra.\n\nWe should ensure we don't mention \"Indian clothing seller\" etc.\n\nWe should just give explanation.\n\nWe should ensure we don't add \"fabric_texture: match\" as markdown. We wrote in plain English.\n\nWe should final answer.\n\nWe must not add \"Verifier findings (attribute: verdict):\" as heading. That's heading. So avoid.\n\nWe should just write sentences.\n\nWe should ensure we don't use colon? Colon is okay, but not heading. Probably okay.\n\nWe should avoid using markdown like **.\n\nWe should produce final answer now.",
+            "tools": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 408,
+        "total_tokens": 1829,
+        "completion_tokens": 1421,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1364
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1364
+        }
+      }
+    }
+  },
+  "error": null
+}

@@ -1,18 +1,20 @@
-// npm run copy:llama -- <job-id> [<job-id> ...]
+// npm run copy:fireworks -- <job-id> [<job-id> ...]
 //
-// FW1: for each committed job, writes the receipt summary and the listing
-// copy (src/llama-fireworks.ts) to data/copy/<job-id>.json, and one redacted
-// call log per Fireworks request to evidence/fireworks-<started_at>.json.
+// FW1 / FW1b: for each committed job, writes the receipt summary and the
+// listing copy (src/fireworks-copy.ts) to data/copy/<job-id>.json, and one
+// redacted call log per Fireworks request to evidence/fireworks-<started_at>.json.
+// The model is Meta muse-spark-open on Fireworks unless FIREWORKS_MODEL says
+// otherwise; each record names the model id it sent, or "none" for the template.
 // With no FIREWORKS_API_KEY in the process or the Windows User env, both texts
 // come from the template and say fallback_reason no_api_token. Spend goes to
-// %LOCALAPPDATA%\ProofShot\fireworks-ledger.json (5 USD cap).
+// %LOCALAPPDATA%\ProofShot\fireworks-ledger.json, capped in src/fireworks-copy.ts.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { copyFacts, fireworksLedger, writeCopy } from "../src/llama-fireworks.ts";
-import type { CopyRecord, CopyTask, FireworksCallLog, FireworksFetch } from "../src/llama-fireworks.ts";
+import { copyFacts, fireworksLedger, writeCopy } from "../src/fireworks-copy.ts";
+import type { CopyRecord, CopyTask, FireworksCallLog, FireworksFetch } from "../src/fireworks-copy.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -28,7 +30,7 @@ function writeLog(log: FireworksCallLog): string {
 
 const jobs = process.argv.slice(2);
 if (jobs.length === 0 || jobs.some((j) => !/^[a-z0-9][a-z0-9-]{0,63}$/.test(j) || j.startsWith("upload-"))) {
-  console.error("usage: npm run copy:llama -- <committed job id> [...]");
+  console.error("usage: npm run copy:fireworks -- <committed job id> [...]");
   process.exit(2);
 }
 

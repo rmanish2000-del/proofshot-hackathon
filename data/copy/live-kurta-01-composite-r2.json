@@ -5,21 +5,37 @@
       "job_id": "live-kurta-01-composite-r2",
       "task": "receipt_summary",
       "receipt_head": "4e684d96fc6cad23a87b0c34cbe14cafd97c4f0b19513e16be84f48b83d06287",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "fireworks_failed",
-      "text": "Decision: RELEASE, the image can be published."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "aed15b788acc5c338bbefb84130656550363c08001bb351d428997af1a6b9989",
+      "usage": {
+        "prompt_tokens": 444,
+        "completion_tokens": 3023
+      },
+      "cost_usd": 0.013403,
+      "cost_estimated": true,
+      "text": "Decision is RELEASE which means the image can be published. All checks matched colour, print, collar, sleeves, hem, pockets, buttons, logo and fabric. No issues found. Your kurta details were kept as in photos."
     },
     {
       "job_id": "live-kurta-01-composite-r2",
       "task": "listing_copy",
       "receipt_head": "4e684d96fc6cad23a87b0c34cbe14cafd97c4f0b19513e16be84f48b83d06287",
-      "provider": "template",
-      "model": "none",
-      "generated": false,
-      "fallback_reason": "fireworks_failed",
-      "text": "Type: kurta (women's). Main colour: rust / orange."
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/muse-spark-open",
+      "response_model": "accounts/fireworks/models/muse-spark-open",
+      "generated": true,
+      "key_source": "user_env",
+      "request_sha256": "04fadcd69a2d0b3dcab5610167d5206ff135e42505445c02e946345f4b502da4",
+      "usage": {
+        "prompt_tokens": 315,
+        "completion_tokens": 2670
+      },
+      "cost_usd": 0.011741,
+      "cost_estimated": true,
+      "text": "Women's kurta in rust orange."
     }
   ]
 }
