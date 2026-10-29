@@ -115,7 +115,8 @@ test("DEMO1e: a job that stored no mask says fidelity was not run, in plain word
   assert.equal(fid.reason, "fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg", "receipt text kept");
   assert.ok(r.reasons.filter((x) => x.rule !== "fidelity").every((x) => x.plain === null));
   // A job whose segments entry has masks keeps the receipt's fidelity text as it is.
-  for (const v of readdirSync(JOBS).map((job) => presentJob(load(job)))) {
+  // upload-* jobs are local serve uploads, gitignored and never committed.
+  for (const v of readdirSync(JOBS).filter((job) => !job.startsWith("upload-")).map((job) => presentJob(load(job)))) {
     for (const x of v.renders.flatMap((rv) => rv.reasons)) {
       if (x.plain !== null) assert.ok(v.job_id && ["live-kurta-01", "live-kurta-01-2", "live-kurta-01-mismatch"].includes(v.job_id), `${v.job_id}: plain only on jobs with no stored mask`);
     }
