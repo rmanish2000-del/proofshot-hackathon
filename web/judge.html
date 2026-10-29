@@ -178,7 +178,11 @@ async function loadList() {
   counts.textContent = "";
   for (const d of ["RELEASE", "REVIEW", "REFUSE"]) counts.append(el("span", { class: `count ${d}`, text: `${ICON[d]} ${d} ${list.counts[d]}` }));
   const want = params.get("job");
-  if (want && list.jobs.some((j) => j.job_id === want)) sel.value = want;
+  // The list holds the 20 newest jobs; a linked older job is added rather than silently swapped for the newest.
+  if (want && /^[a-z0-9][a-z0-9-]{0,63}$/.test(want) && !list.jobs.some((j) => j.job_id === want)) {
+    sel.append(el("option", { value: want, text: `${want} (older job)` }));
+  }
+  if (want && [...sel.options].some((o) => o.value === want)) sel.value = want;
   return sel.value;
 }
 

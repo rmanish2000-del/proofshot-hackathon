@@ -200,6 +200,11 @@ export interface PackSummary {
   readonly chains_ok: number;
   readonly garments_with_receipts: readonly string[];
   readonly decisions: Readonly<Record<string, number>>;
+  /** The same totals for live renders only, and for fixture renders only. */
+  readonly decisions_live: Readonly<Record<string, number>>;
+  readonly decisions_fixture: Readonly<Record<string, number>>;
+  /** Jobs whose receipt holds more than one render (the chain count is per job, the decisions per render). */
+  readonly jobs_with_several_renders: readonly string[];
   readonly live_renders: number;
   readonly verifier_errors: number;
 }
@@ -207,14 +212,23 @@ export interface PackSummary {
 export function summarize(rows: readonly PackRow[]): PackSummary {
   const jobs = new Map<string, boolean>();
   for (const r of rows) jobs.set(r.job_id, r.chain_ok);
-  const decisions: Record<string, number> = {};
-  for (const r of rows) decisions[r.decision || "none"] = (decisions[r.decision || "none"] ?? 0) + 1;
+  const count = (list: readonly PackRow[]) => {
+    const out: Record<string, number> = {};
+    for (const r of list) out[r.decision || "none"] = (out[r.decision || "none"] ?? 0) + 1;
+    return Object.fromEntries(Object.entries(out).sort());
+  };
+  const decisions = count(rows);
+  const perJob = new Map<string, number>();
+  for (const r of rows) perJob.set(r.job_id, (perJob.get(r.job_id) ?? 0) + 1);
   return {
     jobs: jobs.size,
     renders: rows.length,
     chains_ok: [...jobs.values()].filter(Boolean).length,
     garments_with_receipts: [...new Set(rows.map((r) => r.garment).filter((g) => g !== ""))].sort(),
-    decisions: Object.fromEntries(Object.entries(decisions).sort()),
+    decisions,
+    decisions_live: count(rows.filter((r) => r.provenance === "live")),
+    decisions_fixture: count(rows.filter((r) => r.provenance !== "live")),
+    jobs_with_several_renders: [...perJob].filter(([, n]) => n > 1).map(([j]) => j).sort(),
     live_renders: rows.filter((r) => r.provenance === "live").length,
     verifier_errors: rows.filter((r) => r.verifier_error !== "").length,
   };

@@ -25,7 +25,11 @@ const readJson = (p: string) => (existsSync(p) ? (JSON.parse(readFileSync(p, "ut
 
 const ms4 = readJson(join("evidence", "ms4-summary.json"));
 const cal = readJson(join("evidence", "calibration-jobs-2026-10-29.json"));
-const x1 = (cal?.gate as { name: string }[] | undefined)?.find((c) => c.name === "x1") as Record<string, number> | undefined;
+const x1 = (cal?.gate as { name: string }[] | undefined)?.find((c) => c.name === "x1") as (Record<string, number> & { cases?: { label: string; decision: string }[] }) | undefined;
+// Judged as the label says: a same-garment render released, a different-garment render held (REVIEW or REFUSE).
+const x1Cases = x1?.cases ?? [];
+const asLabelled = x1Cases.filter((c) => (c.label === "same" ? c.decision === "RELEASE" : c.decision !== "RELEASE")).length;
+const sameReview = x1Cases.filter((c) => c.label === "same" && c.decision === "REVIEW").length;
 
 let texts = 0;
 let byModel = 0;
@@ -58,8 +62,11 @@ const pack = {
   ms4: ms4
     ? { pairs: ms4.pairs, runs: ms4.runs, answered: ms4.answered, by_expected: ms4.by_expected, mismatch_catch: ms4.mismatch_catch, consistency: ms4.consistency, gate_agreement: { compared: ms4.gate_agreement.compared, agree: ms4.gate_agreement.agree }, spend: ms4.spend }
     : null,
-  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, false_match: x1.false_match, false_refuse: x1.false_refuse, unmeasured: x1.unmeasured } : null,
-  copy: { jobs: copyJobs.length, texts, by_model: byModel, template: texts - byModel },
+  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, judged_as_labelled: asLabelled, false_match: x1.false_match, false_refuse: x1.false_refuse, same_sent_to_review: sameReview, unmeasured: x1.unmeasured } : null,
+  copy: {
+    jobs: copyJobs.length, texts, by_model: byModel, template: texts - byModel,
+    note: "texts are the final records in data/copy; the answered copy calls in stages are more, because retries, superseded runs and rewrites are logged too",
+  },
   adversarial,
   limits: [
     `${summary.garments_with_receipts.length} real garments (${summary.garments_with_receipts.join(", ")}), all the owner's own; #10 asked for 12 or more, and no museum garments are used.`,
@@ -69,7 +76,9 @@ const pack = {
 };
 
 const fmt = (v: number | null, d = 0) => (v === null ? "n/a" : v.toFixed(d));
-const stageRow = (s: StageStats) => `| ${s.stage} | ${s.calls} | ${s.answered} | ${s.failed} | ${fmt(s.latency_ms_median)} | ${fmt(s.latency_ms_p90)} | ${fmt(s.usd_per_call_median, 4)} | ${s.usd_total.toFixed(4)} |`;
+const stageName = (s: StageStats) => (s.answered === 0 ? `${s.stage}: ${s.calls} ${s.calls === 1 ? "call" : "calls"}, none answered, never used` : s.stage);
+const stageRow = (s: StageStats) => `| ${stageName(s)} | ${s.calls} | ${s.answered} | ${s.failed} | ${fmt(s.latency_ms_median)} | ${fmt(s.latency_ms_p90)} | ${fmt(s.usd_per_call_median, 4)} | ${s.usd_total.toFixed(4)} |`;
+const totals = (d: Readonly<Record<string, number>>) => Object.entries(d).map(([k, n]) => `${k} ${n}`).join(", ") || "none";
 const decisions = Object.entries(summary.decisions).map(([d, n]) => `${d} ${n}`).join(", ");
 const md = [
   "# Evidence pack (#10), from committed material only",
@@ -78,9 +87,9 @@ const md = [
   "",
   "## Receipts",
   "",
-  `- ${summary.jobs} jobs, ${summary.renders} renders; ${summary.chains_ok} of ${summary.jobs} hash chains verify.`,
+  `- ${summary.jobs} jobs, ${summary.renders} renders; ${summary.chains_ok} of ${summary.jobs} hash chains verify (one chain per job; ${summary.jobs_with_several_renders.join(", ") || "no job"} has more than one render).`,
   `- Garments with receipts: ${summary.garments_with_receipts.join(", ")}.`,
-  `- Gate decisions: ${decisions}. Live renders: ${summary.live_renders}. Renders whose verifier call failed: ${summary.verifier_errors}.`,
+  `- Gate decisions per render: ${decisions}. Live renders (${summary.live_renders}): ${totals(summary.decisions_live)}. Fixture renders (${summary.renders - summary.live_renders}): ${totals(summary.decisions_fixture)}. Renders whose verifier call failed: ${summary.verifier_errors}.`,
   "- One row per render, with providers, model ids and tokens: `results.csv`.",
   "",
   "## Latency and cost per stage (committed call logs)",
@@ -89,7 +98,7 @@ const md = [
   "|---|---|---|---|---|---|---|---|",
   ...stages.map(stageRow),
   "",
-  "USD is the ledger rule applied to each logged usage (tokens x the price table; SAM at a flat 0.0025 USD from secondary sources): an estimate, not an invoice.",
+  "Latency and USD count answered calls only. USD is the ledger rule applied to each logged usage (tokens x the price table; SAM at a flat 0.0025 USD from secondary sources): an estimate, not an invoice.",
   "",
   "## Verify a receipt offline",
   "",
@@ -102,10 +111,10 @@ const md = [
   ...adversarial.map((a) => `| ${a.case} | ${a.expected} | ${a.evidence} | ${a.result} |`),
   "",
   ...(pack.ms4 ? ["## Muse Spark cross-check (MS4)", "", `${pack.ms4.pairs} pairs, ${pack.ms4.answered} of ${pack.ms4.runs} runs answered. Same garment: ${pack.ms4.by_expected.same.correct} of ${pack.ms4.by_expected.same.answered} released. Wrong garment: ${pack.ms4.mismatch_catch.refused} of ${pack.ms4.mismatch_catch.answered} refused. Changed by a try-on: ${pack.ms4.by_expected.changed.correct} of ${pack.ms4.by_expected.changed.answered} held. Same decision on all 3 runs: ${pack.ms4.consistency.same_decision_all_reps} of ${pack.ms4.consistency.pairs_scored} pairs.`, ""] : []),
-  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders: ${pack.calibration.false_match} false matches, ${pack.calibration.false_refuse} false refusals, ${pack.calibration.unmeasured} unmeasured (\`evidence/calibration-jobs-2026-10-29.json\`).`, ""] : []),
+  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders: ${pack.calibration.judged_as_labelled} of ${x1Cases.length} judged as their label says (same released, different held). ${pack.calibration.false_match} false matches; ${pack.calibration.false_refuse} false refusals and ${pack.calibration.same_sent_to_review} same-garment renders sent to REVIEW; ${pack.calibration.unmeasured} unmeasured (\`evidence/calibration-jobs-2026-10-29.json\`).`, ""] : []),
   "## Copy",
   "",
-  `${texts} texts for ${copyJobs.length} jobs (English and Hindi summary and listing): ${byModel} by Meta muse-spark-open on Fireworks, ${texts - byModel} from the template.`,
+  `${texts} final texts for ${copyJobs.length} jobs (English and Hindi summary and listing): ${byModel} by Meta muse-spark-open on Fireworks, ${texts - byModel} from the template. The answered copy calls above are more: retries, superseded runs and rewrites are logged too.`,
   "",
   "## Limits",
   "",

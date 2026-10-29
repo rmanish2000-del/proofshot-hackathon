@@ -34,6 +34,7 @@
     "ms4": "node --experimental-strip-types scripts/ms4-batch.ts",
     "verify:meta": "node --experimental-strip-types scripts/meta-verify.ts",
     "evidence:pack": "node --experimental-strip-types scripts/evidence-pack.ts",
+    "figures": "node --experimental-strip-types scripts/figures.ts",
     "sp1": "node --experimental-strip-types scripts/sp1.ts"
   },
   "devDependencies": {

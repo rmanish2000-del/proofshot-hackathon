@@ -139,7 +139,7 @@ writeFileSync(SUMMARY, `${JSON.stringify({
   attempts: { lines: all.length, failed_attempts: all.filter((r) => !r.ok).length },
   ...score,
   spend: { account: "meta", batch_usd: batchUsd, batch_calls: batchCalls, estimated: true, ledger_spent_usd: meta.spent_usd, ledger_calls: ledgerEntries.length, batch_cap_usd: meta.cap_usd, batch_left_usd: meta.batch_left_usd, reserve_used: false },
-  limits: "Small sample: 2 photographed garments (both women's kurtas), one photo set each, 3 repeats per pair. A rate here says how this checker behaved on these pairs, not how it behaves in general.",
+  limits: `Small sample: ${plan.garments.length} photographed garments (${plan.garments.join(", ")}), one photo set each, ${MS4_REPEATS} repeats per pair. The verifier alone, no fidelity check. A rate here says how this checker behaved on these pairs, not how it behaves in general.`,
 }, null, 2)}\n`);
 console.log(`wrote ${SUMMARY}`);
 console.log(`same ${JSON.stringify(score.by_expected.same)}; changed ${JSON.stringify(score.by_expected.changed)}; mismatch catch ${JSON.stringify(score.mismatch_catch)}`);

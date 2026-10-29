@@ -4,7 +4,9 @@ ProofShot checks a candidate listing image against the seller's own phone
 photos of the garment (three or four of them) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
 code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
-from those structured findings and a measured fidelity check. Every step is
+from those structured findings and a fidelity check, measured on the garment
+masks when measurable; missing measurements fail closed and are reported on
+the receipt (the gate never releases an unmeasured image). Every step is
 written into a hash-chained receipt that anyone can check offline in
 `web/verify.html`: a single page that makes no network request and needs no
 account (checked in a browser over local HTTP; opening it from disk is not yet
@@ -15,30 +17,35 @@ path cuts the seller's own garment pixels out with a SAM 3.1 mask and places
 them on a ghost mannequin, in deterministic code. The try-on path is an AI
 try-on (Pruna on Replicate). No Meta image generator is used anywhere, and
 Muse Image is refused at runtime. No committed run has released a generated
-on-model photo: all 7 try-on images were held by the gate (5 REFUSE, 2
-REVIEW).
+on-model photo: all <!--f:tryon_total-->7<!--/f--> try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f-->
+REVIEW). The verifier alone would not have held them all: in the Muse Spark
+cross-check it passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> checks of those shortened try-ons; the measured
+fidelity check is what held every one.
 
 ## What each Meta model does
 
 | Model | Served by | What it does in ProofShot | Logged calls (committed) |
 |---|---|---|---|
-| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | 117, `evidence/sam-*.json` |
-| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | 224, `evidence/verifier-*.json`, `evidence/ms4/` |
-| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | 291, `evidence/fireworks-*.json`, texts in `data/copy/` |
-| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | 19, `evidence/verifier-*.json` |
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: the mask the composite cuts out and the fidelity check measures on | <!--f:sam_calls-->122<!--/f-->, `evidence/sam-*.json` |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings (colour, print, collar, sleeves, hem, pockets, buttons, logo, texture) that the gate reads. It never decides and never makes an image | <!--f:muse13_calls-->225<!--/f-->, `evidence/verifier-*.json`, `evidence/ms4/` |
+| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy and plain-language receipt summaries, written after the gate from the receipt; the text never enters the chain | <!--f:fireworks_calls-->291<!--/f-->, `evidence/fireworks-*.json`, texts in `data/copy/` |
+| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier (27 to 28 Oct), before the Meta Model API one | <!--f:baseten_calls-->19<!--/f-->, `evidence/verifier-*.json` |
 
 Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
 
 ## Limits
 
-- **Small sample.** Four real garments (two women's kurtas, two shirts), all
+- **Small sample.** <!--f:garments-->4<!--/f--> real garments (two women's kurtas, two shirts), all
   from one household. Every rate in this README describes those pairs, not
   ProofShot in general.
 - **Verifier accuracy is not measured in general.** The Muse Spark cross-check
-  (MS4) refused 153 of 153 wrong-garment runs and released 24 of 30
+  (MS4) refused <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f-->
   same-garment runs, on these four garments only.
+- **The verifier misses length changes.** On its own it passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->
+  checks of try-ons that had shortened the garment; the gate held all of them
+  only because the fidelity check measured the garment shrinking in frame.
 - **Thresholds are provisional.** Calibration over the committed receipts finds
-  0 false matches and 4 false refusals, all four where the verifier gave no
+  <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them where the verifier gave no
   answer; that is a self-check on few garments, not an error rate.
 - **No generated on-model photo has been released**, and nothing here claims an
   effect on returns or sales. No public deploy.
@@ -56,8 +63,8 @@ npm run intake -- <folder>   # garment photos in: strips metadata, records both 
 npm run call:baseten         # one live Muse Spark Open call, logged to evidence/
 ```
 
-`npm run call:baseten` is the only command that uses the network, and it needs
-`BASETEN_API_KEY` set.
+Of these, `npm run call:baseten` is the only command that makes a live model
+API call, and it needs `BASETEN_API_KEY` set.
 
 ## Judge quickstart
 
@@ -132,22 +139,6 @@ files, so it works there as is. Nothing staged is committed.
 npm run serve -- --jobs out/ui-jobs --shop out/ui-shop
 ```
 
-### Live jobs and calibration (28 Oct 13:50 IST)
-
-- Live VERIFIER: Muse Spark Open on Baseten (`meta-models/muse-spark-open-1026`), one chat completion per render, per-attribute findings.
-- Live SEGMENTER: SAM 3.1 on `api.meta.ai`; every SAM call in `job:live` writes a redacted call log.
-- JPEG decode is wired, so fidelity is measured on JPEG.
-- Renders: the `sam` jobs below used the stand-in (the owner's front photo, tagged "owner's photo, stands in for render"), so a RELEASE on them is photo-vs-itself and proves the measured path runs, NOT accuracy. Since NR1 (6beed3a) `RENDER_PROVIDER=composite` places the SAM-cut garment from the seller's front photo onto the code-drawn `mannequin-01` template (homography warp, feathered edge); the receipt says `method: composite`, `generative: false`, and a missing mask is a REFUSE, never a fall-back to the stand-in. No image model is called, nothing is generated, and no person is in frame.
-- Live composite jobs (0e12a5e): `live-kurta-02-composite` RELEASE (2 SAM segments, verifier 9 of 9 `match`, fidelity on the warped source mask delta_e 0.19); `live-kurta-01-composite` REFUSE `not_verified`, because the verifier answer was cut off at max_tokens 4096. NR2 (8d0b72b) retries a cut-off answer once and refuses a second one as `verifier_truncated`; the kurta-01 re-run `live-kurta-01-composite-r2` (9e08fee, on eb09bc3) is RELEASE, verifier finish_reason stop in one attempt. The composite is the same photo's pixels on a new background, so these too show the measured path, not accuracy on a generated image.
-- Composite v2 (NR3, SPEC-composite-v2, `src/composite-v2.ts`, model `composite-v2`, now the default for `RENDER_PROVIDER=composite`; `COMPOSITE_VERSION=v1` or `RENDER_TEMPLATE` keeps v1): a "ghost mannequin" product shot, 1200x1600, with no body template. The mask is cleaned, lighting is flattened and white balance adjusted by bounded, recorded amounts (max ±8% per colour channel, shadow gain 0.80 to 1.35), a flat neck insert fills the neck opening, and the garment gets a soft shadow on a studio backdrop. Fidelity checks compare against the seller's original photo. A photo that fails the quality pre-check (cut off, too small, harsh shadow, clipped, fragmented mask, correction ΔE above 6) is REVIEW (`render_quality`) with the reason and every check on the receipt, and no image. Run offline on the committed SAM masks, both kurta front photos are REVIEW "over- or under-exposed photo" (clipped 7.7% and 4.7% against 3%; kurta-01 also shadow 0.64 against 0.55), so no v2 image exists yet; a retake per `docs/CAPTURE.md` is the fix, not looser thresholds. Thresholds are provisional (UNVERIFIED). Any v2 image is UNVERIFIED for camera until Manish signs it off.
-- Verifier accuracy NOT MEASURED.
-- Absent or undefined verifier findings fail closed as `REFUSE not_verified`, the same as a verifier that failed.
-- Live jobs on `kurta-01`: `REFUSE not_verified` (first answer cut off), `REVIEW` (no mask), `REFUSE mismatch` (kurta-02 front as the render, colour hard mismatch, n=1), `live-kurta-01-sam` (3 segments 0.957/0.949/0.973, gate `REVIEW`, fidelity could not decode JPEG then), and `live-kurta-01-sam-2` (4 logged SAM calls, verifier matched, fidelity measured, gate `RELEASE`).
-- Live job `live-kurta-02-sam` on `kurta-02`: 3 logged SAM 3.1 calls and 1 logged verifier call, gate `RELEASE`, but the render is the stand-in kurta-02 front photo so it is photo-vs-itself and proves the measured path, not accuracy.
-- Calibration (fidelity only, not a gate decision) has SAM masks for 5 of 5 photos of two garments and measured 20 of 20 photo pairs, including the different-garment pairs: at the current thresholds 0 false matches and 6 of 8 same-garment pairs refused; at 1.5x looser 0 false matches, 0 false refusals, 2 same-garment pairs sent to review. Only two garments, so this is a small sample, not a calibrated false-match rate; thresholds are unchanged.
-- Calibration over recorded jobs (29 Oct, `npm run calibrate:jobs`, evidence/calibration-jobs-2026-10-29.json): the fidelity values and verifier findings already on 31 committed receipts, re-judged at 0.5x to 2x the thresholds, gate and fidelity alone. Labels in data/calibration/labels.json say what each render image shows (the owner's photo, a composite, or a try-on that shortened the kurta); a render is `same` only in a job for the garment it shows unchanged. At the current thresholds the rerun gives the gate decision each receipt recorded, 31 of 31; 0 false matches at every factor; 2 false refusals (both verifier-side, not thresholds: no findings came back for live-kurta-01 and live-kurta-01-composite, so the gate refused them as not verified), 4 unmeasured. Still two garments and many renders of the same images, so not a calibrated rate; thresholds are unchanged. The 4 fixture-job renders are skipped (their fidelity entries were written, not measured).
-- No public deploy.
-
 ### Optional: live providers
 
 You do not need these for the quickstart. Without them, every provider is a
@@ -207,8 +198,10 @@ signature or outside witness (`docs/SPEC.md` §3, threat model).
 
 ## Verify page
 
-`web/verify.html` is one self-contained file. Open it from disk. It works offline: a
-Content-Security-Policy of `default-src 'none'` blocks every request. Give it a
+`web/verify.html` is one self-contained file that makes no network request: a
+Content-Security-Policy of `default-src 'none'` blocks every request. It has
+been checked in a browser served over local HTTP; opening it straight from disk
+(`file://`) is not yet checked. Give it a
 `receipt.jsonl` and an image (or its sha256). It checks the chain with
 WebCrypto (`crypto.subtle`) and answers **VALID** (this image was released by
 this record), **NOT RELEASED** (rendered but not released, with the gate's
@@ -252,8 +245,8 @@ New in this feature, all written during the event: `src/shop.ts`,
 `data/jobs/fixture-shirt-01/` (generated), `test/shop.test.ts`, SPEC §11, the
 `shaFromFragment` helper in `src/core.js` and the `#sha` prefill in
 `web/verify.html`, and `src/page.ts` / `scripts/page.ts` covering both pages.
-Pre-existing (rebuilt from the spec earlier in this repo, not part of this
-feature): the gate, the receipt chain, the verify-page core (`src/core.js`
+Built earlier in this repository, during the event, and not part of this
+feature: the gate, the receipt chain, the verify-page core (`src/core.js`
 checks) and the intake.
 
 ## Seller upload (built during the hackathon)
@@ -352,39 +345,10 @@ committed.
   shop panel say "Lighting only: no colour correction was applied".
 - `PROOFSHOT_RENDER=replicate-pruna-tryon` (NR4, `src/render-replicate.ts`):
   an AI preview by Pruna p-image-try-on on Replicate (third-party, non-Meta).
-  **Seven live Pruna calls as of ace95ac (n=7): two REVIEW, five REFUSE,
-  none released; the gate caught every one.** First (14dad54, `data/jobs/live-kurta-02-tryon`): the gate said **REVIEW**. The try-on cut the below-knee kurta-02 to hip
-  length and drew shorts below it; the verifier flagged the hem as a mismatch
-  (0.98) and the fidelity check found the garment shrank in frame (area
-  0.212). The gate caught an AI model changing the garment, and nothing was
-  released. Why (NR4b): the cut-out was the whole kurta, but the synthetic
-  model wears a hip-length T-shirt over leggings and no prompt was sent, so
-  the try-on replaced only the T-shirt. Since NR4b the request carries a
-  prompt with the garment type and length the seller claimed (`Type:`,
-  `Length:` or `hem:` in the garment note), never colour or print, and none
-  when neither is claimed. That fix did not keep the length (9b3b226,
-  `live-kurta-02-tryon-2` and `live-kurta-01-tryon`, both **REFUSE**): both
-  outputs are still hip-length tunics over the model's leggings (fidelity area
-  0.212 and 0.206, below 0.400), and kurta-01's full sleeves came back
-  three-quarter. On both, the verifier timed out at 180 s, so the gate
-  refused them as not verified (fail closed). Since NR4c a verifier request
-  that times out is sent once more with a 360 s timeout, and the receipt lists
-  both attempts. On a second model image, `synthetic-02` (an AI-generated
-  fictional adult in an ankle-length slip, so the lower body is free; 04d9cd0),
-  both kurtas still came back short (4427c81, `live-kurta-02-tryon-s02` and
-  `live-kurta-01-tryon-s02`, both **REFUSE** on fidelity, area 0.210 and
-  0.183). This time the verifier answered and flagged the hem as a mismatch on
-  both. The garment image sent is the whole kurta, hem included (NR4d,
-  `evidence/tryon-sent/`); since NR4d it has a white margin. The margin did
-  not keep the length either (ace95ac, synthetic-02: `live-kurta-02-tryon-m`
-  **REFUSE**, area 0.176, delta_e 22.687; `live-kurta-01-tryon-m` **REVIEW**,
-  area 0.301, delta_e 17.522). So for long garments the honest demo is
-  composite v2, with the try-on shown as what the gate catches. Separately,
-  two committed try-on images were re-verified without a new Pruna call (the
-  render entry is a stand-in file, so these are not try-on calls):
-  `live-kurta-02-tryon-2-reverify` **REVIEW** (the verifier answered: hem
-  mismatch 0.96, soft) and `live-kurta-01-tryon-reverify` **REFUSE**
-  (fidelity: texture 0.641, area 0.206). Since NR4e each
+  All <!--f:tryon_total-->7<!--/f--> committed try-on calls were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE,
+  <!--f:tryon_review-->2<!--/f--> REVIEW, none released): for the long kurtas the try-on came back shorter,
+  and the fidelity check or the verifier caught it. The run-by-run log (NR4 to
+  NR4d) is in `docs/HISTORY.md`. Since NR4e each
   model folder declares how far down the model's own outfit reaches
   (`model.json` `covers`: synthetic-01 `hip`, synthetic-02 `ankle`). A garment
   claimed longer than that falls back to composite v2 with `fallback_reason`
@@ -417,7 +381,7 @@ committed.
   (`src/sam-meta.ts`, `POST https://api.meta.ai/v1/responses`, request model
   `sam-3.1`). `MODEL_SEGMENT` must be `meta/sam-3.1 (api.meta.ai)` for that
   transport; `SEGMENT_PROMPT` overrides the noun phrase (default "the
-  garment"). One live call is logged (see the table below).
+  garment"). Every SAM call is logged under `evidence/sam-*.json`.
 - `BASETEN_API_KEY`: the verifier call to Muse Spark Open
   (`meta-models/muse-spark-open-1026`) on Baseten (`src/verifier.ts`, one
   chat completion per render with the photos as `image_url` parts).
@@ -444,16 +408,14 @@ committed.
   million tokens in / out (Fireworks and Baseten pages); SAM 3.1 2.50 USD per
   1000 images (secondary sources, not read on dev.meta.ai).
 
-**Built with Muse Spark Open.** The verifier calls `meta-models/muse-spark-open-1026`
-on Baseten. Four real calls are logged under `evidence/` with the key redacted
-and the images replaced by their size and hash; tokens, latency and finish
-reasons are in `docs/API-NOTES.md`. The model reasons before it answers
-(`reasoning_content`): at `max_tokens` 64 a one-word answer was cut off, and at
-1500 the nine findings were (1338 reasoning tokens first). At 4096 the
-kurta-01 composite answer was cut off too (4055 reasoning tokens,
-`evidence/verifier-2026-10-28T12-30-54-012Z.json`), so the verifier now sends
-8192 and retries once at 16384 when the answer stops at the limit; a second
-cut-off answer is a REFUSE (`verifier_truncated`), never a pass.
+**Built with Muse Spark.** The verifier today is Muse Spark 1.3 on the Meta Model
+API (`api.meta.ai`, <!--f:muse13_calls-->225<!--/f--> logged calls); the first verifier was Muse Spark Open
+(`meta-models/muse-spark-open-1026`) on Baseten (<!--f:baseten_calls-->19<!--/f--> logged calls). Every call
+log is under `evidence/` with the key replaced and the images replaced by
+their size and hash. The verifier sends `max_tokens` 8192 and asks once more
+at 16384 when the answer stops at the limit; a second cut-off answer is a
+REFUSE (`verifier_truncated`), never a pass. How that limit was found is in
+`docs/HISTORY.md`.
 
 The HTTP transports for `openai-images`, `fal` and `meta` are not written yet.
 The renderer takes an injected transport.
@@ -482,38 +444,44 @@ The renderer takes an injected transport.
 
 ## What is verified and what is not
 
+Dated experiment rows (each live run and when it happened) are in
+`docs/HISTORY.md`.
+
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite green | 317 tests pass, 0 fail | `npm test`, run on 29 Oct 2026 at 18:32 IST on master b54374c (MS4), clean tree |
-| Typecheck clean | yes | `npm run typecheck`, same run |
-| CI green | on 2859cde: [run 40654848955](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40654848955); on 00fe261: [run 40641160204](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40641160204) (run ids given by Grok, 28 Oct 13:50 IST) | earlier: [run 40484105220](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/40484105220) on e2847f1 |
-| Live Muse Spark Open call on Baseten | 2 text calls, both HTTP 200 | `evidence/baseten-2026-10-27T13-23-37-385Z.json` (max_tokens 64, content null, finish_reason length) and `evidence/baseten-2026-10-28T00-51-41-996Z.json` (max_tokens 1024, content "ready", finish_reason stop); numbers in `docs/API-NOTES.md` |
-| Live verifier call with images (4 JPEGs, 715×1600) | 2 calls, both HTTP 200: the first cut off at max_tokens 1500 (finish_reason length, 1338 reasoning tokens), the second complete at 4096 (finish_reason stop, 1808 completion tokens, 9 findings all `match`) | `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `evidence/verifier-2026-10-28T03-59-30-015Z.json` (key placeholder, images as size and hash) |
-| Live pipeline job through the verifier | 5 jobs, stand-in render. On kurta-02: `live-kurta-02-sam` (1e05d38) RELEASE with 3 SAM 3.1 calls and 1 verifier call, each logged redacted (`evidence/sam-2026-10-28T08-1*.json`, `evidence/verifier-2026-10-28T08-16-02-429Z.json`). **Like `live-kurta-01-sam-2`, that RELEASE is the owner's photo checked against itself** (the stand-in render is kurta-02 front), so it proves the measured path on a second garment, not accuracy; its shop card carries the same stand-in tag. On kurta-01: `live-kurta-01` REFUSE (`not_verified`, the cut-off answer) and `live-kurta-01-2` REVIEW (fidelity unmeasured: no mask), both with no segmenter; `live-kurta-01-sam` REVIEW with SAM 3.1 masks (fidelity unmeasured: run before the JPEG decode); `live-kurta-01-sam-2` (189f87c) RELEASE with SAM 3.1 masks and fidelity measured on the JPEGs (delta_e 0.0001, texture 1). **That RELEASE is the owner's photo checked against itself** (the stand-in render is kurta-01 front): it proves the measured path runs end to end, not that the gate is accurate, and its shop card is tagged "owner's photo, stands in for render" | `data/jobs/live-kurta-02-sam/`, `data/jobs/live-kurta-01/`, `data/jobs/live-kurta-01-2/`, `data/jobs/live-kurta-01-sam/`, `data/jobs/live-kurta-01-sam-2/`, `demo/recordings/live-kurta-01-2/` |
-| Deliberate-mismatch live job | 1 job (n=1): kurta-01 sources, kurta-02 front as the render (`--render`), no segmenter: REFUSE (`hard_mismatch`, color mismatch at 0.99) | `data/jobs/live-kurta-01-mismatch/`, `evidence/verifier-2026-10-28T04-25-58-791Z.json`, recording `demo/recordings/live-kurta-01-mismatch/` (replays to REFUSE) |
-| Plain-language summary and listing copy (Meta model on Fireworks) | 3 jobs (RELEASE `live-kurta-01-composite-r2`, REVIEW `live-kurta-02-composite-v2`, REFUSE `live-kurta-01-mismatch`): all 6 texts written by `accounts/fireworks/models/muse-spark-open` (29 Oct), each naming its decision word as the gate gave it; read by hand against the receipts. Getting there took 12 calls: one timed out at 60 s, one summary was refused by the guard (it also said "REVIEW" for the fidelity sub-check), one was cut off at 4096 tokens; each was re-run after the fix (180 s timeout, prompt names one decision word, max_tokens 8192). About 0.12 USD on the ledger. Not Llama: Fireworks serves no Llama to this key. **FW2 (29 Oct): all 24 committed jobs, English and Hindi**, a summary and a 2 to 3 sentence listing each (96 texts): 81 written by the model, 15 from the template because the model spent all 8192 tokens reasoning (`truncated`). The first Hindi listings named a decision word, so the guard refused them; Hindi listings then got a prompt naming none, and the pass was re-run. 121 calls, 2.0153 USD in all on the Fireworks ledger. **FW2 copy fix (29 Oct, Grok's 15:05 list):** listings now describe the garment from the seller's description only (type, colour, length), never the check: the old prompt offered "attributes matching the photos", so listings said things like "No attributes were found matching the photos". A listing with a gate, receipt, check, match, render or decision word (English or Hindi) is asked once more, then falls back (`off_topic`); fixture jobs must say they are fixture data. A summary for a receipt with no verifier findings may not say any detail matched or was kept (`unsupported`; the old `live-kurta-02-tryon-2` summary did). Free-text fixture notes are parsed as one description. `max_tokens` is 16384. Re-run over all 35 committed jobs (the 24 above plus the 11 MS3 re-check jobs): 140 texts, 135 by the model, 5 from the template (3 still cut off at 16384, 1 timed out, 1 Hindi summary refused twice by the new check). A test fails if any committed listing names the pipeline. 112 more calls, 1.7968 USD; Fireworks ledger 3.8121 USD in 233 calls, 56.19 of the 60 USD cap left, reserve untouched. **Shirts (29 Oct evening):** English and Hindi summary and listing for the 7 shirt jobs (`shirt-plaid`, `shirt-zebra` previews, `ms2-shirt-*`, the 3 plaid composite jobs): 28 texts, 26 by the model, 2 template (cut off). The plaid's own description says "checks", which the listing check first read as pipeline talk; a garment word in the seller's description is now allowed (test FW2 shirts). Fireworks ledger 4.6647 USD in 273 calls, 55.34 of 60 left. **Preview listings (29 Oct):** `kurta-01`, `kurta-02` and the two shirt previews are real garments with the owner's photo as the image, so their listings now describe the garment only (no "fixture" or "owner's photo stands in for the preview" sentence; "preview" and "stands in" are off-topic words in both languages; test FW2 fix 5). The synthetic `fixture-shirt-01` still says it is fixture data. A detail written before "; as in the photos" is kept (the zebra print was dropped; test FW2 fix 6). Re-run: 9 jobs' listings, all by the model. Fireworks ledger 4.8333 USD in 292 calls, 55.17 of 60 left (snapshot `evidence/fireworks-ledger-20261029.json`) | `data/copy/*.json`, `evidence/fireworks-2026-10-29T05-*.json` (key placeholder), 404s for Llama in `evidence/fireworks-2026-10-29T04-39-*.json` |
-| Garment check by Muse Spark on the Meta Model API (MS2) | 2 jobs, one per garment folder with photos (29 Oct): `ms2-kurta-01` and `ms2-kurta-02`, verifier `muse-spark-1.3` on `api.meta.ai` (the id `npm run models:meta` listed; Muse Image and the `-contributor` tier refused), SAM 3.1 masks (3 segments each), fidelity measured; both RELEASE. **Each RELEASE is the owner's photo checked against itself** (stand-in render), so it shows the check runs on the Meta credit end to end, not accuracy. shirt-01, shirt-02 and shirt-03 were skipped: they have no committed photos. 9 Meta calls, about 0.05 USD on the Meta ledger, none on Baseten. The first job's verifier log names the key placeholder `[BASETEN_API_KEY]` by mistake (fixed to `[MODEL_API_KEY]` before the second; no key in either) | `data/jobs/ms2-kurta-0{1,2}/`, `evidence/verifier-2026-10-29T05-4{5,7}-*.json`, `evidence/sam-2026-10-29T05-4*.json` |
-| Meta batch over every committed garment job (MS3) | `npm run ms3` (29 Oct): 11 jobs, one per distinct garment + render image among the committed jobs whose garment has photos, each re-checked by Muse Spark 1.3 on `api.meta.ai` with SAM 3.1 masks and measured fidelity (that render stands in, nothing generated). Skipped: renders that are the owner's own photo (MS2 already checked those bytes on Meta), fixture/preview jobs, the uncommitted upload job, and `live-kurta-02-composite-v2` (no image stored). Gate: 3 RELEASE (the 3 composites), 3 REVIEW (`kurta-01-tryon-m` fidelity; `kurta-02-tryon` and `kurta-02-tryon-2` hem), 5 REFUSE (the deliberate mismatch on a hard colour mismatch, 4 try-ons on fidelity: the garment shrank in frame). Same decision as the earlier Baseten receipt on 9 of 11; the 2 that differ were Baseten REFUSE not_verified (no answer), and Muse Spark answered (`kurta-01-composite` RELEASE, `kurta-02-tryon-2` REVIEW, as its Baseten re-verify). **A Muse Spark RELEASE here is a self-check of the verifier path, not a publish decision.** Meta ledger after the batch: 59 calls, 0.354166 USD (MS2 + MS3; 50 MS3 calls), 79.65 of the 80 USD batch cap left, reserve not used. The whole set cost far less than the cap | `data/jobs/ms3-*/`, `evidence/sam-2026-10-29T08-*.json`, `evidence/verifier-2026-10-29T08-*.json`, `evidence/meta-ledger-20261029-ms3.json` |
-| Muse Spark cross-check matrix (MS4) | `npm run ms4` (29 Oct): the 2 photographed garments (kurta-01, kurta-02) x the 12 distinct labelled render images in the committed jobs = 24 pairs, each sent 3 times to Muse Spark 1.3 on `api.meta.ai` with the gate's own garment-check prompt; no job or receipt written. Truth per pair from `data/calibration/labels.json` (the 7 try-on labels come from Grok's 28 Oct review lines). Decision = the gate's `decide` over Muse Spark's findings alone. 72 of 72 calls answered. **Known-wrong pairs** (one kurta's photos against the other's renders): 36 of 36 runs REFUSE, all on a hard colour mismatch. **Same garment, unchanged** (owner photo, composites): 15 of 15 RELEASE. **Try-ons that shortened the kurta**: 17 of 21 runs held (REVIEW, on hem or sleeve length); 4 released: `kurta-01-tryon-m` all 3 times, `kurta-02-tryon-2` once. The recorded gate still held those, on fidelity. **Consistency**: same decision in all 3 runs on 23 of 24 pairs; 94.9% of per-attribute verdicts identical across runs. **Against recorded gate decisions** (Muse Spark findings plus the job's recorded fidelity, per run): 84 of 93 agree; all 9 disagreements are the 3 jobs whose original verifier gave no answer (`live-kurta-01`, `live-kurta-01-composite`, `live-kurta-02-tryon-2`, recorded REFUSE not_verified). The tricky-photo set (PS-SP1) was not run: its list is not in either repo or on #23, and no other garment photos are committed. 1.2904 USD for 72 calls; Meta ledger 1.6445 USD in 131 calls, 78.36 of the 80 USD cap left, reserve not used. The matrix as specified needed only that much. **Small sample:** 2 kurtas, one photo set each, 3 repeats; these rates describe these pairs, not the checker in general. **Shirts added (29 Oct evening):** `ms2-shirt-plaid` RELEASE and `ms2-shirt-zebra` REVIEW (owner's front photo as the render, Muse Spark 1.3 on api.meta.ai: 9 of 9 attributes match on both; zebra is REVIEW only because SAM found no mask in its front photo, so fidelity could not be measured). The matrix then covers 4 garments x 17 labelled renders = 68 pairs, 204 runs, all answered (one answer that was not JSON was asked again). Wrong garment: 153 of 153 runs REFUSE, including every kurta-vs-shirt and plaid-vs-zebra pair. Same garment unchanged: 24 of 30 RELEASE; the 6 others are REVIEW on the plaid composites (`logo_text` below its floor), never REFUSE. Same decision on all 3 runs: 65 of 68 pairs. MS4 in all: 5.3957 USD over 205 logged calls (tokens x price); Meta ledger 5.9383 USD, 74.06 of the 80 USD cap left, reserve not used | `evidence/ms4-summary.json`, `evidence/ms4-runs.jsonl`, `evidence/ms4/verifier-*.json` (key placeholder) |
-| Composite v2 on a real shirt (NR3, plaid-front, 29 Oct) | Two new garments from the seller photos Grok committed in proofshot `photos/shirts-20261029` (`data/garments/shirt-plaid`, 4 photos; `shirt-zebra`, 3 photos; intake found no metadata left; no person in any photo, checked on intake; note.txt and WHY.txt written by Claude Code from the photos and Grok's note, marked as such). `RENDER_PROVIDER=composite VERIFIER_PROVIDER=meta` job on `shirt-plaid` with SAM 3.1 masks: the composite keeps the check, colours, collar and buttons (fidelity RELEASE, delta_e 1.94, area 0.60). `live-shirt-plaid-composite-v2` and `-r2` are REFUSE not_verified: the verifier call failed in under a second with "fetch failed" (the Meta server closed the pooled socket while the job computed for about 90 s). A standalone re-check (`npm run verify:meta`, `evidence/reverify/shirt-plaid-composite-v2-try.json`) answered in 23 s. The Meta verifier now retries once on such a network error (test MS2 7). `-r3`: **REVIEW**, all 9 attributes match but `logo_text` at 0.80 is below the 0.85 floor (the small brand label). Meta spend for NR3: 0.10 USD | `data/jobs/live-shirt-plaid-composite-v2*/`, `evidence/sam-2026-10-29T13-*.json`, `evidence/verifier-2026-10-29T13-*.json` |
-| Verifier accuracy | **not measured**: two live comparisons are a photo against itself (the stand-in) and one is a single deliberate mismatch that was refused; that shows the model can catch one obvious mismatch, not how often it does | the three live jobs above |
-| Live SAM 3.1 call on the Meta Model API | 1 call, HTTP 200, one `<\|box;…\|><\|mask;…\|>` token pair returned for the prompt "kurta" on `data/garments/kurta-01/1-front.jpg` (box confidence 0.957) | `evidence/sam-2026-10-28T03-04-30-778Z.json` (key and headers left out, image replaced by its size and hash); numbers in `docs/API-NOTES.md` |
-| SAM 3.1 masks decoded | yes, in tests: `@meta-sam/parser` 0.1.0 turns the logged answer into one box (27,169 to 651,1408 of 715×1600, confidence 0.957) and one full-frame mask whose garment pixels all fall inside that box | `test/sam-parser.test.ts` against `evidence/sam-2026-10-28T03-04-30-778Z.json` and the committed photo |
-| SAM 3.1 segmentation in the gate | **run live in one job**: `live-kurta-01-sam` (kurta-01, stand-in render) got 3 kurta segments from SAM 3.1 (scores 0.957, 0.949, 0.973); fidelity was unmeasured (REVIEW: that job ran before the JPEG decode of R3), so the gate said REVIEW. Its SAM calls have no per-call log in `evidence/` (only the receipt's segments entry). The re-run `live-kurta-01-sam-2` (189f87c) logged each of its 4 SAM calls (`evidence/sam-2026-10-28T05-4*.json`, key and headers left out) and measured fidelity on the masks | `data/jobs/live-kurta-01-sam/`, `data/jobs/live-kurta-01-sam-2/`, tests in `test/sam-parser.test.ts` and `test/serve.test.ts` |
-| Fidelity thresholds | **uncalibrated**: `npm run calibrate` (R4) scores 20 ordered pairs of the 5 committed kurta photos (same garment dir = same: 8 same, 12 different). With SAM masks for all 5 photos (run by Grok 28 Oct 13:50, after `live-kurta-02-sam`), all 20 pairs are measured: at the current values (x1) 0 of 12 different-garment pairs are falsely matched and 6 of 8 same-garment pairs are refused (every front/back pair; the two kurta-01 front/front pairs are released); at 1.5x looser, 0 false match, 0 false refuse, and the 2 kurta-02 front/back pairs go to REVIEW; at 2x looser, 8 of 12 different-garment pairs go to REVIEW (none released). This is the fidelity check alone (no verifier findings), on two garments: it is not a gate decision and no threshold is changed on it. Earlier run (11:35, kurta-01 masks only): 6 same pairs measured, 4 refused, 14 pairs unmeasured. With whole-frame masks (background included, not the SPEC §10 measure) the current values refuse all 8 same-garment pairs (front against back counts as same); at 2x looser the 8 are released and the 12 different-garment pairs go to REVIEW. 5 photos of 2 garments, so no threshold is changed on this. The CLI scores the fidelity check alone (no verifier findings, said in its output); in the scorer a pair with no findings now fails closed at the gate (REFUSE `not_verified`), fixed in N1 after PS-1 found it released. Since N10 the CLI also prints the four raw values (delta_e, hist, texture, area) for every pair and writes them under `pairs` in its `--out` file, values only, no threshold applied. In the 15:15 run (same 5 SAM masks): delta_e is 2.6 to 10.8 on the 8 same-garment pairs and 32.3 to 41.6 on the 12 different-garment pairs; texture is 0.45 to 0.94 on same and 0.34 to 0.61 on different, so the two overlap, and the 6 front/back same pairs refused at x1 are refused on texture (0.45 to 0.55, below 0.65). Two garments: an observation, not a threshold decision |  `config/fidelity.json`, `evidence/calibration-sam-20261028-1515.json` (per-pair values), `evidence/calibration-sam-2026-10-28.json` (5/5 masks), `evidence/calibration-sam-20261028.json`, `evidence/calibration-sam-20261028-1135.json`, `evidence/calibration-whole-frame-20261028.json` |
+| Test suite | <!--f:tests-->342<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Typecheck clean | yes | `npm run typecheck`, also run in CI |
+| Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->122<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->225<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->291<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), never used | `evidence/`, counts in `evidence/pack/summary.json` |
+| Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |
+| Verifier accuracy | **not measured in general.** The Muse Spark cross-check (MS4, verifier alone, no fidelity check): <!--f:ms4_pairs-->68<!--/f--> pairs, <!--f:ms4_runs-->204<!--/f--> runs; wrong garment refused <!--f:ms4_wrong_refused-->153 of 153<!--/f-->; same garment released <!--f:ms4_same_released-->24 of 30<!--/f-->; shortened try-ons held <!--f:ms4_changed_held-->17 of 21<!--/f-->, so the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the gate's fidelity check is what held those try-ons; the same decision on all 3 runs for <!--f:ms4_consistent-->65 of 68<!--/f--> pairs. Four garments only | `evidence/ms4-summary.json` |
+| Calibration | <!--f:cal_cases-->37<!--/f--> labelled renders (<!--f:cal_same-->18<!--/f--> same, <!--f:cal_different-->19<!--/f--> different) at the shipped thresholds: <!--f:cal_false_match-->0<!--/f--> false matches, <!--f:cal_false_refuse-->4<!--/f--> false refusals (all where the verifier gave no answer), <!--f:cal_unmeasured-->6<!--/f--> unmeasured; recorded decisions reproduced <!--f:cal_reproduced-->37 of 37<!--/f-->. A self-check, not an error rate | `evidence/calibration-jobs-2026-10-29.json` |
+| Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
 | Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. Opening it from disk (`file://`) was **not checked**: the browser used shows `file://` pages as a non-secure snapshot | also tested in Node against the same core |
 | Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form, every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
 | Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 115c3ba, no EXIF/GPS, no phone number; author email is the noreply address from 28 Oct) | made public by Manish on 28 Oct after the history scan |
 
 ## Built during the event
 
-Everything in this repository was written from the specification
-(`docs/SPEC.md`) during the hackathon, starting 26 Oct 2026 at 21:30 IST, with
-a new git history. The spec itself was written before the event and carried
-over; it marks every change made here with *(event)*. Config boilerplate
-(`tsconfig.json`, `.gitignore`) mirrors the pre-existing repo. ProofShot's pre-existing
-core stays in a separate private repository. It is not copied here and is
-only called as a hosted service.
+Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
+27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
+IST. Every commit in this repository was made during the event. The code was
+written here from the specification; no code from before the event was copied
+in.
+
+### Prior work used
+
+- `docs/SPEC.md`: the written specification of ProofShot's attributes, gate
+  rules and receipt format, first written on 24 Oct 2026, before the event, and
+  carried over. The code here is rewritten from it, and every change made to it
+  during the event is marked *(event)*.
+- Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
+  private repository.
+
+Nothing else from before the event is used. No pre-existing ProofShot service
+is called: the demo and every committed receipt use only the code in this
+repository and the providers named above (SAM 3.1 and Muse Spark 1.3 on
+`api.meta.ai`, Muse Spark Open on Baseten, muse-spark-open on Fireworks, Pruna
+on Replicate).
 
 ## License
 
