@@ -1,0 +1,25 @@
+{
+  "job_id": "live-kurta-01-composite-r2",
+  "records": [
+    {
+      "job_id": "live-kurta-01-composite-r2",
+      "task": "receipt_summary",
+      "receipt_head": "4e684d96fc6cad23a87b0c34cbe14cafd97c4f0b19513e16be84f48b83d06287",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Decision: RELEASE, the image can be published."
+    },
+    {
+      "job_id": "live-kurta-01-composite-r2",
+      "task": "listing_copy",
+      "receipt_head": "4e684d96fc6cad23a87b0c34cbe14cafd97c4f0b19513e16be84f48b83d06287",
+      "provider": "template",
+      "model": "none",
+      "generated": false,
+      "fallback_reason": "fireworks_failed",
+      "text": "Type: kurta (women's). Main colour: rust / orange."
+    }
+  ]
+}
