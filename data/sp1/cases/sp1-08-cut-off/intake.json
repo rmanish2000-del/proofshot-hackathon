@@ -1,0 +1,12 @@
+{
+  "garment": "sp1-08-cut-off",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "e9445585ad067b413e3964a56e91957294aaaede1556becfd48eedf8d1241c13",
+      "sha256": "e9445585ad067b413e3964a56e91957294aaaede1556becfd48eedf8d1241c13",
+      "removed": []
+    }
+  ]
+}

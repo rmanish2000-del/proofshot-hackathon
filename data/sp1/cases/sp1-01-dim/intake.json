@@ -1,0 +1,12 @@
+{
+  "garment": "sp1-01-dim",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "48f4a88f918e6e1c859f2d1df5ae1e86193cceb57aa698bcf4c8d3d60b272ece",
+      "sha256": "48f4a88f918e6e1c859f2d1df5ae1e86193cceb57aa698bcf4c8d3d60b272ece",
+      "removed": []
+    }
+  ]
+}

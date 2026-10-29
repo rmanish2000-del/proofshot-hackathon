@@ -1,0 +1,12 @@
+{
+  "garment": "sp1-09-too-small",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "d492489a258ba144ff23c80e532821956e5e2ed9c00da12ad90d708c324cacfd",
+      "sha256": "d492489a258ba144ff23c80e532821956e5e2ed9c00da12ad90d708c324cacfd",
+      "removed": []
+    }
+  ]
+}

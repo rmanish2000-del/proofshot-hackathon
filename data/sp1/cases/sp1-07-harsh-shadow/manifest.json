@@ -1,0 +1,28 @@
+{
+  "case": "sp1-07-harsh-shadow",
+  "n": 7,
+  "pain": "harsh phone shadow",
+  "synthetic": true,
+  "from": {
+    "garment": "shirt-plaid",
+    "photo": "data/garments/shirt-plaid/1-front.jpg",
+    "sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd"
+  },
+  "transform": {
+    "op": "hard_shadow",
+    "darken": 0.3
+  },
+  "encoder": "jpeg-js 92, JFIF only (no EXIF, no ICC)",
+  "photo": {
+    "name": "1-front.jpg",
+    "sha256": "8743ea660a4a31b124bb225497fba01691b1e558a6c947444aa87af5046a7fa4",
+    "width": 2448,
+    "height": 2676
+  },
+  "segment_prompt": "shirt",
+  "person": "none (the owner's flat garment photo, transformed)",
+  "expected": {
+    "decision": "REVIEW",
+    "rule": "render_quality (shadow)"
+  }
+}

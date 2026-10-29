@@ -33,7 +33,8 @@
     "ms3": "node --experimental-strip-types scripts/ms3-batch.ts",
     "ms4": "node --experimental-strip-types scripts/ms4-batch.ts",
     "verify:meta": "node --experimental-strip-types scripts/meta-verify.ts",
-    "evidence:pack": "node --experimental-strip-types scripts/evidence-pack.ts"
+    "evidence:pack": "node --experimental-strip-types scripts/evidence-pack.ts",
+    "sp1": "node --experimental-strip-types scripts/sp1.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
