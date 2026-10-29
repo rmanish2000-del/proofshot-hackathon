@@ -1,0 +1,28 @@
+{
+  "case": "sp1-09-too-small",
+  "n": 9,
+  "pain": "photo too small",
+  "synthetic": true,
+  "from": {
+    "garment": "shirt-plaid",
+    "photo": "data/garments/shirt-plaid/1-front.jpg",
+    "sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd"
+  },
+  "transform": {
+    "op": "downscale",
+    "long_edge": 400
+  },
+  "encoder": "jpeg-js 92, JFIF only (no EXIF, no ICC)",
+  "photo": {
+    "name": "1-front.jpg",
+    "sha256": "d492489a258ba144ff23c80e532821956e5e2ed9c00da12ad90d708c324cacfd",
+    "width": 366,
+    "height": 400
+  },
+  "segment_prompt": "shirt",
+  "person": "none (the owner's flat garment photo, transformed)",
+  "expected": {
+    "decision": "REVIEW",
+    "rule": "render_quality (resolution)"
+  }
+}

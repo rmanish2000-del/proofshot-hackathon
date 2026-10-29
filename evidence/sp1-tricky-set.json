@@ -1,0 +1,152 @@
+{
+  "item": "SP1 seller-pain tricky set (#23 6497097719)",
+  "generated_by": "npm run sp1",
+  "pipeline": "job:live: RENDER_PROVIDER=composite (v2), VERIFIER_PROVIDER=meta (Muse Spark 1.3, api.meta.ai), MODEL_SEGMENT meta/sam-3.1 (api.meta.ai), SEGMENT_PROMPT shirt (transform cases) or kurta (case 10); thresholds unchanged",
+  "jobs_root": "data/sp1/jobs",
+  "summary": {
+    "cases": 12,
+    "run": 5,
+    "not_run": 7,
+    "answered": 5,
+    "agree": 5,
+    "disagree": 0,
+    "released": 0
+  },
+  "rows": [
+    {
+      "n": 1,
+      "case": "sp1-01-dim",
+      "pain": "dim room, under-exposed/clipped",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (clipped)",
+      "status": "run",
+      "synthetic": true,
+      "actual": "REVIEW",
+      "actual_reason": "render_quality: CompositeQualityReview: over- or under-exposed photo",
+      "agrees": true,
+      "note": "synthetic: {\"op\":\"exposure\",\"gain\":0.04} on data/garments/shirt-plaid/1-front.jpg (manifest in data/sp1/cases/sp1-01-dim)"
+    },
+    {
+      "n": 2,
+      "case": "sp1-02-busy-background",
+      "pain": "busy bedspread background, fragmented mask",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (fragmentation)",
+      "status": "not_run",
+      "note": "needs real photo, not run: a busy background has to be photographed; pasting a texture behind a cut-out would test the paste, not the phone photo"
+    },
+    {
+      "n": 3,
+      "case": "sp1-03-creased-hem",
+      "pain": "creased hem read as hem mismatch",
+      "expected": "REVIEW",
+      "expected_rule": "soft hem mismatch",
+      "status": "not_run",
+      "note": "needs real photo, not run: creases are fabric folds; no pixel transform makes them"
+    },
+    {
+      "n": 4,
+      "case": "sp1-04-folded",
+      "pain": "folded garment, length hidden",
+      "expected": "REVIEW",
+      "expected_rule": "length not visible",
+      "status": "not_run",
+      "note": "needs real photo, not run: a folded garment has to be folded and photographed"
+    },
+    {
+      "n": 5,
+      "case": "sp1-05-mirror-angle",
+      "pain": "odd mirror angle, no person, hem uncertain",
+      "expected": "REVIEW",
+      "expected_rule": "hem uncertain",
+      "status": "not_run",
+      "note": "needs real photo, not run: a mirror shot needs the mirror; a warp of the flat photo is not one"
+    },
+    {
+      "n": 6,
+      "case": "sp1-06-moire",
+      "pain": "printed fabric moire, confident print_pattern mismatch",
+      "expected": "REFUSE",
+      "expected_rule": "hard print_pattern mismatch",
+      "status": "not_run",
+      "note": "needs real photo, not run: moire comes from the camera sensor meeting the print; synthetic moire would be a guess"
+    },
+    {
+      "n": 7,
+      "case": "sp1-07-harsh-shadow",
+      "pain": "harsh phone shadow",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (shadow)",
+      "status": "run",
+      "synthetic": true,
+      "actual": "REVIEW",
+      "actual_reason": "render_quality: CompositeQualityReview: harsh shadow across the garment; retake in shade",
+      "agrees": true,
+      "note": "synthetic: {\"op\":\"hard_shadow\",\"darken\":0.3} on data/garments/shirt-plaid/1-front.jpg (manifest in data/sp1/cases/sp1-07-harsh-shadow)"
+    },
+    {
+      "n": 8,
+      "case": "sp1-08-cut-off",
+      "pain": "sleeve or hem cut off at frame edge",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (edge_touch)",
+      "status": "run",
+      "synthetic": true,
+      "actual": "REVIEW",
+      "actual_reason": "render_quality: CompositeQualityReview: garment is cut off at the edge of the photo",
+      "agrees": true,
+      "note": "synthetic: {\"op\":\"crop_bottom\",\"keep\":0.7} on data/garments/shirt-plaid/1-front.jpg (manifest in data/sp1/cases/sp1-08-cut-off)"
+    },
+    {
+      "n": 9,
+      "case": "sp1-09-too-small",
+      "pain": "photo too small",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (resolution)",
+      "status": "run",
+      "synthetic": true,
+      "actual": "REVIEW",
+      "actual_reason": "render_quality: CompositeQualityReview: photo resolution too low",
+      "agrees": true,
+      "note": "synthetic: {\"op\":\"downscale\",\"long_edge\":400} on data/garments/shirt-plaid/1-front.jpg (manifest in data/sp1/cases/sp1-09-too-small)"
+    },
+    {
+      "n": 10,
+      "case": "sp1-10-other-kurta",
+      "pain": "different kurta by mistake",
+      "expected": "REFUSE",
+      "expected_rule": "hard mismatch",
+      "status": "run",
+      "synthetic": false,
+      "actual": "REFUSE",
+      "actual_reason": "hard_mismatch: color: mismatch at 0.98 on a hard attribute",
+      "agrees": true,
+      "note": "the image to publish is data/garments/kurta-02/1-front.jpg, the sources are kurta-01's own photos"
+    },
+    {
+      "n": 11,
+      "case": "sp1-11-dark-on-dark",
+      "pain": "dark garment on similar background, no mask",
+      "expected": "REFUSE",
+      "expected_rule": "render_failed (no mask)",
+      "status": "not_run",
+      "note": "needs real photo, not run: no committed garment is dark on a matching background; darkening one would change the garment, not the photo"
+    },
+    {
+      "n": 12,
+      "case": "sp1-12-correction",
+      "pain": "white-balance correction above dE 6",
+      "expected": "REVIEW",
+      "expected_rule": "render_quality (correction)",
+      "status": "not_run",
+      "note": "needs real photo, not run: white balance runs only on a near-neutral garment (C* <= 8) and no committed garment is that neutral, so it needs a grey or white garment shot under coloured light; a light ramp on shirt-plaid trips the shadow check before the correction check (offline: ramp to 0.5 passes with correction dE 3.27, ramp to 0.4 fails on shadow 0.61)"
+    }
+  ],
+  "stopped": [],
+  "limits": [
+    "Synthetic cases are one pixel transform of the owner's shirt-plaid front photo, so they test the checks, not a seller's real phone.",
+    "shirt-plaid is the base because its untouched front passes composite v2's pre-check; the untouched kurta-01 and kurta-02 fronts already fail it on clipping.",
+    "Cases 2, 3, 4, 5, 6, 11 and 12 need a real photo and were not run.",
+    "A disagreement is a finding to report; no threshold was changed for it."
+  ]
+}

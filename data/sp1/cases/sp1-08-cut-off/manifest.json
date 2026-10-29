@@ -1,0 +1,28 @@
+{
+  "case": "sp1-08-cut-off",
+  "n": 8,
+  "pain": "sleeve or hem cut off at frame edge",
+  "synthetic": true,
+  "from": {
+    "garment": "shirt-plaid",
+    "photo": "data/garments/shirt-plaid/1-front.jpg",
+    "sha256": "2aeafd1e6242affccefc78773a099a47b1edc4ce034b9ecf29aba4c995a32ddd"
+  },
+  "transform": {
+    "op": "crop_bottom",
+    "keep": 0.7
+  },
+  "encoder": "jpeg-js 92, JFIF only (no EXIF, no ICC)",
+  "photo": {
+    "name": "1-front.jpg",
+    "sha256": "e9445585ad067b413e3964a56e91957294aaaede1556becfd48eedf8d1241c13",
+    "width": 2448,
+    "height": 1873
+  },
+  "segment_prompt": "shirt",
+  "person": "none (the owner's flat garment photo, transformed)",
+  "expected": {
+    "decision": "REVIEW",
+    "rule": "render_quality (edge_touch)"
+  }
+}

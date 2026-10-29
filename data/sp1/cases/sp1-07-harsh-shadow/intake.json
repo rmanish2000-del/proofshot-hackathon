@@ -1,0 +1,12 @@
+{
+  "garment": "sp1-07-harsh-shadow",
+  "files": [
+    {
+      "source_name": "1-front.jpg",
+      "name": "1-front.jpg",
+      "source_sha256": "8743ea660a4a31b124bb225497fba01691b1e558a6c947444aa87af5046a7fa4",
+      "sha256": "8743ea660a4a31b124bb225497fba01691b1e558a6c947444aa87af5046a7fa4",
+      "removed": []
+    }
+  ]
+}
