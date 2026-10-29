@@ -440,6 +440,10 @@ The renderer takes an injected transport.
   will be our own garment photos under `data/garments/`, with metadata
   removed.
 
+## Evidence pack (#10)
+
+`evidence/pack/` is built by `npm run evidence:pack` from committed material only: every receipt in `data/jobs` (one row per render in `results.csv`, with chain check, providers, model ids and tokens), the call logs in `evidence/` (latency median and p90, and cost from logged usage, per stage), the MS4 cross-check, the calibration report and the copy. Museum samples (the Met, Rijksmuseum) are **not used**: that fetch was dropped on 29 Oct, so the pack covers the 4 real garments only (`kurta-01`, `kurta-02`, `shirt-plaid`, `shirt-zebra`), not the 12 #10 first asked for. A test fails if the committed pack no longer matches the receipts. Summary: `evidence/pack/README.md`.
+
 ## What is verified and what is not
 
 | Claim | Status | Evidence |
