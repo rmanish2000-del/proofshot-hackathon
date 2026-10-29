@@ -100,7 +100,7 @@ test("DEMO1b: every shot has seconds, each beat's shots fit its DEMO.md timecode
 test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md, timed like frames.txt, ending at the total", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
-  assert.ok(voice.get(7)!.startsWith("Every decision is written into a hash-chained receipt."), "beat 7 voiceover");
+  assert.ok(voice.get(6)!.startsWith("Every decision is written into a hash-chained receipt."), "beat 6 voiceover");
   const narration = shotNarration(DEMO_SHOTS, voice);
   const narrated = DEMO_SHOTS.filter((s) => narration.get(s.id));
   assert.ok(narrated.length > 0);
@@ -149,7 +149,7 @@ test("DEMO1c: captions.srt has one cue per narrated shot, verbatim from DEMO.md,
   assert.equal(piped.get(3), "Said.");
 });
 
-test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 and 6 carry the v5 lines, and S1's card shows beat 1", () => {
+test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 and 5 carry the v6 lines, and S1's card shows beat 1", () => {
   const voice = narrationFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8"));
   assert.equal(voice.get(1), "Build for Your World. An Indian boutique seller lists a shirt online.");
   assert.equal(
@@ -157,7 +157,7 @@ test("DEMO1f: captions.srt has no TBD cue: every shot is narrated, beats 1, 3 an
     "A pipeline smoke example first: the seller's own photo as the candidate. All nine attributes match, and the gate says RELEASE.",
   );
   assert.equal(
-    voice.get(6),
+    voice.get(5),
     "Then a different shirt. The verifier finds a hard colour mismatch and the gate says REFUSE. A wrong image cannot ship.",
   );
   for (const [beat, line] of voice) assert.ok(!line.includes("TBD") && !line.includes("["), `beat ${beat} voiceover has no TBD`);
@@ -187,16 +187,16 @@ test("DEMO1g: the DEMO.md beat table has no [TBD], its timecodes are the cumulat
     at = sec(to!);
   }
   assert.equal(at, DEMO_SHOTS.reduce((n, s) => n + s.seconds, 0), "last timecode is the shots.json total");
-  assert.equal(at, 90, "1:30 (Codex review: 90 s)");
+  assert.equal(at, 76, "1:16 (v6: the 14 s try-on beat dropped from the 90 s v5 cut)");
 });
 
-test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the Words cell is the real count, and beats 2, 4 and 7 carry the v5 lines", () => {
+test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the Words cell is the real count, and beats 2, 4 and 6 carry the v6 lines", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   const voice = narrationFromDemoMd(md);
   const beats = beatSecondsFromDemoMd(md);
   const table = md.split("## Timecode table")[1]!.split("\n## ")[0]!;
   const rows = table.split("\n").filter((l) => /^\|\s*\d+\s*\|/.test(l));
-  assert.equal(rows.length, 8);
+  assert.equal(rows.length, 7);
   for (const row of rows) {
     const beat = Number(/^\|\s*(\d+)/.exec(row)![1]);
     const words = voice.get(beat)!.split(/\s+/).filter(Boolean).length;
@@ -210,25 +210,25 @@ test("DEMO1h: every beat's voiceover is within its word cap (seconds x 2.5), the
   );
   assert.equal(
     voice.get(4),
-    "Now an AI try-on of a long kurta. It came back shortened. The verifier matched every attribute, but the measured fidelity check caught the shrunken garment, so the gate held it for REVIEW.",
+    "Next, a ghost-mannequin composite of the plaid shirt. The brand label is matched below its confidence floor, so the gate says REVIEW.",
   );
   assert.equal(
-    voice.get(7),
+    voice.get(6),
     "Every decision is written into a hash-chained receipt. The verify page checks every hash in the browser, with no server: VALID. Change one byte, and it says TAMPERED.",
   );
   assert.ok(!table.includes("wait on Grok"), "no open note under the table");
 });
 
-test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S8 is the receipt bytes, the checklist asks for verify.html from disk", () => {
+test("DEMO1i: DEMO.md claims no Wi-Fi or offline state that no frame shows; S7 is the receipt bytes, the checklist asks for verify.html from disk", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   assert.ok(!/wi-?fi/i.test(md), "no Wi-Fi in DEMO.md");
   assert.ok(!/offline/i.test(md), "no offline claim in DEMO.md");
-  const s8 = md.split("\n").find((l) => /^\|\s*S8\s*\|/.test(l))!;
-  assert.match(s8, /receipt bytes around the byte that will change/);
+  const s7 = md.split("\n").find((l) => /^\|\s*S7\s*\|/.test(l))!;
+  assert.match(s7, /receipt bytes around the byte that will change/);
   assert.ok(md.includes("- [ ] verify.html opened from disk (file:// URL visible), no server running."));
 });
 
-test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload page was browser-checked, no pinned test count or commit, the RELEASE is a pipeline smoke example, and the try-on beat shows a held try-on with no image", () => {
+test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload page was browser-checked, no pinned test count or commit, the RELEASE is a pipeline smoke example, and the demo shows shirts only: no kurta job, no try-on beat", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   for (const stale of ["no generative render transport", "not checked in a real browser", "214", "c4feb75", "generated on-model image exists"]) {
     assert.ok(!md.includes(stale), `no "${stale}" in DEMO.md`);
@@ -238,18 +238,11 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
   const release = md.split("\n").find((l) => l.startsWith("| Pipeline smoke example (RELEASE)"))!;
   assert.match(release, /owner's own front photo/);
   assert.match(release, /\*\*not\*\* accuracy/);
-  const tryon = md.split("\n").find((l) => l.startsWith("| AI try-on held by the fidelity check"))!;
-  assert.match(tryon, /REVIEW, citing fidelity/);
-  // The beat's job really is a try-on whose gate decision was held on fidelity, with every verifier finding a match.
-  const lines = readFileSync(join(root, "data/jobs/live-kurta-01-tryon-m/receipt.jsonl"), "utf8").trim().split("\n").map((l) => JSON.parse(l));
-  assert.equal(lines.find((e) => e.kind === "render").payload.provider, "replicate-pruna-tryon");
-  assert.ok(lines.find((e) => e.kind === "verifier").payload.findings.every((f: { verdict: string }) => f.verdict === "match"));
-  const gate = lines.find((e) => e.kind === "gate").payload;
-  assert.equal(gate.decision, "REVIEW");
-  assert.equal(gate.cited.rule, "fidelity");
-  // Its frames never scroll to the image section (the try-on shows a synthetic person).
-  const s5 = DEMO_SHOTS.find((s) => s.id === "S5")!;
-  assert.ok(s5.frames.every((f) => f.path.includes("live-kurta-01-tryon-m") && !f.actions.some((a) => "scrollTo" in a && a.scrollTo === "#h-result")));
+  // v6 (Manish): shirts only. No shot opens a kurta job, and the timecode and shot tables name none.
+  for (const shot of DEMO_SHOTS) for (const f of shot.frames) assert.ok(!f.path.includes("kurta"), `${f.name}: no kurta job`);
+  const tables = md.split("## Timecode table")[1]!.split("## Recording checklist")[0]!;
+  assert.ok(!/kurta|try-on/i.test(tables), "no kurta or try-on in the timecode or shot table");
+  assert.ok(!md.includes("| AI try-on held by the fidelity check"), "no try-on row");
   const gen = md.split("\n").find((l) => l.startsWith("| A generated on-model image"))!;
   assert.match(gen, /no generated image has been released/);
   // The call count is read from the committed receipts, never typed from memory.
@@ -259,6 +252,9 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
     return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
   });
   assert.match(gen, new RegExp(`the ${tryons.length} live try-on calls committed so far \\(${tryons.length} receipts`));
+  // The try-on beat was dropped, not swapped, because no committed shirt job has a try-on render.
+  assert.ok(tryons.length > 0 && tryons.every((d) => d.includes("kurta")), "every committed try-on is a kurta job");
+  assert.match(gen, /there is no shirt try-on, so this video has no try-on beat/);
 });
 
 test("DEMO1b: the replay log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
@@ -319,7 +315,7 @@ test("DEMO1: PROOFSHOT_BROWSER is tried first; Windows looks for Edge and Chrome
   assert.ok(win.includes("C:\\PF\\Google\\Chrome\\Application\\chrome.exe"));
 });
 
-test("DEMO1k: the judge page opens a linked job even when it is not among the 20 newest (the S5 try-on job is older), instead of showing the newest", () => {
+test("DEMO1k: the judge page opens a linked job even when it is not among the 20 newest (an older job, e.g. a try-on), instead of showing the newest", () => {
   const html = readFileSync(join(root, "web/judge.html"), "utf8");
   assert.match(html, /\(older job\)/);
   assert.match(html, /if \(want && \[\.\.\.sel\.options\]\.some\(\(o\) => o\.value === want\)\) sel\.value = want;/);
