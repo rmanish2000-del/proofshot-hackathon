@@ -24,7 +24,8 @@
     "demo:capture": "node --experimental-strip-types scripts/demo-capture.ts",
     "demo:stage": "node --experimental-strip-types scripts/demo-stage.ts",
     "composite:preview": "node --experimental-strip-types scripts/composite-preview.ts",
-    "make:template":"node --experimental-strip-types scripts/make-template.ts"
+    "make:template":"node --experimental-strip-types scripts/make-template.ts",
+    "copy:llama": "node --experimental-strip-types scripts/llama-copy.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
