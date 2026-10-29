@@ -1,0 +1,67 @@
+{
+  "label": "shirt-plaid-composite-v2-try",
+  "garment_dir": "data/garments/shirt-plaid",
+  "render": "data/jobs/live-shirt-plaid-composite-v2/live-shirt-plaid-composite-v2-r0.png",
+  "started_at": "2026-10-29T13:21:59.344Z",
+  "image_bytes": 9657899,
+  "ok": true,
+  "findings": [
+    {
+      "attribute": "color",
+      "verdict": "match",
+      "confidence": 0.95,
+      "note": "White base with mustard-yellow, navy-blue and light-blue plaid identical in both."
+    },
+    {
+      "attribute": "print_pattern",
+      "verdict": "match",
+      "confidence": 0.96,
+      "note": "Large check plaid with navy blocks, mustard bands and thin red lines matches."
+    },
+    {
+      "attribute": "logo_text",
+      "verdict": "uncertain",
+      "confidence": 0.6,
+      "note": "Green interior neck label visible in both but text not legible in render, cannot confirm wording."
+    },
+    {
+      "attribute": "collar",
+      "verdict": "match",
+      "confidence": 0.95,
+      "note": "Standard pointed shirt collar with same plaid in both."
+    },
+    {
+      "attribute": "sleeve_length",
+      "verdict": "match",
+      "confidence": 0.95,
+      "note": "Long sleeves with button cuffs in both."
+    },
+    {
+      "attribute": "hem",
+      "verdict": "match",
+      "confidence": 0.9,
+      "note": "Curved shirttail hem visible in both."
+    },
+    {
+      "attribute": "pocket_count",
+      "verdict": "match",
+      "confidence": 0.85,
+      "note": "Single chest pocket on wearer left in both, count 1."
+    },
+    {
+      "attribute": "buttons",
+      "verdict": "match",
+      "confidence": 0.9,
+      "note": "White front placket buttons and cuff buttons match."
+    },
+    {
+      "attribute": "fabric_texture",
+      "verdict": "match",
+      "confidence": 0.85,
+      "note": "Same woven cotton twill appearance, no texture change."
+    }
+  ],
+  "decision": "REVIEW",
+  "cited": "logo_text: uncertain at 0.60, below the 0.85 floor",
+  "log": "evidence/verifier-2026-10-29T13-21-59-390Z.json"
+}

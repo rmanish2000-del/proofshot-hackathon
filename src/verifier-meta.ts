@@ -154,7 +154,10 @@ export interface MetaVerifierOptions {
  * the redacted log went to `onCall`. An answer cut off at max_output_tokens is
  * never read: it is asked once more at the retry limit, and a second cut-off
  * throws VerifierTruncatedError. A request that times out is sent once more
- * with the longer timeout. Every attempt is listed in the usage when more than
+ * with the longer timeout. A request that fails before any answer (a network
+ * TypeError such as "fetch failed": the server closed a pooled keep-alive
+ * socket, NR3 shirt-plaid, 29 Oct) is sent once more on a new attempt; nothing
+ * else is retried, a spend-cap refusal included. Every attempt is listed in the usage when more than
  * one was sent.
  */
 export function metaVerifier(opts: MetaVerifierOptions): Verifier {
@@ -168,6 +171,7 @@ export function metaVerifier(opts: MetaVerifierOptions): Verifier {
       const images = [...req.sources.map((s) => s.bytes), req.render].map((b) => ({ bytes: b.length, ...(imageSize(b) ?? { width: 0, height: 0 }) }));
       const attempts: VerifierAttempt[] = [];
       let timeoutRetried = false;
+      let networkRetried = false;
       const send = async (limit: number): Promise<{ body: unknown; text: string }> => {
         for (;;) {
           const timeout = timeoutRetried ? (opts.retryTimeoutMs ?? VERIFIER_RETRY_TIMEOUT_MS) : (opts.timeoutMs ?? VERIFIER_TIMEOUT_MS);
@@ -177,6 +181,7 @@ export function metaVerifier(opts: MetaVerifierOptions): Verifier {
           let raw = "";
           let error: string | null = null;
           let timedOut = false;
+          let network = false;
           try {
             const res = await opts.fetch(META_MODEL_API_URL, {
               method: "POST",
@@ -190,6 +195,7 @@ export function metaVerifier(opts: MetaVerifierOptions): Verifier {
           } catch (e) {
             error = errorText(e);
             timedOut = e instanceof Error && e.name === "TimeoutError";
+            network = !timedOut && e instanceof TypeError;
           }
           const finished = now();
           const log = {
@@ -211,6 +217,10 @@ export function metaVerifier(opts: MetaVerifierOptions): Verifier {
             attempts.push({ max_tokens: limit, finish_reason: null, ...(timedOut || timeoutRetried ? { timeout_ms: timeout } : {}), error });
             if (timedOut && !timeoutRetried) {
               timeoutRetried = true;
+              continue;
+            }
+            if (network && !networkRetried) {
+              networkRetried = true;
               continue;
             }
             const err = new VerifierTransportError(error.replace(/^VerifierTransportError: /, ""), timedOut);
