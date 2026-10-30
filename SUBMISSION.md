@@ -29,7 +29,7 @@ ProofShot is a release gate for those images. For one candidate image it segment
 
 Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of the receipt and it says TAMPERED, with the entry number.
 
-What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_total-->7<!--/f--> AI try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none released); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check held every one. That is <!--f:garments-->4<!--/f--> garments, all the owner's own, so it is not a general accuracy claim.
+What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_total-->7<!--/f--> AI try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none released); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). That is <!--f:garments-->4<!--/f--> garments, all the owner's own, so it is not a general accuracy claim.
 
 English and Hindi listing copy is written after the gate, from the receipt, by muse-spark-open on Fireworks.
 
@@ -213,7 +213,7 @@ same-garment runs released, <!--f:ms4_consistent-->65 of 68<!--/f--> pairs gave 
 The other 21 of the <!--f:ms4_runs-->204<!--/f--> are the shortened try-on checks (<!--f:tryon_total-->7<!--/f--> try-on images
 against their own garment, 3 runs each, `changed` in
 `evidence/ms4-summary.json`): Muse Spark alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the
-fidelity check is what held all <!--f:tryon_total-->7<!--/f--> try-ons in the gate. All <!--f:ms4_runs-->204<!--/f--> runs were
+fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-ons (the gate cited fidelity for 4, the verifier for 3). All <!--f:ms4_runs-->204<!--/f--> runs were
 answered; none is a not_verified run.
 
 Spend, ledger figures (ProofShot's own spend ledgers, `npm run ledger` on 29
@@ -309,7 +309,7 @@ endpoint URL in `src/` and `scripts/`.
 - *Did any AI on-model image get released?* No: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> committed try-on
   images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`). The
   verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
-  check is what held every one in the gate. All <!--f:tryon_total-->7<!--/f--> are kurta jobs, so the
+  check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). All <!--f:tryon_total-->7<!--/f--> are kurta jobs, so the
   demo, which shows the two shirts only, has no AI on-model image, and no new
   paid call was made for the video (`docs/DEMO.md`,
   `test/demo-capture.test.ts`).
@@ -333,7 +333,7 @@ from intake to the gate decision into a SHA-256 hash-chained receipt, and
 `web/verify.html` checks that chain in the browser. In calibration, the gate
 reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x with <!--f:cal_false_match-->0<!--/f--> false matches. In the
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
-fidelity check held all <!--f:tryon_total-->7<!--/f--> try-on images in the gate.
+fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-on images.
 
 Checked against: Built during the event (first commit 15658a4), Calibration
 and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`.
