@@ -26,9 +26,11 @@ SAM 3.1, makes a candidate (composite v2, the seller's own garment pixels on a
 ghost mannequin, no image model; or an AI try-on with Pruna on Replicate),
 verifies it against those photos with Muse Spark 1.3, measures fidelity on the
 SAM 3.1 masks, and lets a deterministic gate decide RELEASE, REVIEW or REFUSE.
-Every step goes into a SHA-256 hash-chained receipt, and `web/verify.html`
-re-checks that receipt in the browser with WebCrypto. English and Hindi
-listing copy is written after the gate by muse-spark-open on Fireworks.
+Every step from intake to the gate decision goes into a SHA-256 hash-chained
+receipt, and `web/verify.html` re-checks that receipt in the browser with
+WebCrypto. English and Hindi listing copy is written after the gate by
+muse-spark-open on Fireworks, from the receipt, and is kept outside the chain
+(`data/copy`, each record naming the receipt head it was written from).
 
 Checked against: README "What each Meta model does" (the model table) and
 "How the gate decides", `src/pipeline.ts`, `data/jobs/live-kurta-0*-tryon*`.
