@@ -63,16 +63,17 @@ Checked against:
 ## Calibration
 
 `npm run calibrate:jobs` re-judges <!--f:cal_cases-->37<!--/f--> labelled renders from committed receipts
-(<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different) at threshold factors 0.5x to 2x. At 1x it
-reproduces the recorded gate decision on <!--f:cal_reproduced-->37 of 37<!--/f-->. The gate reports <!--f:cal_false_match-->0<!--/f--> false
-matches at 1x (0 at every factor in the report). At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them renders
-where the verifier gave no answer (not_verified), so they are not a threshold
-effect (two of them, `live-shirt-plaid-composite-v2` and `-r2`, are the two
-failed runs under Challenges; the other two are `live-kurta-01` and
-`live-kurta-01-composite`, whose verifier answered with output that was not
-JSON); <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. The <!--f:cal_cases-->37<!--/f--> includes those <!--f:cal_unmeasured-->6<!--/f--> unmeasured
-renders; the <!--f:cal_skipped-->6<!--/f--> fixture renders are not in the <!--f:cal_cases-->37<!--/f-->: they are skipped because
-their fidelity values were written, not measured. No threshold changed: the
+(<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different) at threshold factors 0.5x to 2x. At 1x,
+<!--f:cal_reproduced-->37 of 37<!--/f--> rows match the gate decision each receipt recorded. <!--f:cal_unmeasured-->6<!--/f--> of those <!--f:cal_cases-->37<!--/f--> are
+unmeasured (no mask, so the fidelity check could not run); they stay in the
+<!--f:cal_cases-->37<!--/f--> and in the counts below. A further <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped,
+outside the <!--f:cal_cases-->37<!--/f-->, because their fidelity values were written, not measured.
+The gate reports <!--f:cal_false_match-->0<!--/f--> false matches at 1x (0 at every factor in the report).
+At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals: two failed verifier calls
+(`live-shirt-plaid-composite-v2` and `-r2`, the failed runs under Challenges)
+and two verifier outputs that were not JSON (`live-kurta-01`,
+`live-kurta-01-composite`), all recorded as not_verified, so they are not a
+threshold effect. No threshold changed: the
 0.5x to 2x factor sweep only reports, and the configured thresholds in
 `config/fidelity.json` were not edited after it. Four garments and many
 repeated images: this is not a calibrated error rate.
@@ -149,10 +150,9 @@ every committed try-on a kurta job).
 
 Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
-IST. Every commit in this repository was made during the event. The code was
-written here from the specification; no product code from before the event
-was copied in. The written specification and the config boilerplate were
-carried over, as listed under Prior work used below.
+IST. `git log` has no commit dated before it. The prior work used is
+`docs/SPEC.md` and the config boilerplate only, as listed under Prior work used
+below; the code was written here from that specification.
 
 **Prior work used:**
 
@@ -163,9 +163,8 @@ carried over, as listed under Prior work used below.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
 
-Nothing else from before the event is used. No pre-existing ProofShot service
-is called: the demo and every committed receipt use only the code in this
-repository and the providers named under Built with (SAM 3.1 and Muse Spark 1.3 on
+The demo and every committed receipt use only the code in this repository and
+the hosted models named under Built with (SAM 3.1 and Muse Spark 1.3 on
 `api.meta.ai`, Muse Spark Open on Baseten, muse-spark-open on Fireworks, Pruna
 on Replicate).
 
@@ -177,16 +176,15 @@ endpoint URL in `src/` and `scripts/`.
 
 - *What is the first commit, and is pre-event code in it?* `4aa99f9`, 27 Oct
   2026 at 11:10 IST, after the 26 Oct 21:30 IST opening (`git log --reverse`).
-  No product code from before the event is in it or in any later commit: the
-  gate, receipt chain, verify page, provider code, demo and evidence were all
-  written here.
+  `git log` has no commit dated before it, and the gate, receipt chain, verify
+  page, provider code, demo and evidence are all in commits from 4aa99f9 on.
 - *What was carried over?* Only `docs/SPEC.md` (the written specification,
   with event changes marked *(event)*) and the config boilerplate
   (`tsconfig.json`, `.gitignore`), as listed under Prior work used.
-- *Is any pre-existing service called?* No. The demo and every receipt use
+- *What do the demo and the receipts call?* The demo and every receipt use
   only this repository's code and the hosted models named under Built with
-  (the `provider` field of each receipt in `data/jobs`); no pre-existing
-  ProofShot service exists or is called.
+  (the `provider` field of each receipt in `data/jobs`, and the endpoint URLs
+  in `src/` and `scripts/`).
 - *Why does the demo show no AI on-model image?* All <!--f:tryon_total-->7<!--/f--> committed try-on
   receipts are kurta jobs, and the gate held every one (<!--f:tryon_refuse-->5<!--/f--> REFUSE,
   <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`); the demo shows the two

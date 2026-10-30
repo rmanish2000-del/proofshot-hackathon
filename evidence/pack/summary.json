@@ -3,7 +3,7 @@
   "sources": {
     "receipts": "data/jobs/*/receipt.jsonl",
     "call_logs": "evidence/{sam,verifier,fireworks}-*.json, evidence/ms4/verifier-*.json",
-    "museum_samples": "not used (the Met / Rijksmuseum fetch was dropped on 29 Oct; no museum image is in this pack)"
+    "museum_samples": "not used (no museum-image fetch is logged in evidence/, and no museum image is in this pack)"
   },
   "receipts": {
     "jobs": 42,
@@ -155,11 +155,19 @@
     "factor": "x1 (config/fidelity.json)",
     "same": 18,
     "different": 19,
+    "cases": 37,
     "judged_as_labelled": 29,
+    "same_released": 10,
+    "different_held": 19,
     "false_match": 0,
     "false_refuse": 4,
     "same_sent_to_review": 4,
-    "unmeasured": 6
+    "unmeasured": 6,
+    "unmeasured_within": {
+      "as_labelled": 2,
+      "false_refuse": 1,
+      "same_review": 3
+    }
   },
   "copy": {
     "jobs": 42,
@@ -209,6 +217,6 @@
   "limits": [
     "4 real garments (kurta-01, kurta-02, shirt-plaid, shirt-zebra), all the owner's own; the plan for this pack (an issue in the private coordination repository, not in this one) asked for 12 or more, and no museum garments are used.",
     "Latency is per committed call, across days and payload sizes; it is not a controlled benchmark.",
-    "Cost is the ledger rule applied to logged usage (tokens x price table; SAM flat); no provider invoice was read."
+    "Cost is a token estimate from the price table (SAM flat, UNVERIFIED price); no provider invoice was read."
   ]
 }
