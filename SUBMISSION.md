@@ -1,4 +1,4 @@
-# ProofShot: Devpost submission fields
+# ProofShot: submission fields
 
 **Track:** Indie Developer. **Team:** solo, Manish Patel.
 
@@ -8,6 +8,59 @@ The source is named under each section. Updated 29 Oct 2026 from the Codex
 review, on master after d0499ca. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
+
+## Form answers (paste-ready)
+
+For the Cerebral Valley submit form. Paste from the rendered page (the numbers are kept current by
+`npm run figures`). Every answer is from this repository; the evidence for each one is in the sections below
+and in README.md. Anything not in the repository is **TBD**.
+
+**Project name:** ProofShot
+
+**Tagline:** A release gate for seller listing images: each candidate image is checked against the seller's own photos, a deterministic gate decides RELEASE, REVIEW or REFUSE, and every decision gets a hash-chained receipt.
+
+**Short description:** ProofShot checks a candidate listing image against the seller's own phone photos before it goes on sale. SAM 3.1 segments the garment, Muse Spark 1.3 on the Meta Model API checks nine attributes, a fidelity check measures the masked regions, and a deterministic code gate (not a model) decides RELEASE, REVIEW or REFUSE. Every step goes into a SHA-256 hash-chained receipt that a single web page verifies in the browser with no server.
+
+**Long description:**
+
+An Indian boutique seller lists garments online from their own phone photos. Any image that goes on the listing, a cleaned-up product shot or an AI try-on, can quietly change the garment: its colour, its print, its length. The buyer then gets something other than what was photographed.
+
+ProofShot is a release gate for those images. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a ghost mannequin with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
+
+Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of the receipt and it says TAMPERED, with the entry number.
+
+What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_total-->7<!--/f--> AI try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none released); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check held every one. That is <!--f:garments-->4<!--/f--> garments, all the owner's own, so it is not a general accuracy claim.
+
+English and Hindi listing copy is written after the gate, from the receipt, by muse-spark-open on Fireworks.
+
+**Track and team:** Indie Developer track. Solo: Manish Patel.
+
+**Theme:** Build for Your World (Indian boutique sellers' listing images).
+
+**Meta models used (logged calls):**
+
+| Model | Served by | Role | Logged calls |
+|---|---|---|---|
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: masks for the composite and the fidelity check | <!--f:sam_calls-->130<!--/f--> |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
+| Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier. Built with Muse Spark Open | <!--f:baseten_calls-->19<!--/f--> |
+| muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy, written after the gate | <!--f:fireworks_calls-->293<!--/f--> |
+
+The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime. AI try-on candidates came from Pruna on Replicate (<!--f:pruna_calls-->7<!--/f--> calls, all held by the gate); that is not a Meta model.
+
+**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `4aa99f9`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
+
+**Repository:** https://github.com/rmanish2000-del/proofshot-hackathon
+
+**Licence:** MIT (`LICENSE`).
+
+**Demo video:** YOUTUBE_URL_TBD
+
+**Still TBD:** the video link; whether the narration is the TTS voice or Manish's own; any form field not listed here (for example a thumbnail or social links).
+
+Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
+the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
+work), `docs/DEMO.md`, `docs/prior-work/README.md`, `LICENSE`.
 
 ## Inspiration
 
