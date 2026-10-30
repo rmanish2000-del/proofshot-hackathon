@@ -103,7 +103,7 @@ const md = [
   "",
   "## Verify a receipt offline",
   "",
-  "Open `web/verify.html` served over local HTTP (checked that way; opening it from disk is not yet checked). It makes no network request: its Content-Security-Policy blocks every request. Give it a job's `receipt.jsonl` and its released image: it says VALID. Change one byte of the receipt and give it again: it says TAMPERED. `test/check.test.ts` runs the same check in Node with the same `src/core.js`.",
+  "Open `web/verify.html` from disk or served over local HTTP (both checked: over HTTP in Chromium, from disk in headless Edge by the demo capture). It makes no network request: its Content-Security-Policy blocks every request. Give it a job's `receipt.jsonl` and its released image: it says VALID. Change one byte of the receipt and give it again: it says TAMPERED. `test/check.test.ts` runs the same check in Node with the same `src/core.js`.",
   "",
   "## Adversarial cases",
   "",
