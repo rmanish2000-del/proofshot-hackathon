@@ -422,13 +422,14 @@ committed.
   off, is not used: the record holds the template text and says why.
 - Spend caps (CAP1 / CAP1b, 29 Oct, enforced in code with a ledger entry per
   call, one ledger per account in `%LOCALAPPDATA%\ProofShot`; `npm run ledger`
-  prints spent, batch left and reserve left). A batch stops at the cap; the
+  prints spent, batch left and reserve left; "spent" is the sum of the
+  ledger's per-call estimates, not a provider bill). A batch stops at the cap; the
   reserve above it is for the live judge demo and re-runs and is spent only
   by a call made with `PROOFSHOT_USE_RESERVE=1`, never past cap + reserve.
   Fireworks: 60 USD batch + 40 reserve (`src/fireworks-copy.ts`). Meta Model
   API credit (`api.meta.ai`: SAM 3.1, Muse Spark): 80 USD batch + 70 reserve
-  (`src/spend-meta.ts`). Baseten (the muse-spark-open verifier, billed by
-  Baseten, not the Meta credit): its own ledger, 5 USD, no reserve, until a
+  (`src/spend-meta.ts`). Baseten (the muse-spark-open verifier, paid from
+  the Baseten account, not the Meta credit): its own ledger, 5 USD, no reserve, until a
   figure is set. Replicate 5 USD. A call over its limit is refused before it is
   sent, so the step fails closed. Prices: muse-spark-open 1.25 / 4.25 USD per
   million tokens in / out (Fireworks and Baseten pages); SAM 3.1 2.50 USD per

@@ -104,7 +104,7 @@ const md = [
   "",
   "## Latency and cost per stage (committed call logs)",
   "",
-  "| Stage | Calls | Answered | Failed | Median ms | p90 ms | Median USD/call | USD total |",
+  "| Stage | Calls | Answered | Failed | Median ms | p90 ms | Median USD/call (estimate) | USD total (estimate) |",
   "|---|---|---|---|---|---|---|---|",
   ...stages.map(stageRow),
   "",
