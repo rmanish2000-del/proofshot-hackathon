@@ -4,7 +4,7 @@
 
 1. **All new hackathon code, docs and assets go only into this repository,
    `rmanish2000-del/proofshot-hackathon`** (branch `master`, first commit
-   4aa99f9). They are rebuilt from the spec (`docs/SPEC.md`), never copied from
+   15658a4). They are rebuilt from the spec (`docs/SPEC.md`), never copied from
    old code. The README states which code was written during the event and
    labels open-source dependencies and public datasets.
 2. **The old repo `rmanish2000-del/proofshot` stays private.** It is only for

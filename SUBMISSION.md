@@ -5,7 +5,7 @@
 Every field below is written from committed evidence in this repository
 (receipts in `data/jobs`, call logs and reports in `evidence/`, the README).
 The source is named under each section. Updated 29 Oct 2026 from the Codex
-review, on master after d0499ca. Earlier Challenges and Calibration drafts were
+review, on master after 7de2c9c. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
 
@@ -48,7 +48,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime. AI try-on candidates came from Pruna on Replicate (<!--f:pruna_calls-->7<!--/f--> calls, all held by the gate); that is not a Meta model.
 
-**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `4aa99f9`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
+**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
 **Repository:** https://github.com/rmanish2000-del/proofshot-hackathon
 
@@ -127,15 +127,15 @@ Checked against:
 Checked against:
 - No findings, refused: `data/jobs/live-kurta-01` (gate REFUSE not_verified).
 - No stored mask: `data/jobs/live-kurta-01-mismatch` has no segment with mask
-  bytes; the judge view line is from a13273f.
-- Copy audit and fix: 86cffe1, 3f891ec (`data/copy`: <!--f:copy_texts-->168<!--/f--> texts,
+  bytes; the judge view line is from 7a339a5.
+- Copy audit and fix: 03f63c4, a1f5b07 (`data/copy`: <!--f:copy_texts-->168<!--/f--> texts,
   <!--f:copy_model-->164<!--/f--> by the model, <!--f:copy_template-->4<!--/f--> template, from `evidence/pack/summary.json`). These
   are final copy texts, not model calls; the Fireworks call count under Built
   with is higher because retries and rewrites are logged too.
 - Caps and reserve: README spend section (Fireworks 60 USD batch + 40 reserve,
   Meta Model API 80 USD batch + 70 reserve).
 - Network retry: `live-shirt-plaid-composite-v2` and `-r2` (REFUSE
-  not_verified, "fetch failed"), the retry in fa4f126 (test MS2 7).
+  not_verified, "fetch failed"), the retry in b35c7b0 (test MS2 7).
 - Four garments: `data/garments` has kurta-01, kurta-02, shirt-plaid and
   shirt-zebra with photos.
 
@@ -159,7 +159,7 @@ repeated images: this is not a calibrated error rate.
 
 Checked against `evidence/calibration-jobs-2026-10-29.json` (gate table: same
 18, different 19, false_match 0 at every factor, false_refuse 10, 5, 4, 4, 4
-at x0.5 to x2) and the run on d0499ca, which printed "x1 against the gate
+at x0.5 to x2) and the run on 7de2c9c, which printed "x1 against the gate
 decision each receipt recorded: 37 of 37 the same".
 
 ## Built with / How we built it
@@ -200,17 +200,17 @@ these is a billed total. The pack's Meta estimates (SAM 3.1 0.33 + Muse Spark
 1.3 5.83, about 6.16 USD estimated, in `evidence/pack/README.md`) are computed
 differently: they price every
 committed call log, while 5.99 is the ledger as read on 29 Oct, which starts at
-dd7d280 and so leaves out the 51 SAM calls logged before it (0.13 USD estimated)
+25d7afd and so leaves out the 51 SAM calls logged before it (0.13 USD estimated)
 and the 9 calls logged after that reading (0.04 USD estimated).
 The Baseten 0 is not a charge of zero: the spend ledgers were added on 29 Oct
-at 10:53 IST (dd7d280), and every one of the <!--f:baseten_calls-->19<!--/f--> Baseten calls is logged
+at 10:53 IST (25d7afd), and every one of the <!--f:baseten_calls-->19<!--/f--> Baseten calls is logged
 earlier (`evidence/verifier-*.json`, 28 Oct 09:25 IST to 29 Oct 06:13 IST), so none has a ledger entry. Their token
 estimate is 0.30 USD (estimate, `evidence/pack/README.md`); Baseten's own bill
 was not read, so the amount actually charged is UNVERIFIED.
 
 Checked against: README "What each Meta model does" and "Limits",
 `evidence/pack/summary.json` (call counts), `evidence/ms4-summary.json`,
-`package.json`, `npm run ledger` on 29 Oct after d0499ca.
+`package.json`, `npm run ledger` on 29 Oct after 7de2c9c.
 
 ## Demo script (76 s)
 
@@ -232,11 +232,13 @@ every committed try-on a kurta job).
 
 ## Built during the event and prior work
 
-Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
+Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
 IST. `git log` has no commit dated before it. The prior work used is
 `docs/SPEC.md` and the config boilerplate only, as listed under Prior work used
 below; the code was written here from that specification.
+
+History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones.
 
 **Prior work used:**
 
@@ -268,10 +270,10 @@ endpoint URL in `src/` and `scripts/`.
 
 ## Questions a judge may ask
 
-- *What is the first commit, and is pre-event code in it?* `4aa99f9`, 27 Oct
+- *What is the first commit, and is pre-event code in it?* `15658a4`, 27 Oct
   2026 at 11:10 IST, after the 26 Oct 21:30 IST opening (`git log --reverse`).
   `git log` has no commit dated before it, and the gate, receipt chain, verify
-  page, provider code, demo and evidence are all in commits from 4aa99f9 on.
+  page, provider code, demo and evidence are all in commits from 15658a4 on.
 - *What was carried over?* Only `docs/SPEC.md` (the written specification,
   with event changes marked *(event)*) and the config boilerplate
   (`tsconfig.json`, `.gitignore`), as listed under Prior work used.
@@ -308,7 +310,7 @@ reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x wit
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
 fidelity check held all <!--f:tryon_total-->7<!--/f--> try-on images in the gate.
 
-Checked against: Built during the event (first commit 4aa99f9), Calibration
+Checked against: Built during the event (first commit 15658a4), Calibration
 and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`.
 
 ## What I learned

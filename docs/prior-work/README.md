@@ -2,7 +2,7 @@
 
 `SPEC-pre-event.md` is the written specification of ProofShot as it stood
 before the hackathon opened (26 Oct 2026, 21:30 IST). It is copied unchanged;
-judges can compare it with the code built from first commit 4aa99f9.
+judges can compare it with the code built from first commit 15658a4.
 
 | | |
 |---|---|
@@ -27,7 +27,7 @@ and 37 minutes before this repository's first commit, the private repository's
 spec was brought up to date with its earlier code (private commit `04e207d`);
 that update rewrote the §3 payloads and §4 validation and added §7 to §10,
 describing that code. Its text is `SPEC-04e207d.md`, below. This
-repository's `docs/SPEC.md` was first added from it in `89cc8ea` (27 Oct 2026,
+repository's `docs/SPEC.md` was first added from it in `3ce81a3` (27 Oct 2026,
 13:06 IST) and edited after that; each change of substance made here is
 marked *(event)*. To see every difference from the pre-event text:
 
@@ -80,4 +80,4 @@ removed). What `04e207d` changed, against the pre-event text:
 
 The pre-event text names `src/` and test files of the earlier private
 repository; none of that code is in this repository. The code here starts at
-4aa99f9 and was written from the specification.
+15658a4 and was written from the specification.

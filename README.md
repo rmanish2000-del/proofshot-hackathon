@@ -427,7 +427,7 @@ committed.
   and reaches the try-on only with `PROOFSHOT_TRYON_LONG=1`. It
   sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
-  (default `synthetic-01`, an AI-generated fictional adult, 3e852fd;
+  (default `synthetic-01`, an AI-generated fictional adult, 779a67a;
   `REPLICATE_MODEL_IMAGE` picks another). The render entry's `input` records
   exactly the fields sent (images by sha256, seed, the prompt when one was
   sent, and `preserve_input_size` only when
@@ -441,7 +441,7 @@ committed.
   failed or timed-out attempts (120 s each) fall back to composite v2, and the
   render entry then names the composite with `fallback_reason`. The input
   fields sent were checked against the model's API schema before the live call
-  (Grok, 14dad54). Pruna and Replicate data and output terms and India
+  (Grok, 44576a0). Pruna and Replicate data and output terms and India
   availability are UNVERIFIED.
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
@@ -460,7 +460,7 @@ committed.
   Meta's `accounts/fireworks/models/muse-spark-open` on Fireworks from facts
   already in the receipt and the seller's note, stored in `data/copy/`, never
   in the hash chain. `FIREWORKS_MODEL` overrides the model id. Llama 3.3 70B
-  is not served to this key (404, 3097a7b), so no text here is from Llama. An
+  is not served to this key (404, cfaa582), so no text here is from Llama. An
   answer that drops, changes or softens the gate's decision word, or is cut
   off, is not used: the record holds the template text and says why.
 - Spend caps (CAP1 / CAP1b, 29 Oct, enforced in code with a ledger entry per
@@ -528,15 +528,17 @@ Dated experiment rows (each live run and when it happened) are in
 | Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
 | Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. From disk (`file://`): **checked in headless Edge** by `npm run demo:capture` (29 Oct, no flags that loosen security): `ms2-shirt-plaid` receipt and image → VALID, its one-byte copy → TAMPERED. Not yet checked from disk in a normal browser window: the in-app browser used for the HTTP check shows `file://` pages outside its project as a static snapshot | also tested in Node against the same core |
 | Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form, every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
-| Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 115c3ba, no EXIF/GPS, no phone number; author email is the noreply address from 28 Oct) | made public by Manish on 28 Oct after the history scan |
+| Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 6c6837f, no EXIF/GPS, no phone number; author email is the noreply address from 28 Oct) | made public by Manish on 28 Oct after the history scan |
 
 ## Built during the event
 
-Work in this repository starts with its first commit, [`4aa99f9`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/4aa99f9ab9989dcc4705a0980f8660c0c9263f95), on
+Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
 IST. `git log` has no commit dated before it. The prior work used is
 `docs/SPEC.md` and the config boilerplate only (below); the code was written
 here from that specification.
+
+History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones.
 
 ### Prior work used
 

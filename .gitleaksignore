@@ -1,3 +1,4 @@
 # Test fixture keys that gitleaks flags in history (not real keys; the fixture
-# was changed to a low-entropy value in the next commit). No history rewrite.
-fc31a99ac09c6cbe66d2ad390147b3ca67a04c50:test/verifier.test.ts:generic-api-key:28
+# was changed to a low-entropy value in the next commit). The commit hash is the
+# one after the 30 Oct 2026 email re-authoring (it was fc31a99 before).
+cc0d04b797575c74ebb7763405155bf0c7c9f575:test/verifier.test.ts:generic-api-key:28
