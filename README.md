@@ -501,12 +501,14 @@ here from that specification.
   rules and receipt format, first written on 24 Oct 2026, before the event. It
   was brought up to date with the earlier private code on 27 Oct at 10:33 IST
   (during the event, 37 minutes before this repository's first commit; that
-  update added §7 to §10) and carried over. The code here is rewritten from it,
+  update rewrote the §3 payloads and §4 validation and added §7 to §10) and
+  carried over. The code here is rewritten from it,
   and every change of substance made to it in this repository is marked
   *(event)*; punctuation-only edits are not. The pre-event text itself is in
   [`docs/prior-work/`](docs/prior-work/), copied unchanged from the private
-  repository's `pre-hackathon-baseline` tag (blob `b666be9`), so it can be
-  compared with this repository's `docs/SPEC.md` and code.
+  repository's `pre-hackathon-baseline` tag (blob `b666be9`), with the 27 Oct
+  update beside it (blob `9651a5c`), so both steps can be compared with this
+  repository's `docs/SPEC.md` and code.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
 
