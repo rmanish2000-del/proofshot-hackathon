@@ -118,6 +118,21 @@ The full test suite runs offline too, but takes longer (about five minutes on
 a laptop): `npm test` runs <!--f:tests-->364<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
+## Evidence Recovery Agent (keyless demo)
+
+When the gate says REVIEW or REFUSE because evidence is missing, a bounded agent asks the seller for the
+missing photo and re-runs the same gate; the gate still decides. See SUBMISSION.md "Evidence Recovery Agent"
+and `docs/EVIDENCE_RECOVERY_PLAN.md`.
+
+```bash
+npm run agent:demo      # keyless: length case REVIEW -> photo request -> same gate -> RELEASE; one injection refused
+npm run agent:eval      # the agent on the committed jobs; writes evidence/agent-eval-2026-10-30.json
+npm run agent:metrics   # local monitoring summary of the demo store
+```
+
+The demo's verifier is a labelled canned stand-in (no model judged the images): it shows the mechanics, not
+accuracy. Nothing in it calls a model or publishes without the seller's approval.
+
 ## Keyless static demo (not hosted)
 
 `npm run demo:static` builds `out/static-demo/`: the judge view, the verify page and the shop as plain files,

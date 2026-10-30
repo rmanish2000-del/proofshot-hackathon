@@ -64,3 +64,24 @@ softened or scoped where marked), **remove** (not supported; taken out). No clai
 | A listing photo can quietly change the garment: colour, print, length (README, SUBMISSION, deck 1, video C1) | proven as a risk; observed: length | The 7 try-ons shortened long kurtas (`data/calibration/labels.json`); a colour or print change by an image tool was not observed in our committed runs (the colour mismatch shown is a different shirt). "Can" is kept; SUBMISSION states the observed case |
 | Who it is for: Indian boutique sellers (deck 2, video) | **weak, softened** | No seller interviews or usage data. Deck slide 2 now says "Intended users ... (not yet tested with real sellers)" |
 | "ProofShot checks every candidate listing image ... before it goes on sale" (video beat 2) | proven within ProofShot | Only a `release` entry gets a row in the shop preview (`src/shop.ts`, `test/shop.test.ts` "REVIEW and REFUSE jobs produce no row"); no real marketplace is connected |
+
+## Evidence Recovery Agent (round 5)
+
+Only claims proven by a test or a committed file are made about the agent.
+
+| Claim (where) | Verdict | Evidence |
+|---|---|---|
+| The deterministic gate alone decides; the agent reaches it only through `rerun_gate` (SUBMISSION, README, demo video) | proven | `test/agent.test.ts` "agent 11" (no file in `src/agent/` imports the gate or the pipeline); "agent 4" (gate receipt byte-identical with or without the agent) |
+| A real violation never triggers recovery (SUBMISSION, video) | proven | "agent 5"; `test/agent-eval.test.ts` (20 of 20 committed violations: explain only, no request, no re-run) |
+| Tool allowlist and argument schemas enforced in code; anything else rejected and logged (SUBMISSION, video) | proven | "agent 1", "agent 7" |
+| File access scoped to the seller's job (SUBMISSION) | proven | "agent 2" |
+| Instruction-like filenames, EXIF text and model output cannot change the tools or the verdict (SUBMISSION, video) | proven for the cases tested | "agent 6" (filename, EXIF), "agent 7" (six malicious model proposals). Text drawn inside image pixels is not read by the agent at all (no OCR); the verifier's text output is parsed into findings by the pipeline as before |
+| Caps: 4 steps, tool calls per step, step timeout, per-job and per-seller model calls and spend, image size (SUBMISSION) | proven | "agent 8", "agent 9", "agent 13" |
+| Seller approval before any paid call and before publish; nothing auto-publishes (SUBMISSION, video) | proven | "agent 9", "agent 7" (publish refused on REVIEW) |
+| The agent section records every proposal, validation, approval, result, cost, latency and the gate decision, hash-chained, no secrets (SUBMISSION, video) | proven | "agent 10" |
+| Two sellers' jobs run at the same time without mixing files; one seller is held to its concurrent limit (SUBMISSION, AGENT_SCALING) | proven locally | "agent 12" |
+| On the committed jobs: 0 decisions changed, 20 violations left alone, 5 photo requests, 4 paid re-check proposals, 0 resolved; try-ons held 7 of 7 before and after (SUBMISSION, video) | proven | `evidence/agent-eval-2026-10-30.json`; `test/agent-eval.test.ts` keeps it current |
+| The agent resolves real REVIEWs | **not claimed** | not measured: needs real seller photos (and approved paid calls); SUBMISSION says so |
+| Keyless demo: REVIEW → photo request → RELEASE (video, README) | proven as a demo of the mechanics | "agent 3"; the verifier is a labelled canned stand-in, so this shows mechanics, not accuracy (said on screen and in the docs) |
+| OWASP LLM06 Excessive Agency | design guidance only | cited as guidance, not as a certification or audit |
+| Scaling to a managed queue and more workers | **plan, not built** | `docs/AGENT_SCALING.md` |

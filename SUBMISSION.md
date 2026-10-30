@@ -87,6 +87,51 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
 | Throughput or cost per listing at scale | **not measured** | none |
 
+## Evidence Recovery Agent: safety and security design
+
+A bounded agent for one narrow job: when the gate says REVIEW or REFUSE because evidence is missing, it reads the
+receipt, finds the missing photo view, asks the seller for it (fixed English and Hindi text), and re-runs the
+same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/EVIDENCE_RECOVERY_PLAN.md`.
+
+- **The gate alone decides.** The agent reaches the gate only through one injected `rerun_gate` function; no file
+  in `src/agent/` imports the gate or the pipeline (a test checks this). For the same inputs the gate receipt is
+  byte-identical with or without the agent (test).
+- **Real violations are never recovered.** A mismatch the verifier saw or a measured fidelity breach ends in an
+  explanation only (test; on the committed jobs, 20 of 20 violations were left alone).
+- **Allowlist and schemas in code.** Six tools only (`read_receipt`, `check_photo_quality`, `detect_missing_view`,
+  `request_seller_photo`, `rerun_gate`, `explain`); every proposed action, from the rule policy or a model, is
+  validated before it runs: unknown tools, extra or missing arguments, another job's id, free text where the
+  fixed seller text is required, or explaining a different outcome are rejected and logged.
+- **Untrusted inputs.** Photos, filenames, EXIF and model output are data: intake strips EXIF; filenames and
+  model text cannot pick a tool or an argument outside the schema (tests with an instruction-like filename, an
+  EXIF block and malicious model proposals: same tools, same verdict, nothing published).
+- **Scoped files.** Every path is built from checked seller and job ids and must stay inside that job's folder.
+- **Caps and approvals.** At most 4 agent steps per job, a tool-call cap per step, a step timeout, and per-job
+  and per-seller caps on paid model calls and spend; a paid re-check needs the seller's approval first (with the
+  estimate shown), and publishing needs the seller's approval and a RELEASE. Nothing auto-publishes.
+- **Records.** Each job's agent section (`agent.jsonl`, hash-chained) holds every proposal, its validation,
+  approvals (who, when), tool results, cost, latency and the final gate decision; no secrets (test).
+- **Design guidance:** OWASP Top 10 for LLM Applications, LLM06 Excessive Agency (limit tools, permissions and
+  autonomy). This is design guidance we followed, not a certification or an audit.
+
+**Results, measured** (`evidence/agent-eval-2026-10-30.json`, `npm run agent:eval`): on the <!--f:jobs-->42<!--/f--> committed jobs
+plus the fixture job (43 receipts), one offline agent step each, no seller action and no model call: 0 decisions
+changed by the agent; 20 real violations left alone; 5 missing-evidence cases got a photo request (4 full-length
+front, 1 label close-up); 4 verifier failures got a paid re-check proposal that waits for approval; **0 resolved**,
+because resolving needs a new seller photo or an approved paid call, which the committed data does not have. On
+length: the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks; the gate held <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-ons
+before the agent and after it, and the agent attempted no recovery on them (they are real violations). Agent
+step latency on this laptop: p50 69 ms, p90 222 ms. So far the agent proposes the right next step; whether those
+steps resolve real REVIEWs is **not measured** until sellers add photos.
+
+**Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
+canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for
+the full-length view → the seller adds it → the same gate → RELEASE → the seller approves → published; and an
+injected instruction is rejected. It is a demonstration of the agent's mechanics, not of model accuracy.
+
+**Scaling:** local queue with N workers, stateless per-job steps, separate photo and record stores, per-seller
+limits, local metrics (`npm run agent:metrics`); the managed-queue path is a plan (`docs/AGENT_SCALING.md`).
+
 ## Inspiration
 
 An Indian boutique seller lists every garment from their own phone photos.
