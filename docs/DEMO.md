@@ -2,13 +2,13 @@
 
 Status: v6, 29 Oct 2026, from Manish: the demo shows the two shirts only (plaid
 and zebra), no kurta anywhere. v5's try-on beat (`live-kurta-01-tryon-m`) is
-dropped, not replaced: no committed shirt job has a try-on render (every one of
-the committed try-on receipts is a kurta job), and no new paid call was made
+dropped, not replaced: no committed shirt job has a try-on render (all 7 of
+the committed try-on receipts are kurta jobs), and no new paid call was made
 for the video. The kurta jobs stay in the README results and the evidence pack.
 From v5: the plaid self-photo RELEASE is labelled a pipeline smoke example.
 Framed for "Build for Your World" with an Indian boutique seller. v5, v4 and v3
 are in git history. Every job on screen is a committed receipt; "What exists
-today" says what each one is. A `[TBD]` is never read out or shown on screen.
+today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
 Length 76 s. Screen recording only, burned-in captions. Voice: Manish's own (an
 AI voice is UNVERIFIED against the rules). Word cap per beat = seconds x 2.5
@@ -19,11 +19,11 @@ AI voice is UNVERIFIED against the rules). Word cap per beat = seconds x 2.5
 | Thing the video could show | State | Where |
 |---|---|---|
 | Gate, receipt chain, verify page, intake | built, tested on master (`npm test`, all pass) | `npm test` |
-| Gate fails closed | absent findings, a failed or cut-off verifier answer are `REFUSE not_verified` or `verifier_truncated`; an unmeasured fidelity check is never a RELEASE | SPEC §2, §4, §10 |
-| The seller's photos | `data/garments/shirt-plaid`: 4 phone photos of the owner's own shirt (front, back, collar, print), no person, metadata stripped by intake | `data/garments/shirt-plaid` |
+| Gate fails closed | absent findings, a failed or cut-off verifier answer are `REFUSE not_verified` or `verifier_truncated`; an unmeasured fidelity check gives REVIEW at best | SPEC §2, §4, §10 |
+| The seller's photos | `data/garments/shirt-plaid`: 4 phone photos of the owner's own shirt (front, back, collar, print), no person; intake found no metadata to remove (each file's hash unchanged, `removed` empty in `intake.json`) | `data/garments/shirt-plaid` |
 | Pipeline smoke example (RELEASE) | `ms2-shirt-plaid`: the candidate is the owner's own front photo (stand-in), Muse Spark 1.3 on `api.meta.ai` finds 9 of 9 attributes matching, fidelity measured on SAM 3.1 masks, gate RELEASE. Photo against itself: it shows the pipeline runs end to end, **not** accuracy | `data/jobs/ms2-shirt-plaid` |
 | REVIEW on the plaid shirt | `live-shirt-plaid-composite-v2-r3`: composite v2 (the shirt's own pixels cut out by SAM 3.1 and placed on a ghost mannequin by deterministic code, no image model); all 9 attributes agree; `logo_text` scored 0.80, under its 0.85 floor, so the gate says REVIEW | `data/jobs/live-shirt-plaid-composite-v2-r3` |
-| REFUSE for the wrong garment | `live-shirt-plaid-mismatch`: the zebra shirt's front photo as the candidate against the plaid shirt's photos; `hard_mismatch` on colour at 0.99, REFUSE. One job, n=1; the MS4 cross-check refused every wrong-garment run on these four garments | `data/jobs/live-shirt-plaid-mismatch`, `evidence/ms4-summary.json` |
+| REFUSE for the wrong garment | `live-shirt-plaid-mismatch`: the zebra shirt's front photo as the candidate against the plaid shirt's photos; `hard_mismatch` on colour at 0.99, REFUSE. One job, n=1; the MS4 cross-check refused 153 of 153 wrong-garment runs on these four garments | `data/jobs/live-shirt-plaid-mismatch`, `evidence/ms4-summary.json` |
 | A generated on-model image | the Pruna try-on transport exists (NR4, `src/render-replicate.ts`); the 7 live try-on calls committed so far (7 receipts with a `replicate-pruna-tryon` render entry: 2 REVIEW, 5 REFUSE) were all held by the gate, so **no generated image has been released**. All of them are kurta jobs and there is no shirt try-on, so this video has no try-on beat; the results are in the README | `data/jobs/live-kurta-0*-tryon*` |
 | Seller upload page | built, local only (`npm run serve`); checked in a browser (29 Oct, Chromium, fixture mode). The capture has no file picker, so the video shows the empty page, then the committed photos | `web/upload.html`, SPEC §12 |
 | Hosted service, public deploy | **none** | — |
@@ -35,12 +35,12 @@ screen. SAM 3.1 and Muse Spark 1.3 have logs in the shirt jobs' receipts.
 
 1. Name a model on screen or in the voiceover only if its call log is in the
    receipt being shown. No log: cut the model from the video.
-2. Never name Muse Image, anywhere.
+2. Do not name Muse Image, anywhere.
 3. No price clause and no claim about returns or sales.
 4. Licence on the end slide only if `LICENSE` exists in this repository (MIT today).
 5. The smoke-example beat says on screen that the candidate is the owner's own
    photo and that it is a pipeline smoke example.
-6. No person in any frame. The seller is spoken of as "the seller", never
+6. No person in any frame. The seller is spoken of as "the seller", not
    named. Only the plaid and zebra shirts appear; no kurta job is opened.
 
 ## Timecode table
