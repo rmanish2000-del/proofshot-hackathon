@@ -244,7 +244,13 @@ writeFileSync(join(outDir, "shots.json"), JSON.stringify({ browser: browser.spli
 // DEMO1c: the subtitle track for the muted cut, timed from the same seconds.
 const narration = shotNarration(DEMO_SHOTS, narrationFromDemoMd(readFileSync(join(root, "docs/DEMO.md"), "utf8")));
 writeFileSync(join(outDir, "captions.srt"), captionsSrt(DEMO_SHOTS, narration));
-rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+// Edge's child processes can hold the profile a moment after the browser exits; the
+// profile is scratch in the gitignored out folder, so a failed removal is reported, not fatal.
+try {
+  rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+} catch (err) {
+  console.error(`browser profile left in ${profile} (${(err as Error).message.split(",")[0]}); the frames are written`);
+}
 
 for (const r of report) {
   const what = r.error ? `ERROR ${r.error}` : r.frames.length ? r.frames.join(", ") : `skipped: ${r.skip}`;

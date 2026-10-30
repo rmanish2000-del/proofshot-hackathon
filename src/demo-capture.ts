@@ -132,7 +132,7 @@ export const DEMO_SHOTS: readonly Shot[] = [
         from: "page",
         path: "docs/DEMO.md",
         actions: [],
-        page: { kind: "card", title: "ProofShot", lines: ["Every image ships with its receipt.", "github.com/rmanish2000-del/proofshot-hackathon"], licence: "MIT" },
+        page: { kind: "card", title: "ProofShot", lines: ["Every ProofShot result has its receipt.", "github.com/rmanish2000-del/proofshot-hackathon"], licence: "MIT" },
       },
     ],
   },
