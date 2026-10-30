@@ -333,3 +333,18 @@ test("DM10: DEMO.md has no never/cannot absolutes, and says intake stripped meta
   if (/metadata stripped/i.test(md)) assert.ok(files.every((f) => f.removed.length > 0), "DEMO.md says metadata stripped, but intake removed nothing");
   else assert.match(md, /intake found no metadata to remove/);
 });
+
+test("Codex 2: no demo frame shows a fixture receipt; every job on screen and the tampered receipt are provenance live", () => {
+  const receipts = new Set<string>([join(root, "web/shop/ms2-shirt-plaid/receipt.jsonl")]);
+  for (const shot of DEMO_SHOTS) {
+    for (const f of shot.frames) {
+      const job = /[?&]job=([^&]+)/.exec(f.path)?.[1];
+      if (f.from === "jobs" && job) receipts.add(join(root, "data/jobs", decodeURIComponent(job), "receipt.jsonl"));
+    }
+  }
+  for (const p of receipts) {
+    const first = parseReceipt(readFileSync(p, "utf8"))[0] as { kind: string; payload: { provenance?: string } };
+    assert.equal(first.kind, "job", p);
+    assert.equal(first.payload.provenance, "live", `${p} is not a fixture receipt`);
+  }
+});
