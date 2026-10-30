@@ -22,9 +22,13 @@ git hash-object docs/prior-work/SPEC-pre-event.md
 prints `b666be96eda263ffa0cf05cbadb1d38685e38fc8`, the blob at
 `pre-hackathon-baseline:docs/SPEC.md` in the source repository.
 
-What changed during the event: this repository's `docs/SPEC.md` was first
-added in `89cc8ea` (27 Oct 2026, 13:06 IST) and edited after that. To see every
-difference from the pre-event text:
+What changed during the event: on 27 Oct 2026 at 10:33 IST, during the event
+and 37 minutes before this repository's first commit, the private repository's
+spec was brought up to date with its earlier code (private commit `04e207d`,
+not published here); that update added §7 to §10, describing that code. This
+repository's `docs/SPEC.md` was first added from it in `89cc8ea` (27 Oct 2026,
+13:06 IST) and edited after that; each change of substance made here is
+marked *(event)*. To see every difference from the pre-event text:
 
 ```bash
 git diff --no-index docs/prior-work/SPEC-pre-event.md docs/SPEC.md

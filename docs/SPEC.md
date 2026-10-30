@@ -5,11 +5,16 @@ it. Where they disagree, that is a bug in the code.
 
 **Where this file comes from.** It is the written specification of ProofShot's
 pre-existing core, carried over from the private `proofshot` repository
-(`docs/SPEC.md`, first written 24 Oct 2026, before the event; brought up to date
-27 Oct). The code in this repository is rewritten from it. Changes made here
-during the event are marked *(event)*.
+(`docs/SPEC.md`, first written 24 Oct 2026, before the event; its text at the
+`pre-hackathon-baseline` tag is in `docs/prior-work/`). It was brought up to
+date with the earlier private code on 27 Oct 2026 at 10:33 IST (private commit
+`04e207d`, during the event and 37 minutes before this repository's first
+commit, not published here); that update added §7 to §10 as they described the
+private code. The code in this repository is rewritten from it. Every change of
+substance made here is marked *(event)*; edits that only swap a dash for a
+colon or semicolon are not.
 
-Status in this repo: §1–§4 and §10 are implemented (`src/types.ts`,
+Status in this repo *(event)*: §1–§4 and §10 are implemented (`src/types.ts`,
 `src/gate.ts`, `src/receipt.ts`, `src/prior.ts`, `src/schema.ts`, `src/png.ts`,
 `src/fidelity.ts`), the job pipeline with a fixture provider and a `fidelity`
 entry per render (`src/pipeline.ts`), and the image check and verify page of §9
@@ -110,7 +115,7 @@ One JSON object per line, append-only, `receipt.jsonl`.
   broken one without touching it *(event)*.
 
 Entry kinds, in the order a job writes them (`render` → `verifier` →
-`fidelity` → `gate` → `release` repeat per render):
+`fidelity` *(event)* → `gate` → `release` repeat per render):
 
 | Kind | Payload fields |
 |---|---|
@@ -343,7 +348,7 @@ results)*, `src/replay.ts`:
   into `demo/recordings/`, synthetic images and table-driven findings, no
   model and no garment.
 
-## 8. Render providers and the Muse Image refusal (guard rebuilt, HTTP not yet)
+## 8. Render providers and the Muse Image refusal (guard rebuilt, HTTP not yet *(event)*)
 
 `RENDER_PROVIDER` picks the renderer: `openai-images` (default), `fal`, or
 `meta`. Muse Image is not available in India (Meta Geographic Use Policy §2.2),
@@ -452,7 +457,7 @@ In this rewrite *(event, Grok 27 Oct)*:
   result (head included) and the same image check on the fixture receipt, and
   on one edited entry.
 
-## 10. Garment fidelity
+## 10. Garment fidelity (in the pipeline *(event)*; the 27 Oct text said not yet)
 
 A deterministic second check, beside the verifier: SAM masks say where the
 garment is in the source and the render; code measures the masked regions and
@@ -470,7 +475,7 @@ UNCALIBRATED). No model judges anything.
 - A missing, empty or wrong-size mask, or an image that is not 8-bit RGB, is
   `REVIEW` with `metrics: null`. A non-finite metric is `REVIEW`.
 - A broken thresholds config throws; it never falls back to defaults. The two
-  `area` bounds must sit either side of 1.
+  `area` bounds must sit either side of 1 *(event)*.
 - Masks from PNG: 8-bit, non-interlaced greyscale, grey+alpha, RGB or RGBA; a
   pixel is garment when its brightness and alpha are both at least 128. Any
   other PNG throws with the reason.
