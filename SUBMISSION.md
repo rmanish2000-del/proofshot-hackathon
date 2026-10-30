@@ -124,6 +124,7 @@ chain in the browser with WebCrypto.
 | Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
 | muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->293<!--/f--> |
 | Muse Spark Open | Baseten | The first verifier (27 to 28 Oct) | <!--f:baseten_calls-->19<!--/f--> |
+| Pruna try-on (`prunaai/p-image-try-on`) | Replicate | AI try-on candidates; all held by the gate | <!--f:pruna_calls-->7<!--/f--> (render entries in the receipts) |
 
 Candidate images come from a composite v2 renderer (the seller's own garment
 pixels on a ghost mannequin, deterministic code, no image model) or an AI

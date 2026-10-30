@@ -27,3 +27,9 @@ test("figures 2: README.md and SUBMISSION.md quote the figures the committed evi
     assert.equal(text, fresh, `${doc} is out of date: run npm run figures`);
   }
 });
+
+test("figures 3 (SUB26): Pruna calls are counted from the try-on render entries, at least one per try-on image", () => {
+  const f = computeFigures(root);
+  assert.ok(Number(f.pruna_calls) >= Number(f.tryon_total), `${f.pruna_calls} calls for ${f.tryon_total} try-on images`);
+  assert.match(f.pruna_usd_est!, /^\d+\.\d{3}$/);
+});
