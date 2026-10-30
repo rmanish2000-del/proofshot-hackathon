@@ -1,6 +1,6 @@
 // Types for core.js, which stays plain JavaScript so the verify page can inline it.
 
-export type EntryKind = "job" | "segments" | "render" | "verifier" | "fidelity" | "gate" | "release" | "approval";
+export type EntryKind = "job" | "segments" | "render" | "verifier" | "fidelity" | "gate" | "release" | "approval" | "agent";
 
 export interface ReceiptEntry {
   readonly seq: number;
