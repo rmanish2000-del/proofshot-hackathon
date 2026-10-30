@@ -121,8 +121,26 @@ front, 1 label close-up); 4 verifier failures got a paid re-check proposal that 
 because resolving needs a new seller photo or an approved paid call, which the committed data does not have. On
 length: the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks; the gate held <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-ons
 before the agent and after it, and the agent attempted no recovery on them (they are real violations). Agent
-step latency on this laptop: p50 69 ms, p90 222 ms. So far the agent proposes the right next step; whether those
-steps resolve real REVIEWs is **not measured** until sellers add photos.
+step latency on this laptop: p50 69 ms, p90 222 ms. On the committed jobs the agent proposes the next step;
+whether those steps resolve real REVIEWs is measured only on the two real pairs below.
+
+**Real seller photos, measured** (`evidence/agent-real-2026-10-30.json`, `npm run agent:real`, run once on
+30 Oct): two garments photographed by Manish, a pink polo and a mustard kurta, each a deliberately bad photo
+(the polo angled with a sleeve and the hem cut off; the kurta's plain back with a sleeve cut off) and a
+full-length front, checked for people and personal data before intake. The gate ran live (SAM 3.1 and Muse
+Spark 1.3 on api.meta.ai); the render is the seller's own full-length front photo (stand-in, nothing generated).
+**Resolved by the agent: 0 of 2.** With only the bad photo, the gate said REFUSE on both from the masked
+fidelity check (polo: texture 0.531 below 0.650; kurta: colour, histogram, texture and area all outside), so the
+agent treated them as violations, as its rules say, and asked for no photo. As a control, the seller added the
+full-length front unprompted and approved a second paid re-check: Muse Spark then matched every attribute on
+both garments (it had already matched every attribute of the polo from the cropped photo alone), and the gate
+still said REFUSE with the same fidelity numbers, because the fidelity check compares the render with the
+listing's first photo only (`src/fidelity.ts`), and the bad photo was first. Seller steps per garment: list,
+approve, add a photo, approve; no listing completed. Cost: 4 live gate runs, 0.106 USD on the Meta ledger
+(0.03 USD per run was the estimate shown before approval). What this shows: on these two pairs the blocker was
+not the request logic but a bad *first* photo, which no added photo can fix; the agent cannot replace or reorder
+photos, and its message "More photos will not change this" is true here but does not tell the seller to replace
+the first photo. Two pairs is a small sample, not a rate.
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for

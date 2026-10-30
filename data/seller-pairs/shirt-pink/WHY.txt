@@ -1,0 +1,5 @@
+Why this garment is in the demo, and who allowed it.
+
+Owner of the garment: Manish Patel (project owner)
+Permission to photograph and publish (who, when, how given): Manish Patel took the photos and put them in proofshot-handoff/new_garments/shirt-01 on 30 Oct 2026 for the Evidence Recovery Agent real-photo test, and approved the test in chat the same day.
+Why it was chosen (what makes it a hard case: print, colour, weave): a real seller pair: 1-cropped.jpg is a deliberately bad photo (angled, right sleeve and hem cut off; arrived as IMG20261030185408.jpg), 2-full-front.jpg the full-length flat lay (arrived as IMG20261030185355.jpg). The brand label and hang tag are the garment's own; no person and no personal data in either photo (checked by Claude Code before intake).

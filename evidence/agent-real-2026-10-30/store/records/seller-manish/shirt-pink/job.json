@@ -1,0 +1,63 @@
+{
+  "seller": "seller-manish",
+  "job": "shirt-pink",
+  "garment_note": "shirt-pink: Type: polo shirt (short sleeves, two-button placket); Fabric and weave: cotton pique knit; Main colour: pink; Print or motif (what, where, size): small grey embroidered stag logo on the left chest; no print; Collar and cuffs: pink knit collar with grey inner neck tape; ribbed sleeve hems; Buttons: two white buttons on the placket; Anything the render must not change: pink colour, chest logo, placket and collar as photographed",
+  "candidate": "render-standin.jpg",
+  "photos": [
+    {
+      "file": "1-cropped.jpg",
+      "view": "full_length_front",
+      "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc"
+    },
+    {
+      "file": "2-full-front.jpg",
+      "view": "full_length_front",
+      "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+    }
+  ],
+  "status": "done",
+  "steps": 2,
+  "model_calls": 2,
+  "cost_usd": 0.06,
+  "runs": [
+    {
+      "n": 1,
+      "mode": "offline",
+      "decision": "REVIEW",
+      "head": "963f5a91e9c6ac25975968721c9477eb199e22c956910d8235775930c167f88c"
+    },
+    {
+      "n": 2,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "0b66d0361738722061a46da44f13f49b82da0b586107ee103bfc0d76e0e82467"
+    },
+    {
+      "n": 3,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "08738a703bbc8e568e08f6d61901ca2e787b254d39ab82936a10e5b8a268ef33"
+    }
+  ],
+  "approvals": [
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-30T14:30:04.120Z",
+      "estimate_usd": 0.03,
+      "used": true
+    },
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-30T14:31:01.748Z",
+      "estimate_usd": 0.03,
+      "used": true
+    }
+  ],
+  "request": null,
+  "explanation": {
+    "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that keeps the garment as it is. More photos will not change this.",
+    "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को वैसा ही रखे। और फ़ोटो से यह नहीं बदलेगा।"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "garment": "shirt-pink",
+  "files": [
+    {
+      "source_name": "1-cropped.jpg",
+      "name": "1-cropped.jpg",
+      "source_sha256": "d5d81079974adaed64e3c48e9b8984f5af82d5d68414b259c8224ad801acb970",
+      "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc",
+      "removed": [
+        "APP1 Exif",
+        "APP1 http://ns.adobe.com/xap/1.0/",
+        "APP2 MPF",
+        "APP4 QTI Debug Metadata",
+        "APP4 QTI Debug Metadata",
+        "MPF secondary image (907707 bytes after EOI)"
+      ]
+    },
+    {
+      "source_name": "2-full-front.jpg",
+      "name": "2-full-front.jpg",
+      "source_sha256": "1a6e020eb166820c01dfad445a4c6a6a9a09554440e672b300b39cf910eb88f8",
+      "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2",
+      "removed": [
+        "APP1 Exif",
+        "APP1 http://ns.adobe.com/xap/1.0/",
+        "APP2 MPF",
+        "APP4 QTI Debug Metadata",
+        "APP4 QTI Debug Metadata",
+        "MPF secondary image (762362 bytes after EOI)"
+      ]
+    }
+  ]
+}

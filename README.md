@@ -130,6 +130,9 @@ npm run agent:eval      # the agent on the committed jobs; writes evidence/agent
 npm run agent:metrics   # local monitoring summary of the demo store
 ```
 
+`npm run agent:real` ran the agent once on two real seller photo pairs with the live gate (paid, metered on the
+Meta ledger; it refuses to run again over its own records): resolved 0 of 2, see SUBMISSION.md.
+
 The demo's verifier is a labelled canned stand-in (no model judged the images): it shows the mechanics, not
 accuracy. Nothing in it calls a model or publishes without the seller's approval.
 

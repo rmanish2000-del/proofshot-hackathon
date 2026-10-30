@@ -1,0 +1,180 @@
+{
+  "what": "Evidence Recovery Agent on real seller photos: two garments, each a deliberately bad photo and a full-length good one, checked for people and personal data before intake. The render is the stand-in (the seller's own full-length front photo, nothing generated), so a RELEASE here says the evidence matched, not that a generated image is faithful.",
+  "run_on": "2026-10-30",
+  "live_providers": {
+    "segment": "meta / meta/sam-3.1 (api.meta.ai)",
+    "render": "stand-in: the seller's own front photo, nothing generated",
+    "verify": "meta / muse-spark-1.3: the model judges every attribute",
+    "fidelity": "masked metrics (SPEC §10): delta_e, hist, texture, area against config/fidelity.json"
+  },
+  "resolved_by_agent": "0 of 2",
+  "meta_spend_usd_this_run": 0.1058,
+  "jobs": [
+    {
+      "job": "shirt-pink",
+      "garment": "shirt-pink",
+      "bad_photo": "1-cropped.jpg (full_length_front)",
+      "good_photo": "2-full-front.jpg (full_length_front)",
+      "path": "unprompted_control",
+      "resolved_by_agent": false,
+      "first_live": "REFUSE",
+      "last_live": "REFUSE",
+      "agent_asked_for": [
+        null,
+        null
+      ],
+      "seller_steps": [
+        "listed 1-cropped.jpg as full_length_front",
+        "approved paid re-check 1",
+        "added 2-full-front.jpg as full_length_front (not asked for)",
+        "approved paid re-check 2"
+      ],
+      "seller_step_count": 3,
+      "status": "done",
+      "explanation": {
+        "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that keeps the garment as it is. More photos will not change this.",
+        "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को वैसा ही रखे। और फ़ोटो से यह नहीं बदलेगा।"
+      },
+      "runs": [
+        {
+          "run": 1,
+          "mode": "offline",
+          "verifier": "canned-demo-verifier (no model judged the image)",
+          "decision": "REVIEW",
+          "code": "low_confidence",
+          "class": "missing_evidence",
+          "attributes": [
+            "print_pattern",
+            "logo_text",
+            "collar",
+            "fabric_texture"
+          ],
+          "views": [
+            "print_closeup",
+            "label_closeup",
+            "collar_closeup"
+          ]
+        },
+        {
+          "run": 2,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "fidelity_breach",
+          "class": "violation",
+          "attributes": [],
+          "views": []
+        },
+        {
+          "run": 3,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "fidelity_breach",
+          "class": "violation",
+          "attributes": [],
+          "views": []
+        }
+      ],
+      "model_calls": 2,
+      "estimate_usd": 0.06
+    },
+    {
+      "job": "kurta-mustard",
+      "garment": "kurta-mustard",
+      "bad_photo": "1-back-cropped.jpg (full_length_back)",
+      "good_photo": "2-full-front.jpg (full_length_front)",
+      "path": "unprompted_control",
+      "resolved_by_agent": false,
+      "first_live": "REFUSE",
+      "last_live": "REFUSE",
+      "agent_asked_for": [
+        null,
+        null
+      ],
+      "seller_steps": [
+        "listed 1-back-cropped.jpg as full_length_back",
+        "approved paid re-check 1",
+        "added 2-full-front.jpg as full_length_front (not asked for)",
+        "approved paid re-check 2"
+      ],
+      "seller_step_count": 3,
+      "status": "done",
+      "explanation": {
+        "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that keeps the garment as it is. More photos will not change this.",
+        "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को वैसा ही रखे। और फ़ोटो से यह नहीं बदलेगा।"
+      },
+      "runs": [
+        {
+          "run": 1,
+          "mode": "offline",
+          "verifier": "canned-demo-verifier (no model judged the image)",
+          "decision": "REVIEW",
+          "code": "low_confidence",
+          "class": "missing_evidence",
+          "attributes": [
+            "color",
+            "print_pattern",
+            "logo_text",
+            "collar",
+            "sleeve_length",
+            "hem",
+            "pocket_count",
+            "buttons",
+            "fabric_texture"
+          ],
+          "views": [
+            "full_length_front",
+            "print_closeup",
+            "label_closeup",
+            "collar_closeup"
+          ]
+        },
+        {
+          "run": 2,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "soft_mismatch",
+          "class": "violation",
+          "attributes": [
+            "hem"
+          ],
+          "views": []
+        },
+        {
+          "run": 3,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "fidelity_breach",
+          "class": "violation",
+          "attributes": [],
+          "views": []
+        }
+      ],
+      "model_calls": 2,
+      "estimate_usd": 0.06
+    }
+  ],
+  "metrics": {
+    "runs": 4,
+    "failures": 0,
+    "failure_rate": 0,
+    "cap_hits": {},
+    "rejected_actions": 0,
+    "gate_reruns": 4,
+    "model_calls": 4,
+    "spend_usd": 0.12,
+    "completed_listings": 0,
+    "cost_per_completed_listing_usd": null,
+    "queue_ms": {
+      "p50": 15,
+      "p90": 34
+    },
+    "processing_ms": {
+      "p50": 25864,
+      "p90": 79685
+    }
+  }
+}

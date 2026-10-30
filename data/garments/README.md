@@ -19,7 +19,9 @@ npm run intake -- <that folder>
 ```
 
 Intake removes Exif (GPS, device, time), XMP, IPTC and comments without
-re-encoding, so the pixels do not change. It keeps the ICC colour profile. A
+re-encoding, so the pixels do not change. A phone's secondary image after the
+end of the JPEG (an Ultra HDR gain map, declared by the MPF segment) is removed
+too; any other data after the end is refused. It keeps the ICC colour profile. A
 test fails if any committed photo still carries metadata, or does not match
 its `intake.json`.
 

@@ -73,8 +73,11 @@ export function intakeJpeg(sourceName: string, bytes: Uint8Array): { file: Intak
   };
 }
 
+/** Not a JPEG marker: the bytes after EOI that the MPF segment declares as a secondary image. */
+const TRAILER = 0x100;
+
 function isMetadata(s: JpegSegment): boolean {
-  if (s.marker === 0xfe) return true;
+  if (s.marker === 0xfe || s.marker === TRAILER) return true;
   if (s.marker < 0xe1 || s.marker > 0xef) return false;
   return !(s.marker === 0xe2 && s.label === "APP2 ICC");
 }
@@ -96,8 +99,14 @@ function segments(bytes: Uint8Array): JpegSegment[] {
     if (marker === undefined) throw new JpegError("truncated: file ends in fill bytes");
     if (marker === 0xd9) {
       out.push({ marker, start: i, end: m + 1, label: null });
-      if (m + 1 !== bytes.length) throw new JpegError(`${bytes.length - m - 1} bytes after EOI`);
-      return out;
+      if (m + 1 === bytes.length) return out;
+      // A phone's secondary image (an Ultra HDR gain map, a depth map) sits after EOI and is declared by the
+      // MPF segment; it is dropped with the metadata. Any other trailing data is refused.
+      if (out.some((s) => s.label === "APP2 MPF") && bytes[m + 1] === 0xff && bytes[m + 2] === 0xd8) {
+        out.push({ marker: TRAILER, start: m + 1, end: bytes.length, label: `MPF secondary image (${bytes.length - m - 1} bytes after EOI)` });
+        return out;
+      }
+      throw new JpegError(`${bytes.length - m - 1} bytes after EOI`);
     }
     if (m + 2 >= bytes.length) throw new JpegError(`truncated at marker 0x${marker.toString(16)}`);
     const end = m + 1 + ((bytes[m + 1]! << 8) | bytes[m + 2]!);

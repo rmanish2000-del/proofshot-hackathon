@@ -37,6 +37,10 @@ test("stripping removes Exif, XMP-style APPn, IPTC, MPF and comments and keeps e
   assert.deepEqual(jpegMetadata(phone), ["APP1 Exif", "APP2 MPF", "COM", "APP13 Photoshop 3.0"]);
   assert.deepEqual(stripJpegMetadata(phone), clean);
   assert.deepEqual(jpegMetadata(clean), []);
+  // A phone's MPF secondary image after EOI (an Ultra HDR gain map) goes with the metadata.
+  const gainMap = Uint8Array.from([...phone, ...SOI, ...DQT, ...EOI]);
+  assert.deepEqual(jpegMetadata(gainMap), ["APP1 Exif", "APP2 MPF", "COM", "APP13 Photoshop 3.0", "MPF secondary image (12 bytes after EOI)"]);
+  assert.deepEqual(stripJpegMetadata(gainMap), clean);
   // A clean file comes back unchanged, so stripping twice is the same as once.
   assert.deepEqual(stripJpegMetadata(clean), clean);
 });
@@ -62,15 +66,20 @@ test("a name that is not a JPEG, or bytes that are not a whole JPEG, throw", () 
   assert.throws(() => jpegMetadata(Uint8Array.from([0x89, 0x50, 0x4e, 0x47])), /no SOI/);
   assert.throws(() => jpegMetadata(clean.subarray(0, clean.length - 2)), /no end marker|no EOI/);
   assert.throws(() => jpegMetadata(Uint8Array.from([...clean, 0])), /1 bytes after EOI/);
+  // A second JPEG after EOI is refused too unless an MPF segment declares it.
+  assert.throws(() => jpegMetadata(Uint8Array.from([...clean, ...SOI, ...EOI])), /4 bytes after EOI/);
+  assert.throws(() => jpegMetadata(Uint8Array.from([...phone, 0])), /1 bytes after EOI/);
   assert.throws(() => jpegMetadata(Uint8Array.from([...SOI, 0xff, 0xe1, 0x00, 0x40, 1, 2])), /runs past the end/);
 });
 
 const GARMENTS = fileURLToPath(new URL("../data/garments/", import.meta.url));
+// The real seller pairs for the Evidence Recovery Agent: the same intake, kept out of data/garments (shop, calibration).
+const SELLER_PAIRS = fileURLToPath(new URL("../data/seller-pairs/", import.meta.url));
 
 test("every committed garment photo carries no metadata and matches its intake.json", () => {
   const allowed = /^(WHY\.txt|note\.txt|intake\.json|[^.]+\.jpg)$/;
-  for (const garment of readdirSync(GARMENTS)) {
-    const dir = join(GARMENTS, garment);
+  for (const [root, garment] of [GARMENTS, SELLER_PAIRS].flatMap((r) => readdirSync(r).map((g) => [r, g] as const))) {
+    const dir = join(root, garment);
     if (!statSync(dir).isDirectory()) continue;
     const names = readdirSync(dir);
     for (const name of names) assert.match(name, allowed, `${garment}/${name}`);

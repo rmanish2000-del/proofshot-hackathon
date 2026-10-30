@@ -1,0 +1,63 @@
+{
+  "seller": "seller-manish",
+  "job": "kurta-mustard",
+  "garment_note": "kurta-mustard: Type: kurta (three-quarter sleeves, straight cut, knee length or longer); Fabric and weave: not recorded; Main colour: mustard yellow; Print or motif (what, where, size): embroidered pink and peach lotus with sequins, one small on the upper right chest and one large on the lower left front; small yellow flower dots all over the front; lace stripes down both sides of the front panel; Collar and cuffs: round neck with a short front slit and embroidered edging; Buttons: none visible; Anything the render must not change: mustard colour, both lotus motifs, the wide cream lace border at the hem",
+  "candidate": "render-standin.jpg",
+  "photos": [
+    {
+      "file": "1-back-cropped.jpg",
+      "view": "full_length_back",
+      "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+    },
+    {
+      "file": "2-full-front.jpg",
+      "view": "full_length_front",
+      "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee"
+    }
+  ],
+  "status": "done",
+  "steps": 2,
+  "model_calls": 2,
+  "cost_usd": 0.06,
+  "runs": [
+    {
+      "n": 1,
+      "mode": "offline",
+      "decision": "REVIEW",
+      "head": "bb1f80eeea1ebfe27c6d728f3d8ba5be43edd17fe34a4921adbd2a065cec22a8"
+    },
+    {
+      "n": 2,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "87ce3b3ed7c252403f0f505284c3d42e657947b9bcaee722ec5ea02971d073e1"
+    },
+    {
+      "n": 3,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "cc0aacc286d3d0a131dff81365f77857512927f3ca8a07269e5c46d0d65dab8b"
+    }
+  ],
+  "approvals": [
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-30T14:32:21.608Z",
+      "estimate_usd": 0.03,
+      "used": true
+    },
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-30T14:32:47.554Z",
+      "estimate_usd": 0.03,
+      "used": true
+    }
+  ],
+  "request": null,
+  "explanation": {
+    "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that keeps the garment as it is. More photos will not change this.",
+    "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को वैसा ही रखे। और फ़ोटो से यह नहीं बदलेगा।"
+  }
+}

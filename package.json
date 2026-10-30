@@ -39,7 +39,8 @@
     "demo:static": "node --experimental-strip-types scripts/static-demo.ts",
     "agent:eval": "node --experimental-strip-types scripts/agent-eval.ts",
     "agent:metrics": "node --experimental-strip-types scripts/agent-metrics.ts",
-    "agent:demo": "node --experimental-strip-types scripts/agent-demo.ts"
+    "agent:demo": "node --experimental-strip-types scripts/agent-demo.ts",
+    "agent:real": "node --experimental-strip-types scripts/agent-real.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

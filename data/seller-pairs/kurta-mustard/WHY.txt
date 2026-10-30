@@ -1,0 +1,5 @@
+Why this garment is in the demo, and who allowed it.
+
+Owner of the garment: not recorded; the photos were provided by Manish Patel (project owner)
+Permission to photograph and publish (who, when, how given): Manish Patel put the photos in proofshot-handoff/new_garments/kurta-01 on 30 Oct 2026 for the Evidence Recovery Agent real-photo test, and approved the test in chat the same day.
+Why it was chosen (what makes it a hard case: print, colour, weave): a real seller pair: 1-back-cropped.jpg is the plain back with the left sleeve cut off (arrived as IMG-20261030-WA0008.jpg), 2-full-front.jpg the full-length embroidered front (arrived as IMG-20261030-WA0009.jpg). Both arrived through WhatsApp, which had already removed the metadata and reduced them to 715x1600. No person and no personal data in either photo (checked by Claude Code before intake). Not the same garment as kurta-01 (rust).

@@ -1,0 +1,19 @@
+{
+  "garment": "kurta-mustard",
+  "files": [
+    {
+      "source_name": "1-back-cropped.jpg",
+      "name": "1-back-cropped.jpg",
+      "source_sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a",
+      "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a",
+      "removed": []
+    },
+    {
+      "source_name": "2-full-front.jpg",
+      "name": "2-full-front.jpg",
+      "source_sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee",
+      "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee",
+      "removed": []
+    }
+  ]
+}
