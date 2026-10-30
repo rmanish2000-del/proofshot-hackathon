@@ -9,7 +9,7 @@ masks when measurable. In a live run a missing measurement fails closed: the
 fidelity check (`src/fidelity.ts`) gives REVIEW at best and says why on the
 receipt. A fixture run (no keys) has a stub fidelity check that measures
 nothing and returns RELEASE with `"metrics":null`; its receipt says provenance
-`fixture` (example below). Every step is
+`fixture` (example below). Every step from intake to the gate decision is
 written into a hash-chained receipt that anyone can check offline in
 `web/verify.html`: a single page that makes no network request and needs no
 account (checked in Chromium over local HTTP, and opened from disk (`file://`)
