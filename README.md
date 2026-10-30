@@ -28,7 +28,8 @@ fidelity check is what held every one.
 That is why the demo video shows no AI on-model image: every committed
 try-on receipt (<!--f:tryon_total-->7<!--/f-->, <!--f:tryon_review-->2<!--/f--> REVIEW and <!--f:tryon_refuse-->5<!--/f--> REFUSE) is a kurta job held by
 the gate, the demo shows the two shirts only, and there is no shirt try-on.
-No new paid call was made for the video.
+No new paid call was made for the video (`docs/DEMO.md`,
+`test/demo-capture.test.ts`).
 
 ## What each Meta model does
 
