@@ -128,7 +128,7 @@ writes numbered PNG frames at 360 and 1280 px to the gitignored `out/demo/`.
 Title cards (S1, S9) and the receipt bytes around the byte the tamper step
 changes (S7) are plain pages it writes from committed files; S8 opens
 `web/verify.html` from disk with the receipt and then its one-byte copy. `out/demo/shots.json`
-gives each shot's seconds (under 115 s in total) and `out/demo/frames.txt` is
+gives each shot's seconds (76 s in total for v6; the capture's cap is 115 s) and `out/demo/frames.txt` is
 an ffmpeg concat list of the 1280 px frames; the video is assembled from it
 elsewhere, the script runs no ffmpeg. `out/demo/captions.srt` (DEMO1c) is the
 subtitle track for the muted cut: one cue per narrated shot, the `docs/DEMO.md`
@@ -287,7 +287,7 @@ committed by a sync. Pass `--jobs <dir> --shop <dir>` for a scratch run.
 
 `npm run job:live` (`scripts/live-job.ts`) runs the same pipeline on a
 garment's intake photos from the command line, and refuses to start unless the
-verifier is live. Two live jobs are committed under `data/jobs/`:
+verifier is live. The first two live jobs committed under `data/jobs/` were
 `live-kurta-01` (REFUSE: the model's answer was cut off at 1500 tokens, so the
 gate saw no findings) and `live-kurta-01-2` (REVIEW: all nine findings
 `match` at 0.96 or above, fidelity unmeasured because no mask exists); the
@@ -445,7 +445,7 @@ The renderer takes an injected transport.
   will be our own garment photos under `data/garments/`, with metadata
   removed.
 
-## Evidence pack (#10)
+## Evidence pack
 
 `evidence/pack/` is built by `npm run evidence:pack` from committed material only: every receipt in `data/jobs` (one row per render in `results.csv`, with chain check, providers, model ids and tokens), the call logs in `evidence/` (latency median and p90, and cost from logged usage, per stage), the MS4 cross-check, the calibration report and the copy. Museum samples (the Met, Rijksmuseum) are **not used**: that fetch was dropped on 29 Oct, so the pack covers the 4 real garments only (`kurta-01`, `kurta-02`, `shirt-plaid`, `shirt-zebra`), not the 12 #10 first asked for. A test fails if the committed pack no longer matches the receipts. Summary: `evidence/pack/README.md`.
 

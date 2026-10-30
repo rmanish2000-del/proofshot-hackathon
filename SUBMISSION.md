@@ -70,8 +70,8 @@ where the verifier gave no answer (not_verified), so they are not a threshold
 effect (two of them, `live-shirt-plaid-composite-v2` and `-r2`, are the two
 failed runs under Challenges; the other two are `live-kurta-01` and
 `live-kurta-01-composite`, whose verifier answered with output that was not
-JSON); <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. The 37 includes those 6 unmeasured
-renders; the <!--f:cal_skipped-->6<!--/f--> fixture renders are not in the 37: they are skipped because
+JSON); <!--f:cal_unmeasured-->6<!--/f--> renders are unmeasured. The <!--f:cal_cases-->37<!--/f--> includes those <!--f:cal_unmeasured-->6<!--/f--> unmeasured
+renders; the <!--f:cal_skipped-->6<!--/f--> fixture renders are not in the <!--f:cal_cases-->37<!--/f-->: they are skipped because
 their fidelity values were written, not measured. No threshold changed: the
 0.5x to 2x factor sweep only reports, and the configured thresholds in
 `config/fidelity.json` were not edited after it. Four garments and many
@@ -104,10 +104,10 @@ try-on (Pruna on Replicate). No Meta image generator is used; Muse Image is
 refused at runtime. The Muse Spark cross-check (MS4) ran <!--f:ms4_runs-->204<!--/f--> checks over <!--f:ms4_pairs-->68<!--/f-->
 (garment, image) pairs: <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs refused, <!--f:ms4_same_released-->24 of 30<!--/f-->
 same-garment runs released, <!--f:ms4_consistent-->65 of 68<!--/f--> pairs gave the same decision three times.
-The other 21 of the 204 are the shortened try-on checks (7 try-on images
+The other 21 of the <!--f:ms4_runs-->204<!--/f--> are the shortened try-on checks (<!--f:tryon_total-->7<!--/f--> try-on images
 against their own garment, 3 runs each, `changed` in
 `evidence/ms4-summary.json`): Muse Spark alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the
-fidelity check is what held all 7 try-ons in the gate. All 204 runs were
+fidelity check is what held all <!--f:tryon_total-->7<!--/f--> try-ons in the gate. All <!--f:ms4_runs-->204<!--/f--> runs were
 answered; none is a not_verified run.
 
 Spend from the ledgers: Meta Model API 5.99 USD of the 80 USD cap, Fireworks
@@ -118,7 +118,7 @@ committed call log, while 5.99 is the ledger as read on 29 Oct, which starts at
 dd7d280 and so leaves out the 51 SAM calls logged before it (0.13 USD) and the
 9 calls logged after that reading (0.04 USD).
 The Baseten 0 is not a charge of zero: the spend ledgers were added on 29 Oct
-at 10:53 IST (dd7d280), and every one of the 19 Baseten calls is logged
+at 10:53 IST (dd7d280), and every one of the <!--f:baseten_calls-->19<!--/f--> Baseten calls is logged
 earlier (`evidence/verifier-*.json`, 28 Oct 09:25 IST to 29 Oct 06:13 IST), so none has a ledger entry. Their token
 estimate is 0.30 USD (`evidence/pack/README.md`); Baseten's own bill was not
 read, so the amount actually charged is UNVERIFIED.
