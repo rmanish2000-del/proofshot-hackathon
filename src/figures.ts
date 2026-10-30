@@ -40,6 +40,9 @@ export function computeFigures(root: string): Record<string, string> {
   const changed = ms4.by_expected.changed;
 
   let tryon = 0;
+  // SUB26: Pruna calls on Replicate are counted from the receipts' render entries (attempts per render).
+  let prunaCalls = 0;
+  let prunaUsd = 0;
   const tryonBy: Record<string, number> = {};
   const jobs = join(root, "data/jobs");
   for (const job of readdirSync(jobs)) {
@@ -49,6 +52,8 @@ export function computeFigures(root: string): Record<string, string> {
     for (const r of lines.filter((l) => l.kind === "render" && l.payload.provider === "replicate-pruna-tryon")) {
       const g = lines.find((l) => l.kind === "gate" && l.payload.render_id === r.payload.render_id)?.payload.decision ?? "none";
       tryon++;
+      prunaCalls += typeof r.payload.attempts === "number" ? r.payload.attempts : 1;
+      prunaUsd += typeof r.payload.cost_estimated_usd === "number" ? r.payload.cost_estimated_usd : 0;
       tryonBy[g] = (tryonBy[g] ?? 0) + 1;
     }
   }
@@ -84,6 +89,8 @@ export function computeFigures(root: string): Record<string, string> {
     ms4_changed_passed: of(changed.answered - changed.correct, changed.answered),
     ms4_consistent: of(ms4.consistency.same_decision_all_reps, ms4.consistency.pairs_scored),
     tryon_total: String(tryon),
+    pruna_calls: String(prunaCalls),
+    pruna_usd_est: prunaUsd.toFixed(3),
     tryon_refuse: String(tryonBy.REFUSE ?? 0),
     tryon_review: String(tryonBy.REVIEW ?? 0),
     tryon_release: String(tryonBy.RELEASE ?? 0),
