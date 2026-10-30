@@ -507,7 +507,9 @@ here from that specification.
   *(event)*; punctuation-only edits are not. The pre-event text itself is in
   [`docs/prior-work/`](docs/prior-work/), copied unchanged from the private
   repository's `pre-hackathon-baseline` tag (blob `b666be9`), with the 27 Oct
-  update beside it (blob `9651a5c`), so both steps can be compared with this
+  update beside it as
+  [`docs/prior-work/SPEC-04e207d.md`](docs/prior-work/SPEC-04e207d.md) (blob
+  `9651a5c`), so both steps can be compared with this
   repository's `docs/SPEC.md` and code.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
