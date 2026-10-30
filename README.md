@@ -81,6 +81,15 @@ No API keys are needed. Without keys the run is **fixture mode**; the page and
 receipt are labelled as such. The render step shows the owner's photo as a
 stand-in; nothing is generated.
 
+A RELEASE in fixture mode is a no-key demo of the pipeline, **not model
+verification**: the verifier is a fixture (no model judged the image) and the
+fidelity check is a stub that measures nothing (`"metrics":null` in the
+receipt). The receipt's job entry says provenance `fixture`, the upload page
+shows a "Fixture mode: no model key is set" banner and tags each result
+"fixture job", and the verifier is named "fixture verifier (no model judged the
+image)". Verified results are the committed live jobs in
+`data/jobs` (provenance `live`); every job in the demo video is one of those.
+
 1. Install dependencies from the committed lockfile:
 
 ```bash
@@ -103,7 +112,7 @@ Then open `http://127.0.0.1:8787/` (the URL `npm run serve` prints). You should
 see the seller upload page with the five-step board: metadata, segment, render,
 verify, gate. Each result card shows a RELEASE, REVIEW or REFUSE badge, reasons,
 and a **View receipt** link. The seller upload page is local only
-(`npm run serve`) and visually UNVERIFIED. Each image ships with a hash-chained
+(`npm run serve`) and visually UNVERIFIED. Each ProofShot result has a hash-chained
 receipt; a deterministic code gate decides RELEASE/REVIEW/REFUSE.
 
 4. Replay the canned examples (no network, no key; output goes to the
@@ -466,7 +475,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->347<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->348<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_calls-->7<!--/f--> calls, about <!--f:pruna_usd_est-->0.105<!--/f--> USD estimated, the same as the Replicate spend ledger | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |
