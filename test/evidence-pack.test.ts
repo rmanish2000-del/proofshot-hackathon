@@ -86,3 +86,11 @@ test("#10 pack 3: the committed pack is current: results.csv and the receipts su
   assert.match(summary.sources.museum_samples, /^not used/);
   assert.equal(rows.every((r) => r.chain_ok), true, "every committed receipt verifies");
 });
+
+test("#10 pack 5 (SUB18): the calibration groups in the committed pack add up to the cases, with the unmeasured renders inside them", () => {
+  const summary = JSON.parse(readFileSync(new URL("../evidence/pack/summary.json", import.meta.url), "utf8")) as { calibration: { cases: number; judged_as_labelled: number; same_released: number; different_held: number; false_refuse: number; same_sent_to_review: number; unmeasured: number; unmeasured_within: Record<string, number> } };
+  const c = summary.calibration;
+  assert.equal(c.judged_as_labelled + c.false_refuse + c.same_sent_to_review, c.cases);
+  assert.equal(c.same_released + c.different_held, c.judged_as_labelled);
+  assert.equal(Object.values(c.unmeasured_within).reduce((a, b) => a + b, 0), c.unmeasured);
+});

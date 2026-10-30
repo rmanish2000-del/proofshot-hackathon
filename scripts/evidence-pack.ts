@@ -25,11 +25,20 @@ const readJson = (p: string) => (existsSync(p) ? (JSON.parse(readFileSync(p, "ut
 
 const ms4 = readJson(join("evidence", "ms4-summary.json"));
 const cal = readJson(join("evidence", "calibration-jobs-2026-10-29.json"));
-const x1 = (cal?.gate as { name: string }[] | undefined)?.find((c) => c.name === "x1") as (Record<string, number> & { cases?: { label: string; decision: string }[] }) | undefined;
+const x1 = (cal?.gate as { name: string }[] | undefined)?.find((c) => c.name === "x1") as (Record<string, number> & { cases?: { label: string; decision: string; measured: boolean }[] }) | undefined;
 // Judged as the label says: a same-garment render released, a different-garment render held (REVIEW or REFUSE).
 const x1Cases = x1?.cases ?? [];
 const asLabelled = x1Cases.filter((c) => (c.label === "same" ? c.decision === "RELEASE" : c.decision !== "RELEASE")).length;
 const sameReview = x1Cases.filter((c) => c.label === "same" && c.decision === "REVIEW").length;
+const sameRefused = x1Cases.filter((c) => c.label === "same" && c.decision === "REFUSE").length;
+const sameReleased = x1Cases.filter((c) => c.label === "same" && c.decision === "RELEASE").length;
+// SUB18: the unmeasured renders sit inside the groups above, so the counts add up to the cases, not past them.
+const unmeasuredIn = (keep: (c: { label: string; decision: string }) => boolean) => x1Cases.filter((c) => !c.measured && keep(c)).length;
+const unmeasuredSplit = {
+  as_labelled: unmeasuredIn((c) => (c.label === "same" ? c.decision === "RELEASE" : c.decision !== "RELEASE")),
+  false_refuse: unmeasuredIn((c) => c.label === "same" && c.decision === "REFUSE"),
+  same_review: unmeasuredIn((c) => c.label === "same" && c.decision === "REVIEW"),
+};
 
 let texts = 0;
 let byModel = 0;
@@ -55,14 +64,14 @@ const pack = {
   sources: {
     receipts: "data/jobs/*/receipt.jsonl",
     call_logs: "evidence/{sam,verifier,fireworks}-*.json, evidence/ms4/verifier-*.json",
-    museum_samples: "not used (the Met / Rijksmuseum fetch was dropped on 29 Oct; no museum image is in this pack)",
+    museum_samples: "not used (no museum-image fetch is logged in evidence/, and no museum image is in this pack)",
   },
   receipts: summary,
   stages,
   ms4: ms4
     ? { pairs: ms4.pairs, runs: ms4.runs, answered: ms4.answered, by_expected: ms4.by_expected, mismatch_catch: ms4.mismatch_catch, consistency: ms4.consistency, gate_agreement: { compared: ms4.gate_agreement.compared, agree: ms4.gate_agreement.agree }, spend: ms4.spend }
     : null,
-  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, judged_as_labelled: asLabelled, false_match: x1.false_match, false_refuse: x1.false_refuse, same_sent_to_review: sameReview, unmeasured: x1.unmeasured } : null,
+  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, cases: x1Cases.length, judged_as_labelled: asLabelled, same_released: sameReleased, different_held: asLabelled - sameReleased, false_match: x1.false_match, false_refuse: sameRefused, same_sent_to_review: sameReview, unmeasured: x1.unmeasured, unmeasured_within: unmeasuredSplit } : null,
   copy: {
     jobs: copyJobs.length, texts, by_model: byModel, template: texts - byModel,
     note: "texts are the final records in data/copy; the answered copy calls in stages are more, because retries, superseded runs and rewrites are logged too",
@@ -71,12 +80,12 @@ const pack = {
   limits: [
     `${summary.garments_with_receipts.length} real garments (${summary.garments_with_receipts.join(", ")}), all the owner's own; the plan for this pack (an issue in the private coordination repository, not in this one) asked for 12 or more, and no museum garments are used.`,
     "Latency is per committed call, across days and payload sizes; it is not a controlled benchmark.",
-    "Cost is the ledger rule applied to logged usage (tokens x price table; SAM flat); no provider invoice was read.",
+    "Cost is a token estimate from the price table (SAM flat, UNVERIFIED price); no provider invoice was read.",
   ],
 };
 
 const fmt = (v: number | null, d = 0) => (v === null ? "n/a" : v.toFixed(d));
-const stageName = (s: StageStats) => (s.answered === 0 ? `${s.stage}: ${s.calls} ${s.calls === 1 ? "call" : "calls"}, none answered, never used` : s.stage);
+const stageName = (s: StageStats) => (s.answered === 0 ? `${s.stage}: ${s.calls} ${s.calls === 1 ? "call" : "calls"}, none answered, no output used` : s.stage);
 const stageRow = (s: StageStats) => `| ${stageName(s)} | ${s.calls} | ${s.answered} | ${s.failed} | ${fmt(s.latency_ms_median)} | ${fmt(s.latency_ms_p90)} | ${fmt(s.usd_per_call_median, 4)} | ${s.usd_total.toFixed(4)} |`;
 const totals = (d: Readonly<Record<string, number>>) => Object.entries(d).map(([k, n]) => `${k} ${n}`).join(", ") || "none";
 const decisions = Object.entries(summary.decisions).map(([d, n]) => `${d} ${n}`).join(", ");
@@ -84,7 +93,7 @@ const verifierErrors = totals(summary.verifier_errors_by_kind);
 const md = [
   "# Evidence pack, from committed material only",
   "",
-  "Generated by `npm run evidence:pack` from the receipts in `data/jobs` and the call logs in `evidence/`. Generating this pack makes no new model calls; it reads committed call logs. No museum image (that fetch was dropped on 29 Oct). A test checks this file is current.",
+  "Generated by `npm run evidence:pack` from the receipts in `data/jobs` and the call logs in `evidence/`. Generating this pack makes no new model calls; it reads committed call logs. No museum-image fetch is logged in `evidence/`, and no museum image is in this pack. A test checks this file is current.",
   "",
   "## Receipts",
   "",
@@ -99,7 +108,7 @@ const md = [
   "|---|---|---|---|---|---|---|---|",
   ...stages.map(stageRow),
   "",
-  "Latency and USD count answered calls only. USD is the ledger rule applied to each logged usage (tokens x the price table; SAM at a flat 0.0025 USD from secondary sources): an estimate, not an invoice.",
+  "Latency and USD count answered calls only. USD is a token estimate, not an invoice: each logged usage priced with the table in `src/spend-meta.ts` and `src/fireworks-copy.ts` (1.25 / 4.25 USD per million tokens in / out: for muse-spark-open, the Fireworks and Baseten pricing pages; for Muse Spark 1.3 on api.meta.ai, secondary sources quoting Meta's price, UNVERIFIED). SAM is a flat 0.0025 USD per call (2.50 USD per 1000 images, quoted by secondary sources from dev.meta.ai; UNVERIFIED, not read first-hand).",
   "",
   "## Verify a receipt offline",
   "",
@@ -112,7 +121,7 @@ const md = [
   ...adversarial.map((a) => `| ${a.case} | ${a.expected} | ${a.evidence} | ${a.result} |`),
   "",
   ...(pack.ms4 ? ["## Muse Spark cross-check (MS4)", "", `${pack.ms4.pairs} pairs, ${pack.ms4.answered} of ${pack.ms4.runs} runs answered. Same garment: ${pack.ms4.by_expected.same.correct} of ${pack.ms4.by_expected.same.answered} released. Wrong garment: ${pack.ms4.mismatch_catch.refused} of ${pack.ms4.mismatch_catch.answered} refused. Changed by a try-on: ${pack.ms4.by_expected.changed.correct} of ${pack.ms4.by_expected.changed.answered} held. Same decision on all 3 runs: ${pack.ms4.consistency.same_decision_all_reps} of ${pack.ms4.consistency.pairs_scored} pairs.`, ""] : []),
-  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders: ${pack.calibration.judged_as_labelled} of ${x1Cases.length} judged as their label says (same released, different held). ${pack.calibration.false_match} false matches; ${pack.calibration.false_refuse} false refusals and ${pack.calibration.same_sent_to_review} same-garment renders sent to REVIEW; ${pack.calibration.unmeasured} unmeasured (\`evidence/calibration-jobs-2026-10-29.json\`).`, ""] : []),
+  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders, ${pack.calibration.cases} in all, in three groups that add up: ${pack.calibration.judged_as_labelled} judged as their label says (${pack.calibration.same_released} same released + ${pack.calibration.different_held} different held), ${pack.calibration.false_refuse} false refusals and ${pack.calibration.same_sent_to_review} same-garment renders sent to REVIEW: ${pack.calibration.judged_as_labelled} + ${pack.calibration.false_refuse} + ${pack.calibration.same_sent_to_review} = ${pack.calibration.cases}. ${pack.calibration.false_match} false matches. The ${pack.calibration.unmeasured} unmeasured renders are inside those groups, not added to them (${pack.calibration.unmeasured_within.as_labelled} judged as labelled, ${pack.calibration.unmeasured_within.false_refuse} false refusal, ${pack.calibration.unmeasured_within.same_review} REVIEW). Source: \`evidence/calibration-jobs-2026-10-29.json\`.`, ""] : []),
   "## Copy",
   "",
   `${texts} final texts for ${copyJobs.length} jobs (English and Hindi summary and listing): ${byModel} by Meta muse-spark-open on Fireworks, ${texts - byModel} from the template. The answered copy calls above are more: retries, superseded runs and rewrites are logged too.`,
