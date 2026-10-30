@@ -25,7 +25,7 @@
     "demo:capture": "node --experimental-strip-types scripts/demo-capture.ts",
     "demo:stage": "node --experimental-strip-types scripts/demo-stage.ts",
     "composite:preview": "node --experimental-strip-types scripts/composite-preview.ts",
-    "make:template":"node --experimental-strip-types scripts/make-template.ts",
+    "make:template": "node --experimental-strip-types scripts/make-template.ts",
     "copy:fireworks": "node --experimental-strip-types scripts/fireworks-copy.ts",
     "models:fireworks": "node --experimental-strip-types scripts/fireworks-models.ts",
     "ledger": "node --experimental-strip-types scripts/ledger.ts",
@@ -35,7 +35,8 @@
     "verify:meta": "node --experimental-strip-types scripts/meta-verify.ts",
     "evidence:pack": "node --experimental-strip-types scripts/evidence-pack.ts",
     "figures": "node --experimental-strip-types scripts/figures.ts",
-    "sp1": "node --experimental-strip-types scripts/sp1.ts"
+    "sp1": "node --experimental-strip-types scripts/sp1.ts",
+    "demo:static": "node --experimental-strip-types scripts/static-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

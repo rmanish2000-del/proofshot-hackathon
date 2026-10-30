@@ -114,8 +114,24 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->348<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->350<!--/f--> tests, the gate, receipt chain and verify core
 included.
+
+## Keyless static demo (not hosted)
+
+`npm run demo:static` builds `out/static-demo/`: the judge view, the verify page and the shop as plain files,
+for every committed job (local `upload-*` jobs are left out). It needs no server and no API key, and nothing in
+it judges, generates or uploads anything: each page only reads committed receipts. Open it over HTTP (the pages
+fetch JSON files, so `file://` will not work):
+
+```bash
+npm run demo:static -- --serve
+```
+
+then `http://127.0.0.1:8791/` (`--port` picks another port). Any static host can serve the folder as it is
+(about 120 MB); it has not been published anywhere. In this build the judge page's **Verify chain** and
+**Tamper demo** buttons show results computed when the demo was built, and the page says so; `verify.html`
+still checks any receipt live in the browser.
 
 ## Judge quickstart
 
@@ -519,7 +535,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->348<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->350<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_calls-->7<!--/f--> calls, about <!--f:pruna_usd_est-->0.105<!--/f--> USD estimated, the same as the Replicate spend ledger | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |

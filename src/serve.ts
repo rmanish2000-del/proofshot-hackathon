@@ -591,7 +591,8 @@ function gateReasons(dir: string, renderId: string): string[] {
   return [];
 }
 
-function imageFile(dir: string, renderId: string): string | null {
+/** The render image beside a receipt (`<render_id>.jpg` or `.png`), or null. Also used by the static demo build. */
+export function imageFile(dir: string, renderId: string): string | null {
   for (const ext of ["jpg", "png"]) if (existsSync(join(dir, `${renderId}.${ext}`))) return `${renderId}.${ext}`;
   return null;
 }
