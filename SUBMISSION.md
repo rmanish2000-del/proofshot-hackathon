@@ -200,8 +200,9 @@ These are plans, not results:
   garments allow.
 - Shoot the tricky photos from the seller-pain list (dim room, busy background,
   folded garment and others) and run them through the same gate.
-- Check the verify page opened straight from disk in a browser (so far it is
-  checked over local HTTP).
+- Check the verify page opened straight from disk in a normal browser window
+  (so far from disk only in headless Edge, by the demo capture; and over local
+  HTTP in Chromium).
 - Get Manish's visual sign-off on composite v2 images before any is shown as a
   product shot.
 

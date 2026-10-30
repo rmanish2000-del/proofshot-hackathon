@@ -9,8 +9,8 @@ masks when measurable; missing measurements fail closed and are reported on
 the receipt (the gate never releases an unmeasured image). Every step is
 written into a hash-chained receipt that anyone can check offline in
 `web/verify.html`: a single page that makes no network request and needs no
-account (checked in a browser over local HTTP; opening it from disk is not yet
-checked).
+account (checked in Chromium over local HTTP, and opened from disk (`file://`)
+in headless Edge by the demo capture).
 
 The candidate images in the committed runs come from two paths. The composite
 path cuts the seller's own garment pixels out with a SAM 3.1 mask and places
@@ -206,8 +206,9 @@ signature or outside witness (`docs/SPEC.md` §3, threat model).
 
 `web/verify.html` is one self-contained file that makes no network request: a
 Content-Security-Policy of `default-src 'none'` blocks every request. It has
-been checked in a browser served over local HTTP; opening it straight from disk
-(`file://`) is not yet checked. Give it a
+been checked in Chromium served over local HTTP; opened straight from disk
+(`file://`) it is checked in headless Edge: the demo capture (S8, 29 Oct) gave
+VALID for `ms2-shirt-plaid`, then TAMPERED for its one-byte copy. Give it a
 `receipt.jsonl` and an image (or its sha256). It checks the chain with
 WebCrypto (`crypto.subtle`) and answers **VALID** (this image was released by
 this record), **NOT RELEASED** (rendered but not released, with the gate's
@@ -462,7 +463,7 @@ Dated experiment rows (each live run and when it happened) are in
 | Verifier accuracy | **not measured in general.** The Muse Spark cross-check (MS4, verifier alone, no fidelity check): <!--f:ms4_pairs-->68<!--/f--> pairs, <!--f:ms4_runs-->204<!--/f--> runs; wrong garment refused <!--f:ms4_wrong_refused-->153 of 153<!--/f-->; same garment released <!--f:ms4_same_released-->24 of 30<!--/f-->; shortened try-ons held <!--f:ms4_changed_held-->17 of 21<!--/f-->, so the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the gate's fidelity check is what held those try-ons; the same decision on all 3 runs for <!--f:ms4_consistent-->65 of 68<!--/f--> pairs. Four garments only | `evidence/ms4-summary.json` |
 | Calibration | <!--f:cal_cases-->37<!--/f--> labelled renders (<!--f:cal_same-->18<!--/f--> same, <!--f:cal_different-->19<!--/f--> different) at the shipped thresholds: <!--f:cal_false_match-->0<!--/f--> false matches, <!--f:cal_false_refuse-->4<!--/f--> false refusals (all where the verifier gave no answer), <!--f:cal_unmeasured-->6<!--/f--> unmeasured; recorded decisions reproduced <!--f:cal_reproduced-->37 of 37<!--/f-->. A self-check, not an error rate | `evidence/calibration-jobs-2026-10-29.json` |
 | Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
-| Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. Opening it from disk (`file://`) was **not checked**: the browser used shows `file://` pages as a non-secure snapshot | also tested in Node against the same core |
+| Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. From disk (`file://`): **checked in headless Edge** by `npm run demo:capture` (29 Oct, no flags that loosen security): `ms2-shirt-plaid` receipt and image → VALID, its one-byte copy → TAMPERED. Not yet checked from disk in a normal browser window: the in-app browser used for the HTTP check shows `file://` pages outside its project as a static snapshot | also tested in Node against the same core |
 | Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form, every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
 | Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 115c3ba, no EXIF/GPS, no phone number; author email is the noreply address from 28 Oct) | made public by Manish on 28 Oct after the history scan |
 
