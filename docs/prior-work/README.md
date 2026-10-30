@@ -26,7 +26,7 @@ What changed during the event: on 27 Oct 2026 at 10:33 IST, during the event
 and 37 minutes before this repository's first commit, the private repository's
 spec was brought up to date with its earlier code (private commit `04e207d`);
 that update rewrote the §3 payloads and §4 validation and added §7 to §10,
-describing that code. Its text is `SPEC-2026-10-27-update.md`, below. This
+describing that code. Its text is `SPEC-04e207d.md`, below. This
 repository's `docs/SPEC.md` was first added from it in `89cc8ea` (27 Oct 2026,
 13:06 IST) and edited after that; each change of substance made here is
 marked *(event)*. To see every difference from the pre-event text:
@@ -39,11 +39,11 @@ To split that into the two steps, the 27 Oct private update and then the
 changes made in this repository (the ones marked *(event)*):
 
 ```bash
-git diff --no-index docs/prior-work/SPEC-pre-event.md docs/prior-work/SPEC-2026-10-27-update.md
-git diff --no-index docs/prior-work/SPEC-2026-10-27-update.md docs/SPEC.md
+git diff --no-index docs/prior-work/SPEC-pre-event.md docs/prior-work/SPEC-04e207d.md
+git diff --no-index docs/prior-work/SPEC-04e207d.md docs/SPEC.md
 ```
 
-## The 27 Oct update: `SPEC-2026-10-27-update.md`
+## The 27 Oct update: `SPEC-04e207d.md`
 
 Written during the event, before this repository's first commit, so it is not
 pre-event work; it is published so the two steps above can be checked. Copied
@@ -56,8 +56,27 @@ unchanged.
 | Commit | `04e207d`, committed 27 Oct 2026 10:33:07 IST ("SPEC.md brought up to date with the code, before the clean-room rewrite") |
 | Blob SHA | `9651a5c` (`9651a5c5db49f5109fd7e40ea0a5a2aeb52e459b`) |
 
-`git hash-object docs/prior-work/SPEC-2026-10-27-update.md` prints
+`git hash-object docs/prior-work/SPEC-04e207d.md` prints
 `9651a5c5db49f5109fd7e40ea0a5a2aeb52e459b`.
+
+The tag `pre-hackathon-baseline` does not point at this commit: it points at
+`1485431` (26 Oct 19:44:34 IST), an ancestor of `04e207d`, and the two
+`docs/SPEC.md` blobs differ (`b666be9` and `9651a5c`, 99 lines added and 14
+removed). What `04e207d` changed, against the pre-event text:
+
+- A note under the title saying the file was brought up to date on 27 Oct.
+- §3 The receipt: the entry order line (`render` → `verifier` → `gate` →
+  `release` per render), the kinds table rewritten as exact payload fields
+  (`replay` provenance, `garment_id`, `prior_records`, verifier `usage`), the
+  `approval` kind note, and bullets for `garment_id`, `prior_records` and
+  timestamps; the "Added after review (26 Oct)" paragraph is folded into them.
+- §4 Verifier output schema: more inputs that throw `VerifierProtocolError`
+  (a finding that is not an object, non-finite confidence, output that is not
+  JSON, no message content), and a new paragraph on the three accepted
+  wrappings and where the parser is lenient.
+- New sections §7 Replay and record, §8 Render providers and the Muse Image
+  refusal, §9 The verify page's image check, §10 Garment fidelity (not yet in
+  the pipeline).
 
 The pre-event text names `src/` and test files of the earlier private
 repository; none of that code is in this repository. The code here starts at

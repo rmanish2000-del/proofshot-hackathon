@@ -9,7 +9,7 @@ pre-existing core, carried over from the private `proofshot` repository
 `pre-hackathon-baseline` tag is in `docs/prior-work/`). It was brought up to
 date with the earlier private code on 27 Oct 2026 at 10:33 IST (private commit
 `04e207d`, during the event and 37 minutes before this repository's first
-commit; its text is in `docs/prior-work/SPEC-2026-10-27-update.md`); that
+commit; its text is in `docs/prior-work/SPEC-04e207d.md`); that
 update rewrote the §3 payloads and §4 validation and added §7 to §10 as they
 described the private code. The code in this repository is rewritten from it. Every change of
 substance made here is marked *(event)*; edits that only swap a dash for a
