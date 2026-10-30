@@ -5,8 +5,11 @@ photos of the garment (three or four of them) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
 code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
 from those structured findings and a fidelity check, measured on the garment
-masks when measurable; missing measurements fail closed and are reported on
-the receipt (the gate never releases an unmeasured image). Every step is
+masks when measurable. In a live run a missing measurement fails closed: the
+fidelity check (`src/fidelity.ts`) gives REVIEW at best and says why on the
+receipt. A fixture run (no keys) has a stub fidelity check that measures
+nothing and returns RELEASE with `"metrics":null`; its receipt says provenance
+`fixture` (example below). Every step is
 written into a hash-chained receipt that anyone can check offline in
 `web/verify.html`: a single page that makes no network request and needs no
 account (checked in Chromium over local HTTP, and opened from disk (`file://`)
@@ -197,6 +200,12 @@ sorts keys and rejects non-finite numbers. A job writes these kinds in order:
 {"seq":5,"kind":"gate","payload":{"render_id":"demo-r0","decision":"RELEASE","cited":null,"reasons":[]}, …}
 {"seq":6,"kind":"release","payload":{"render_id":"demo-r0","image_sha256":"c41d…","approver":"unattended","approved_by_human":false}, …}
 ```
+
+The `fidelity` entry above is the fixture stub (`fixtureProviders` in
+`src/pipeline.ts`): `"metrics":null` and RELEASE, because a fixture job
+measures nothing. A live job's fidelity entry carries the measured metrics, or
+REVIEW with the reason when it could not measure (`live-kurta-01-2` in
+`data/jobs` is one).
 
 The chain catches an edited, reordered or deleted entry. It does not stop
 someone from rewriting the whole file from entry 0, because there is no
