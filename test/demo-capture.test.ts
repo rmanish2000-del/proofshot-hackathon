@@ -324,3 +324,12 @@ test("DEMO1k: the judge page opens a linked job even when it is not among the 20
   assert.match(html, /\(older job\)/);
   assert.match(html, /if \(want && \[\.\.\.sel\.options\]\.some\(\(o\) => o\.value === want\)\) sel\.value = want;/);
 });
+
+test("DM10: DEMO.md has no never/cannot absolutes, and says intake stripped metadata only if an intake record removed some", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  assert.doesNotMatch(md, /\b(never|cannot|can't)\b/i);
+  const intake = readFileSync(join(root, "data/garments/shirt-plaid/intake.json"), "utf8");
+  const files = (JSON.parse(intake) as { files: { removed: unknown[] }[] }).files;
+  if (/metadata stripped/i.test(md)) assert.ok(files.every((f) => f.removed.length > 0), "DEMO.md says metadata stripped, but intake removed nothing");
+  else assert.match(md, /intake found no metadata to remove/);
+});
