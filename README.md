@@ -500,7 +500,10 @@ here from that specification.
 - `docs/SPEC.md`: the written specification of ProofShot's attributes, gate
   rules and receipt format, first written on 24 Oct 2026, before the event, and
   carried over. The code here is rewritten from it, and every change made to it
-  during the event is marked *(event)*.
+  during the event is marked *(event)*. The pre-event text itself is in
+  [`docs/prior-work/`](docs/prior-work/), copied unchanged from the private
+  repository's `pre-hackathon-baseline` tag (blob `b666be9`), so it can be
+  compared with this repository's `docs/SPEC.md` and code.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
 
