@@ -29,7 +29,11 @@ That is why the demo video shows no AI on-model image: every committed
 try-on receipt (<!--f:tryon_total-->7<!--/f-->, <!--f:tryon_review-->2<!--/f--> REVIEW and <!--f:tryon_refuse-->5<!--/f--> REFUSE) is a kurta job held by
 the gate, the demo shows the two shirts only, and there is no shirt try-on.
 No new paid call was made for the video (`docs/DEMO.md`,
-`test/demo-capture.test.ts`).
+`test/demo-capture.test.ts`). The demo video (about 2.5 minutes) is built from
+the 9 shots of that capture plus four text cards: the problem, what was built
+during the hackathon, the Meta models used with their logged call counts, and
+the evidence with its limits (4 garments, not a general accuracy claim). Every
+number on screen is a figure in this README. Video link: TBD.
 
 ## What each Meta model does
 
@@ -75,6 +79,44 @@ npm run call:baseten         # one live Muse Spark Open call, logged to evidence
 Of these, `npm run call:baseten` is the only command that makes a live model
 API call, and it needs `BASETEN_API_KEY` set.
 
+## Quick verify in 2 minutes
+
+Needs Node 22.6 or later and Chrome or Edge. No API key, and no network after
+`npm ci`. On Windows, clone into a short folder path (the longest file path in
+the repository is 82 characters, so keep the folder under about 170), or git
+stops with "Filename too long".
+
+```bash
+git clone https://github.com/rmanish2000-del/proofshot-hackathon.git
+cd proofshot-hackathon
+npm ci
+npm run serve
+```
+
+If port 8787 is taken, `npm run serve` says so; run
+`npm run serve -- --port 8790` and use that port below. Then, in about two
+minutes:
+
+1. Open `http://127.0.0.1:8787/judge?job=live-shirt-plaid-mismatch`: the plaid
+   shirt's photos beside a different shirt, and the gate's **REFUSE**
+   (`hard_mismatch` on colour at 0.99). Swap the job for
+   `live-shirt-plaid-composite-v2-r3` (**REVIEW**) or `ms2-shirt-plaid`
+   (**RELEASE**, the owner's own photo as the candidate: a pipeline smoke
+   example). These are committed live jobs; the page only reads their receipts.
+2. Open `http://127.0.0.1:8787/verify.html`. Choose the receipt
+   `web/shop/ms2-shirt-plaid/receipt.jsonl` and the image
+   `web/shop/ms2-shirt-plaid/ms2-shirt-plaid-r0.jpg`, then **Check**: VALID,
+   7 entries.
+3. Copy that receipt, change `"seq":1` to `"seq":2` on its second line, and check
+   the copy with the same image: TAMPERED, entry 1.
+
+Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
+network request.
+
+The full test suite runs offline too, but takes longer (about five minutes on
+a laptop): `npm test` runs <!--f:tests-->348<!--/f--> tests, the gate, receipt chain and verify core
+included.
+
 ## Judge quickstart
 
 No API keys are needed. Without keys the run is **fixture mode**; the page and
@@ -112,7 +154,8 @@ Then open `http://127.0.0.1:8787/` (the URL `npm run serve` prints). You should
 see the seller upload page with the five-step board: metadata, segment, render,
 verify, gate. Each result card shows a RELEASE, REVIEW or REFUSE badge, reasons,
 and a **View receipt** link. The seller upload page is local only
-(`npm run serve`) and visually UNVERIFIED. Each ProofShot result has a hash-chained
+(`npm run serve`); it was checked in Chromium on 29 Oct in fixture mode (see
+"What is verified and what is not"). Each ProofShot result has a hash-chained
 receipt; a deterministic code gate decides RELEASE/REVIEW/REFUSE.
 
 4. Replay the canned examples (no network, no key; output goes to the
