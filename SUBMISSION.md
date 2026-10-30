@@ -230,6 +230,34 @@ endpoint URL in `src/` and `scripts/`.
   for the one-byte copy) and over local HTTP in Chromium. It is not yet checked
   from disk in a normal browser window.
 
+## Accomplishments that I'm proud of
+
+I built ProofShot in TypeScript during the event, starting from the written
+spec. The pipeline segments a seller's photos, verifies a candidate image,
+measures fidelity, and lets a deterministic gate decide. It writes each step
+from intake to the gate decision into a SHA-256 hash-chained receipt, and
+`web/verify.html` checks that chain in the browser. In calibration, the gate
+reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x with <!--f:cal_false_match-->0<!--/f--> false matches. In the
+Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
+fidelity check held all <!--f:tryon_total-->7<!--/f--> try-on images in the gate.
+
+Checked against: Built during the event (first commit 4aa99f9), Calibration
+and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`.
+
+## What I learned
+
+I learned to handle silent failures explicitly. A verifier that returns no
+findings should not release an image, so the gate refuses it as not verified.
+When no mask was stored, the job view says the fidelity check could not run
+instead of showing a misleading REVIEW. I added a copy audit and fix pass
+because generated copy sometimes described the software instead of the
+garment. A verifier call with large photos is now retried once, and the two
+failed runs stay recorded as refusals. With four garments, calibration is a
+self-check, not a true error rate.
+
+Checked against: Challenges and Calibration above; `src/gate.ts` (an attribute
+with no finding fires `not_verified`).
+
 ## What's next
 
 These are plans, not results:
