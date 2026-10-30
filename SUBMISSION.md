@@ -9,6 +9,30 @@ review, on master after d0499ca. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
 
+## Inspiration
+
+An Indian boutique seller lists every garment from their own phone photos.
+Any image that goes on that listing, a cleaned-up product shot or an AI
+try-on, can quietly change the colour, the print or the length, and the buyer
+gets something else. In my live try-on calls, long kurtas came back shorter,
+and the gate held all <!--f:tryon_total-->7<!--/f--> committed try-on images (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none
+released). So I wanted a deterministic check against the seller's own photos
+before any candidate image can be listed.
+
+## What it does
+
+For one candidate listing image, ProofShot segments the seller's photos with
+SAM 3.1, makes a candidate (composite v2, the seller's own garment pixels on a
+ghost mannequin, no image model; or an AI try-on with Pruna on Replicate),
+verifies it against those photos with Muse Spark 1.3, measures fidelity on the
+SAM 3.1 masks, and lets a deterministic gate decide RELEASE, REVIEW or REFUSE.
+Every step goes into a SHA-256 hash-chained receipt, and `web/verify.html`
+re-checks that receipt in the browser with WebCrypto. English and Hindi
+listing copy is written after the gate by muse-spark-open on Fireworks.
+
+Checked against: README "What each Meta model does" (the model table) and
+"How the gate decides", `src/pipeline.ts`, `data/jobs/live-kurta-0*-tryon*`.
+
 ## Problem
 
 An Indian boutique seller lists garments online from their own phone photos.
@@ -16,7 +40,7 @@ Any image that goes on the listing, whether a cleaned-up product shot or an AI
 try-on, can quietly change the garment: its colour, its print, its length. A
 buyer then gets something other than what the photo showed.
 
-In our live try-on calls, long kurtas came back hip-length, and the gate caught
+In our live try-on calls, long kurtas came back shorter, and the gate caught
 every one: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-on images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW), none released.
 ProofShot checks each candidate image against the seller's own photos before it
 can be listed, and a deterministic gate, not a model, decides.
@@ -185,11 +209,23 @@ endpoint URL in `src/` and `scripts/`.
   only this repository's code and the hosted models named under Built with
   (the `provider` field of each receipt in `data/jobs`, and the endpoint URLs
   in `src/` and `scripts/`).
-- *Why does the demo show no AI on-model image?* All <!--f:tryon_total-->7<!--/f--> committed try-on
-  receipts are kurta jobs, and the gate held every one (<!--f:tryon_refuse-->5<!--/f--> REFUSE,
-  <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`); the demo shows the two
-  shirts only, no shirt try-on exists, and no new paid call was made for the
-  video (`docs/DEMO.md`, `test/demo-capture.test.ts`).
+- *Did any AI on-model image get released?* No: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> committed try-on
+  images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`). The
+  verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
+  check is what held every one in the gate. All <!--f:tryon_total-->7<!--/f--> are kurta jobs, so the
+  demo, which shows the two shirts only, has no AI on-model image, and no new
+  paid call was made for the video (`docs/DEMO.md`,
+  `test/demo-capture.test.ts`).
+- *What can I run without a key?* `npm ci`, `npm test`, `npm run serve` and
+  `npm run demo:replay` need no key; without keys every provider is a fixture
+  and the page and receipt say so (README "Judge quickstart"). In the README's
+  command list, `npm run call:baseten` is the one live model call and needs
+  `BASETEN_API_KEY`; the live batch scripts (`npm run job:live` and others)
+  also need their keys and are not part of the quickstart.
+- *Can I open `web/verify.html` from disk?* Yes. It is checked from disk
+  (`file://`) in headless Edge by the demo capture (S8: VALID, then TAMPERED
+  for the one-byte copy) and over local HTTP in Chromium. It is not yet checked
+  from disk in a normal browser window.
 
 ## What's next
 
