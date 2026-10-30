@@ -1,0 +1,725 @@
+{
+  "jobs": 43,
+  "by_class": {
+    "violation": 20,
+    "release": 14,
+    "verifier_failure": 4,
+    "missing_evidence": 5
+  },
+  "decisions_changed_by_agent": 0,
+  "recovery_requests": {
+    "full_length_front": 4,
+    "label_closeup": 1
+  },
+  "paid_recheck_proposals": 4,
+  "no_recovery_violations": 20,
+  "resolved_with_committed_data": 0,
+  "seller_steps_proposed": 5,
+  "length": {
+    "verifier_alone_passed_shortened_tryon_checks": "4 of 21",
+    "tryon_receipts": 7,
+    "tryon_held_by_gate_before": 7,
+    "tryon_held_after_agent": 7,
+    "tryon_recovery_attempts": 0
+  },
+  "latency_ms": {
+    "p50": 68.9,
+    "p90": 222.1,
+    "max": 437.7
+  },
+  "rows": [
+    {
+      "job": "fixture-shirt-01",
+      "provenance": "fixture",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "hard_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 68.9
+    },
+    {
+      "job": "kurta-01",
+      "provenance": "fixture",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 82.2
+    },
+    {
+      "job": "kurta-02",
+      "provenance": "fixture",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 87.9
+    },
+    {
+      "job": "live-kurta-01",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "verifier_failure",
+      "code": "not_verified",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "awaiting_approval",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 147.9
+    },
+    {
+      "job": "live-kurta-01-2",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "missing_evidence",
+      "code": "fidelity_unmeasured",
+      "tools": [
+        "read_receipt",
+        "detect_missing_view",
+        "request_seller_photo"
+      ],
+      "status": "awaiting_seller",
+      "requested_view": "full_length_front",
+      "try_on": false,
+      "latency_ms": 30
+    },
+    {
+      "job": "live-kurta-01-composite",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "verifier_failure",
+      "code": "not_verified",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "awaiting_approval",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 35.4
+    },
+    {
+      "job": "live-kurta-01-composite-r2",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 43.4
+    },
+    {
+      "job": "live-kurta-01-mismatch",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "hard_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 140.7
+    },
+    {
+      "job": "live-kurta-01-sam",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "missing_evidence",
+      "code": "fidelity_unmeasured",
+      "tools": [
+        "read_receipt",
+        "detect_missing_view",
+        "request_seller_photo"
+      ],
+      "status": "awaiting_seller",
+      "requested_view": "full_length_front",
+      "try_on": false,
+      "latency_ms": 43.4
+    },
+    {
+      "job": "live-kurta-01-sam-2",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 63.1
+    },
+    {
+      "job": "live-kurta-01-tryon",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "fidelity_breach",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 72.8
+    },
+    {
+      "job": "live-kurta-01-tryon-m",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "fidelity_breach",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 31
+    },
+    {
+      "job": "live-kurta-01-tryon-reverify",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 31.8
+    },
+    {
+      "job": "live-kurta-01-tryon-s02",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 155.8
+    },
+    {
+      "job": "live-kurta-02-composite",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 89.9
+    },
+    {
+      "job": "live-kurta-02-composite-v2",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "missing_evidence",
+      "code": "render_quality",
+      "tools": [
+        "read_receipt",
+        "detect_missing_view",
+        "request_seller_photo"
+      ],
+      "status": "awaiting_seller",
+      "requested_view": "full_length_front",
+      "try_on": false,
+      "latency_ms": 32.4
+    },
+    {
+      "job": "live-kurta-02-sam",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 26.2
+    },
+    {
+      "job": "live-kurta-02-tryon",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 301.1
+    },
+    {
+      "job": "live-kurta-02-tryon-2",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "fidelity_breach",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 47.6
+    },
+    {
+      "job": "live-kurta-02-tryon-2-reverify",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 43.6
+    },
+    {
+      "job": "live-kurta-02-tryon-m",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 198.8
+    },
+    {
+      "job": "live-kurta-02-tryon-s02",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": true,
+      "latency_ms": 36.9
+    },
+    {
+      "job": "live-shirt-plaid-composite-v2",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "verifier_failure",
+      "code": "not_verified",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "awaiting_approval",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 437.7
+    },
+    {
+      "job": "live-shirt-plaid-composite-v2-r2",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "verifier_failure",
+      "code": "not_verified",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "awaiting_approval",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 44.2
+    },
+    {
+      "job": "live-shirt-plaid-composite-v2-r3",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "missing_evidence",
+      "code": "low_confidence",
+      "tools": [
+        "read_receipt",
+        "detect_missing_view",
+        "request_seller_photo"
+      ],
+      "status": "awaiting_seller",
+      "requested_view": "label_closeup",
+      "try_on": false,
+      "latency_ms": 31.4
+    },
+    {
+      "job": "live-shirt-plaid-mismatch",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "hard_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 146.1
+    },
+    {
+      "job": "ms2-kurta-01",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 93.8
+    },
+    {
+      "job": "ms2-kurta-02",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 222.1
+    },
+    {
+      "job": "ms2-shirt-plaid",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 242.7
+    },
+    {
+      "job": "ms2-shirt-zebra",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "missing_evidence",
+      "code": "fidelity_unmeasured",
+      "tools": [
+        "read_receipt",
+        "detect_missing_view",
+        "request_seller_photo"
+      ],
+      "status": "awaiting_seller",
+      "requested_view": "full_length_front",
+      "try_on": false,
+      "latency_ms": 107.8
+    },
+    {
+      "job": "ms3-live-kurta-01-composite",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 152.3
+    },
+    {
+      "job": "ms3-live-kurta-01-composite-r2",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 55.1
+    },
+    {
+      "job": "ms3-live-kurta-01-mismatch",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "hard_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 49.4
+    },
+    {
+      "job": "ms3-live-kurta-01-tryon",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 32.5
+    },
+    {
+      "job": "ms3-live-kurta-01-tryon-m",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "fidelity_breach",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 330.8
+    },
+    {
+      "job": "ms3-live-kurta-01-tryon-s02",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 71.8
+    },
+    {
+      "job": "ms3-live-kurta-02-composite",
+      "provenance": "live",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 18
+    },
+    {
+      "job": "ms3-live-kurta-02-tryon",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 37.9
+    },
+    {
+      "job": "ms3-live-kurta-02-tryon-2",
+      "provenance": "live",
+      "decision_before": "REVIEW",
+      "decision_after": "REVIEW",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 178.5
+    },
+    {
+      "job": "ms3-live-kurta-02-tryon-m",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 82.8
+    },
+    {
+      "job": "ms3-live-kurta-02-tryon-s02",
+      "provenance": "live",
+      "decision_before": "REFUSE",
+      "decision_after": "REFUSE",
+      "class": "violation",
+      "code": "soft_mismatch",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "done",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 54.6
+    },
+    {
+      "job": "shirt-plaid",
+      "provenance": "fixture",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 24.2
+    },
+    {
+      "job": "shirt-zebra",
+      "provenance": "fixture",
+      "decision_before": "RELEASE",
+      "decision_after": "RELEASE",
+      "class": "release",
+      "code": "release",
+      "tools": [
+        "read_receipt",
+        "explain"
+      ],
+      "status": "ready_to_publish",
+      "requested_view": null,
+      "try_on": false,
+      "latency_ms": 164.3
+    }
+  ]
+}
