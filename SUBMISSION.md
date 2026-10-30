@@ -62,6 +62,31 @@ Sources: README.md (intro, "What each Meta model does", "What is verified and wh
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
 work), `docs/DEMO.md`, `docs/prior-work/README.md`, `LICENSE`.
 
+## Metrics (measured, with their limits)
+
+Every number here is from a committed test, run log or report, named in the last column; numbers with a
+figure marker are kept current by `npm run figures`. Anything not measured says so.
+
+| What | Result | Source |
+|---|---|---|
+| Automated tests | <!--f:tests-->350<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
+| Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
+| Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
+| Calibration: false refusals at 1x | <!--f:cal_false_refuse-->4<!--/f-->, all verifier failures (2 failed calls, 2 non-JSON answers), not a threshold effect | same; Calibration below |
+| Muse Spark cross-check: wrong-garment runs refused | <!--f:ms4_wrong_refused-->153 of 153<!--/f--> | `evidence/ms4-summary.json` |
+| Muse Spark cross-check: same-garment runs released | <!--f:ms4_same_released-->24 of 30<!--/f--> | same |
+| Muse Spark cross-check: same decision on all 3 runs | <!--f:ms4_consistent-->65 of 68<!--/f--> pairs | same |
+| AI try-ons held by the gate | <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks | `data/jobs/live-kurta-0*-tryon*`, `evidence/ms4-summary.json` |
+| Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
+| Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run) |
+| Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` |
+| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures, each a per-call token estimate, not a bill | Built with, below |
+| General verifier accuracy | **not measured** (4 garments, all the owner's own; the rates above are for these pairs only) | README "What is verified and what is not" |
+| False-match rate on real sellers' listings | **not measured** | none |
+| End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
+| Throughput or cost per listing at scale | **not measured** | none |
+
 ## Inspiration
 
 An Indian boutique seller lists every garment from their own phone photos.
