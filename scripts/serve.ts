@@ -46,7 +46,14 @@ const server = new UploadServer({
   providers,
 });
 
-createServer((req, res) => void server.handler(req, res)).listen(port, "127.0.0.1", () => {
+const http = createServer((req, res) => void server.handler(req, res));
+// A port already taken (often an older npm run serve) gets one line, not a stack trace.
+http.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code !== "EADDRINUSE") throw err;
+  console.error(`port ${port} is already in use (an older npm run serve?). Stop it, or pick another port: npm run serve -- --port 8790`);
+  process.exit(2);
+});
+http.listen(port, "127.0.0.1", () => {
   console.log(`ProofShot seller upload: http://127.0.0.1:${port}/`);
   console.log(`mode: ${providers.mode.fixture ? "FIXTURE (no verifier key read; the page says so)" : "live"}`);
   for (const [step, label] of Object.entries(providers.mode.labels)) console.log(`  ${step}: ${label}`);
