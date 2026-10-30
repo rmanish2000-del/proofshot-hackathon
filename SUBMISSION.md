@@ -112,6 +112,11 @@ answered; none is a not_verified run.
 
 Spend from the ledgers: Meta Model API 5.99 USD of the 80 USD cap, Fireworks
 4.83 USD of 60, Replicate 0.105 USD, Baseten 0 on its ledger; no reserve used.
+The pack's Meta estimates (SAM 3.1 0.33 + Muse Spark 1.3 5.83, about 6.16 USD
+in `evidence/pack/README.md`) are computed differently: they price every
+committed call log, while 5.99 is the ledger as read on 29 Oct, which starts at
+dd7d280 and so leaves out the 51 SAM calls logged before it (0.13 USD) and the
+9 calls logged after that reading (0.04 USD).
 The Baseten 0 is not a charge of zero: the spend ledgers were added on 29 Oct
 at 10:53 IST (dd7d280), and every one of the 19 Baseten calls is logged
 earlier (`evidence/verifier-*.json`, 28 Oct 09:25 IST to 29 Oct 06:13 IST), so none has a ledger entry. Their token
