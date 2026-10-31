@@ -46,3 +46,20 @@ test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the
     assert.doesNotMatch(said, /5\/5|5 REFUSED/);
   }
 });
+
+test("wording 4: DEMO v7 runs 170 s or less with the end card, the beats are back to back, and the prior-work line opens beat 1", () => {
+  const md = read("docs/DEMO.md");
+  const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
+  const rows = v7.split("\n").filter((l) => /^\| (\d [A-Z]|Card )/.test(l));
+  assert.equal(rows.length, 6, "five beats and the end card");
+  const secs = (t: string) => Number(t.split(":")[0]) * 60 + Number(t.split(":")[1]);
+  let clock = 0;
+  for (const row of rows) {
+    const [, from, to, len] = /(\d:\d\d) to (\d:\d\d) \((\d+) s/.exec(row)!;
+    assert.equal(secs(from!), clock, `${row.slice(0, 20)} starts where the last beat ended`);
+    assert.equal(secs(to!) - secs(from!), Number(len), `${row.slice(0, 20)} length`);
+    clock = secs(to!);
+  }
+  assert.ok(clock <= 170, `v7 runs ${clock} s, target 170 s or less`);
+  assert.match(rows[0]!, /prior-work caption .* from 0:00 to 0:05/);
+});

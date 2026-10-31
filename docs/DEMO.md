@@ -36,19 +36,27 @@ screen. SAM 3.1 and Muse Spark 1.3 have logs in the shirt jobs' receipts.
 Grok 17:35 IST 31 Oct (#23). This is the script for re-rendering the
 assembled video in out/final (first commit cited: 15658a4). It does not
 change the v6 timecode table and shot list below: those still drive
-`npm run demo:capture`. Five beats, 3:00 in all, word cap = seconds x 2.5.
-Every figure was read from a committed file on 31 Oct.
+`npm run demo:capture`. Five beats, 2:50 in all with the optional end card
+(2:45 without it), word cap = seconds x 2.5. Every figure was read from a
+committed file on 31 Oct.
+
+Grok 21:10 IST 31 Oct: the prior-work line comes at the opening, as an
+on-screen caption over the first 5 s of beat 1; beat 3 is 10 s shorter (40 s,
+same narration, which fits its cap) and the later beats move up; the end card
+is optional. The narration text is unchanged from the first v7 (72db20c). The
+narration audio is Manish's own recorded voiceover; nothing is re-recorded or
+generated.
 
 | Beat | Time | Screen | Narration | Source |
 |---|---|---|---|---|
-| 1 Problem | 0:00 to 0:25 (25 s, cap 62) | Title card, then the four phone photos of the plaid shirt | An Indian boutique seller lists garments from their own phone photos. A cleaned-up shot or an AI try-on can quietly change the garment: its colour, its print, its length. ProofShot is an evidence-recovery agent that catches that before the listing goes live. | `data/garments/shirt-plaid` |
+| 1 Problem | 0:00 to 0:25 (25 s, cap 62) | Title card with the prior-work caption (below) on screen from 0:00 to 0:05, then the four phone photos of the plaid shirt | An Indian boutique seller lists garments from their own phone photos. A cleaned-up shot or an AI try-on can quietly change the garment: its colour, its print, its length. ProofShot is an evidence-recovery agent that catches that before the listing goes live. | `data/garments/shirt-plaid` |
 | 2 Agent loop | 0:25 to 1:10 (45 s, cap 112) | The keyless `npm run agent:demo` run (2-back.jpg is the image to publish), with the "canned verifier" label visible | This is the keyless agent demo. Its verifier is a labelled stand-in, so it shows the mechanics, not model accuracy. The seller gives three close-ups and no full-length view, and the gate says REVIEW. The agent reads the receipt and asks for the missing view. The seller adds it, the same gate runs again, and it says RELEASE. Nothing is published until the seller approves. A proposal carrying injected text is rejected, and publish stays blocked. | `scripts/agent-demo.ts`; run 31 Oct about 20:27 IST: run-1 REVIEW, run-2 RELEASE, published; injection REVIEW, publish refused |
-| 3 Results | 1:10 to 2:00 (50 s, cap 125) | The verdict table of the try-on run, then the shirt-pink composite beside photo 1 | Then five real garments. Pruna (via Replicate) made five AI try-ons. 0 of 5 AI try-ons released; every one held for review or refused, with the reason on the receipt. Composite v2 gave one RELEASE, three REVIEW and one REFUSE. The RELEASE is built from the seller's own pixels, cut out and moved, not a generated image. | `evidence/tryon/SUMMARY.md` (n = 10 jobs on 5 garments) |
-| 4 Verify page | 2:00 to 2:30 (30 s, cap 75) | `web/verify.html` opened from disk: VALID, then the one-byte copy: TAMPERED with the entry number | Every decision is written into a hash-chained receipt. The verify page checks every hash in the browser, with no server: VALID. Change one byte, and it says TAMPERED, with the entry number. | as v6 S7/S8 |
-| 5 Meta tooling | 2:30 to 2:55 (25 s, cap 62) | A receipt with its SAM 3.1 and Muse Spark 1.3 log entries, then one Baseten verifier log | SAM 3.1 segments the garment. Muse Spark 1.3 on the Meta Model API checks nine attributes. Earlier runs used Muse Spark Open via Baseten. Every call is logged, and a code gate, not a model, decides. | Muse Spark Open via Baseten checked against `evidence/verifier-*.json`: 19 logs with provider `baseten`, model `meta-models/muse-spark-open-1026`, 28 Oct to 29 Oct 00:43 UTC; later logs are `muse-spark-1.3` on `api.meta.ai` |
-| Card | 2:55 to 3:00 (5 s, no narration) | Prior-work card, text only | | the card text below |
+| 3 Results | 1:10 to 1:50 (40 s, cap 100) | The verdict table of the try-on run, then the shirt-pink composite beside photo 1 | Then five real garments. Pruna (via Replicate) made five AI try-ons. 0 of 5 AI try-ons released; every one held for review or refused, with the reason on the receipt. Composite v2 gave one RELEASE, three REVIEW and one REFUSE. The RELEASE is built from the seller's own pixels, cut out and moved, not a generated image. | `evidence/tryon/SUMMARY.md` (n = 10 jobs on 5 garments) |
+| 4 Verify page | 1:50 to 2:20 (30 s, cap 75) | `web/verify.html` opened from disk: VALID, then the one-byte copy: TAMPERED with the entry number | Every decision is written into a hash-chained receipt. The verify page checks every hash in the browser, with no server: VALID. Change one byte, and it says TAMPERED, with the entry number. | as v6 S7/S8 |
+| 5 Meta tooling | 2:20 to 2:45 (25 s, cap 62) | A receipt with its SAM 3.1 and Muse Spark 1.3 log entries, then one Baseten verifier log | SAM 3.1 segments the garment. Muse Spark 1.3 on the Meta Model API checks nine attributes. Earlier runs used Muse Spark Open via Baseten. Every call is logged, and a code gate, not a model, decides. | Muse Spark Open via Baseten checked against `evidence/verifier-*.json`: 19 logs with provider `baseten`, model `meta-models/muse-spark-open-1026`, 28 Oct to 29 Oct 00:43 UTC; later logs are `muse-spark-1.3` on `api.meta.ai` |
+| Card | 2:45 to 2:50 (5 s, no narration, optional) | Prior-work card, text only (repeats the opening caption) | | the card text below |
 
-Prior-work card (5 s, on screen exactly):
+Prior-work caption (beat 1, 0:00 to 0:05) and optional end card, on screen exactly:
 
 Prior work: spec document only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public.
 
