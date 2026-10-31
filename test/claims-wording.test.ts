@@ -77,6 +77,16 @@ test("wording 9 (Grok 22:40 AGW5, 22:58 AGW6): README Limits and the SUBMISSION 
   assert.doesNotMatch(sub, /with no photo shared between the two sets, so/);
   // AGW6: the try-on summary's handoff folder kurta-01 must not read as data/garments/kurta-01.
   assert.match(read("evidence/tryon/SUMMARY.md"), /The handoff folder named `kurta-01` above is kurta-red-floral, not `data\/garments\/kurta-01` \(different sha256\)\./);
+  // AGW7: CLAIMS_AUDIT keeps a row for the 9 total, with both proofs and its scope.
+  const audit = read("CLAIMS_AUDIT.md").split("\n");
+  const row = audit.find((l) => l.startsWith('| "<!--f:garments_all-->9<!--/f--> real garments in all"'));
+  assert.ok(row, "CLAIMS_AUDIT has a row for the 9-garment claim");
+  assert.match(row, /\| proven, scoped \|/);
+  assert.match(row, /"figures 5"/);
+  assert.match(row, /by-eye check of the front photos was done by Claude Code \(autorun\)/);
+  assert.match(row, /not a general accuracy sample/);
+  assert.ok(audit.some((l) => l.startsWith("| On 5 real garments (pink polo, mustard kurta, pink patchwork kurta, red floral kurta, grey shirt)")), "the 5-garment row still names the 5");
+  assert.ok(audit.some((l) => l.includes("4 garments, all the owner's own")), "the 4-garment calibration row still reads 4");
 });
 
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
