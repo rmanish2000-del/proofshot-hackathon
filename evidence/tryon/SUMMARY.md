@@ -24,6 +24,8 @@ treated as the same garment and not taken in again:
 | `shirt-01` | `shirt-pink` |
 | `kurta-01` | `kurta-red-floral` (its first photo has the same sha256; its second is a smaller copy of the same view) |
 
+The handoff folder named `kurta-01` above is kurta-red-floral, not `data/garments/kurta-01` (different sha256).
+
 `shirt-grey-mufti/back_HAS_PERSON_LEGS.jpg` shows a person, so it was excluded before intake and never copied.
 
 ## Verdicts

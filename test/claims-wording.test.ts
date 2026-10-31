@@ -65,7 +65,7 @@ test("wording 8 (Grok 22:25, AGW4): the README 'Public repo' row says every comm
   assert.match(read("docs/HISTORY.md"), /30 Oct history\s+re-authoring \(emails only/);
 });
 
-test("wording 9 (Grok 22:40, AGW5): README Limits and the SUBMISSION evidence paragraph scope the 4 garments and the 5 of the 31 Oct run, and give 9 only beside the no-shared-photo check", () => {
+test("wording 9 (Grok 22:40 AGW5, 22:58 AGW6): README Limits and the SUBMISSION evidence paragraph scope the 4 garments and the 5 of the 31 Oct run, and give 9 only beside the no-shared-photo and by-eye checks", () => {
   const readme = read("README.md").replace(/\s+/g, " ");
   const limit = readme.slice(readme.indexOf("**Small sample.**"), readme.indexOf("**Verifier accuracy is not measured"));
   assert.match(limit, /cover <!--f:garments-->4<!--\/f--> real garments \(two women's kurtas, two shirts: kurta-01, kurta-02, shirt-plaid, shirt-zebra\)/);
@@ -73,7 +73,10 @@ test("wording 9 (Grok 22:40, AGW5): README Limits and the SUBMISSION evidence pa
   assert.match(limit, /No photo is shared between the two sets .* <!--f:garments_all-->9<!--\/f--> real garments in all/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /That is <!--f:garments-->4<!--\/f--> garments/);
-  assert.match(sub, /on <!--f:garments-->4<!--\/f--> garments \(kurta-01, kurta-02, shirt-plaid, shirt-zebra\), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--\/f--> other real garments, with no photo shared between the two sets, so <!--f:garments_all-->9<!--\/f--> garments in all/);
+  assert.match(sub, /on <!--f:garments-->4<!--\/f--> garments \(kurta-01, kurta-02, shirt-plaid, shirt-zebra\), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--\/f--> other real garments; no photo is shared between the two sets \(sha256\) and by eye none of the 5 is one of the 4, so <!--f:garments_all-->9<!--\/f--> garments in all/);
+  assert.doesNotMatch(sub, /with no photo shared between the two sets, so/);
+  // AGW6: the try-on summary's handoff folder kurta-01 must not read as data/garments/kurta-01.
+  assert.match(read("evidence/tryon/SUMMARY.md"), /The handoff folder named `kurta-01` above is kurta-red-floral, not `data\/garments\/kurta-01` \(different sha256\)\./);
 });
 
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
