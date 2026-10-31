@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: the eval on the committed jobs (round 5). Each committed receipt is copied into a
+// Evidence-checking agent: the eval on the committed jobs (round 5). Each committed receipt is copied into a
 // scratch store as run-1 of a job, and the agent takes one offline step. No seller acts and no model is called,
 // so the gate runner given here throws if the agent ever tries to re-run: the eval measures what the agent
 // would do and ask for, and proves it changes no decision. "Resolved" needs a new seller photo or an approved

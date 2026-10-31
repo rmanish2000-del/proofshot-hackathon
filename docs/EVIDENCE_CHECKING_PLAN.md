@@ -1,4 +1,4 @@
-# Evidence Recovery Agent: plan (round 5, written before the code)
+# Evidence-checking agent: plan (round 5, written before the code)
 
 **Rule.** The deterministic gate (`src/gate.ts` `decide()`, called only inside `src/pipeline.ts` `runJob`) alone
 decides RELEASE / REVIEW / REFUSE. The agent can only read a receipt, check photos locally, find a missing

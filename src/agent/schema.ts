@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: the action allowlist and argument schemas, enforced in code. Every proposed action,
+// Evidence-checking agent: the action allowlist and argument schemas, enforced in code. Every proposed action,
 // from the rule-based policy or from a model, passes validateAction before it can run; anything else (an
 // unknown tool, an extra or missing argument, a value outside its enum, another job's id, free text where a
 // fixed text is required) is rejected and logged. There is no tool that sets a verdict, a threshold, publishes,

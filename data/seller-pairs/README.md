@@ -1,4 +1,4 @@
-# Real seller photo pairs (Evidence Recovery Agent)
+# Real seller photo pairs (evidence-checking agent)
 
 Real photos for `npm run agent:real` (SUBMISSION.md, "Real seller photos, measured"). One folder per garment:
 a deliberately bad photo (`1-...jpg`) and a full-length front (`2-full-front.jpg`), with `intake.json`,

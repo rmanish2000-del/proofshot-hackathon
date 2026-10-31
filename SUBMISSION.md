@@ -91,7 +91,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 A bounded agent for one narrow job: when the gate says REVIEW or REFUSE because evidence is missing, it reads the
 receipt, finds the missing photo view, asks the seller for it (fixed English and Hindi text), and re-runs the
-same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/EVIDENCE_RECOVERY_PLAN.md`.
+same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/EVIDENCE_CHECKING_PLAN.md`.
 
 - **The gate alone decides.** The agent reaches the gate only through one injected `rerun_gate` function; no file
   in `src/agent/` imports the gate or the pipeline (a test checks this). For the same inputs the gate receipt is

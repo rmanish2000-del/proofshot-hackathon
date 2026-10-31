@@ -1,6 +1,6 @@
 // npm run agent:demo
 //
-// The keyless Evidence Recovery Agent demo (no key, no network, no model): writes a fresh store under
+// The keyless evidence-checking agent demo (no key, no network, no model): writes a fresh store under
 // out/agent-demo/store and a transcript at out/agent-demo/transcript.json. The verifier is the labelled canned
 // demo verifier (src/recovery-gate.ts): it shows the agent's mechanics, not model accuracy.
 //

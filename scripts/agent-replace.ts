@@ -1,6 +1,6 @@
 // npm run agent:replace
 //
-// The Evidence Recovery Agent's replace-the-first-photo action on the two real seller pairs (Manish and Grok,
+// The evidence-checking agent's replace-the-first-photo action on the two real seller pairs (Manish and Grok,
 // 31 Oct 2026: "implement option 1, replace the first photo ... Re-run live on data/seller-pairs/shirt-pink and
 // kurta-mustard with the good photo as the replacement (budget cap 0.20 USD). Report the real verdicts, even if
 // still REFUSE."). The 30 Oct run (evidence/agent-real-2026-10-30.json) showed the blocker: the fidelity check
@@ -189,7 +189,7 @@ const dropImages = (dir: string): void => {
 dropImages(store.root);
 const resolvedCount = results.filter((r) => r.resolved).length;
 const summary = {
-  what: "Evidence Recovery Agent, replace-the-first-photo action, on the two real seller pairs (the same photos as evidence/agent-real-2026-10-30.json). The render is the stand-in: the seller's own full-length front photo, nothing generated; after the replacement, photo 1 and the stand-in render are the same file. Trigger signals: photo 1's SAM mask box, fixed patterns over verifier notes, and (from the 2026-10-31-label run on) the view label the seller picked for photo 1, so a RELEASE here says the evidence path now works, not that a generated image is faithful.",
+  what: "Evidence-checking agent, replace-the-first-photo action, on the two real seller pairs (the same photos as evidence/agent-real-2026-10-30.json). The render is the stand-in: the seller's own full-length front photo, nothing generated; after the replacement, photo 1 and the stand-in render are the same file. Trigger signals: photo 1's SAM mask box, fixed patterns over verifier notes, and (from the 2026-10-31-label run on) the view label the seller picked for photo 1, so a RELEASE here says the evidence path now works, not that a generated image is faithful.",
   run_on: new Date().toISOString().slice(0, 10),
   live_providers: live.mode.labels,
   budget_usd: BUDGET_USD,

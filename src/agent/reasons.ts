@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: what a gate outcome means for recovery, and the fixed seller text per reason code.
+// Evidence-checking agent: what a gate outcome means for recovery, and the fixed seller text per reason code.
 // It reads the gate and fidelity entries the pipeline wrote; it never decides anything. A real violation anywhere
 // in the reasons wins over everything else, so it can never start a photo request or a paid re-check. The one
 // exception is a bad first photo (replaceTrigger): the fidelity check measures the image against photo 1 only,

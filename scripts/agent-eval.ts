@@ -1,6 +1,6 @@
 // npm run agent:eval
 //
-// The Evidence Recovery Agent on the committed jobs (src/agent/eval.ts): one offline step each, no seller action,
+// The evidence-checking agent on the committed jobs (src/agent/eval.ts): one offline step each, no seller action,
 // no model call. Writes evidence/agent-eval-2026-10-30.json and prints the summary. Latencies vary run to run;
 // everything else is a function of the committed receipts.
 

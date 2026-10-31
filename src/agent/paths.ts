@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: file access scoped to one seller's one job. Ids and file names are checked against a
+// Evidence-checking agent: file access scoped to one seller's one job. Ids and file names are checked against a
 // strict pattern (no separators, no "..", no drive letters), and every resolved path must stay inside its base.
 
 import { resolve, sep } from "node:path";

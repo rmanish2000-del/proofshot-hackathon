@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: the deterministic, rule-based policy (the default; keyless and offline). Given what
+// Evidence-checking agent: the deterministic, rule-based policy (the default; keyless and offline). Given what
 // this step has learned so far, it proposes the next action, or null to end the step. A model-backed proposer
 // can stand in for it, but every proposal still goes through validateAction: the policy is advice, the
 // allowlist is the law. Nothing in a photo, a filename or a model answer reaches this function: it sees the job

@@ -131,7 +131,7 @@ test("EX1: orientations 3 and 8 (little-endian TIFF too); tag 1, no tag or a mal
 });
 
 const GARMENTS = fileURLToPath(new URL("../data/garments/", import.meta.url));
-// The real seller pairs for the Evidence Recovery Agent: the same intake, kept out of data/garments (shop, calibration).
+// The real seller pairs for the evidence-checking agent: the same intake, kept out of data/garments (shop, calibration).
 const SELLER_PAIRS = fileURLToPath(new URL("../data/seller-pairs/", import.meta.url));
 
 test("every committed garment photo carries no metadata and matches its intake.json", () => {

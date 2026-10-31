@@ -1,4 +1,4 @@
-// The gate side of the Evidence Recovery Agent: rerun_gate's only implementation. It is outside src/agent/ on
+// The gate side of the evidence-checking agent: rerun_gate's only implementation. It is outside src/agent/ on
 // purpose: the agent holds a GateRunner function and nothing else; this file turns a re-run request into an
 // ordinary runJob call, so the same pipeline and the same deterministic gate (decide) write the same receipt as
 // any job would. The agent cannot pass a verdict, a threshold or findings in: only photos, labels and a mode.

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -38,11 +38,18 @@ test("wording 6 (Grok 21:52): the beat 3 composite v2 breakdown is stated in evi
   assert.match(source, /evidence\/tryon\/SUMMARY\.md.*composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE/);
 });
 
-test("wording 7 (Grok 21:57): no 'Evidence Recovery' name in SUBMISSION, README or CLAIMS_AUDIT; beat 1 keeps the recorded narration and carries the agent caption", () => {
-  for (const doc of ["SUBMISSION.md", "README.md", "CLAIMS_AUDIT.md"]) assert.doesNotMatch(read(doc), /evidence[- ]recovery/i, doc);
+test("wording 7 (Grok 21:57, 22:10): no 'Evidence Recovery' name in SUBMISSION, README, CLAIMS_AUDIT, docs/*.md or the seller-pairs README (beat 1's recorded narration aside); the plan doc's new path is the one linked; beat 1 keeps the recorded narration and carries the agent caption", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
   const beat1 = v7.split("\n").find((l) => l.startsWith("| 1 Problem"))!;
+  const docs = readdirSync(join(root, "docs")).filter((f) => f.endsWith(".md")).map((f) => `docs/${f}`);
+  assert.ok(docs.includes("docs/EVIDENCE_CHECKING_PLAN.md") && !docs.includes("docs/EVIDENCE_RECOVERY_PLAN.md"));
+  for (const doc of ["SUBMISSION.md", "README.md", "CLAIMS_AUDIT.md", "data/seller-pairs/README.md", ...docs]) {
+    const text = doc === "docs/DEMO.md" ? md.replace(beat1.split("|")[4]!, "") : read(doc);
+    assert.doesNotMatch(text, /evidence[- ]recovery/i, doc);
+    assert.doesNotMatch(text, /EVIDENCE_RECOVERY_PLAN/, `${doc} links the old plan path`);
+  }
+  for (const doc of ["README.md", "SUBMISSION.md", "src/agent/vocab.ts"]) assert.match(read(doc), /docs\/EVIDENCE_CHECKING_PLAN\.md/, doc);
   assert.match(beat1, /the agent caption \(below\) over the last sentence/);
   assert.match(beat1.split("|")[4]!, /ProofShot is an evidence-recovery agent that catches that/);
   assert.match(v7, /verbatim from Manish's recorded voiceover/);

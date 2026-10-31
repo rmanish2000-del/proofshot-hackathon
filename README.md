@@ -124,7 +124,7 @@ included.
 
 When the gate says REVIEW or REFUSE because evidence is missing, a bounded agent asks the seller for the
 missing photo and re-runs the same gate; the gate still decides. See SUBMISSION.md "Evidence-checking agent"
-and `docs/EVIDENCE_RECOVERY_PLAN.md`.
+and `docs/EVIDENCE_CHECKING_PLAN.md`.
 
 ```bash
 npm run agent:demo      # keyless: length case REVIEW -> photo request -> same gate -> RELEASE; one injection refused

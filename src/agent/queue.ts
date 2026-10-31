@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: a local job queue (files, no external service). A task is one bounded agent step for
+// Evidence-checking agent: a local job queue (files, no external service). A task is one bounded agent step for
 // one job; the job is queued again only after the seller acts (adds a photo or approves). N workers run in one
 // process; a task is claimed by an atomic rename from pending/ to running/, and a seller never has more running
 // tasks than its limit. Workers share nothing but the queue folder: each step reads only its own job's files.

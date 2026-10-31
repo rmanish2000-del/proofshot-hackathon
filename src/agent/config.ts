@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: limits (round 5). Every cap the agent and its queue enforce lives here, so one file
+// Evidence-checking agent: limits (round 5). Every cap the agent and its queue enforce lives here, so one file
 // says how far the agent may go. A config file can only lower or set these within sane bounds; unknown keys and
 // non-numbers are refused, not ignored.
 

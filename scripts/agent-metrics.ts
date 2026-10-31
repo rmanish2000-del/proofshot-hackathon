@@ -1,6 +1,6 @@
 // npm run agent:metrics [-- --root out/agent-demo/store]
 //
-// The Evidence Recovery Agent's local monitoring summary (src/agent/metrics.ts): runs, failures, cap hits,
+// The evidence-checking agent's local monitoring summary (src/agent/metrics.ts): runs, failures, cap hits,
 // rejected actions, gate re-runs, model calls, spend, queue and processing time, cost per completed listing.
 
 import { resolve } from "node:path";

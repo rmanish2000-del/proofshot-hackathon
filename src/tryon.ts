@@ -37,7 +37,7 @@ export function guardRenderer(renderer: Renderer): Renderer {
 }
 
 /**
- * SC1 (Grok, 31 Oct, from the DeepSeek Q31 red-team): the Evidence Recovery Agent's replace-photo-1 path takes a
+ * SC1 (Grok, 31 Oct, from the DeepSeek Q31 red-team): the evidence-checking agent's replace-photo-1 path takes a
  * new photo 1 from the seller, so a seller could answer with the image to publish itself. Then fidelity compares a
  * file with itself. This wrapper never lets that pass as a fidelity check: when the image to publish is a source
  * photo byte for byte, a RELEASE becomes REVIEW (a person looks), and REVIEW or REFUSE keeps its decision; either

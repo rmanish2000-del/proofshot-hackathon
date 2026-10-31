@@ -1,4 +1,4 @@
-# Evidence Recovery Agent: scaling path (a plan, not built)
+# Evidence-checking agent: scaling path (a plan, not built)
 
 **Built and tested today (local only):** the agent is stateless between jobs: each step reads only its own
 job's photos and receipts and writes its next action and result to its own job record (`src/agent/store.ts`).

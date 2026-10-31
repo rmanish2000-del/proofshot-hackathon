@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: one bounded step for one job. It never decides: the gate is reached only through the
+// Evidence-checking agent: one bounded step for one job. It never decides: the gate is reached only through the
 // injected GateRunner (rerun_gate), which runs the same pipeline and gate as any job. The step enforces the
 // allowlist and schemas (validateAction), the step cap, the tool-call cap, a wall-clock timeout, and the per-job
 // and per-seller caps on paid model calls and spend; it writes every proposal, validation, approval, tool result,

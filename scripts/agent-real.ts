@@ -1,6 +1,6 @@
 // npm run agent:real
 //
-// The Evidence Recovery Agent on real seller photos (Manish, 30 Oct 2026, in chat: "copy them into the repo as
+// The evidence-checking agent on real seller photos (Manish, 30 Oct 2026, in chat: "copy them into the repo as
 // new jobs only after checking for faces/personal data, run the Evidence Recovery Agent on them, and report the
 // real resolution rate and seller steps. Don't invent or synthesize photos." Paid calls approved in chat the
 // same day). Two garments in data/seller-pairs (shirt-pink, kurta-mustard; kept out of data/garments so the shop and the calibration sets do not pick them up), each a deliberately bad photo and a
@@ -170,7 +170,7 @@ dropImages(store.root);
 mkdirSync(OUT, { recursive: true });
 const resolvedCount = results.filter((r) => r.resolved_by_agent).length;
 const summary = {
-  what: "Evidence Recovery Agent on real seller photos: two garments, each a deliberately bad photo and a full-length good one, checked for people and personal data before intake. The render is the stand-in (the seller's own full-length front photo, nothing generated), so a RELEASE here says the evidence matched, not that a generated image is faithful.",
+  what: "Evidence-checking agent on real seller photos: two garments, each a deliberately bad photo and a full-length good one, checked for people and personal data before intake. The render is the stand-in (the seller's own full-length front photo, nothing generated), so a RELEASE here says the evidence matched, not that a generated image is faithful.",
   run_on: new Date().toISOString().slice(0, 10),
   live_providers: live.mode.labels,
   resolved_by_agent: `${resolvedCount} of ${results.length}`,

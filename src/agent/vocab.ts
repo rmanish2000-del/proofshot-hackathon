@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: the closed vocabularies. Tools, views and reason codes are fixed lists here; nothing
+// Evidence-checking agent: the closed vocabularies. Tools, views and reason codes are fixed lists here; nothing
 // read from a photo, a filename, EXIF or model output can add to them.
 
 export const TOOLS = ["read_receipt", "check_photo_quality", "detect_missing_view", "request_seller_photo", "request_replace_primary", "rerun_gate", "explain"] as const;
@@ -8,7 +8,7 @@ export type ToolName = (typeof TOOLS)[number];
 export const VIEWS = ["full_length_front", "full_length_back", "collar_closeup", "label_closeup", "print_closeup"] as const;
 export type View = (typeof VIEWS)[number];
 
-/** The view that shows each gate attribute best (docs/EVIDENCE_RECOVERY_PLAN.md). */
+/** The view that shows each gate attribute best (docs/EVIDENCE_CHECKING_PLAN.md). */
 export const VIEW_FOR_ATTRIBUTE: Readonly<Record<string, View>> = Object.freeze({
   color: "full_length_front",
   sleeve_length: "full_length_front",

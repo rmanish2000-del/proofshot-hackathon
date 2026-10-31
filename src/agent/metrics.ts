@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: local monitoring. One JSON line per queue run in <root>/metrics.jsonl (no external
+// Evidence-checking agent: local monitoring. One JSON line per queue run in <root>/metrics.jsonl (no external
 // service), and a summary: runs, failures, cap hits, gate re-runs, spend, latency, queue time, processing time,
 // failure rate, and cost per completed listing (a listing whose latest gate decision is RELEASE).
 

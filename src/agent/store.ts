@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: storage, keyed by seller and job. Photos (blobs) and records (job record, gate
+// Evidence-checking agent: storage, keyed by seller and job. Photos (blobs) and records (job record, gate
 // receipts, the agent section) live in separate trees so they can move to separate stores later:
 //
 //   <root>/blobs/<seller>/<job>/<photo>              seller photos and the candidate image

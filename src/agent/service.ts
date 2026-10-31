@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: the seller-facing actions around the agent. Creating a job and adding a photo go
+// Evidence-checking agent: the seller-facing actions around the agent. Creating a job and adding a photo go
 // through intake (metadata stripped, JPEG only) and the per-seller size limit; approvals are recorded with who
 // and when; publish refuses unless the gate's latest decision is RELEASE and the seller approved publishing.
 // Nothing here or in the agent publishes on its own.

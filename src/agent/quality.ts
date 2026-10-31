@@ -1,4 +1,4 @@
-// Evidence Recovery Agent: a local photo check (no model, no network). Resolution and exposure come straight from
+// Evidence-checking agent: a local photo check (no model, no network). Resolution and exposure come straight from
 // the pixels; blur is the variance of a 3x3 Laplacian on a downscaled grey copy (low variance = few sharp edges).
 // Crop needs a garment mask, which this check does not have, so it reports crop as not checked rather than guess.
 // Thresholds are starting values set on the committed garment photos (all pass), not a calibrated blur model.
