@@ -29,7 +29,7 @@ ProofShot is an evidence-recovery agent for those images, with a release gate at
 
 Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of the receipt and it says TAMPERED, with the entry number.
 
-What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_total-->7<!--/f--> AI try-on images were held by the gate (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none released); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). That is <!--f:garments-->4<!--/f--> garments, all the owner's own, so it is not a general accuracy claim.
+What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_all_total-->12<!--/f--> committed AI try-on images were held by the gate (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none released): the <!--f:tryon_total-->7<!--/f--> kurta try-ons of 28–29 Oct (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and the <!--f:tryon_run31_total-->5<!--/f--> of the 31 Oct try-on run (<!--f:tryon_run31_refuse-->5<!--/f--> REFUSE). For the 28–29 Oct kurta try-ons, the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). That is <!--f:garments-->4<!--/f--> garments, all the owner's own, so it is not a general accuracy claim.
 
 English and Hindi listing copy is written after the gate, from the receipt, by muse-spark-open on Fireworks.
 
@@ -46,7 +46,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 | Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier. Built with Muse Spark Open | <!--f:baseten_calls-->19<!--/f--> |
 | muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy, written after the gate | <!--f:fireworks_calls-->293<!--/f--> |
 
-The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime. AI try-on candidates came from Pruna on Replicate (<!--f:pruna_calls-->7<!--/f--> calls, all held by the gate); that is not a Meta model.
+The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime. AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
 
 **Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->383<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->384<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -77,11 +77,11 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | Muse Spark cross-check: wrong-garment runs refused | <!--f:ms4_wrong_refused-->153 of 153<!--/f--> | `evidence/ms4-summary.json` |
 | Muse Spark cross-check: same-garment runs released | <!--f:ms4_same_released-->24 of 30<!--/f--> | same |
 | Muse Spark cross-check: same decision on all 3 runs | <!--f:ms4_consistent-->65 of 68<!--/f--> pairs | same |
-| AI try-ons held by the gate | <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW); the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks | `data/jobs/live-kurta-0*-tryon*`, `evidence/ms4-summary.json` |
+| AI try-ons held by the gate | <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW): <!--f:tryon_total-->7<!--/f--> kurta try-ons 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> in the 31 Oct run; on the 28–29 Oct set the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`, `evidence/ms4-summary.json` |
 | Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
 | Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run) |
 | Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` |
-| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures, each a per-call token estimate, not a bill | Built with, below |
+| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
 | General verifier accuracy | **not measured** (4 garments, all the owner's own; the rates above are for these pairs only) | README "What is verified and what is not" |
 | False-match rate on real sellers' listings | **not measured** | none |
 | End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
@@ -121,7 +121,7 @@ plus the fixture job (43 receipts), one offline agent step each, no seller actio
 changed by the agent; 20 real violations left alone; 5 missing-evidence cases got a photo request (4 full-length
 front, 1 label close-up); 4 verifier failures got a paid re-check proposal that waits for approval; **0 resolved**,
 because resolving needs a new seller photo or an approved paid call, which the committed data does not have. On
-length: the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks; the gate held <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-ons
+length: the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks; the gate held the <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> 28–29 Oct kurta try-ons in data/jobs (the 31 Oct run was not in this evaluation)
 before the agent and after it, and the agent attempted no recovery on them (they are real violations). Agent
 step latency on this laptop: p50 69 ms, p90 222 ms. On the committed jobs the agent proposes the next step;
 whether those steps resolve real REVIEWs is measured only on the two real pairs below.
@@ -206,8 +206,8 @@ An Indian boutique seller lists every garment from their own phone photos.
 Any image that goes on that listing, a cleaned-up product shot or an AI
 try-on, can quietly change the colour, the print or the length, and the buyer
 gets something else. In my live try-on calls, long kurtas came back shorter,
-and the gate held all <!--f:tryon_total-->7<!--/f--> committed try-on images (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, none
-released). So I wanted a deterministic check against the seller's own photos
+and the gate held all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none
+released; <!--f:tryon_total-->7<!--/f--> kurta try-ons on 28–29 Oct and <!--f:tryon_run31_total-->5<!--/f--> on 31 Oct). So I wanted a deterministic check against the seller's own photos
 before any candidate image can be listed.
 
 ## What it does
@@ -235,13 +235,14 @@ try-on, can quietly change the garment: its colour, its print, its length. A
 buyer then gets something other than what the photo showed.
 
 In our live try-on calls, long kurtas came back shorter, and the gate caught
-every one: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> try-on images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW), none released.
+every one: <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed try-on images were held (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW), none released.
 ProofShot checks each candidate image against the seller's own photos before it
 can be listed, and a deterministic gate, not a model, decides.
 
 Checked against:
-- Try-on results: the 7 receipts with a `replicate-pruna-tryon` render entry in
-  `data/jobs/live-kurta-0*-tryon*` (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, <!--f:tryon_release-->0<!--/f--> RELEASE), and
+- Try-on results: the <!--f:tryon_total-->7<!--/f--> receipts with a `replicate-pruna-tryon` render entry in
+  `data/jobs/live-kurta-0*-tryon*` (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, <!--f:tryon_release-->0<!--/f--> RELEASE), the
+  <!--f:tryon_run31_total-->5<!--/f--> in `evidence/tryon/*/pruna/receipt.jsonl` (<!--f:tryon_run31_refuse-->5<!--/f--> REFUSE), and
   `data/calibration/labels.json` (the 7 try-on renders, length changed).
 - The gate: `src/gate.ts`, README "How the gate decides".
 - No claim is made about returns or sales.
@@ -323,7 +324,7 @@ chain in the browser with WebCrypto.
 | Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
 | muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->293<!--/f--> |
 | Muse Spark Open | Baseten | The first verifier (calls logged 28 Oct 09:25 IST to 29 Oct 06:13 IST; 2 earlier one-word smoke calls in `evidence/baseten-*.json` are not counted here) | <!--f:baseten_calls-->19<!--/f--> |
-| Pruna try-on (`prunaai/p-image-try-on`) | Replicate | AI try-on candidates; all held by the gate | <!--f:pruna_calls-->7<!--/f--> (render entries in the receipts) |
+| Pruna try-on (`prunaai/p-image-try-on`) | Replicate | AI try-on candidates; all held by the gate | <!--f:pruna_all_calls-->12<!--/f--> (render entries in the receipts: <!--f:pruna_calls-->7<!--/f--> for the 28–29 Oct kurta jobs, the rest in the 31 Oct try-on run) |
 
 Candidate images come from a composite v2 renderer (the seller's own garment
 pixels on a ghost mannequin, deterministic code, no image model) or an AI
@@ -331,10 +332,10 @@ try-on (Pruna on Replicate). No Meta image generator is used; Muse Image is
 refused at runtime. The Muse Spark cross-check (MS4) ran <!--f:ms4_runs-->204<!--/f--> checks over <!--f:ms4_pairs-->68<!--/f-->
 (garment, image) pairs: <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs refused, <!--f:ms4_same_released-->24 of 30<!--/f-->
 same-garment runs released, <!--f:ms4_consistent-->65 of 68<!--/f--> pairs gave the same decision three times.
-The other 21 of the <!--f:ms4_runs-->204<!--/f--> are the shortened try-on checks (<!--f:tryon_total-->7<!--/f--> try-on images
+The other 21 of the <!--f:ms4_runs-->204<!--/f--> are the shortened try-on checks (the <!--f:tryon_total-->7<!--/f--> kurta try-on images of 28–29 Oct
 against their own garment, 3 runs each, `changed` in
 `evidence/ms4-summary.json`): Muse Spark alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the
-fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-ons (the gate cited fidelity for 4, the verifier for 3). All <!--f:ms4_runs-->204<!--/f--> runs were
+fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> of these kurta try-ons (the gate cited fidelity for 4, the verifier for 3). All <!--f:ms4_runs-->204<!--/f--> runs were
 answered; none is a not_verified run.
 
 Spend, ledger figures (ProofShot's own spend ledgers, `npm run ledger` on 29
@@ -342,7 +343,10 @@ Oct; each entry is the per-call estimate the code records when it makes the
 call, tokens x the price table; no provider bill was read): Meta Model API
 5.99 USD (ledger) of the 80 USD cap, Fireworks 4.83 USD (ledger) of 60,
 Replicate 0.105 USD (ledger), Baseten 0 (ledger); no reserve used. None of
-these is a billed total. The pack's Meta estimates (SAM 3.1 0.33 + Muse Spark
+these is a billed total. The 29 Oct Replicate reading covers the <!--f:pruna_calls-->7<!--/f--> kurta try-on
+calls (<!--f:pruna_usd_est-->0.105<!--/f--> USD at the 0.015 USD per-call estimate on their receipts); the
+31 Oct try-on run came later, so across all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls the receipt
+estimate is <!--f:pruna_all_usd_est-->0.180<!--/f--> USD (`evidence/tryon/SUMMARY.md`); the ledger was not re-read. The pack's Meta estimates (SAM 3.1 0.33 + Muse Spark
 1.3 5.83, about 6.16 USD estimated, in `evidence/pack/README.md`) are computed
 differently: they price every
 committed call log, while 5.99 is the ledger as read on 29 Oct, which starts at
@@ -368,8 +372,9 @@ whose brand label is below its confidence floor
 (`live-shirt-plaid-composite-v2-r3`); REFUSE for the wrong garment, the zebra
 shirt against the plaid shirt's photos (`live-shirt-plaid-mismatch`); then one
 byte of the receipt changed and the verify page says TAMPERED. Framed for
-"Build for Your World". The video has no try-on beat: every committed try-on
-is of a kurta, and there is no shirt try-on. The try-on results (all held by
+"Build for Your World". The v6 video has no try-on beat: when v6 was written
+(29 Oct) every committed try-on was of a kurta, with no shirt try-on (the 31 Oct
+try-on run, which has two shirts, came later; v7 shows only its verdict table). The try-on results (all held by
 the gate, none released) are under Problem above and in the README.
 
 Checked against `docs/DEMO.md` and `test/demo-capture.test.ts` (word caps,
@@ -427,11 +432,13 @@ endpoint URL in `src/` and `scripts/`.
   only this repository's code and the hosted models named under Built with
   (the `provider` field of each receipt in `data/jobs`, and the endpoint URLs
   in `src/` and `scripts/`).
-- *Did any AI on-model image get released?* No: <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> committed try-on
-  images were held (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW, `data/jobs/live-kurta-0*-tryon*`). The
+- *Did any AI on-model image get released?* No: <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed try-on
+  images were held (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW): <!--f:tryon_total-->7<!--/f--> kurta try-ons of 28–29 Oct in
+  `data/jobs/live-kurta-0*-tryon*` (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and <!--f:tryon_run31_total-->5<!--/f--> in the 31 Oct run
+  (`evidence/tryon/SUMMARY.md`, all REFUSE). On the 28–29 Oct set the
   verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
-  check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). All <!--f:tryon_total-->7<!--/f--> are kurta jobs, so the
-  demo, which shows the two shirts only, has no AI on-model image, and no new
+  check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). The v6
+  demo shows the two shirts only and has no AI on-model image (v7 shows the 31 Oct verdict table, not the try-on images), and no new
   paid call was made for the video (`docs/DEMO.md`,
   `test/demo-capture.test.ts`).
 - *What can I run without a key?* `npm ci`, `npm test`, `npm run serve` and
@@ -454,7 +461,7 @@ from intake to the gate decision into a SHA-256 hash-chained receipt, and
 `web/verify.html` checks that chain in the browser. In calibration, the gate
 reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x with <!--f:cal_false_match-->0<!--/f--> false matches. In the
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
-fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-on images.
+fidelity check returned REVIEW or REFUSE on all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_total-->7<!--/f--> on 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> on 31 Oct).
 
 On two real seller pairs, the Evidence Recovery Agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
 asking the seller to replace a bad first photo (2 of 2 with the seller's photo

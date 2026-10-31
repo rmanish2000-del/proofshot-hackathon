@@ -33,3 +33,15 @@ test("figures 3 (SUB26): Pruna calls are counted from the try-on render entries,
   assert.ok(Number(f.pruna_calls) >= Number(f.tryon_total), `${f.pruna_calls} calls for ${f.tryon_total} try-on images`);
   assert.match(f.pruna_usd_est!, /^\d+\.\d{3}$/);
 });
+
+test("figures 4 (NUM6): the 31 Oct try-on run is counted, all = 28–29 Oct kurta set + 31 Oct run, and no doc calls the kurta set 'all committed'", () => {
+  const f = computeFigures(root);
+  assert.equal(Number(f.tryon_run31_total), 5, "evidence/tryon has the 5 Pruna try-ons of 31 Oct");
+  assert.equal(Number(f.tryon_all_total), Number(f.tryon_total) + Number(f.tryon_run31_total));
+  assert.equal(Number(f.tryon_all_release), 0);
+  assert.ok(Number(f.pruna_all_calls) >= Number(f.tryon_all_total));
+  for (const doc of FIGURE_DOCS) {
+    const text = readFileSync(join(root, doc), "utf8").replace(/\s+/g, " ");
+    assert.doesNotMatch(text, /all <!--f:tryon_total-->\d+<!--\/f--> (committed|try-on|AI)|<!--f:tryon_total-->\d+<!--\/f--> of <!--f:tryon_total-->\d+<!--\/f--> committed/i, `${doc}: the kurta set is named, not 'all committed'`);
+  }
+});

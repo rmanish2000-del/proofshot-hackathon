@@ -5,7 +5,7 @@
 //
 // Sources: evidence/pack/summary.json (receipts, per-stage call counts, copy),
 // evidence/calibration-jobs-2026-10-29.json (the latest calibration report),
-// evidence/ms4-summary.json, data/jobs receipts (try-on renders), and the test
+// evidence/ms4-summary.json, data/jobs and evidence/tryon receipts (try-on renders), and the test
 // files (the number of top-level `test(` calls, which is what `npm test` runs).
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -39,24 +39,17 @@ export function computeFigures(root: string): Record<string, string> {
   const ms4 = readJson(join(root, "evidence/ms4-summary.json"));
   const changed = ms4.by_expected.changed;
 
-  let tryon = 0;
   // SUB26: Pruna calls on Replicate are counted from the receipts' render entries (attempts per render).
-  let prunaCalls = 0;
-  let prunaUsd = 0;
-  const tryonBy: Record<string, number> = {};
-  const jobs = join(root, "data/jobs");
-  for (const job of readdirSync(jobs)) {
-    const p = join(jobs, job, "receipt.jsonl");
-    if (job.startsWith("upload-") || !existsSync(p)) continue;
-    const lines = readFileSync(p, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l) as Json);
-    for (const r of lines.filter((l) => l.kind === "render" && l.payload.provider === "replicate-pruna-tryon")) {
-      const g = lines.find((l) => l.kind === "gate" && l.payload.render_id === r.payload.render_id)?.payload.decision ?? "none";
-      tryon++;
-      prunaCalls += typeof r.payload.attempts === "number" ? r.payload.attempts : 1;
-      prunaUsd += typeof r.payload.cost_estimated_usd === "number" ? r.payload.cost_estimated_usd : 0;
-      tryonBy[g] = (tryonBy[g] ?? 0) + 1;
-    }
-  }
+  // NUM6 (31 Oct): two committed sets, kept apart so every sentence can name the one it means:
+  // the 28–29 Oct kurta jobs (data/jobs/*) and the 31 Oct try-on run (evidence/tryon/<garment>/<renderer>/).
+  const kurta = tryonSet(readdirSync(join(root, "data/jobs"))
+    .filter((job) => !job.startsWith("upload-"))
+    .map((job) => join(root, "data/jobs", job, "receipt.jsonl")));
+  const runDir = join(root, "evidence/tryon");
+  const run31 = tryonSet(existsSync(runDir)
+    ? readdirSync(runDir, { withFileTypes: true }).filter((d) => d.isDirectory())
+      .flatMap((g) => readdirSync(join(runDir, g.name)).map((r) => join(runDir, g.name, r, "receipt.jsonl")))
+    : []);
 
   const r = pack.receipts as Json;
   return {
@@ -88,19 +81,45 @@ export function computeFigures(root: string): Record<string, string> {
     ms4_changed_held: of(changed.correct, changed.answered),
     ms4_changed_passed: of(changed.answered - changed.correct, changed.answered),
     ms4_consistent: of(ms4.consistency.same_decision_all_reps, ms4.consistency.pairs_scored),
-    tryon_total: String(tryon),
-    pruna_calls: String(prunaCalls),
-    pruna_usd_est: prunaUsd.toFixed(3),
-    tryon_refuse: String(tryonBy.REFUSE ?? 0),
-    tryon_review: String(tryonBy.REVIEW ?? 0),
-    tryon_release: String(tryonBy.RELEASE ?? 0),
+    // tryon_* and pruna_* without "all": the 28–29 Oct kurta jobs only.
+    tryon_total: String(kurta.total),
+    pruna_calls: String(kurta.calls),
+    pruna_usd_est: kurta.usd.toFixed(3),
+    tryon_refuse: String(kurta.by.REFUSE ?? 0),
+    tryon_review: String(kurta.by.REVIEW ?? 0),
+    tryon_release: String(kurta.by.RELEASE ?? 0),
+    tryon_run31_total: String(run31.total),
+    tryon_run31_refuse: String(run31.by.REFUSE ?? 0),
+    tryon_all_total: String(kurta.total + run31.total),
+    tryon_all_refuse: String((kurta.by.REFUSE ?? 0) + (run31.by.REFUSE ?? 0)),
+    tryon_all_review: String((kurta.by.REVIEW ?? 0) + (run31.by.REVIEW ?? 0)),
+    tryon_all_release: String((kurta.by.RELEASE ?? 0) + (run31.by.RELEASE ?? 0)),
+    pruna_all_calls: String(kurta.calls + run31.calls),
+    pruna_all_usd_est: (kurta.usd + run31.usd).toFixed(3),
     copy_texts: String(pack.copy.texts),
     copy_model: String(pack.copy.by_model),
     copy_template: String(pack.copy.template),
   };
 }
 
-const MARKER = /<!--f:([a-z0-9_]+)-->([\s\S]*?)<!--\/f-->/g;
+/** Pruna try-on renders in these receipts (missing files skipped): count, calls, estimated USD, gate decisions. */
+export function tryonSet(receipts: string[]): { total: number; calls: number; usd: number; by: Record<string, number> } {
+  const set = { total: 0, calls: 0, usd: 0, by: {} as Record<string, number> };
+  for (const p of receipts) {
+    if (!existsSync(p)) continue;
+    const lines = readFileSync(p, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l) as Json);
+    for (const r of lines.filter((l) => l.kind === "render" && l.payload.provider === "replicate-pruna-tryon")) {
+      const g = lines.find((l) => l.kind === "gate" && l.payload.render_id === r.payload.render_id)?.payload.decision ?? "none";
+      set.total++;
+      set.calls += typeof r.payload.attempts === "number" ? r.payload.attempts : 1;
+      set.usd += typeof r.payload.cost_estimated_usd === "number" ? r.payload.cost_estimated_usd : 0;
+      set.by[g] = (set.by[g] ?? 0) + 1;
+    }
+  }
+  return set;
+}
+
+const MARKER =/<!--f:([a-z0-9_]+)-->([\s\S]*?)<!--\/f-->/g;
 
 /** The text with every marked figure set to its computed value; unknown keys are reported, never guessed. */
 export function applyFigures(text: string, figures: Readonly<Record<string, string>>): { text: string; unknown: string[]; count: number } {
@@ -117,4 +136,4 @@ export function applyFigures(text: string, figures: Readonly<Record<string, stri
   return { text: out, unknown, count };
 }
 
-export const FIGURE_DOCS = ["README.md", "SUBMISSION.md"] as const;
+export const FIGURE_DOCS = ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md"] as const;
