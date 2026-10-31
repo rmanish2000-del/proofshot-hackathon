@@ -4,7 +4,9 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
-import { JpegError, intakeJpeg, intakeName, jpegMetadata, stripJpegMetadata } from "../src/intake.ts";
+import jpeg from "jpeg-js";
+
+import { JpegError, exifOrientation, intakeJpeg, intakeName, jpegMetadata, stripJpegMetadata } from "../src/intake.ts";
 import type { IntakeFile } from "../src/intake.ts";
 import { sha256Hex } from "../src/util.ts";
 
@@ -72,6 +74,62 @@ test("a name that is not a JPEG, or bytes that are not a whole JPEG, throw", () 
   assert.throws(() => jpegMetadata(Uint8Array.from([...SOI, 0xff, 0xe1, 0x00, 0x40, 1, 2])), /runs past the end/);
 });
 
+/** A real 32x16 JPEG: left half red, right half blue. */
+function halves(): Uint8Array {
+  const w = 32, h = 16;
+  const data = new Uint8Array(w * h * 4);
+  for (let i = 0; i < w * h; i++) data.set(i % w < 16 ? [220, 20, 20, 255] : [20, 20, 220, 255], i * 4);
+  return new Uint8Array(jpeg.encode({ data, width: w, height: h }, 95).data);
+}
+
+/** An APP1 Exif segment whose IFD0 holds one orientation tag (SHORT, one value). */
+function exifOrient(value: number, little = false): number[] {
+  const u16 = (v: number) => (little ? [v & 0xff, v >> 8] : [v >> 8, v & 0xff]);
+  const u32 = (v: number) => (little ? [...u16(v & 0xffff), ...u16(v >>> 16)] : [...u16(v >>> 16), ...u16(v & 0xffff)]);
+  const tiff = [...(little ? [0x49, 0x49] : [0x4d, 0x4d]), ...u16(42), ...u32(8), ...u16(1), ...u16(0x0112), ...u16(3), ...u32(1), ...u16(value), 0, 0, ...u32(0)];
+  return seg(0xe1, [...Buffer.from("Exif\0\0", "latin1"), ...tiff]);
+}
+
+const withTag = (base: Uint8Array, app1: number[]) => Uint8Array.from([...SOI, ...app1, ...ICC, ...base.subarray(2)]);
+const rgbAt = (img: { width: number; data: Uint8Array }, x: number, y: number) => [...img.data.subarray((y * img.width + x) * 4, (y * img.width + x) * 4 + 3)];
+const isRed = (p: number[]) => p[0]! > 150 && p[2]! < 100;
+const isBlue = (p: number[]) => p[2]! > 150 && p[0]! < 100;
+
+test("EX1: an orientation-6 photo is turned upright before the tag is stripped; EXIF-free, nothing after EOI, ICC kept", () => {
+  const base = halves();
+  const sideways = withTag(base, exifOrient(6));
+  assert.equal(exifOrientation(sideways), 6);
+  const { file, bytes } = intakeJpeg("1-front.jpg", sideways);
+  assert.equal(file.orientation_applied, 6);
+  assert.deepEqual(file.removed, ["APP1 Exif"]);
+  assert.equal(file.sha256, sha256Hex(bytes));
+  assert.deepEqual(jpegMetadata(bytes), [], "no metadata, and no trailing bytes (jpegMetadata throws on any)");
+  assert.deepEqual([...bytes.subarray(bytes.length - 2)], [0xff, 0xd9]);
+  assert.ok(Buffer.from(bytes).includes(Buffer.from("ICC_PROFILE\0", "latin1")), "the ICC profile is kept");
+  assert.equal(exifOrientation(bytes), 1);
+  const img = jpeg.decode(bytes, { useTArray: true });
+  assert.deepEqual([img.width, img.height], [16, 32], "rotated 90 degrees clockwise");
+  assert.ok(isRed(rgbAt(img, 8, 4)) && isBlue(rgbAt(img, 8, 27)), "the left half is now on top");
+  // Intake again is lossless: the stored photo has nothing left to turn or strip.
+  assert.deepEqual(intakeJpeg("1-front.jpg", bytes).bytes, bytes);
+});
+
+test("EX1: orientations 3 and 8 (little-endian TIFF too); tag 1, no tag or a malformed tag changes no pixel", () => {
+  const base = halves();
+  const eight = jpeg.decode(intakeJpeg("a.jpg", withTag(base, exifOrient(8, true))).bytes, { useTArray: true });
+  assert.deepEqual([eight.width, eight.height], [16, 32]);
+  assert.ok(isBlue(rgbAt(eight, 8, 4)) && isRed(rgbAt(eight, 8, 27)), "turned 90 degrees anticlockwise: the right half is on top");
+  const three = jpeg.decode(intakeJpeg("a.jpg", withTag(base, exifOrient(3))).bytes, { useTArray: true });
+  assert.deepEqual([three.width, three.height], [32, 16]);
+  assert.ok(isBlue(rgbAt(three, 4, 8)) && isRed(rgbAt(three, 27, 8)), "turned 180 degrees");
+  for (const app1 of [exifOrient(1), exifOrient(9), exifOrient(0, true), EXIF]) {
+    const photo = withTag(base, app1);
+    const { file, bytes } = intakeJpeg("a.jpg", photo);
+    assert.equal(file.orientation_applied, undefined);
+    assert.deepEqual(bytes, stripJpegMetadata(photo), "lossless strip, as before");
+  }
+});
+
 const GARMENTS = fileURLToPath(new URL("../data/garments/", import.meta.url));
 // The real seller pairs for the Evidence Recovery Agent: the same intake, kept out of data/garments (shop, calibration).
 const SELLER_PAIRS = fileURLToPath(new URL("../data/seller-pairs/", import.meta.url));
@@ -92,6 +150,9 @@ test("every committed garment photo carries no metadata and matches its intake.j
       const bytes = readFileSync(join(dir, f.name));
       assert.deepEqual(jpegMetadata(bytes), [], `${garment}/${f.name} still carries metadata`);
       assert.equal(sha256Hex(bytes), f.sha256, `${garment}/${f.name} does not match intake.json`);
+      // EX1 changed no committed photo: none was turned at intake, and none has a tag left to turn.
+      assert.equal(f.orientation_applied, undefined, `${garment}/${f.name}`);
+      assert.equal(exifOrientation(bytes), 1, `${garment}/${f.name}`);
     }
   }
 });

@@ -505,8 +505,11 @@ UNCALIBRATED). No model judges anything.
   pass; otherwise the result is `checkFidelity`'s. A replay's hash-only mask
   is not mask bytes, so a replay is unmeasured too. Images are decoded by
   `decodeRgb` in `src/image.ts` *(event, R3)*: PNG by `src/png.ts`, JPEG by
-  the open-source jpeg-js 0.4.4 (decode only, 50 MP cap, EXIF orientation
-  not applied since intake strips it). Before R3 a JPEG was unmeasured; the
+  the open-source jpeg-js 0.4.4 (50 MP cap, EXIF orientation not applied
+  here: since EX1 *(event)* intake turns a photo tagged 2 to 8 upright, the
+  one case it decodes and re-encodes, at quality 95 with the JFIF and ICC
+  segments kept and `orientation_applied` in intake.json, then strips the
+  tag; a photo with no tag or tag 1 is still stripped losslessly). Before R3 a JPEG was unmeasured; the
   receipts written then (e.g. `data/jobs/live-kurta-01-sam`) keep that reason.
 - The segmenter *(event, #18)*, `src/sam.ts`: `samSegmenter({model, transport,
   prompt?})` is the pipeline's `Segmenter` behind an injected transport that

@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->376<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->378<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -496,8 +496,10 @@ These are plans, not results:
 - Make the agent's replace-photo trigger structural (mask geometry and seller
   labels) rather than dependent on the verifier's wording, and measure it on
   more than two pairs.
-- Apply the photo's EXIF orientation before intake strips EXIF: the grey
-  shirt's front came in sideways and its composite was refused.
+- Re-take the grey shirt through intake from the original phone file: since
+  EX1 (31 Oct) intake applies the EXIF orientation before stripping it, but the
+  committed grey shirt photo was stripped before that, so it is still sideways
+  and was not changed (the original with its tag is not in the repo).
 
 Checked against: README "Limits" and "What is verified and what is not";
 Grok's SP1 list on #23 (six of its twelve cases need a real phone photo);

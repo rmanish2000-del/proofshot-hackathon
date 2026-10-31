@@ -17,7 +17,7 @@ export class ImageError extends Error {
 /** Same cap as png.ts: 50 million pixels. */
 const MAX_MP = 50;
 
-/** The RGB pixels of a JPEG or PNG. EXIF orientation is not applied: intake strips it, and SAM saw the same bytes. */
+/** The RGB pixels of a JPEG or PNG. EXIF orientation is not applied here: intake turned the pixels upright before stripping the tag (EX1), and SAM saw the same bytes. */
 export function decodeRgb(bytes: Uint8Array): RgbImage {
   const ext = imageExt(bytes);
   if (ext === "png") return rgbFromPng(decodePng(bytes));
