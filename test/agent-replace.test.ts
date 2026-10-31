@@ -16,7 +16,9 @@ import { Store } from "../src/agent/store.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
 import { cannedDemoProviders, pipelineGate } from "../src/recovery-gate.ts";
 import type { ProvidersFor } from "../src/recovery-gate.ts";
-import { selfComparisonReview } from "../src/tryon.ts";
+import { headerSize, nearCopyDistance, selfComparisonReview } from "../src/tryon.ts";
+import { decodeRgb } from "../src/image.ts";
+import jpeg from "jpeg-js";
 import { ATTRIBUTES } from "../src/types.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -241,6 +243,79 @@ test("replace 9 (SC1): the self-comparison wrapper only ever makes fidelity stri
   assert.deepEqual(refused.reasons.slice(0, 1), ["measured"]);
   assert.match(refused.reasons[1]!, /source photo 1/);
   assert.match((await fixed("RELEASE").check(req(photo("3-collar.jpg")))).reasons[0]!, /source photo 2 \(collar\.jpg\)/);
+});
+
+/** Re-encode a JPEG at another quality, optionally at 1/step size (nearest pixel): a seller re-saving or resizing it. */
+function resave(bytes: Uint8Array, quality: number, step = 1): Uint8Array {
+  const img = decodeRgb(bytes);
+  const width = Math.floor(img.width / step);
+  const height = Math.floor(img.height / step);
+  const rgba = new Uint8Array(width * height * 4);
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = (y * step * img.width + x * step) * 3;
+    rgba.set([img.data[p]!, img.data[p + 1]!, img.data[p + 2]!, 255], (y * width + x) * 4);
+  }
+  return new Uint8Array(jpeg.encode({ data: rgba, width, height }, quality).data);
+}
+
+/** A JPEG stretched to width x height (nearest pixel), quality 90: another picture with the candidate's framing. */
+function resize(bytes: Uint8Array, width: number, height: number): Uint8Array {
+  const img = decodeRgb(bytes);
+  const rgba = new Uint8Array(width * height * 4);
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = (Math.floor((y * img.height) / height) * img.width + Math.floor((x * img.width) / width)) * 3;
+    rgba.set([img.data[p]!, img.data[p + 1]!, img.data[p + 2]!, 255], (y * width + x) * 4);
+  }
+  return new Uint8Array(jpeg.encode({ data: rgba, width, height }, 90).data);
+}
+
+test("replace 10 (SC2): a new photo 1 that is the image to publish re-encoded or resized is REVIEW too; a different photo is not", async (t) => {
+  const candidate = photo("2-back.jpg");
+  // exif: the same pixels with an Exif APP1 block after SOI, as a phone file differs from its stripped copy.
+  const exif = new Uint8Array([0xff, 0xd8, 0xff, 0xe1, 0x00, 0x0a, 0x45, 0x78, 0x69, 0x66, 0, 0, 0, 0, ...candidate.subarray(2)]);
+  const copies = { exif, q50: resave(candidate, 50), q95: resave(candidate, 95), half: resave(candidate, 70, 2) };
+  for (const [name, bytes] of Object.entries(copies)) {
+    assert.notEqual(Buffer.compare(Buffer.from(bytes), Buffer.from(candidate)), 0, `${name} has other bytes`);
+    const d = nearCopyDistance(candidate, bytes)!;
+    t.diagnostic(`near copy ${name}: ${d.toFixed(3)}`);
+    assert.ok(d < 1, `${name}: distance ${d}`);
+  }
+  // The other side of the threshold: other photos of the same garment.
+  for (const other of ["1-front.jpg", "3-collar.jpg"]) {
+    const d = nearCopyDistance(candidate, photo(other));
+    t.diagnostic(`other photo ${other}: ${d === null ? "not comparable" : d.toFixed(3)}`);
+    assert.ok(d === null || d > 10, `${other}: distance ${d}`);
+  }
+  // Same aspect, different picture: the front photo stretched to the candidate's size is compared, and is far.
+  const size = decodeRgb(candidate);
+  for (const other of ["1-front.jpg", "3-collar.jpg"]) {
+    const d = nearCopyDistance(candidate, resize(photo(other), size.width, size.height))!;
+    t.diagnostic(`other photo ${other} at the candidate's size: ${d.toFixed(3)}`);
+    assert.ok(d > 10, `${other} resized: distance ${d}`);
+  }
+  assert.deepEqual(headerSize(candidate), { width: size.width, height: size.height }, "header size matches the decode");
+  assert.deepEqual(headerSize(exif), { width: size.width, height: size.height }, "header size skips an Exif block");
+  assert.equal(nearCopyDistance(candidate, new Uint8Array([1, 2, 3])), null, "not an image: no claim either way");
+
+  // Through the agent: the seller answers the replace request with the candidate re-saved at quality 50.
+  const { store, config, gate } = setup();
+  await badJob(store, gate, config);
+  await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
+  replacePrimary(store, "seller-a", "polo-1", { file: "front.jpg", bytes: copies.q50, view: "full_length_front" }, "seller A", config, CLOCK);
+  const s2 = await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
+  assert.equal(s2.decision, "REVIEW", "a re-saved copy of the image to publish is not a fidelity pass");
+  assert.notEqual(s2.status, "ready_to_publish");
+  const fid = store.readRunReceipt("seller-a", "polo-1", 2).find((e) => e.kind === "fidelity")!.payload as { decision: string; reasons: string[] };
+  assert.equal(fid.decision, "REVIEW");
+  assert.match(fid.reasons.at(-1)!, /^self_comparison: the image to publish is a near copy of source photo 1 \(front\.jpg\): mean pixel difference \d+\.\d\d on a 32x32 grid, at most 3 /);
+  assert.match(fid.reasons.at(-1)!, /nothing generated/);
+
+  // Only ever stricter: REFUSE stays REFUSE; a different image is untouched.
+  const fixed = (decision: "RELEASE" | "REFUSE") => selfComparisonReview({ check: async () => ({ decision, metrics: null, reasons: [] }) });
+  const req = (render: Uint8Array) => ({ sources: [{ name: "front.jpg", bytes: copies.half }], segments: [], render, renderId: "r0", scene: "studio" });
+  assert.equal((await fixed("REFUSE").check(req(candidate))).decision, "REFUSE");
+  assert.equal((await fixed("RELEASE").check(req(candidate))).decision, "REVIEW");
+  assert.deepEqual(await fixed("RELEASE").check(req(photo("1-front.jpg"))), { decision: "RELEASE", metrics: null, reasons: [] });
 });
 
 test("replace 7: the trigger on the real 30 Oct receipts, and the seller text says what would change the outcome", () => {

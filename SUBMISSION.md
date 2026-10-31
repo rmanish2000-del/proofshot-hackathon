@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->378<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->379<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -186,6 +186,11 @@ to publish is source photo N ... byte for byte ... the seller's own photo, nothi
 gate rules and `src/fidelity.ts` are unchanged. The two RELEASEs above were exactly this case, so **run again
 today, both would be REVIEW, not RELEASE**; their committed records are kept as they happened. The keyless demo's
 image to publish is now a photo the seller never lists, so its RELEASE is not a self-comparison either.
+SC2 closes the next step of the same trick: the image to publish re-saved, re-encoded, stripped of EXIF or resized.
+Both pictures are reduced to a 32x32 grid of mean colours; a mean difference of at most 3 (0-255) counts as the same
+picture, and the RELEASE becomes REVIEW with that distance in the receipt. Measured on a committed photo: copies
+0.00 to 0.49, other photos of the same garment at the same size above 40. A crop, rotation, mirror, other aspect
+ratio or heavy edit is not caught (CLAIMS_AUDIT).
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for
