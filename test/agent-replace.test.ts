@@ -16,6 +16,7 @@ import { Store } from "../src/agent/store.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
 import { cannedDemoProviders, pipelineGate } from "../src/recovery-gate.ts";
 import type { ProvidersFor } from "../src/recovery-gate.ts";
+import { selfComparisonReview } from "../src/tryon.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -53,7 +54,8 @@ function setup() {
 
 async function badJob(store: Store, gate: GateRunner, config: AgentConfig, seller = "seller-a", job = "polo-1") {
   return createJob(store, gate, {
-    seller, job, garmentNote: "plaid shirt, long sleeves", candidate: { file: "candidate.jpg", bytes: photo("1-front.jpg") },
+    // The candidate is not one of the photos' bytes: "replace 8" covers a photo that is the candidate itself.
+    seller, job, garmentNote: "plaid shirt, long sleeves", candidate: { file: "candidate.jpg", bytes: photo("2-back.jpg") },
     photos: [{ file: "bad.jpg", bytes: photo("1-front.jpg"), view: "full_length_front" }, { file: "collar.jpg", bytes: photo("3-collar.jpg"), view: "collar_closeup" }],
   }, config);
 }
@@ -203,6 +205,42 @@ test("replace 6: the gate verdict is never set by the agent: the receipt after a
   }
   // No tool takes a verdict.
   for (const t of ["set_verdict", "set_decision", "publish", "replace_and_release"]) assert.equal(ok({ tool: t, args: {} }), false, t);
+});
+
+test("replace 8 (SC1): a new photo 1 that is the image to publish itself is REVIEW, said plainly in the receipt, and cannot be published", async () => {
+  const { store, config, gate } = setup();
+  await badJob(store, gate, config);
+  await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
+  // The seller answers the request with the candidate's own bytes.
+  replacePrimary(store, "seller-a", "polo-1", { file: "front.jpg", bytes: photo("2-back.jpg"), view: "full_length_front" }, "seller A", config, CLOCK);
+  const s2 = await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
+  assert.equal(s2.decision, "REVIEW", "the measured RELEASE does not stand: fidelity compared the photo with itself");
+  assert.notEqual(s2.status, "ready_to_publish");
+  const receipt = store.readRunReceipt("seller-a", "polo-1", 2);
+  const fid = receipt.find((e) => e.kind === "fidelity")!.payload as { decision: string; reasons: string[] };
+  assert.equal(fid.decision, "REVIEW");
+  assert.match(fid.reasons.at(-1)!, /^self_comparison: the image to publish is source photo 1 \(front\.jpg\) byte for byte/);
+  assert.match(fid.reasons.at(-1)!, /nothing generated/);
+  const gateEntry = receipt.filter((e) => e.kind === "gate").at(-1)!.payload as { decision: string; cited: { rule: string; reason: string } };
+  assert.deepEqual([gateEntry.decision, gateEntry.cited.rule], ["REVIEW", "fidelity"]);
+  assert.equal(receipt.some((e) => e.kind === "release"), false);
+  assert.throws(() => approve(store, "seller-a", "polo-1", "publish", "seller A", config, CLOCK), /only a RELEASE/);
+});
+
+test("replace 9 (SC1): the self-comparison wrapper only ever makes fidelity stricter, and leaves other renders alone", async () => {
+  const a = photo("1-front.jpg");
+  const b = photo("2-back.jpg");
+  const sources = [{ name: "front.jpg", bytes: a }, { name: "collar.jpg", bytes: photo("3-collar.jpg") }];
+  const fixed = (decision: "RELEASE" | "REVIEW" | "REFUSE") => selfComparisonReview({ check: async () => ({ decision, metrics: null, reasons: decision === "RELEASE" ? [] : ["measured"] }) });
+  const req = (render: Uint8Array) => ({ sources, segments: [], render, renderId: "r0", scene: "studio" });
+  assert.deepEqual(await fixed("RELEASE").check(req(b)), { decision: "RELEASE", metrics: null, reasons: [] }, "a different image: untouched");
+  assert.equal((await fixed("RELEASE").check(req(a))).decision, "REVIEW");
+  assert.equal((await fixed("REVIEW").check(req(a))).decision, "REVIEW");
+  const refused = await fixed("REFUSE").check(req(a));
+  assert.equal(refused.decision, "REFUSE");
+  assert.deepEqual(refused.reasons.slice(0, 1), ["measured"]);
+  assert.match(refused.reasons[1]!, /source photo 1/);
+  assert.match((await fixed("RELEASE").check(req(photo("3-collar.jpg")))).reasons[0]!, /source photo 2 \(collar\.jpg\)/);
 });
 
 test("replace 7: the trigger on the real 30 Oct receipts, and the seller text says what would change the outcome", () => {

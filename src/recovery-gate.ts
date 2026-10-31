@@ -11,6 +11,7 @@
 import { runJob } from "./pipeline.ts";
 import type { Providers } from "./pipeline.ts";
 import type { Clock } from "./receipt.ts";
+import { selfComparisonReview } from "./tryon.ts";
 import type { GateRunInput, GateRunner } from "./agent/runner.ts";
 import { VIEW_FOR_ATTRIBUTE } from "./agent/vocab.ts";
 import { ATTRIBUTES } from "./types.ts";
@@ -43,9 +44,12 @@ export function pipelineGate(opts: { readonly offline: ProvidersFor; readonly li
   return async (input) => {
     const providersFor = input.mode === "live" ? opts.live : opts.offline;
     if (!providersFor) throw new Error("no live gate configured: a live re-run is not available here");
+    // The seller supplies both the photos and the image to publish here, so a photo equal to that image is never a
+    // fidelity pass (src/tryon.ts selfComparisonReview, SC1).
+    const providers = providersFor(input);
     const result = await runJob(
       { jobId: input.runId, garmentNote: input.garmentNote, scenes: ["studio"], sources: input.sources },
-      { outRoot: input.outRoot, providers: providersFor(input), provenance: input.mode === "live" ? "live" : "fixture", clock: opts.clock },
+      { outRoot: input.outRoot, providers: { ...providers, fidelity: selfComparisonReview(providers.fidelity) }, provenance: input.mode === "live" ? "live" : "fixture", clock: opts.clock },
     );
     const decision = result.refused ? "REFUSE" : (result.renders[0]?.decision ?? "REFUSE");
     return { decision, head: result.head };

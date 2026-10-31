@@ -6,7 +6,7 @@
 // has the hash of any source photo, so runJob records render_failed (REFUSE)
 // and the verifier is never paid for; the batch then fails the run.
 
-import type { Renderer } from "./pipeline.ts";
+import type { FidelityChecker, Renderer } from "./pipeline.ts";
 import { sha256Hex } from "./util.ts";
 
 export class SelfComparisonError extends Error {
@@ -30,6 +30,26 @@ export function guardRenderer(renderer: Renderer): Renderer {
       const image = await renderer.render(req);
       assertNotSelfComparison(sha256Hex(image.bytes), req.sources.map((s) => sha256Hex(s.bytes)));
       return image;
+    },
+  };
+}
+
+/**
+ * SC1 (Grok, 31 Oct, from the DeepSeek Q31 red-team): the Evidence Recovery Agent's replace-photo-1 path takes a
+ * new photo 1 from the seller, so a seller could answer with the image to publish itself. Then fidelity compares a
+ * file with itself. This wrapper never lets that pass as a fidelity check: when the image to publish is a source
+ * photo byte for byte, a RELEASE becomes REVIEW (a person looks), and REVIEW or REFUSE keeps its decision; either
+ * way the fidelity entry says so in a reason. The thresholds and src/fidelity.ts are not touched.
+ */
+export function selfComparisonReview(checker: FidelityChecker): FidelityChecker {
+  return {
+    async check(req) {
+      const out = await checker.check(req);
+      const i = req.sources.map((s) => sha256Hex(s.bytes)).indexOf(sha256Hex(req.render));
+      if (i === -1) return out;
+      const reason = `self_comparison: the image to publish is source photo ${i + 1} (${req.sources[i]!.name}) byte for byte, so fidelity compared the photo with itself and checked no render; the seller's own photo, nothing generated, and a person must look`;
+      const reasons = [...(Array.isArray(out.reasons) ? out.reasons : []), reason];
+      return { ...out, decision: out.decision === "RELEASE" ? "REVIEW" : out.decision, reasons };
     },
   };
 }

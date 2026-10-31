@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->374<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->376<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -177,6 +177,15 @@ polo, 0.0023 kurta). This shows the evidence path now works, not that a generate
 steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 5 live gate runs, 0.1189 USD on the
 Meta ledger (0.0756 + 0.0433, under the 0.20 USD cap; estimate shown before approval: 0.03 USD per run). Two
 pairs is a small sample, not a rate.
+
+**Self-comparison on this path, closed after the run (SC1, 31 Oct).** A red-team question: what stops a seller
+answering the replace request with the image to publish itself? Nothing did. Since SC1 the agent's gate runner
+checks every run: when the image to publish is a source photo byte for byte, a fidelity RELEASE becomes REVIEW (a
+person looks; REVIEW and REFUSE stay as they are), and the receipt's fidelity entry says "self_comparison: the image
+to publish is source photo N ... byte for byte ... the seller's own photo, nothing generated". The thresholds, the
+gate rules and `src/fidelity.ts` are unchanged. The two RELEASEs above were exactly this case, so **run again
+today, both would be REVIEW, not RELEASE**; their committed records are kept as they happened. The keyless demo's
+image to publish is now a photo the seller never lists, so its RELEASE is not a self-comparison either.
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for

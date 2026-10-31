@@ -37,7 +37,7 @@ function setup(overrides: Record<string, unknown> = {}) {
 /** The keyless length case: close-ups only, so the canned verifier is unsure about length; REVIEW on run-1. */
 async function lengthCase(store: Store, gate: GateRunner, config: AgentConfig, seller = "seller-a", job = "plaid-1", collarName = "collar.jpg") {
   return createJob(store, gate, {
-    seller, job, garmentNote: "plaid shirt, long sleeves, button front", candidate: { file: "candidate.jpg", bytes: photo("1-front.jpg") },
+    seller, job, garmentNote: "plaid shirt, long sleeves, button front", candidate: { file: "candidate.jpg", bytes: photo("2-back.jpg") },
     photos: [
       { file: collarName, bytes: photo("3-collar.jpg"), view: "collar_closeup" },
       { file: "label.jpg", bytes: photo("3-collar.jpg"), view: "label_closeup" }, // the collar shot also shows the label
@@ -135,7 +135,7 @@ test("agent 6: injection in a filename or in EXIF text does not change the tools
   const runCase = async (collarName: string, collarBytes: Uint8Array) => {
     const { store, config, gate } = setup();
     await createJob(store, gate, {
-      seller: "seller-a", job: "plaid-1", garmentNote: "plaid shirt", candidate: { file: "candidate.jpg", bytes: photo("1-front.jpg") },
+      seller: "seller-a", job: "plaid-1", garmentNote: "plaid shirt", candidate: { file: "candidate.jpg", bytes: photo("2-back.jpg") },
       photos: [{ file: collarName, bytes: collarBytes, view: "collar_closeup" }, { file: "label.jpg", bytes: photo("3-collar.jpg"), view: "label_closeup" }, { file: "print.jpg", bytes: photo("4-print.jpg"), view: "print_closeup" }],
     }, config);
     const s = await runAgentStep({ store, seller: "seller-a", job: "plaid-1", gate, config, clock: CLOCK });
