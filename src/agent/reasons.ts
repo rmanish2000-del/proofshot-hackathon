@@ -94,9 +94,11 @@ export interface ReplaceTrigger {
  * Whether the last gate run's receipt shows that the listing's first photo is the problem: the fidelity check
  * (which measures against photo 1 only) said REVIEW or REFUSE, and the receipt shows photo 1 is cropped (its
  * SAM mask box, already in the receipt, touches the top or bottom edge, or a verifier note says the source is
- * cut off), angled or partial (a verifier note). It reads what the pipeline wrote; it makes no model call.
+ * cut off), angled or partial (a verifier note, or the view label the seller picked for photo 1 when it is not
+ * full_length_front: structured data from the job record, so it does not depend on a model's wording). It reads
+ * what the pipeline wrote; it makes no model call.
  */
-export function replaceTrigger(entries: readonly ReceiptEntry[], primary: string): ReplaceTrigger | null {
+export function replaceTrigger(entries: readonly ReceiptEntry[], primary: string, primaryView?: View): ReplaceTrigger | null {
   const gates = entries.filter((e) => e.kind === "gate");
   if (gates.length === 0) return null;
   const renderId = asObj(gates[gates.length - 1]!.payload).render_id;
@@ -112,6 +114,7 @@ export function replaceTrigger(entries: readonly ReceiptEntry[], primary: string
     if (y <= EDGE) found.set("cropped", `photo 1 mask box touches the top edge (y=${y.toFixed(3)})`);
     else if (y + h >= 1 - EDGE) found.set("cropped", `photo 1 mask box touches the bottom edge (y+h=${(y + h).toFixed(3)})`);
   }
+  if (primaryView !== undefined && primaryView !== "full_length_front") found.set("partial_view", `photo 1 is labelled ${primaryView}, not full_length_front`);
   const verifier = entries.find((e) => e.kind === "verifier" && asObj(e.payload).render_id === renderId);
   const findings = verifier && Array.isArray(asObj(verifier.payload).findings) ? (asObj(verifier.payload).findings as unknown[]).map(asObj) : [];
   for (const f of findings) {

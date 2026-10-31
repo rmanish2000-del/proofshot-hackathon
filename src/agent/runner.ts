@@ -167,8 +167,8 @@ export async function runAgentStep(opts: StepOptions): Promise<StepResult> {
         const entries = store.readRunReceipt(seller, job, last.n);
         state.outcome = outcomeOf(entries);
         const o = state.outcome;
-        const primary = record.photos[0]?.file;
-        state.replace = primary ? replaceTrigger(entries, primary) : null;
+        const primary = record.photos[0];
+        state.replace = primary ? replaceTrigger(entries, primary.file, primary.view) : null;
         const rp = state.replace;
         return {
           summary: `run-${last.n}: ${o.decision}, ${o.code} (${o.class})${rp ? `; photo 1: ${rp.problems.join(", ")}` : ""}`,

@@ -146,8 +146,9 @@ replace or reorder photos, and its seller text ("More photos will not change thi
 **Replace the first photo, measured** (`evidence/agent-replace-2026-10-31.json`, `npm run agent:replace`, run once
 on 31 Oct, cap 0.20 USD). A new allowlisted action, `request_replace_primary`: after a live run whose fidelity
 check says REVIEW or REFUSE, the agent reads the same receipt for signs that photo 1 is the problem: the SAM mask
-box of photo 1 touching the top or bottom edge (cropped), or a verifier note matching fixed patterns that say the
-source is cut off, angled, partial or the back only. No new model call is made for this. The seller gets a fixed
+box of photo 1 touching the top or bottom edge (cropped), a verifier note matching fixed patterns that say the
+source is cut off, angled, partial or the back only, or (added after the first run, below) a seller label on
+photo 1 other than full-length front. No new model call is made for this. The seller gets a fixed
 text naming the problem and asking for a full-length front as photo 1. The seller must approve and give the photo.
 The old photo 1 leaves the listing, and the gate runs again from the start, offline first, then live after a
 second approved paid re-check. At most 1 replacement per job, enforced in the validator and in the seller action.
@@ -157,17 +158,25 @@ seller text for a mismatch or a fidelity breach now says what would change the o
 | Garment | Photo 1 | Agent asked to replace? | Live verdict before | Live verdict after |
 |---|---|---|---|---|
 | Pink polo | angled, hem cut off | yes: cropped (mask box at the bottom edge; the verifier notes did not say so) | REFUSE (texture 0.531 below 0.650) | **RELEASE** |
-| Mustard kurta | the back, sleeve cut off | **no** | REFUSE (hem mismatch; fidelity delta_e 92.3, area 0.103) | not run |
+| Mustard kurta, first run | the back, sleeve cut off | **no** | REFUSE (hem mismatch; fidelity delta_e 92.3, area 0.103) | not run |
+| Mustard kurta, re-run with the label signal | the same | yes: partial view (photo 1 is labelled `full_length_back`) | REFUSE (the same hem mismatch and fidelity numbers) | **RELEASE** |
 
-**Resolved: 1 of 2.** The polo released after the replacement. Caveat: the stand-in render is the seller's own
-full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001).
-This shows the evidence path now works, not that a generated image is faithful. The kurta was missed. Its mask box
-is clear of the top and bottom edges. This time Muse Spark wrote "Source shows back view which is plain" and
-"Source shows only back round neckline", and neither matches the fixed patterns ("back view only", "only the
-back"). On 30 Oct it wrote "back view only", which does match. The trigger depends on the verifier's wording, so
-it is not reliable. The miss is reported as it happened; the patterns were not tuned and re-run. Seller steps:
-polo 4 (list, approve, replace, approve), kurta 2 (list, approve). Cost: 3 live gate runs, 0.0756 USD on the
-Meta ledger (estimate shown before approval: 0.03 USD per run). Two pairs is a small sample, not a rate.
+In the first run the kurta was missed. Its mask box is clear of the top and bottom edges. This time Muse Spark
+wrote "Source shows back view which is plain" and "Source shows only back round neckline", and neither matches
+the fixed patterns ("back view only", "only the back"). On 30 Oct it wrote "back view only", which does match.
+So the note patterns depend on the verifier's wording and are not reliable on their own. The fix, approved by
+Manish ("Yes, add and re-run"): a third signal, the view label the seller picked for photo 1. When it is not
+`full_length_front` it counts as a partial view. The label is structured data from the job record, not model
+text, and it still only counts after a fidelity REVIEW or REFUSE. The note patterns were not changed. The kurta
+was then re-run once as a fresh job (`evidence/agent-replace-2026-10-31-label.json`, `--jobs kurta-mustard`).
+The first live result is kept as it happened.
+
+**Resolved: 2 of 2 with the label signal (1 of 2 before it).** Caveat: the stand-in render is the seller's own
+full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001
+polo, 0.0023 kurta). This shows the evidence path now works, not that a generated image is faithful. Seller
+steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 5 live gate runs, 0.1189 USD on the
+Meta ledger (0.0756 + 0.0433, under the 0.20 USD cap; estimate shown before approval: 0.03 USD per run). Two
+pairs is a small sample, not a rate.
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for

@@ -18,9 +18,14 @@
 // must stay within 0.20 USD, or the run stops. Nothing is published. The result goes to
 // evidence/agent-replace-2026-10-31.json; records under evidence/agent-replace-2026-10-31/store/records; the
 // store's photo copies are removed afterwards (the same bytes are in data/seller-pairs, by the hash on each receipt).
+//
+// Options: --jobs a,b runs only those jobs; --tag T writes evidence/agent-replace-T(.json) instead; --budget USD
+// lowers the cap. Used once on 31 Oct after the view-label trigger was added (Manish: "Yes, add and re-run"):
+// --jobs kurta-mustard --tag 2026-10-31-label --budget 0.1244 (what was left of the 0.20 USD cap).
 
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import { makeConfig } from "../src/agent/config.ts";
@@ -38,17 +43,22 @@ import { META_KEY_ENV, resolveUserEnvKey } from "../src/verifier-meta.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const OUT = join(ROOT, "evidence", "agent-replace-2026-10-31");
-const SUMMARY = join(ROOT, "evidence", "agent-replace-2026-10-31.json");
+const { values: opt } = parseArgs({ options: { jobs: { type: "string" }, tag: { type: "string", default: "2026-10-31" }, budget: { type: "string" } } });
+if (!/^[0-9a-z-]{1,40}$/.test(opt.tag!)) throw new Error("--tag must be lowercase letters, digits and dashes");
+const OUT = join(ROOT, "evidence", `agent-replace-${opt.tag}`);
+const SUMMARY = join(ROOT, "evidence", `agent-replace-${opt.tag}.json`);
 const SELLER = "seller-manish";
 const APPROVER = "Manish Patel";
-const BUDGET_USD = 0.2;
+const BUDGET_USD = opt.budget === undefined ? 0.2 : Number(opt.budget);
+if (!(BUDGET_USD > 0 && BUDGET_USD <= 0.2)) throw new Error("--budget must be above 0 and at most 0.20 USD");
 const PER_RUN_MARGIN_USD = 0.05;
 
-const JOBS: readonly { job: string; garment: string; bad: string; badView: View; good: string }[] = [
+const ALL_JOBS: readonly { job: string; garment: string; bad: string; badView: View; good: string }[] = [
   { job: "shirt-pink", garment: "shirt-pink", bad: "1-cropped.jpg", badView: "full_length_front", good: "2-full-front.jpg" },
   { job: "kurta-mustard", garment: "kurta-mustard", bad: "1-back-cropped.jpg", badView: "full_length_back", good: "2-full-front.jpg" },
 ];
+const JOBS = opt.jobs ? ALL_JOBS.filter((j) => opt.jobs!.split(",").includes(j.job)) : ALL_JOBS;
+if (JOBS.length === 0) throw new Error("--jobs matched no job");
 
 if (existsSync(OUT) || existsSync(SUMMARY)) {
   console.error(`${OUT} already exists: these jobs ran once; their records are the result`);
@@ -179,7 +189,7 @@ const dropImages = (dir: string): void => {
 dropImages(store.root);
 const resolvedCount = results.filter((r) => r.resolved).length;
 const summary = {
-  what: "Evidence Recovery Agent, replace-the-first-photo action, on the two real seller pairs (the same photos as evidence/agent-real-2026-10-30.json). The render is the stand-in: the seller's own full-length front photo, nothing generated; after the replacement, photo 1 and the stand-in render are the same file, so a RELEASE here says the evidence path now works, not that a generated image is faithful.",
+  what: "Evidence Recovery Agent, replace-the-first-photo action, on the two real seller pairs (the same photos as evidence/agent-real-2026-10-30.json). The render is the stand-in: the seller's own full-length front photo, nothing generated; after the replacement, photo 1 and the stand-in render are the same file. Trigger signals: photo 1's SAM mask box, fixed patterns over verifier notes, and (from the 2026-10-31-label run on) the view label the seller picked for photo 1, so a RELEASE here says the evidence path now works, not that a generated image is faithful.",
   run_on: new Date().toISOString().slice(0, 10),
   live_providers: live.mode.labels,
   budget_usd: BUDGET_USD,

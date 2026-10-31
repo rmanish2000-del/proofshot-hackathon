@@ -136,7 +136,10 @@ Meta ledger; it refuses to run again over its own records): resolved 0 of 2, see
 (`request_replace_primary`: when fidelity fails and the receipt shows photo 1 is cropped, angled or partial, the
 seller is asked to replace photo 1 and the gate re-runs from the start): resolved 1 of 2. The polo went
 REFUSE → RELEASE, against a stand-in render that is the same file as the new photo 1. The kurta was not asked,
-because the trigger missed the verifier's wording. 0.0756 USD.
+because the note patterns missed the verifier's wording (0.0756 USD). After photo 1's seller label (here
+`full_length_back`) was added as a trigger signal, the kurta was re-run once (`--jobs kurta-mustard --tag
+2026-10-31-label`): asked, REFUSE → RELEASE, same stand-in caveat, 0.0433 USD. 2 of 2 with the label; 0.1189 USD
+in total.
 
 The demo's verifier is a labelled canned stand-in (no model judged the images): it shows the mechanics, not
 accuracy. Nothing in it calls a model or publishes without the seller's approval.

@@ -214,10 +214,21 @@ test("replace 7: the trigger on the real 30 Oct receipts, and the seller text sa
   // The kurta: photo 1 is the back; the verifier's note says the source shows the back view only.
   const kurta = replaceTrigger(read("kurta-mustard", 2), "1-back-cropped.jpg")!;
   assert.deepEqual([kurta.fidelity, kurta.problems], ["REFUSE", ["partial_view"]]);
-  // A limit, kept visible: with the full-length front added as photo 2, fidelity still says REFUSE against the
-  // back, but the notes no longer say the source is the back and its mask is clear of the edges, so the receipt
-  // shows nothing and no replacement is asked for. The request has to come from the first live run.
+  // With the full-length front added as photo 2, the notes no longer say the source is the back and its mask is
+  // clear of the edges: from the receipt alone nothing shows. The seller's own label for photo 1 does.
   assert.equal(replaceTrigger(read("kurta-mustard", 3), "1-back-cropped.jpg"), null);
+  const byLabel = replaceTrigger(read("kurta-mustard", 3), "1-back-cropped.jpg", "full_length_back")!;
+  assert.deepEqual(byLabel.problems, ["partial_view"]);
+  assert.match(byLabel.evidence[0]!, /labelled full_length_back/);
+  // The 31 Oct kurta receipt, whose notes missed the fixed patterns: caught by the label alone.
+  const missed = join(ROOT, "evidence", "agent-replace-2026-10-31", "store", "records", "seller-manish", "kurta-mustard", "runs", "run-2", "receipt.jsonl");
+  const missedEntries = parseReceipt(readFileSync(missed, "utf8"));
+  assert.equal(replaceTrigger(missedEntries, "1-back-cropped.jpg"), null);
+  assert.deepEqual(replaceTrigger(missedEntries, "1-back-cropped.jpg", "full_length_back")!.problems, ["partial_view"]);
+  // A full_length_front label adds nothing, and a label never triggers without a fidelity REVIEW/REFUSE.
+  assert.equal(replaceTrigger(read("kurta-mustard", 3), "2-full-front.jpg", "full_length_front"), null);
+  const passing = read("shirt-pink", 3).map((e) => (e.kind === "fidelity" ? { ...e, payload: { ...(e.payload as object), decision: "RELEASE" } } : e));
+  assert.equal(replaceTrigger(passing, "2-full-front.jpg", "collar_closeup"), null);
   // The good full-length front is not flagged as photo 1 (its mask stays clear of the top and bottom edges).
   assert.equal(replaceTrigger(read("kurta-mustard", 3), "2-full-front.jpg"), null);
   assert.equal(replaceTrigger(read("shirt-pink", 3), "2-full-front.jpg"), null);
