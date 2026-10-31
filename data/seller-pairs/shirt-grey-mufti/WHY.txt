@@ -1,0 +1,5 @@
+Why this garment is in the demo, and who allowed it.
+
+Owner of the garment: not recorded; the photos were provided by Manish Patel (project owner)
+Permission to photograph and publish (who, when, how given): Manish Patel put the photos in proofshot-handoff/new_garments/shirt-grey-mufti on 31 Oct 2026 for the try-on render run (CC_PROMPT_TRYON_31OCT).
+Why it was chosen (what makes it a hard case: print, colour, weave): a plain light grey shirt with a crinkled texture, where a colour shift is easy to miss. front.jpg, fabric_closeup.jpg and label.jpg were taken in; back_HAS_PERSON_LEGS.jpg shows a person's legs and was excluded before intake (never copied here). front.jpg shows the room around the bed (a chair and a suitcase) but no person and no personal data. Its Exif, including the orientation tag, was removed, so the photo shows sideways as stored.

@@ -1,0 +1,60 @@
+{
+  "garment": "shirt-pink",
+  "renderer": "pruna",
+  "job_dir": "evidence/tryon/shirt-pink/pruna",
+  "render": {
+    "path": "evidence/tryon/shirt-pink/pruna/pruna-r0.jpg",
+    "provider": "replicate-pruna-tryon",
+    "model": "prunaai/p-image-try-on",
+    "generative": true,
+    "prompt": "Garment type: polo shirt (short sleeves, two-button placket).",
+    "sha256": "995efbb490b1123a039ac72dfe5fbd572783b2a08443f27b44dad2075bb29283"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "2-full-front.jpg",
+      "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+    },
+    {
+      "photo": 2,
+      "name": "1-cropped.jpg",
+      "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "REFUSE",
+    "metrics": {
+      "delta_e": 37.94999316942357,
+      "hist": 0.9778293399092273,
+      "texture": 0.546875,
+      "area": 0.11611144617700099
+    },
+    "reasons": [
+      "delta_e 37.950 above 20",
+      "hist 0.978 above 0.600",
+      "texture 0.547 below 0.650",
+      "area 0.116 below 0.400: the garment shrank in frame"
+    ]
+  },
+  "verdict": "REFUSE",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "fidelity",
+    "reason": "fidelity REFUSE: delta_e 37.950 above 20; hist 0.978 above 0.600; texture 0.547 below 0.650; area 0.116 below 0.400: the garment shrank in frame"
+  },
+  "cost_usd": {
+    "meta": 0.0298,
+    "replicate": 0.015,
+    "total": 0.0448
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-07-51-916Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-08-01-246Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-08-47-908Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-09-09-784Z.json"
+  ]
+}

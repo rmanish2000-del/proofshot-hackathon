@@ -41,7 +41,8 @@
     "agent:metrics": "node --experimental-strip-types scripts/agent-metrics.ts",
     "agent:demo": "node --experimental-strip-types scripts/agent-demo.ts",
     "agent:real": "node --experimental-strip-types scripts/agent-real.ts",
-    "agent:replace": "node --experimental-strip-types scripts/agent-replace.ts"
+    "agent:replace": "node --experimental-strip-types scripts/agent-replace.ts",
+    "tryon": "node --experimental-strip-types scripts/tryon-batch.ts"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

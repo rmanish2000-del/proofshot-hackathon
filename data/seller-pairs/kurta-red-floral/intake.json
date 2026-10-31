@@ -1,0 +1,19 @@
+{
+  "garment": "kurta-red-floral",
+  "files": [
+    {
+      "source_name": "front.jpg",
+      "name": "front.jpg",
+      "source_sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc",
+      "sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc",
+      "removed": []
+    },
+    {
+      "source_name": "back.jpg",
+      "name": "back.jpg",
+      "source_sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7",
+      "sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7",
+      "removed": []
+    }
+  ]
+}

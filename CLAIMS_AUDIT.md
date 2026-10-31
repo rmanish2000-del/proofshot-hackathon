@@ -92,3 +92,17 @@ Only claims proven by a test or a committed file are made about the agent.
 | Keyless demo: REVIEW → photo request → RELEASE (video, README) | proven as a demo of the mechanics | "agent 3"; the verifier is a labelled canned stand-in, so this shows mechanics, not accuracy (said on screen and in the docs) |
 | OWASP LLM06 Excessive Agency | design guidance only | cited as guidance, not as a certification or audit |
 | Scaling to a managed queue and more workers | **plan, not built** | `docs/AGENT_SCALING.md` |
+
+## Try-on render run (31 Oct 2026)
+
+Until this run, the shirt-pink and kurta-mustard RELEASEs above compared photo 1 with a stand-in render that is the
+same file. Here every garment got a render that differs from every source photo: a guard refuses a render with any
+source photo's sha256. The unchanged gate judged each render. Summary: `evidence/tryon/SUMMARY.md`.
+
+| Claim (where) | Verdict | Evidence |
+|---|---|---|
+| On 5 real garments (pink polo, mustard kurta, pink patchwork kurta, red floral kurta, grey shirt), 10 jobs with Pruna try-on and composite v2 side by side: RELEASE 1 (the polo's composite), REVIEW 3 (composites whose garment touches the photo edge), REFUSE 6 (all 5 AI try-ons and the grey shirt's composite); 0.3028 USD (Meta 0.2277, Replicate 0.0750) | proven | `evidence/tryon/<garment>/<renderer>.json` and receipts; `evidence/tryon/run-2026-10-31T05-*.json` |
+| A render is never judged against itself in this run | proven | `src/tryon.ts` `guardRenderer`; `test/tryon.test.ts` TRYON 1 to 3; no render's sha256 equals a source photo's (`self_comparison: null` in every job file) |
+| An AI try-on can pass the gate | **not claimed** | 0 of 5 released in this run, 0 of 12 across all committed try-ons; the polo try-on looks close but was refused on fidelity (delta_e 37.95), cause not investigated, no threshold changed |
+| The composite RELEASE shows image fidelity | **not claimed** | it is the seller's own pixels moved onto a plain background; it shows the judge passes an honest re-placement, not a generated image |
+| No Meta image generator is used | proven | the only one on the key is `muse-image-1.0`, refused (`src/render.ts`, SPEC §8, not available in India); the try-ons are Pruna on Replicate, third-party and non-Meta |

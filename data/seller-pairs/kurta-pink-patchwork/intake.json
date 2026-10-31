@@ -1,0 +1,19 @@
+{
+  "garment": "kurta-pink-patchwork",
+  "files": [
+    {
+      "source_name": "front.jpg",
+      "name": "front.jpg",
+      "source_sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade",
+      "sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade",
+      "removed": []
+    },
+    {
+      "source_name": "back.jpg",
+      "name": "back.jpg",
+      "source_sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8",
+      "sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8",
+      "removed": []
+    }
+  ]
+}

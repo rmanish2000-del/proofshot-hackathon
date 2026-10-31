@@ -1,0 +1,59 @@
+{
+  "garment": "kurta-mustard",
+  "renderer": "pruna",
+  "job_dir": "evidence/tryon/kurta-mustard/pruna",
+  "render": {
+    "path": "evidence/tryon/kurta-mustard/pruna/pruna-r0.jpg",
+    "provider": "replicate-pruna-tryon",
+    "model": "prunaai/p-image-try-on",
+    "generative": true,
+    "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+    "sha256": "d8a2302e1409c875bee6c3540bb229cb58ab49d7303cbab021b78836ccee86f6"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "2-full-front.jpg",
+      "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee"
+    },
+    {
+      "photo": 2,
+      "name": "1-back-cropped.jpg",
+      "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "REFUSE",
+    "metrics": {
+      "delta_e": 85.00103470870012,
+      "hist": 0.9311526770766427,
+      "texture": 0.421875,
+      "area": 2.188365320884515
+    },
+    "reasons": [
+      "delta_e 85.001 above 20",
+      "hist 0.931 above 0.600",
+      "texture 0.422 below 0.650"
+    ]
+  },
+  "verdict": "REFUSE",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "fidelity",
+    "reason": "fidelity REFUSE: delta_e 85.001 above 20; hist 0.931 above 0.600; texture 0.422 below 0.650"
+  },
+  "cost_usd": {
+    "meta": 0.0275,
+    "replicate": 0.015,
+    "total": 0.0425
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-16-32-001Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-16-37-390Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-16-56-235Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-17-20-997Z.json"
+  ]
+}

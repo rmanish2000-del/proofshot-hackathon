@@ -1,0 +1,58 @@
+{
+  "garment": "kurta-pink-patchwork",
+  "renderer": "pruna",
+  "job_dir": "evidence/tryon/kurta-pink-patchwork/pruna",
+  "render": {
+    "path": "evidence/tryon/kurta-pink-patchwork/pruna/pruna-r0.jpg",
+    "provider": "replicate-pruna-tryon",
+    "model": "prunaai/p-image-try-on",
+    "generative": true,
+    "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+    "sha256": "b25ec11503c6373f7411940470802e2d8209fd7bcb5e42ca1bb1d73e4ecb55cb"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "front.jpg",
+      "sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade"
+    },
+    {
+      "photo": 2,
+      "name": "back.jpg",
+      "sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "REFUSE",
+    "metrics": {
+      "delta_e": 7.470882847030029,
+      "hist": 0.21860803607629015,
+      "texture": 0.5,
+      "area": 0.2955593546285368
+    },
+    "reasons": [
+      "texture 0.500 below 0.650",
+      "area 0.296 below 0.400: the garment shrank in frame"
+    ]
+  },
+  "verdict": "REFUSE",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "fidelity",
+    "reason": "fidelity REFUSE: texture 0.500 below 0.650; area 0.296 below 0.400: the garment shrank in frame"
+  },
+  "cost_usd": {
+    "meta": 0.0263,
+    "replicate": 0.015,
+    "total": 0.0413
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-17-45-932Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-17-48-871Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-18-07-465Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-18-28-750Z.json"
+  ]
+}

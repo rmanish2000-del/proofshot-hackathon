@@ -1,0 +1,37 @@
+{
+  "garment": "kurta-mustard",
+  "renderer": "composite",
+  "job_dir": "evidence/tryon/kurta-mustard/composite",
+  "render": null,
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "2-full-front.jpg",
+      "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee"
+    },
+    {
+      "photo": 2,
+      "name": "1-back-cropped.jpg",
+      "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": null,
+  "verdict": "REVIEW",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "render_quality",
+    "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+  },
+  "cost_usd": {
+    "meta": 0.005,
+    "replicate": 0,
+    "total": 0.005
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-17-26-928Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-17-30-467Z.json"
+  ]
+}

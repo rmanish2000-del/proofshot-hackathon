@@ -1,0 +1,48 @@
+{
+  "garment": "shirt-pink",
+  "renderer": "composite",
+  "job_dir": "evidence/tryon/shirt-pink/composite",
+  "render": {
+    "path": "evidence/tryon/shirt-pink/composite/composite-r0.png",
+    "provider": "composite",
+    "model": "composite-v2",
+    "generative": false,
+    "prompt": "Product photo of this exact garment, unchanged: shirt-pink: Type: polo shirt (short sleeves, two-button placket); Fabric and weave: cotton pique knit; Main colour: pink; Print or motif (what, where, size): small grey embroidered stag logo on the left chest; no print; Collar and cuffs: pink knit collar with grey inner neck tape; ribbed sleeve hems; Buttons: two white buttons on the placket; Anything the render must not change: pink colour, chest logo, placket and collar as photographed. Scene: studio.",
+    "sha256": "2c096710328e9495e13245a9b62c09ede9f0ca9af5429e5d72425f0de7ef1cb0"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "2-full-front.jpg",
+      "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+    },
+    {
+      "photo": 2,
+      "name": "1-cropped.jpg",
+      "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "RELEASE",
+    "metrics": {
+      "delta_e": 2.1107603764945977,
+      "hist": 0.026862892138904554,
+      "texture": 0.921875,
+      "area": 0.7716692226676324
+    },
+    "reasons": []
+  },
+  "verdict": "RELEASE",
+  "cited": null,
+  "cost_usd": {
+    "meta": 0.0302,
+    "replicate": 0,
+    "total": 0.0302
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-09-37-721Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-09-49-688Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-14-16-854Z.json"
+  ]
+}

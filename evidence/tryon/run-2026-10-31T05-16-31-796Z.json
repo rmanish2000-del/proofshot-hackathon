@@ -1,0 +1,426 @@
+{
+  "started_at": "2026-10-31T05:16:31.796Z",
+  "budget_usd": 15,
+  "spent_usd": 0.2278,
+  "stopped": null,
+  "jobs": [
+    {
+      "garment": "kurta-mustard",
+      "renderer": "pruna",
+      "job_dir": "evidence/tryon/kurta-mustard/pruna",
+      "render": {
+        "path": "evidence/tryon/kurta-mustard/pruna/pruna-r0.jpg",
+        "provider": "replicate-pruna-tryon",
+        "model": "prunaai/p-image-try-on",
+        "generative": true,
+        "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+        "sha256": "d8a2302e1409c875bee6c3540bb229cb58ab49d7303cbab021b78836ccee86f6"
+      },
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "2-full-front.jpg",
+          "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee"
+        },
+        {
+          "photo": 2,
+          "name": "1-back-cropped.jpg",
+          "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": {
+        "decision": "REFUSE",
+        "metrics": {
+          "delta_e": 85.00103470870012,
+          "hist": 0.9311526770766427,
+          "texture": 0.421875,
+          "area": 2.188365320884515
+        },
+        "reasons": [
+          "delta_e 85.001 above 20",
+          "hist 0.931 above 0.600",
+          "texture 0.422 below 0.650"
+        ]
+      },
+      "verdict": "REFUSE",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "fidelity",
+        "reason": "fidelity REFUSE: delta_e 85.001 above 20; hist 0.931 above 0.600; texture 0.422 below 0.650"
+      },
+      "cost_usd": {
+        "meta": 0.0275,
+        "replicate": 0.015,
+        "total": 0.0425
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-16-32-001Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-16-37-390Z.json",
+        "evidence/tryon/logs/verifier-2026-10-31T05-16-56-235Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-17-20-997Z.json"
+      ]
+    },
+    {
+      "garment": "kurta-mustard",
+      "renderer": "composite",
+      "job_dir": "evidence/tryon/kurta-mustard/composite",
+      "render": null,
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "2-full-front.jpg",
+          "sha256": "8a0540e76bb70d163e768da5c6efe1bcec2cb5054195218b3693c9b84422feee"
+        },
+        {
+          "photo": 2,
+          "name": "1-back-cropped.jpg",
+          "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": null,
+      "verdict": "REVIEW",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "render_quality",
+        "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+      },
+      "cost_usd": {
+        "meta": 0.005,
+        "replicate": 0,
+        "total": 0.005
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-17-26-928Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-17-30-467Z.json"
+      ]
+    },
+    {
+      "garment": "kurta-pink-patchwork",
+      "renderer": "pruna",
+      "job_dir": "evidence/tryon/kurta-pink-patchwork/pruna",
+      "render": {
+        "path": "evidence/tryon/kurta-pink-patchwork/pruna/pruna-r0.jpg",
+        "provider": "replicate-pruna-tryon",
+        "model": "prunaai/p-image-try-on",
+        "generative": true,
+        "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+        "sha256": "b25ec11503c6373f7411940470802e2d8209fd7bcb5e42ca1bb1d73e4ecb55cb"
+      },
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade"
+        },
+        {
+          "photo": 2,
+          "name": "back.jpg",
+          "sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": {
+        "decision": "REFUSE",
+        "metrics": {
+          "delta_e": 7.470882847030029,
+          "hist": 0.21860803607629015,
+          "texture": 0.5,
+          "area": 0.2955593546285368
+        },
+        "reasons": [
+          "texture 0.500 below 0.650",
+          "area 0.296 below 0.400: the garment shrank in frame"
+        ]
+      },
+      "verdict": "REFUSE",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "fidelity",
+        "reason": "fidelity REFUSE: texture 0.500 below 0.650; area 0.296 below 0.400: the garment shrank in frame"
+      },
+      "cost_usd": {
+        "meta": 0.0263,
+        "replicate": 0.015,
+        "total": 0.0413
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-17-45-932Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-17-48-871Z.json",
+        "evidence/tryon/logs/verifier-2026-10-31T05-18-07-465Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-18-28-750Z.json"
+      ]
+    },
+    {
+      "garment": "kurta-pink-patchwork",
+      "renderer": "composite",
+      "job_dir": "evidence/tryon/kurta-pink-patchwork/composite",
+      "render": null,
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade"
+        },
+        {
+          "photo": 2,
+          "name": "back.jpg",
+          "sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": null,
+      "verdict": "REVIEW",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "render_quality",
+        "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+      },
+      "cost_usd": {
+        "meta": 0.005,
+        "replicate": 0,
+        "total": 0.005
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-18-34-356Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-18-36-425Z.json"
+      ]
+    },
+    {
+      "garment": "kurta-red-floral",
+      "renderer": "pruna",
+      "job_dir": "evidence/tryon/kurta-red-floral/pruna",
+      "render": {
+        "path": "evidence/tryon/kurta-red-floral/pruna/pruna-r0.jpg",
+        "provider": "replicate-pruna-tryon",
+        "model": "prunaai/p-image-try-on",
+        "generative": true,
+        "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+        "sha256": "e929ed4c7a8bf9ee0920dcc4ae97dfa997d53760879dd6af20b301e7e2a70cf9"
+      },
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc"
+        },
+        {
+          "photo": 2,
+          "name": "back.jpg",
+          "sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": {
+        "decision": "REFUSE",
+        "metrics": {
+          "delta_e": 54.28774094909562,
+          "hist": 0.9002069318428163,
+          "texture": 0.515625,
+          "area": 0.03186343814852014
+        },
+        "reasons": [
+          "delta_e 54.288 above 20",
+          "hist 0.900 above 0.600",
+          "texture 0.516 below 0.650",
+          "area 0.032 below 0.400: the garment shrank in frame"
+        ]
+      },
+      "verdict": "REFUSE",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "fidelity",
+        "reason": "fidelity REFUSE: delta_e 54.288 above 20; hist 0.900 above 0.600; texture 0.516 below 0.650; area 0.032 below 0.400: the garment shrank in frame"
+      },
+      "cost_usd": {
+        "meta": 0.023,
+        "replicate": 0.015,
+        "total": 0.038
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-18-49-658Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-18-52-447Z.json",
+        "evidence/tryon/logs/verifier-2026-10-31T05-19-05-452Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-19-23-536Z.json"
+      ]
+    },
+    {
+      "garment": "kurta-red-floral",
+      "renderer": "composite",
+      "job_dir": "evidence/tryon/kurta-red-floral/composite",
+      "render": null,
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc"
+        },
+        {
+          "photo": 2,
+          "name": "back.jpg",
+          "sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": null,
+      "verdict": "REVIEW",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "render_quality",
+        "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+      },
+      "cost_usd": {
+        "meta": 0.005,
+        "replicate": 0,
+        "total": 0.005
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-19-30-548Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-19-34-242Z.json"
+      ]
+    },
+    {
+      "garment": "shirt-grey-mufti",
+      "renderer": "pruna",
+      "job_dir": "evidence/tryon/shirt-grey-mufti/pruna",
+      "render": {
+        "path": "evidence/tryon/shirt-grey-mufti/pruna/pruna-r0.jpg",
+        "provider": "replicate-pruna-tryon",
+        "model": "prunaai/p-image-try-on",
+        "generative": true,
+        "prompt": "Garment type: shirt (long sleeves, shown rolled.",
+        "sha256": "9bd092e9a186ee640032e6ce11f7dc75313b51f188730d862b6e39f9f61f63d0"
+      },
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "37d6cfcf0660eef6458ca4ca65305eb41c17d9707e6ecf57efa1bd409badcbd6"
+        },
+        {
+          "photo": 2,
+          "name": "fabric_closeup.jpg",
+          "sha256": "d86ff18811e96c79667080b8410c5bb8d71261f877f8e13144cecb56c136311d"
+        },
+        {
+          "photo": 3,
+          "name": "label.jpg",
+          "sha256": "81184f2b9103471c65b1431b147cd20f87b483b88b37499453c0ca61bb953287"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": {
+        "decision": "REFUSE",
+        "metrics": {
+          "delta_e": 41.15398652918511,
+          "hist": 0.9289654494033058,
+          "texture": 0.453125,
+          "area": 0.7902231647364052
+        },
+        "reasons": [
+          "delta_e 41.154 above 20",
+          "hist 0.929 above 0.600",
+          "texture 0.453 below 0.650"
+        ]
+      },
+      "verdict": "REFUSE",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "fidelity",
+        "reason": "fidelity REFUSE: delta_e 41.154 above 20; hist 0.929 above 0.600; texture 0.453 below 0.650"
+      },
+      "cost_usd": {
+        "meta": 0.038,
+        "replicate": 0.015,
+        "total": 0.053
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-19-49-861Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-19-57-847Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-20-02-428Z.json",
+        "evidence/tryon/logs/verifier-2026-10-31T05-20-31-488Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-21-03-244Z.json"
+      ]
+    },
+    {
+      "garment": "shirt-grey-mufti",
+      "renderer": "composite",
+      "job_dir": "evidence/tryon/shirt-grey-mufti/composite",
+      "render": {
+        "path": "evidence/tryon/shirt-grey-mufti/composite/composite-r0.png",
+        "provider": "composite",
+        "model": "composite-v2",
+        "generative": false,
+        "prompt": "Product photo of this exact garment, unchanged: shirt-grey-mufti: Type: shirt (long sleeves, shown rolled; regular collar; button front); Fabric and weave: crinkled plain weave, light; Main colour: light grey with a lavender cast; Print or motif (what, where, size): none; solid colour; Collar and cuffs: regular point collar; a cream brand label inside the neck reads MUFTI; Buttons: small white buttons down the placket; Anything the render must not change: the grey colour, the plain crinkled texture, the collar and buttons. Scene: studio.",
+        "sha256": "28e6b6248a4c1c5660076e373ec402b362b6ee63be20fd550d81667c198d5eef"
+      },
+      "inputs": [
+        {
+          "photo": 1,
+          "name": "front.jpg",
+          "sha256": "37d6cfcf0660eef6458ca4ca65305eb41c17d9707e6ecf57efa1bd409badcbd6"
+        },
+        {
+          "photo": 2,
+          "name": "fabric_closeup.jpg",
+          "sha256": "d86ff18811e96c79667080b8410c5bb8d71261f877f8e13144cecb56c136311d"
+        },
+        {
+          "photo": 3,
+          "name": "label.jpg",
+          "sha256": "81184f2b9103471c65b1431b147cd20f87b483b88b37499453c0ca61bb953287"
+        }
+      ],
+      "self_comparison": null,
+      "fidelity": {
+        "decision": "REFUSE",
+        "metrics": {
+          "delta_e": 60.813011303161815,
+          "hist": 0.9758644393157377,
+          "texture": 0.4375,
+          "area": 4.5575962033403306
+        },
+        "reasons": [
+          "delta_e 60.813 above 20",
+          "hist 0.976 above 0.600",
+          "texture 0.438 below 0.650",
+          "area 4.558 above 2.500: the garment grew in frame"
+        ]
+      },
+      "verdict": "REFUSE",
+      "cited": {
+        "attribute": null,
+        "verdict": null,
+        "confidence": null,
+        "rule": "fidelity",
+        "reason": "fidelity REFUSE: delta_e 60.813 above 20; hist 0.976 above 0.600; texture 0.438 below 0.650; area 4.558 above 2.500: the garment grew in frame"
+      },
+      "cost_usd": {
+        "meta": 0.0379,
+        "replicate": 0,
+        "total": 0.0379
+      },
+      "logs": [
+        "evidence/tryon/logs/sam-2026-10-31T05-21-15-507Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-21-25-498Z.json",
+        "evidence/tryon/logs/sam-2026-10-31T05-21-30-374Z.json",
+        "evidence/tryon/logs/verifier-2026-10-31T05-23-28-442Z.json"
+      ]
+    }
+  ]
+}

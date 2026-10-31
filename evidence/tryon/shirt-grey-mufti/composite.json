@@ -1,0 +1,65 @@
+{
+  "garment": "shirt-grey-mufti",
+  "renderer": "composite",
+  "job_dir": "evidence/tryon/shirt-grey-mufti/composite",
+  "render": {
+    "path": "evidence/tryon/shirt-grey-mufti/composite/composite-r0.png",
+    "provider": "composite",
+    "model": "composite-v2",
+    "generative": false,
+    "prompt": "Product photo of this exact garment, unchanged: shirt-grey-mufti: Type: shirt (long sleeves, shown rolled; regular collar; button front); Fabric and weave: crinkled plain weave, light; Main colour: light grey with a lavender cast; Print or motif (what, where, size): none; solid colour; Collar and cuffs: regular point collar; a cream brand label inside the neck reads MUFTI; Buttons: small white buttons down the placket; Anything the render must not change: the grey colour, the plain crinkled texture, the collar and buttons. Scene: studio.",
+    "sha256": "28e6b6248a4c1c5660076e373ec402b362b6ee63be20fd550d81667c198d5eef"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "front.jpg",
+      "sha256": "37d6cfcf0660eef6458ca4ca65305eb41c17d9707e6ecf57efa1bd409badcbd6"
+    },
+    {
+      "photo": 2,
+      "name": "fabric_closeup.jpg",
+      "sha256": "d86ff18811e96c79667080b8410c5bb8d71261f877f8e13144cecb56c136311d"
+    },
+    {
+      "photo": 3,
+      "name": "label.jpg",
+      "sha256": "81184f2b9103471c65b1431b147cd20f87b483b88b37499453c0ca61bb953287"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "REFUSE",
+    "metrics": {
+      "delta_e": 60.813011303161815,
+      "hist": 0.9758644393157377,
+      "texture": 0.4375,
+      "area": 4.5575962033403306
+    },
+    "reasons": [
+      "delta_e 60.813 above 20",
+      "hist 0.976 above 0.600",
+      "texture 0.438 below 0.650",
+      "area 4.558 above 2.500: the garment grew in frame"
+    ]
+  },
+  "verdict": "REFUSE",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "fidelity",
+    "reason": "fidelity REFUSE: delta_e 60.813 above 20; hist 0.976 above 0.600; texture 0.438 below 0.650; area 4.558 above 2.500: the garment grew in frame"
+  },
+  "cost_usd": {
+    "meta": 0.0379,
+    "replicate": 0,
+    "total": 0.0379
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-21-15-507Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-21-25-498Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-21-30-374Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-23-28-442Z.json"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "garment": "kurta-red-floral",
+  "renderer": "composite",
+  "job_dir": "evidence/tryon/kurta-red-floral/composite",
+  "render": null,
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "front.jpg",
+      "sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc"
+    },
+    {
+      "photo": 2,
+      "name": "back.jpg",
+      "sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": null,
+  "verdict": "REVIEW",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "render_quality",
+    "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+  },
+  "cost_usd": {
+    "meta": 0.005,
+    "replicate": 0,
+    "total": 0.005
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-19-30-548Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-19-34-242Z.json"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "garment": "kurta-pink-patchwork",
+  "renderer": "composite",
+  "job_dir": "evidence/tryon/kurta-pink-patchwork/composite",
+  "render": null,
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "front.jpg",
+      "sha256": "1bcfc6e2bc46b43af7c83784c5fd17d0de82604662d7b8bfc8fb36d82e4c6ade"
+    },
+    {
+      "photo": 2,
+      "name": "back.jpg",
+      "sha256": "4952aa911eff712380622265748b8709d03ee5f2352a08ed1d55cff7fe7651c8"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": null,
+  "verdict": "REVIEW",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "render_quality",
+    "reason": "CompositeQualityReview: garment is cut off at the edge of the photo"
+  },
+  "cost_usd": {
+    "meta": 0.005,
+    "replicate": 0,
+    "total": 0.005
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-18-34-356Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-18-36-425Z.json"
+  ]
+}

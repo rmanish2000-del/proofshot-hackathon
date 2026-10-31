@@ -1,0 +1,60 @@
+{
+  "garment": "kurta-red-floral",
+  "renderer": "pruna",
+  "job_dir": "evidence/tryon/kurta-red-floral/pruna",
+  "render": {
+    "path": "evidence/tryon/kurta-red-floral/pruna/pruna-r0.jpg",
+    "provider": "replicate-pruna-tryon",
+    "model": "prunaai/p-image-try-on",
+    "generative": true,
+    "prompt": "Garment type: kurta (three-quarter sleeves, straight cut, knee length or l.",
+    "sha256": "e929ed4c7a8bf9ee0920dcc4ae97dfa997d53760879dd6af20b301e7e2a70cf9"
+  },
+  "inputs": [
+    {
+      "photo": 1,
+      "name": "front.jpg",
+      "sha256": "6c65f949027ec74a6b05b85a82ed6d2669d7c47a7d69296ef608369a359b7fdc"
+    },
+    {
+      "photo": 2,
+      "name": "back.jpg",
+      "sha256": "c91cb0a2e17b4deb5ab513ce01c7c4af44526a8fe3bfaa0faa1046d056f3c4d7"
+    }
+  ],
+  "self_comparison": null,
+  "fidelity": {
+    "decision": "REFUSE",
+    "metrics": {
+      "delta_e": 54.28774094909562,
+      "hist": 0.9002069318428163,
+      "texture": 0.515625,
+      "area": 0.03186343814852014
+    },
+    "reasons": [
+      "delta_e 54.288 above 20",
+      "hist 0.900 above 0.600",
+      "texture 0.516 below 0.650",
+      "area 0.032 below 0.400: the garment shrank in frame"
+    ]
+  },
+  "verdict": "REFUSE",
+  "cited": {
+    "attribute": null,
+    "verdict": null,
+    "confidence": null,
+    "rule": "fidelity",
+    "reason": "fidelity REFUSE: delta_e 54.288 above 20; hist 0.900 above 0.600; texture 0.516 below 0.650; area 0.032 below 0.400: the garment shrank in frame"
+  },
+  "cost_usd": {
+    "meta": 0.023,
+    "replicate": 0.015,
+    "total": 0.038
+  },
+  "logs": [
+    "evidence/tryon/logs/sam-2026-10-31T05-18-49-658Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-18-52-447Z.json",
+    "evidence/tryon/logs/verifier-2026-10-31T05-19-05-452Z.json",
+    "evidence/tryon/logs/sam-2026-10-31T05-19-23-536Z.json"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "garment": "shirt-grey-mufti",
+  "files": [
+    {
+      "source_name": "front.jpg",
+      "name": "front.jpg",
+      "source_sha256": "87e1b6e9c602179a920469c520c8f8887a824fe0f06d118f9232bc41960dceab",
+      "sha256": "37d6cfcf0660eef6458ca4ca65305eb41c17d9707e6ecf57efa1bd409badcbd6",
+      "removed": [
+        "APP1 Exif",
+        "APP1 http://ns.adobe.com/xap/1.0/",
+        "APP2 MPF",
+        "APP4 QTI Debug Metadata",
+        "APP4 QTI Debug Metadata",
+        "MPF secondary image (529782 bytes after EOI)"
+      ]
+    },
+    {
+      "source_name": "fabric_closeup.jpg",
+      "name": "fabric_closeup.jpg",
+      "source_sha256": "04095284cb6b5e8622166a260f6dcb471e5e91c0105bd87f2b7a75545861f213",
+      "sha256": "d86ff18811e96c79667080b8410c5bb8d71261f877f8e13144cecb56c136311d",
+      "removed": [
+        "APP1 Exif",
+        "APP1 http://ns.adobe.com/xap/1.0/",
+        "APP2 MPF",
+        "APP4 QTI Debug Metadata",
+        "APP4 QTI Debug Metadata",
+        "MPF secondary image (442959 bytes after EOI)"
+      ]
+    },
+    {
+      "source_name": "label.jpg",
+      "name": "label.jpg",
+      "source_sha256": "a82097a6c33c2488cb031915d4245c095edd323993949b7bf8064a477bb4729e",
+      "sha256": "81184f2b9103471c65b1431b147cd20f87b483b88b37499453c0ca61bb953287",
+      "removed": [
+        "APP1 Exif",
+        "APP1 http://ns.adobe.com/xap/1.0/",
+        "APP2 MPF",
+        "APP4 QTI Debug Metadata",
+        "APP4 QTI Debug Metadata",
+        "MPF secondary image (427516 bytes after EOI)"
+      ]
+    }
+  ]
+}

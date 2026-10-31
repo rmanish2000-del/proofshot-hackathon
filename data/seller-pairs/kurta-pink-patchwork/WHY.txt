@@ -1,0 +1,5 @@
+Why this garment is in the demo, and who allowed it.
+
+Owner of the garment: not recorded; the photos were provided by Manish Patel (project owner)
+Permission to photograph and publish (who, when, how given): Manish Patel put the photos in proofshot-handoff/new_garments/kurta-pink-patchwork on 31 Oct 2026 for the try-on render run (CC_PROMPT_TRYON_31OCT).
+Why it was chosen (what makes it a hard case: print, colour, weave): a dense multi-colour patchwork print, which a generated image can easily rearrange. front.jpg and back.jpg are flat lays at 715x1600 (landscape) and the hem is outside the frame in both, so the length is not shown. No person and no personal data in either photo (checked by Claude Code before intake).

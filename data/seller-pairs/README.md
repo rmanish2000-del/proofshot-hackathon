@@ -7,3 +7,8 @@ it. Before intake, every photo was checked for people and personal data (none fo
 
 They live here rather than in `data/garments`, so the shop previews, calibration and the MS3/MS4 planners,
 which read every garment folder, do not pick up the deliberately bad photos.
+
+`kurta-pink-patchwork`, `kurta-red-floral` and `shirt-grey-mufti` (31 Oct) are for the try-on render run
+(`npm run tryon`, `evidence/tryon/SUMMARY.md`). They have no deliberately bad photo, and each lists its full-length
+front first. The same `WHY.txt` check for people was made; `shirt-grey-mufti`'s back photo showed a person and was
+not taken in.
