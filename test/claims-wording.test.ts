@@ -38,6 +38,17 @@ test("wording 6 (Grok 21:52): the beat 3 composite v2 breakdown is stated in evi
   assert.match(source, /evidence\/tryon\/SUMMARY\.md.*composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE/);
 });
 
+test("wording 7 (Grok 21:57): no 'Evidence Recovery' name in SUBMISSION, README or CLAIMS_AUDIT; beat 1 keeps the recorded narration and carries the agent caption", () => {
+  for (const doc of ["SUBMISSION.md", "README.md", "CLAIMS_AUDIT.md"]) assert.doesNotMatch(read(doc), /evidence[- ]recovery/i, doc);
+  const md = read("docs/DEMO.md");
+  const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
+  const beat1 = v7.split("\n").find((l) => l.startsWith("| 1 Problem"))!;
+  assert.match(beat1, /the agent caption \(below\) over the last sentence/);
+  assert.match(beat1.split("|")[4]!, /ProofShot is an evidence-recovery agent that catches that/);
+  assert.match(v7, /verbatim from Manish's recorded voiceover/);
+  assert.ok(v7.includes("\nEvidence-checking agent: it asks the seller for missing evidence, or refuses.\n"));
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));

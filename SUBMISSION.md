@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->386<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->387<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -87,7 +87,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
 | Throughput or cost per listing at scale | **not measured** | none |
 
-## Evidence Recovery Agent: safety and security design
+## Evidence-checking agent: safety and security design
 
 A bounded agent for one narrow job: when the gate says REVIEW or REFUSE because evidence is missing, it reads the
 receipt, finds the missing photo view, asks the seller for it (fixed English and Hindi text), and re-runs the
@@ -265,7 +265,7 @@ Checked against:
   refusals under Calibration.
 - With only four garments so far, calibration is a self-check rather than a
   true error rate.
-- On two real seller pairs the Evidence Recovery Agent first resolved 0 of 2:
+- On two real seller pairs the evidence-checking agent first resolved 0 of 2:
   the bad photo was photo 1, the one fidelity compares against, so no added
   photo could help. A "replace photo 1" request fixed the polo, but missed the
   kurta, because the verifier described the back view in words my fixed note
@@ -285,7 +285,7 @@ Checked against:
   not_verified, "fetch failed"), the retry in b35c7b0 (test MS2 7).
 - Four garments: `data/garments` has kurta-01, kurta-02, shirt-plaid and
   shirt-zebra with photos.
-- Agent on real pairs: Evidence Recovery Agent above;
+- Agent on real pairs: Evidence-checking agent above;
   `evidence/agent-real-2026-10-30.json`, `evidence/agent-replace-2026-10-31.json`.
 
 ## Calibration
@@ -465,7 +465,7 @@ reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x wit
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
 fidelity check returned REVIEW or REFUSE on all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_total-->7<!--/f--> on 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> on 31 Oct).
 
-On two real seller pairs, the Evidence Recovery Agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
+On two real seller pairs, the evidence-checking agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
 asking the seller to replace a bad first photo (2 of 2 with the seller's photo
 label as a trigger, 1 of 2 before I added it). The caveat comes first: the
 render was a stand-in, the seller's own new photo 1, so render and photo were
@@ -476,7 +476,7 @@ seller's own pixels placed again, not a generated image.
 
 Checked against: Built during the event (first commit 15658a4), Calibration
 and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`;
-Evidence Recovery Agent above; `evidence/tryon/SUMMARY.md`.
+Evidence-checking agent above; `evidence/tryon/SUMMARY.md`.
 
 ## What I learned
 
@@ -493,7 +493,7 @@ text depends on its wording: the same kurta back was "back view only" on
 missed it. Structured data, such as the seller's photo label, is a safer signal.
 
 Checked against: Challenges and Calibration above; `src/gate.ts` (an attribute
-with no finding fires `not_verified`); Evidence Recovery Agent above.
+with no finding fires `not_verified`); Evidence-checking agent above.
 
 ## What's next
 

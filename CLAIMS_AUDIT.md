@@ -65,7 +65,7 @@ softened or scoped where marked), **remove** (not supported; taken out). No clai
 | Who it is for: Indian boutique sellers (deck 2, video) | **weak, softened** | No seller interviews or usage data. Deck slide 2 now says "Intended users ... (not yet tested with real sellers)" |
 | "ProofShot checks every candidate listing image ... before it goes on sale" (video beat 2) | proven within ProofShot | Only a `release` entry gets a row in the shop preview (`src/shop.ts`, `test/shop.test.ts` "REVIEW and REFUSE jobs produce no row"); no real marketplace is connected |
 
-## Evidence Recovery Agent (round 5)
+## Evidence-checking agent (round 5)
 
 Only claims proven by a test or a committed file are made about the agent.
 

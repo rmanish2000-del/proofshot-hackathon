@@ -49,7 +49,7 @@ generated.
 
 | Beat | Time | Screen | Narration | Source |
 |---|---|---|---|---|
-| 1 Problem | 0:00 to 0:25 (25 s, cap 62) | Title card with the prior-work caption (below) on screen from 0:00 to 0:05, then the four phone photos of the plaid shirt | An Indian boutique seller lists garments from their own phone photos. A cleaned-up shot or an AI try-on can quietly change the garment: its colour, its print, its length. ProofShot is an evidence-recovery agent that catches that before the listing goes live. | `data/garments/shirt-plaid` |
+| 1 Problem | 0:00 to 0:25 (25 s, cap 62) | Title card with the prior-work caption (below) on screen from 0:00 to 0:05, then the four phone photos of the plaid shirt; the agent caption (below) over the last sentence | An Indian boutique seller lists garments from their own phone photos. A cleaned-up shot or an AI try-on can quietly change the garment: its colour, its print, its length. ProofShot is an evidence-recovery agent that catches that before the listing goes live. | `data/garments/shirt-plaid` |
 | 2 Agent loop | 0:25 to 1:10 (45 s, cap 112) | The keyless `npm run agent:demo` run (2-back.jpg is the image to publish), with the "canned verifier" label visible | This is the keyless agent demo. Its verifier is a labelled stand-in, so it shows the mechanics, not model accuracy. The seller gives three close-ups and no full-length view, and the gate says REVIEW. The agent reads the receipt and asks for the missing view. The seller adds it, the same gate runs again, and it says RELEASE. Nothing is published until the seller approves. A proposal carrying injected text is rejected, and publish stays blocked. | `scripts/agent-demo.ts`; run 31 Oct about 20:27 IST: run-1 REVIEW, run-2 RELEASE, published; injection REVIEW, publish refused |
 | 3 Results | 1:10 to 1:50 (40 s, cap 100) | The verdict table of the try-on run, then the shirt-pink composite beside photo 1 | Then five real garments. Pruna (via Replicate) made five AI try-ons. 0 of 5 AI try-ons released; every one held for review or refused, with the reason on the receipt. Composite v2 gave one RELEASE, three REVIEW and one REFUSE. The RELEASE is built from the seller's own pixels, cut out and moved, not a generated image. | `evidence/tryon/SUMMARY.md` (n = 10 jobs on 5 garments; Totals, "By method": composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE) |
 | 4 Verify page | 1:50 to 2:20 (30 s, cap 75) | `web/verify.html` opened from disk: VALID, then the one-byte copy: TAMPERED with the entry number | Every decision is written into a hash-chained receipt. The verify page checks every hash in the browser, with no server: VALID. Change one byte, and it says TAMPERED, with the entry number. | as v6 S7/S8 |
@@ -59,6 +59,13 @@ generated.
 Prior-work caption (beat 1, 0:00 to 0:05) and optional end card, on screen exactly:
 
 Prior work: spec document only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public.
+
+Beat 1 narration is verbatim from Manish's recorded voiceover and is not
+re-recorded (Grok 21:57 IST 31 Oct): its "evidence-recovery agent" claims only
+catching. The agent is named in the caption instead, on screen over the last
+sentence of beat 1, exactly:
+
+Evidence-checking agent: it asks the seller for missing evidence, or refuses.
 
 Do not say or show:
 
