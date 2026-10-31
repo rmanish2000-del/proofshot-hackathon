@@ -111,6 +111,35 @@ test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one vid
   assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is the v7 re-render below: script length 2:45, or 2:50 with the optional end card\)/);
 });
 
+test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISSION says; beat 3 shows a replicate-pruna-tryon receipt entry before Pruna is named; the plan doc says check_photo_quality is built", () => {
+  const md = read("docs/DEMO.md");
+  const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
+  assert.match(read("SUBMISSION.md"), /the written specification and config boilerplate only/);
+  assert.match(v7, /\nPrior work: the written specification and config boilerplate only\. .*git log is public\.\n/);
+  assert.doesNotMatch(md, /spec document only/);
+  const beat3 = v7.split("\n").find((l) => l.startsWith("| 3 Results"))!;
+  const cells = beat3.split("|").map((c) => c.trim());
+  assert.match(cells[3]!, /^From 1:10, before Pruna is named: the receipt caption \(below\)/);
+  assert.match(cells[3]!, /No try-on image, no person in frame/);
+  assert.match(cells[4]!, /Pruna \(via Replicate\)/);
+  const caption = /\nReceipt (evidence\/tryon\/[^ ,]+), entry (\d+): render, provider replicate-pruna-tryon, model ([^,]+), prediction ([a-z0-9]+)\. Gate: (\w+) \((\w+)\)\.\n/.exec(v7);
+  assert.ok(caption, "the beat 3 receipt caption is in the v7 section");
+  const entries = read(caption[1]!).trim().split("\n").map((l) => JSON.parse(l));
+  const render = entries[Number(caption[2])];
+  assert.equal(render.kind, "render");
+  assert.equal(render.payload.provider, "replicate-pruna-tryon");
+  assert.equal(render.payload.model, caption[3]);
+  assert.equal(render.payload.prediction_id, caption[4]);
+  const gate = entries.find((e) => e.kind === "gate");
+  assert.equal(gate.payload.decision, caption[5]);
+  assert.equal(gate.payload.cited.rule, caption[6]);
+  const plan = read("docs/EVIDENCE_CHECKING_PLAN.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(plan, /Nothing measures blur or resolution today/);
+  assert.match(plan, /Built since: the agent's local `check_photo_quality` \(`src\/agent\/quality\.ts`/);
+  assert.match(plan, /Still plan: crop, which needs a garment mask/);
+  assert.match(read("src/agent/quality.ts"), /crop: "not checked \(no garment mask\)"/);
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
@@ -119,7 +148,7 @@ test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the
   assert.match(v7, /Pruna \(via Replicate\)/);
   assert.match(v7, /one RELEASE, three REVIEW and one REFUSE/);
   assert.match(v7, /npm run agent:demo/);
-  assert.ok(v7.includes("Prior work: spec document only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public."));
+  assert.ok(v7.includes("Prior work: the written specification and config boilerplate only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public."));
   const rows = v7.split("\n").filter((l) => /^\| \d [A-Z]/.test(l));
   assert.equal(rows.length, 5, "five narrated beats");
   for (const row of rows) {

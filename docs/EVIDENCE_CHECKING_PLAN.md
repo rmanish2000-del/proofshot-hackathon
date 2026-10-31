@@ -34,8 +34,11 @@ once). In the pipeline the measured fidelity check flagged both (`live-kurta-01-
 agent must not touch these: they are real violations, and the gate already holds them.
 
 **Existing photo checks.** Intake (`src/intake.ts`): JPEG only, metadata stripped, both hashes kept. Composite v2
-pre-check (`render_quality`): exposure and correction limits. Nothing measures blur or resolution today; the
-agent adds a local `check_photo_quality` (resolution, exposure, blur; crop only when a mask is supplied).
+pre-check (`render_quality`): exposure and correction limits. Built since: the agent's local `check_photo_quality`
+(`src/agent/quality.ts`, called from `src/agent/policy.ts` and `src/agent/runner.ts`) measures resolution (short
+side), exposure (mean luma, too dark / too bright) and blur (variance of a 3x3 Laplacian); its thresholds are starting
+values set on the committed garment photos, not calibrated. Still plan: crop, which needs a garment mask; the check
+reports it as "not checked (no garment mask)".
 
 **Live calls and cost.** Verifier (Muse Spark 1.3) and SAM calls go through the metered fetch and spend ledgers
 (`src/spend-meta.ts`, per-account caps). The agent defaults to offline; any re-run that would call a model needs
