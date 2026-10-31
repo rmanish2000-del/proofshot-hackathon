@@ -1,0 +1,103 @@
+{
+  "seller": "seller-manish",
+  "job": "shirt-pink",
+  "garment_note": "shirt-pink: Type: polo shirt (short sleeves, two-button placket); Fabric and weave: cotton pique knit; Main colour: pink; Print or motif (what, where, size): small grey embroidered stag logo on the left chest; no print; Collar and cuffs: pink knit collar with grey inner neck tape; ribbed sleeve hems; Buttons: two white buttons on the placket; Anything the render must not change: pink colour, chest logo, placket and collar as photographed",
+  "candidate": "render-standin.jpg",
+  "photos": [
+    {
+      "file": "2-full-front.jpg",
+      "view": "full_length_front",
+      "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+    }
+  ],
+  "status": "ready_to_publish",
+  "steps": 3,
+  "model_calls": 2,
+  "cost_usd": 0.06,
+  "runs": [
+    {
+      "n": 1,
+      "mode": "offline",
+      "decision": "REVIEW",
+      "head": "f1b0786c6087ab8beed8fd724e470f3325e685ea8b6317cd22a1f8e55b29a48f"
+    },
+    {
+      "n": 2,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "39bc0a04451a9d873959b9c1b3433e2547fcb4f97b3a5fe4539f809f29b636e7"
+    },
+    {
+      "n": 3,
+      "mode": "offline",
+      "decision": "REVIEW",
+      "head": "5edcf0fcb271c61110cf7b2c1190acccf1236c002aa6a0a7b0f7f6c075906b74"
+    },
+    {
+      "n": 4,
+      "mode": "live",
+      "decision": "RELEASE",
+      "head": "319617523bd5d3287d76efe00a07bd9be348796562b29fda714b8cd6a66cbff5"
+    }
+  ],
+  "approvals": [
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-31T02:20:07.601Z",
+      "estimate_usd": 0.03,
+      "used": true
+    },
+    {
+      "what": "replace_primary",
+      "by": "Manish Patel",
+      "at": "2026-10-31T02:21:08.083Z"
+    },
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-31T02:21:14.643Z",
+      "estimate_usd": 0.03,
+      "used": true
+    }
+  ],
+  "request": null,
+  "explanation": {
+    "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided RELEASE; the agent did not. Still needed: your approval to publish.",
+    "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: RELEASE; एजेंट ने नहीं। अभी चाहिए: प्रकाशित करने के लिए आपकी स्वीकृति।"
+  },
+  "replace_request": null,
+  "replaced": [
+    {
+      "old": {
+        "file": "1-cropped.jpg",
+        "view": "full_length_front",
+        "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc"
+      },
+      "new": {
+        "file": "2-full-front.jpg",
+        "view": "full_length_front",
+        "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+      },
+      "problems": [
+        "cropped"
+      ],
+      "by": "Manish Patel",
+      "at": "2026-10-31T02:21:08.083Z",
+      "runs": [
+        {
+          "n": 3,
+          "mode": "offline",
+          "decision": "REVIEW",
+          "cost_usd": 0
+        },
+        {
+          "n": 4,
+          "mode": "live",
+          "decision": "RELEASE",
+          "cost_usd": 0.03
+        }
+      ]
+    }
+  ]
+}

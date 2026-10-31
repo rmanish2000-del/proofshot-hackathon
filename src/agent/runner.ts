@@ -7,13 +7,13 @@
 import type { Clock } from "../receipt.ts";
 import type { AgentConfig } from "./config.ts";
 import { checkPhotoQuality } from "./quality.ts";
-import { EXPLAIN, outcomeOf } from "./reasons.ts";
+import { EXPLAIN, outcomeOf, replaceTrigger } from "./reasons.ts";
 import { answerToRequest, rulePolicy } from "./policy.ts";
 import type { Proposer, StepState } from "./policy.ts";
 import { validateAction } from "./schema.ts";
 import type { Action } from "./schema.ts";
 import type { JobRecord, Store } from "./store.ts";
-import { VIEW_INSTRUCTIONS } from "./vocab.ts";
+import { VIEW_INSTRUCTIONS, replacePrimaryText } from "./vocab.ts";
 import type { View } from "./vocab.ts";
 
 export interface GateRunInput {
@@ -118,7 +118,10 @@ export async function runAgentStep(opts: StepOptions): Promise<StepResult> {
       cap = "tool_calls";
       break;
     }
-    const v = validateAction(proposal, { job, photos: record.photos.map((p) => p.file), outcomeCode: state.outcome?.code });
+    const v = validateAction(proposal, {
+      job, photos: record.photos.map((p) => p.file), outcomeCode: state.outcome?.code,
+      primary: record.photos[0]?.file, primaryProblems: state.replace?.problems, replaces: (record.replaced ?? []).length,
+    });
     log.append("agent", { event: "proposed", step, action: v.ok ? v.action : { invalid: true }, validation: v.ok ? "ok" : v.error });
     if (!v.ok) {
       // A rejected action ends the step: nothing outside the allowlist runs, and no verdict changes.
@@ -161,9 +164,17 @@ export async function runAgentStep(opts: StepOptions): Promise<StepResult> {
           state.explained = true; // nothing to recover before the first gate run
           return { summary: "no gate run yet", status: "new", need: { en: "the first gate run.", hi: "पहली गेट जाँच।" } };
         }
-        state.outcome = outcomeOf(store.readRunReceipt(seller, job, last.n));
+        const entries = store.readRunReceipt(seller, job, last.n);
+        state.outcome = outcomeOf(entries);
         const o = state.outcome;
-        return { summary: `run-${last.n}: ${o.decision}, ${o.code} (${o.class})`, outcome: { decision: o.decision, code: o.code, class: o.class, attributes: o.attributes, views: o.views } };
+        const primary = record.photos[0]?.file;
+        state.replace = primary ? replaceTrigger(entries, primary) : null;
+        const rp = state.replace;
+        return {
+          summary: `run-${last.n}: ${o.decision}, ${o.code} (${o.class})${rp ? `; photo 1: ${rp.problems.join(", ")}` : ""}`,
+          outcome: { decision: o.decision, code: o.code, class: o.class, attributes: o.attributes, views: o.views },
+          primary: rp ? { photo: rp.photo, fidelity: rp.fidelity, problems: rp.problems, evidence: rp.evidence } : null,
+        };
       }
       case "detect_missing_view": {
         const o = state.outcome!;
@@ -181,6 +192,12 @@ export async function runAgentStep(opts: StepOptions): Promise<StepResult> {
         state.requested = view;
         record = { ...record, request: { view, instructions_en: VIEW_INSTRUCTIONS[view].en, instructions_hi: VIEW_INSTRUCTIONS[view].hi } };
         return { summary: `asked the seller for: ${view}`, status: "awaiting_seller", need: { en: VIEW_INSTRUCTIONS[view].en, hi: VIEW_INSTRUCTIONS[view].hi } };
+      }
+      case "request_replace_primary": {
+        state.replaceRequested = true;
+        const text = replacePrimaryText(action.args.problems);
+        record = { ...record, replace_request: { photo: action.args.photo, problems: action.args.problems, text_en: text.en, text_hi: text.hi } };
+        return { summary: `asked the seller to replace photo 1 (${action.args.problems.join(", ")})`, status: "awaiting_seller", need: text };
       }
       case "explain": {
         state.explained = true;
@@ -221,11 +238,15 @@ export async function runAgentStep(opts: StepOptions): Promise<StepResult> {
           sources: record.photos.map((p) => ({ name: p.file, bytes: store.readPhoto(seller, job, p.file) })),
           candidate: store.readPhoto(seller, job, record.candidate), views, mode: action.args.mode,
         });
-        record = { ...record, runs: [...record.runs, { n, mode: action.args.mode, decision: res.decision, head: res.head }], request: null };
+        // Runs after a replacement of photo 1 are logged on that replacement too, with their cost.
+        const replaced = record.replaced?.length
+          ? record.replaced.map((x, i, all) => (i === all.length - 1 ? { ...x, runs: [...x.runs, { n, mode: action.args.mode, decision: res.decision, cost_usd: estimate }] } : x))
+          : record.replaced;
+        record = { ...record, runs: [...record.runs, { n, mode: action.args.mode, decision: res.decision, head: res.head }], request: null, ...(replaced ? { replaced } : {}) };
         state.rerun = { decision: res.decision, mode: action.args.mode };
         state.outcome = undefined; // read the fresh receipt next
         state.missingViews = undefined;
-        return { summary: `gate re-run ${n} (${action.args.mode}): ${res.decision}`, gate: { decision: res.decision, head: res.head }, cost_usd: estimate };
+        return { summary: `gate re-run ${n} (${action.args.mode}): ${res.decision}`, gate: { decision: res.decision, head: res.head }, cost_usd: estimate, after_replace: Boolean(replaced?.length) };
       }
     }
   }

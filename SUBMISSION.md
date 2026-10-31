@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->364<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->371<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -97,9 +97,11 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
   in `src/agent/` imports the gate or the pipeline (a test checks this). For the same inputs the gate receipt is
   byte-identical with or without the agent (test).
 - **Real violations are never recovered.** A mismatch the verifier saw or a measured fidelity breach ends in an
-  explanation only (test; on the committed jobs, 20 of 20 violations were left alone).
-- **Allowlist and schemas in code.** Six tools only (`read_receipt`, `check_photo_quality`, `detect_missing_view`,
-  `request_seller_photo`, `rerun_gate`, `explain`); every proposed action, from the rule policy or a model, is
+  explanation only (test; on the committed jobs, 20 of 20 violations were left alone). One exception, added
+  31 Oct: when the fidelity check says REVIEW or REFUSE and the receipt shows the first photo (the one fidelity
+  measures against) is cropped, angled or partial, the agent may ask the seller to replace photo 1 (below).
+- **Allowlist and schemas in code.** Seven tools only (`read_receipt`, `check_photo_quality`, `detect_missing_view`,
+  `request_seller_photo`, `request_replace_primary`, `rerun_gate`, `explain`); every proposed action, from the rule policy or a model, is
   validated before it runs: unknown tools, extra or missing arguments, another job's id, free text where the
   fixed seller text is required, or explaining a different outcome are rejected and logged.
 - **Untrusted inputs.** Photos, filenames, EXIF and model output are data: intake strips EXIF; filenames and
@@ -138,9 +140,34 @@ still said REFUSE with the same fidelity numbers, because the fidelity check com
 listing's first photo only (`src/fidelity.ts`), and the bad photo was first. Seller steps per garment: list,
 approve, add a photo, approve; no listing completed. Cost: 4 live gate runs, 0.106 USD on the Meta ledger
 (0.03 USD per run was the estimate shown before approval). What this shows: on these two pairs the blocker was
-not the request logic but a bad *first* photo, which no added photo can fix; the agent cannot replace or reorder
-photos, and its message "More photos will not change this" is true here but does not tell the seller to replace
-the first photo. Two pairs is a small sample, not a rate.
+not the request logic but a bad *first* photo, which no added photo can fix. At the time the agent could not
+replace or reorder photos, and its seller text ("More photos will not change this") did not say what would.
+
+**Replace the first photo, measured** (`evidence/agent-replace-2026-10-31.json`, `npm run agent:replace`, run once
+on 31 Oct, cap 0.20 USD). A new allowlisted action, `request_replace_primary`: after a live run whose fidelity
+check says REVIEW or REFUSE, the agent reads the same receipt for signs that photo 1 is the problem: the SAM mask
+box of photo 1 touching the top or bottom edge (cropped), or a verifier note matching fixed patterns that say the
+source is cut off, angled, partial or the back only. No new model call is made for this. The seller gets a fixed
+text naming the problem and asking for a full-length front as photo 1. The seller must approve and give the photo.
+The old photo 1 leaves the listing, and the gate runs again from the start, offline first, then live after a
+second approved paid re-check. At most 1 replacement per job, enforced in the validator and in the seller action.
+The per-job step, cost and timeout limits are unchanged. The gate and `src/fidelity.ts` are unchanged. The
+seller text for a mismatch or a fidelity breach now says what would change the outcome. Same photos, fresh jobs:
+
+| Garment | Photo 1 | Agent asked to replace? | Live verdict before | Live verdict after |
+|---|---|---|---|---|
+| Pink polo | angled, hem cut off | yes: cropped (mask box at the bottom edge; the verifier notes did not say so) | REFUSE (texture 0.531 below 0.650) | **RELEASE** |
+| Mustard kurta | the back, sleeve cut off | **no** | REFUSE (hem mismatch; fidelity delta_e 92.3, area 0.103) | not run |
+
+**Resolved: 1 of 2.** The polo released after the replacement. Caveat: the stand-in render is the seller's own
+full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001).
+This shows the evidence path now works, not that a generated image is faithful. The kurta was missed. Its mask box
+is clear of the top and bottom edges. This time Muse Spark wrote "Source shows back view which is plain" and
+"Source shows only back round neckline", and neither matches the fixed patterns ("back view only", "only the
+back"). On 30 Oct it wrote "back view only", which does match. The trigger depends on the verifier's wording, so
+it is not reliable. The miss is reported as it happened; the patterns were not tuned and re-run. Seller steps:
+polo 4 (list, approve, replace, approve), kurta 2 (list, approve). Cost: 3 live gate runs, 0.0756 USD on the
+Meta ledger (estimate shown before approval: 0.03 USD per run). Two pairs is a small sample, not a rate.
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for

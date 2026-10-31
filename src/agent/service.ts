@@ -9,6 +9,7 @@ import { intakeJpeg } from "../intake.ts";
 import type { AgentConfig } from "./config.ts";
 import { checkFileName, checkId } from "./paths.ts";
 import type { GateRunner } from "./runner.ts";
+import { MAX_REPLACES_PER_JOB } from "./schema.ts";
 import type { JobRecord, PhotoRecord, Store } from "./store.ts";
 import { VIEWS } from "./vocab.ts";
 import type { View } from "./vocab.ts";
@@ -66,6 +67,40 @@ export function addPhoto(store: Store, seller: string, job: string, photo: NewPh
   const added = intake(store, seller, job, photo, config);
   const next: JobRecord = { ...record, photos: [...record.photos, added], status: record.status === "awaiting_seller" ? "new" : record.status };
   store.writeJob(next);
+  return next;
+}
+
+/**
+ * The seller approves the agent's request to replace photo 1 and gives the new photo, a full-length front.
+ * Only the job's own seller can (the store is keyed by seller), only while the request is open, and only once
+ * per job. The old photo 1 leaves the listing (its hash stays on the record); the new one becomes photo 1, and
+ * the next agent step runs the gate again from the start on the new photos.
+ */
+export function replacePrimary(store: Store, seller: string, job: string, photo: NewPhoto, by: string, config: AgentConfig, clock: Clock = wallClock): JobRecord {
+  if (typeof by !== "string" || !/^[A-Za-z0-9 ._-]{1,40}$/.test(by)) throw new SellerError("approver must be a plain name");
+  checkId("seller", seller);
+  if (!store.hasJob(seller, job)) throw new SellerError(`no job ${job} for this seller`);
+  const record = store.readJob(seller, job);
+  if (record.seller !== seller) throw new SellerError("only the job's own seller can replace its photos");
+  const open = record.replace_request;
+  if (!open) throw new SellerError("the agent has not asked to replace photo 1");
+  if ((record.replaced ?? []).length >= MAX_REPLACES_PER_JOB) throw new SellerError(`photo 1 can be replaced ${MAX_REPLACES_PER_JOB} time per job`);
+  if (photo.view !== "full_length_front") throw new SellerError("the replacement for photo 1 must be a full-length front photo");
+  const old = record.photos[0];
+  if (!old || old.file !== open.photo) throw new SellerError("photo 1 changed since the request");
+  if (record.photos.some((p) => p.file === photo.file)) throw new SellerError(`${photo.file} is already on this job`);
+  const added = intake(store, seller, job, photo, config);
+  const at = clock();
+  const approval = { what: "replace_primary" as const, by, at };
+  const next: JobRecord = {
+    ...record, photos: [added, ...record.photos.slice(1)], status: "new", replace_request: null, request: null,
+    approvals: [...record.approvals, approval],
+    replaced: [...(record.replaced ?? []), { old, new: added, problems: open.problems, by, at, runs: [] }],
+  };
+  store.writeJob(next);
+  const log = store.agentLog(seller, job, clock);
+  log.append("agent", { event: "approval", approval });
+  log.append("agent", { event: "replaced_primary", old: { file: old.file, sha256: old.sha256 }, new: { file: added.file, sha256: added.sha256 }, problems: open.problems, by, at });
   return next;
 }
 

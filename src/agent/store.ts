@@ -13,7 +13,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { Receipt, parseReceipt } from "../receipt.ts";
 import type { Clock, ReceiptEntry } from "../receipt.ts";
 import { checkFileName, checkId, scopedPath } from "./paths.ts";
-import type { View } from "./vocab.ts";
+import type { PrimaryProblem, View } from "./vocab.ts";
 
 export interface PhotoRecord {
   readonly file: string;
@@ -29,11 +29,21 @@ export interface RunRecord {
 }
 
 export interface ApprovalRecord {
-  readonly what: "paid_rerun" | "publish";
+  readonly what: "paid_rerun" | "publish" | "replace_primary";
   readonly by: string;
   readonly at: string;
   readonly estimate_usd?: number;
   readonly used?: boolean;
+}
+
+/** One replacement of photo 1: what was replaced, by whom, and the gate runs on the new photos. */
+export interface ReplacedRecord {
+  readonly old: PhotoRecord;
+  readonly new: PhotoRecord;
+  readonly problems: readonly PrimaryProblem[];
+  readonly by: string;
+  readonly at: string;
+  readonly runs: readonly { readonly n: number; readonly mode: "offline" | "live"; readonly decision: string; readonly cost_usd: number }[];
 }
 
 export interface JobRecord {
@@ -49,6 +59,9 @@ export interface JobRecord {
   readonly runs: readonly RunRecord[];
   readonly approvals: readonly ApprovalRecord[];
   readonly request: { readonly view: View; readonly instructions_en: string; readonly instructions_hi: string } | null;
+  /** The agent's open request to replace photo 1 (absent on records from before this action existed). */
+  readonly replace_request?: { readonly photo: string; readonly problems: readonly PrimaryProblem[]; readonly text_en: string; readonly text_hi: string } | null;
+  readonly replaced?: readonly ReplacedRecord[];
   readonly explanation: { readonly en: string; readonly hi: string } | null;
 }
 

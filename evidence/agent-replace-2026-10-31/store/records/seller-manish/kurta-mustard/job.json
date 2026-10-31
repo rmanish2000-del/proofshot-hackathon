@@ -1,0 +1,45 @@
+{
+  "seller": "seller-manish",
+  "job": "kurta-mustard",
+  "garment_note": "kurta-mustard: Type: kurta (three-quarter sleeves, straight cut, knee length or longer); Fabric and weave: not recorded; Main colour: mustard yellow; Print or motif (what, where, size): embroidered pink and peach lotus with sequins, one small on the upper right chest and one large on the lower left front; small yellow flower dots all over the front; lace stripes down both sides of the front panel; Collar and cuffs: round neck with a short front slit and embroidered edging; Buttons: none visible; Anything the render must not change: mustard colour, both lotus motifs, the wide cream lace border at the hem",
+  "candidate": "render-standin.jpg",
+  "photos": [
+    {
+      "file": "1-back-cropped.jpg",
+      "view": "full_length_back",
+      "sha256": "2e036039595887b41781da32001afa714bee3a6c74521117f473e888e3ee298a"
+    }
+  ],
+  "status": "done",
+  "steps": 1,
+  "model_calls": 1,
+  "cost_usd": 0.03,
+  "runs": [
+    {
+      "n": 1,
+      "mode": "offline",
+      "decision": "REVIEW",
+      "head": "fd05eaf260d28dd84fa37b076636c73e5a5b9bc023c647e196c45858e02998bb"
+    },
+    {
+      "n": 2,
+      "mode": "live",
+      "decision": "REFUSE",
+      "head": "b0e262a5ae40f3980857c177dde02ed9d7f0e0daf81acdefe808660ec2274793"
+    }
+  ],
+  "approvals": [
+    {
+      "what": "paid_rerun",
+      "by": "Manish Patel",
+      "at": "2026-10-31T02:22:04.239Z",
+      "estimate_usd": 0.03,
+      "used": true
+    }
+  ],
+  "request": null,
+  "explanation": {
+    "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that shows the garment exactly as it is.",
+    "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को बिल्कुल वैसा ही दिखाए।"
+  }
+}

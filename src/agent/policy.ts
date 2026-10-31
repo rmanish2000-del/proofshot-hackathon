@@ -4,7 +4,8 @@
 // allowlist is the law. Nothing in a photo, a filename or a model answer reaches this function: it sees the job
 // record (structured fields) and tool results only.
 
-import type { Outcome } from "./reasons.ts";
+import type { Outcome, ReplaceTrigger } from "./reasons.ts";
+import { MAX_REPLACES_PER_JOB } from "./schema.ts";
 import type { QualityReport } from "./quality.ts";
 import type { JobRecord } from "./store.ts";
 import { VIEW_INSTRUCTIONS } from "./vocab.ts";
@@ -14,6 +15,9 @@ export interface StepState {
   readonly record: JobRecord;
   /** The latest gate outcome read in this step (read_receipt), or undefined before the first read. */
   outcome?: Outcome;
+  /** What the same receipt shows about photo 1 (replaceTrigger), read with the outcome; null when nothing. */
+  replace?: ReplaceTrigger | null;
+  replaceRequested?: boolean;
   missingViews?: readonly View[];
   quality: Record<string, QualityReport>;
   requested?: View;
@@ -35,8 +39,10 @@ const req = (view: View) => ({ tool: "request_seller_photo", args: { view, instr
 export const rulePolicy: Proposer = (s) => {
   const r = s.record;
   // A request or an explanation ends the step: the next step starts only after the seller acts.
-  if (s.requested || s.explained) return null;
+  if (s.requested || s.explained || s.replaceRequested) return null;
   const answered = answerToRequest(r);
+  const replaces = r.replaced ?? [];
+  const fresh = replaces.at(-1);
   const liveApproval = r.approvals.find((a) => a.what === "paid_rerun" && !a.used);
 
   // The seller answered a request: check the new photo, re-run the same gate offline, read it, explain it.
@@ -46,12 +52,24 @@ export const rulePolicy: Proposer = (s) => {
     if (q.issues.length > 0) return req(r.request!.view);
     return { tool: "rerun_gate", args: { listing: r.job, mode: "offline" } };
   }
+  // The seller replaced photo 1: check the new photo, then run the gate again from the start (offline first).
+  if (fresh && fresh.runs.length === 0 && !s.rerun) {
+    const q = s.quality[fresh.new.file];
+    if (!q) return { tool: "check_photo_quality", args: { photo: fresh.new.file } };
+    if (q.issues.length === 0) return { tool: "rerun_gate", args: { listing: r.job, mode: "offline" } };
+  }
   // The seller approved a paid re-check: run it once.
   if (liveApproval && !s.rerun) return { tool: "rerun_gate", args: { listing: r.job, mode: "live" } };
 
   // The runner clears the outcome after a re-run, so the fresh receipt is read before anything else.
   if (s.outcome === undefined) return { tool: "read_receipt", args: {} };
   const o = s.outcome;
+
+  // The fidelity check measures against photo 1 only; when the receipt shows photo 1 is the problem, ask the
+  // seller to replace it (once per job). This comes before the violation rule: added photos cannot fix it.
+  if (s.replace && o.class !== "release" && replaces.length < MAX_REPLACES_PER_JOB && r.photos[0]?.file === s.replace.photo) {
+    return { tool: "request_replace_primary", args: { listing: r.job, photo: s.replace.photo, problems: [...s.replace.problems] } };
+  }
 
   if (o.class === "missing_evidence") {
     if (s.missingViews === undefined) return { tool: "detect_missing_view", args: {} };

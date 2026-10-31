@@ -1,0 +1,232 @@
+{
+  "what": "Evidence Recovery Agent, replace-the-first-photo action, on the two real seller pairs (the same photos as evidence/agent-real-2026-10-30.json). The render is the stand-in: the seller's own full-length front photo, nothing generated; after the replacement, photo 1 and the stand-in render are the same file, so a RELEASE here says the evidence path now works, not that a generated image is faithful.",
+  "run_on": "2026-10-31",
+  "live_providers": {
+    "segment": "meta / meta/sam-3.1 (api.meta.ai)",
+    "render": "stand-in: the seller's own front photo, nothing generated",
+    "verify": "meta / muse-spark-1.3: the model judges every attribute",
+    "fidelity": "masked metrics (SPEC §10): delta_e, hist, texture, area against config/fidelity.json"
+  },
+  "budget_usd": 0.2,
+  "stopped": null,
+  "resolved": "1 of 2",
+  "meta_spend_usd_this_run": 0.0756,
+  "jobs": [
+    {
+      "job": "shirt-pink",
+      "garment": "shirt-pink",
+      "bad_photo": "1-cropped.jpg (full_length_front)",
+      "replacement": "2-full-front.jpg (full_length_front)",
+      "path": "replaced",
+      "replace_asked_for": [
+        "cropped"
+      ],
+      "replace_text_en": "Your first photo has a problem: the garment runs off the edge of the picture, so part of it is cut off. The image is measured against photo 1, so adding more photos will not change the result, but replacing photo 1 can. Please replace photo 1 with a full-length front photo. Lay the whole garment flat or hang it, front side up, on a plain background in daylight, and photograph all of it from collar to hem, with a little space around it. After you replace it, the gate checks the listing again from the start.",
+      "first_live": "REFUSE",
+      "last_live": "RELEASE",
+      "resolved": true,
+      "seller_steps": [
+        "listed 1-cropped.jpg as full_length_front (photo 1)",
+        "approved paid re-check 1",
+        "approved the replacement and gave 2-full-front.jpg as photo 1",
+        "approved paid re-check 2"
+      ],
+      "status": "ready_to_publish",
+      "explanation": {
+        "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided RELEASE; the agent did not. Still needed: your approval to publish.",
+        "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: RELEASE; एजेंट ने नहीं। अभी चाहिए: प्रकाशित करने के लिए आपकी स्वीकृति।"
+      },
+      "runs": [
+        {
+          "run": 1,
+          "mode": "offline",
+          "verifier": "canned-demo-verifier (no model judged the image)",
+          "decision": "REVIEW",
+          "code": "low_confidence",
+          "class": "missing_evidence",
+          "attributes": [
+            "print_pattern",
+            "logo_text",
+            "collar",
+            "fabric_texture"
+          ],
+          "fidelity": {
+            "decision": "RELEASE",
+            "metrics": null,
+            "reasons": []
+          }
+        },
+        {
+          "run": 2,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "fidelity_breach",
+          "class": "violation",
+          "attributes": [],
+          "fidelity": {
+            "decision": "REFUSE",
+            "metrics": {
+              "delta_e": 0.915948653471375,
+              "hist": 0.02374745060112076,
+              "texture": 0.53125,
+              "area": 0.8102518407183574
+            },
+            "reasons": [
+              "texture 0.531 below 0.650"
+            ]
+          }
+        },
+        {
+          "run": 3,
+          "mode": "offline",
+          "verifier": "canned-demo-verifier (no model judged the image)",
+          "decision": "REVIEW",
+          "code": "low_confidence",
+          "class": "missing_evidence",
+          "attributes": [
+            "print_pattern",
+            "logo_text",
+            "collar",
+            "fabric_texture"
+          ],
+          "fidelity": {
+            "decision": "RELEASE",
+            "metrics": null,
+            "reasons": []
+          }
+        },
+        {
+          "run": 4,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "RELEASE",
+          "code": "release",
+          "class": "release",
+          "attributes": [],
+          "fidelity": {
+            "decision": "RELEASE",
+            "metrics": {
+              "delta_e": 0.0001058909988313635,
+              "hist": 2.5981062314156735e-7,
+              "texture": 1,
+              "area": 0.9999915003759965
+            },
+            "reasons": []
+          }
+        }
+      ],
+      "replaced": [
+        {
+          "old": {
+            "file": "1-cropped.jpg",
+            "view": "full_length_front",
+            "sha256": "73b294f94bbb355551793b6866421bf389d6f382263f1158f993c4abebfac2dc"
+          },
+          "new": {
+            "file": "2-full-front.jpg",
+            "view": "full_length_front",
+            "sha256": "92f53fdfc33d0a9f75aea69b01cda2a8b490e680168db8b4fd34795b189abce2"
+          },
+          "problems": [
+            "cropped"
+          ],
+          "by": "Manish Patel",
+          "at": "2026-10-31T02:21:08.083Z",
+          "runs": [
+            {
+              "n": 3,
+              "mode": "offline",
+              "decision": "REVIEW",
+              "cost_usd": 0
+            },
+            {
+              "n": 4,
+              "mode": "live",
+              "decision": "RELEASE",
+              "cost_usd": 0.03
+            }
+          ]
+        }
+      ],
+      "model_calls": 2,
+      "estimate_usd": 0.06
+    },
+    {
+      "job": "kurta-mustard",
+      "garment": "kurta-mustard",
+      "bad_photo": "1-back-cropped.jpg (full_length_back)",
+      "replacement": "2-full-front.jpg (full_length_front)",
+      "path": "not_asked",
+      "replace_asked_for": null,
+      "replace_text_en": null,
+      "first_live": "REFUSE",
+      "last_live": "REFUSE",
+      "resolved": false,
+      "seller_steps": [
+        "listed 1-back-cropped.jpg as full_length_back (photo 1)",
+        "approved paid re-check 1"
+      ],
+      "status": "done",
+      "explanation": {
+        "en": "Agent did: rerun_gate, read_receipt, explain. The gate decided REFUSE; the agent did not. Still needed: Use an image that shows the garment exactly as it is.",
+        "hi": "एजेंट ने किया: rerun_gate, read_receipt, explain। फ़ैसला गेट ने किया: REFUSE; एजेंट ने नहीं। अभी चाहिए: ऐसी तस्वीर इस्तेमाल करें जो कपड़े को बिल्कुल वैसा ही दिखाए।"
+      },
+      "runs": [
+        {
+          "run": 1,
+          "mode": "offline",
+          "verifier": "canned-demo-verifier (no model judged the image)",
+          "decision": "REVIEW",
+          "code": "low_confidence",
+          "class": "missing_evidence",
+          "attributes": [
+            "color",
+            "print_pattern",
+            "logo_text",
+            "collar",
+            "sleeve_length",
+            "hem",
+            "pocket_count",
+            "buttons",
+            "fabric_texture"
+          ],
+          "fidelity": {
+            "decision": "RELEASE",
+            "metrics": null,
+            "reasons": []
+          }
+        },
+        {
+          "run": 2,
+          "mode": "live",
+          "verifier": "muse-spark-1.3 (api.meta.ai)",
+          "decision": "REFUSE",
+          "code": "soft_mismatch",
+          "class": "violation",
+          "attributes": [
+            "hem"
+          ],
+          "fidelity": {
+            "decision": "REFUSE",
+            "metrics": {
+              "delta_e": 92.28461438809472,
+              "hist": 0.9780340707707524,
+              "texture": 0.46875,
+              "area": 0.10314885980802112
+            },
+            "reasons": [
+              "delta_e 92.285 above 20",
+              "hist 0.978 above 0.600",
+              "texture 0.469 below 0.650",
+              "area 0.103 below 0.400: the garment shrank in frame"
+            ]
+          }
+        }
+      ],
+      "replaced": [],
+      "model_calls": 1,
+      "estimate_usd": 0.03
+    }
+  ]
+}
