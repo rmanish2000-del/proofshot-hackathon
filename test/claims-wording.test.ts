@@ -89,6 +89,28 @@ test("wording 9 (Grok 22:40 AGW5, 22:58 AGW6): README Limits and the SUBMISSION 
   assert.ok(audit.some((l) => l.includes("4 garments, all the owner's own")), "the 4-garment calibration row still reads 4");
 });
 
+test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one video length, the v7 script's, labelled as script length; 76 s appears only as the v6 capture timing", () => {
+  const md = read("docs/DEMO.md");
+  const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
+  const rows = v7.split("\n").filter((l) => /^\| (\d [A-Z]|Card )/.test(l));
+  const end = (row: string) => /to (\d:\d\d) \(/.exec(row)![1]!;
+  const withCard = end(rows.at(-1)!);
+  const without = end(rows.at(-2)!);
+  assert.deepEqual([without, withCard], ["2:45", "2:50"]);
+  assert.match(v7, new RegExp(`${withCard} in all with the optional end card\\s+\\(${without} without it\\)`));
+  const claim = `script runs ${without}, or ${withCard} with the optional end card. That is the script length`;
+  for (const doc of ["README.md", "SUBMISSION.md"]) {
+    const text = read(doc).replace(/\s+/g, " ");
+    assert.ok(text.includes(claim), `${doc} states the v7 script length`);
+    assert.doesNotMatch(text, /about 2\.5 minutes|Demo script \(76 s\)/, doc);
+    for (const m of text.matchAll(/76 s/g)) {
+      const around = text.slice(Math.max(0, m.index! - 160), m.index! + 40);
+      assert.match(around, /v6|clone \+ `npm ci`/, `${doc}: '76 s' not labelled v6: ${around}`);
+    }
+  }
+  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is the v7 re-render below: script length 2:45, or 2:50 with the optional end card\)/);
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));

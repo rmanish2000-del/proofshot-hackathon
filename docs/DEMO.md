@@ -10,7 +10,8 @@ Framed for "Build for Your World" with an Indian boutique seller. v5, v4 and v3
 are in git history. Every job on screen is a committed receipt; "What exists
 today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
-Length 76 s. Screen recording only, burned-in captions. Voice: Manish's own (an
+v6 capture timing 76 s (the video to submit is the v7 re-render below: script
+length 2:45, or 2:50 with the optional end card). Screen recording only, burned-in captions. Voice: Manish's own (an
 AI voice is UNVERIFIED against the rules). Word cap per beat = seconds x 2.5
 (150 wpm).
 

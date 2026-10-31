@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->390<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->391<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -364,9 +364,14 @@ Checked against: README "What each Meta model does" and "Limits",
 `evidence/pack/summary.json` (call counts), `evidence/ms4-summary.json`,
 `package.json`, `npm run ledger` on 29 Oct after 7de2c9c.
 
-## Demo script (76 s)
+## Demo script
 
-Seven beats, nine shots, 76 s, in `docs/DEMO.md` (v6), showing the two shirts
+The video to submit is the v7 re-render in `docs/DEMO.md`: five beats, its
+script runs 2:45, or 2:50 with the optional end card. That is the script
+length; the rendered file is not committed, so its measured length is not
+stated here.
+
+The v6 capture timing (`npm run demo:capture`): seven beats, nine shots, 76 s, in `docs/DEMO.md` (v6), showing the two shirts
 only (plaid and zebra): the seller's phone photos of a plaid shirt; a pipeline
 smoke example (`ms2-shirt-plaid`, the owner's own photo as the candidate,
 RELEASE: it shows the pipeline runs, not accuracy); REVIEW for a composite
@@ -380,7 +385,7 @@ try-on run, which has two shirts, came later; v7 shows only its verdict table). 
 the gate, none released) are under Problem above and in the README.
 
 Checked against `docs/DEMO.md` and `test/demo-capture.test.ts` (word caps,
-timecodes summing to 76 s, every job committed, no kurta job in any shot,
+v6 timecodes summing to 76 s, every job committed, no kurta job in any shot,
 every committed try-on a kurta job).
 
 ## Built during the event and prior work
