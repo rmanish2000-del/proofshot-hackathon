@@ -199,8 +199,9 @@ before any candidate image can be listed.
 ## What it does
 
 For one candidate listing image, ProofShot segments the seller's photos with
-SAM 3.1, makes a candidate (composite v2, the seller's own garment pixels on a
-ghost mannequin, no image model; or an AI try-on with Pruna on Replicate),
+SAM 3.1, takes or makes the candidate (the seller's own photo; composite v2,
+the seller's own garment pixels on a ghost mannequin, no image model; or an AI
+try-on with Pruna on Replicate),
 verifies it against those photos with Muse Spark 1.3, measures fidelity on the
 SAM 3.1 masks, and lets a deterministic gate decide RELEASE, REVIEW or REFUSE.
 Every step from intake to the gate decision goes into a SHA-256 hash-chained
@@ -247,6 +248,11 @@ Checked against:
   refusals under Calibration.
 - With only four garments so far, calibration is a self-check rather than a
   true error rate.
+- On two real seller pairs the Evidence Recovery Agent first resolved 0 of 2:
+  the bad photo was photo 1, the one fidelity compares against, so no added
+  photo could help. A "replace photo 1" request fixed the polo, but missed the
+  kurta, because the verifier described the back view in words my fixed note
+  patterns did not match.
 
 Checked against:
 - No findings, refused: `data/jobs/live-kurta-01` (gate REFUSE not_verified).
@@ -262,6 +268,8 @@ Checked against:
   not_verified, "fetch failed"), the retry in b35c7b0 (test MS2 7).
 - Four garments: `data/garments` has kurta-01, kurta-02, shirt-plaid and
   shirt-zebra with photos.
+- Agent on real pairs: Evidence Recovery Agent above;
+  `evidence/agent-real-2026-10-30.json`, `evidence/agent-replace-2026-10-31.json`.
 
 ## Calibration
 
@@ -434,8 +442,18 @@ reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x wit
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
 fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-on images.
 
+On two real seller pairs, the Evidence Recovery Agent got both to RELEASE by
+asking the seller to replace a bad first photo (2 of 2 with the seller's photo
+label as a trigger, 1 of 2 before I added it). The caveat comes first: the
+render was a stand-in, the seller's own new photo 1, so render and photo were
+the same file. That proves the evidence path works, not that a generated image
+is faithful, and two pairs is not a rate. In a try-on run on 5 real garments,
+0 of 5 AI try-ons were released. The one RELEASE was a composite v2, the
+seller's own pixels placed again, not a generated image.
+
 Checked against: Built during the event (first commit 15658a4), Calibration
-and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`.
+and Built with above, `src/gate.ts`, `src/receipt.ts`, `web/verify.html`;
+Evidence Recovery Agent above; `evidence/tryon/SUMMARY.md`.
 
 ## What I learned
 
@@ -446,10 +464,13 @@ instead of showing a misleading REVIEW. I added a copy audit and fix pass
 because generated copy sometimes described the software instead of the
 garment. A verifier call with large photos is now retried once, and the two
 failed runs stay recorded as refusals. With four garments, calibration is a
-self-check, not a true error rate.
+self-check, not a true error rate. A trigger that reads the verifier's free
+text depends on its wording: the same kurta back was "back view only" on
+30 Oct and "Source shows back view which is plain" on 31 Oct, so the agent
+missed it. Structured data, such as the seller's photo label, is a safer signal.
 
 Checked against: Challenges and Calibration above; `src/gate.ts` (an attribute
-with no finding fires `not_verified`).
+with no finding fires `not_verified`); Evidence Recovery Agent above.
 
 ## What's next
 
@@ -463,6 +484,12 @@ These are plans, not results:
   HTTP in Chromium).
 - Get Manish's visual sign-off on composite v2 images before any is shown as a
   product shot.
+- Make the agent's replace-photo trigger structural (mask geometry and seller
+  labels) rather than dependent on the verifier's wording, and measure it on
+  more than two pairs.
+- Apply the photo's EXIF orientation before intake strips EXIF: the grey
+  shirt's front came in sideways and its composite was refused.
 
 Checked against: README "Limits" and "What is verified and what is not";
-Grok's SP1 list on #23 (six of its twelve cases need a real phone photo).
+Grok's SP1 list on #23 (six of its twelve cases need a real phone photo);
+`evidence/tryon/SUMMARY.md`.
