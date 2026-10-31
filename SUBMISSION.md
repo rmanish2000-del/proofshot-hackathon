@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->384<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->385<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -104,7 +104,7 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
   `request_seller_photo`, `request_replace_primary`, `rerun_gate`, `explain`); every proposed action, from the rule policy or a model, is
   validated before it runs: unknown tools, extra or missing arguments, another job's id, free text where the
   fixed seller text is required, or explaining a different outcome are rejected and logged.
-- **Untrusted inputs.** Photos, filenames, EXIF and model output are data: intake strips EXIF; filenames and
+- **Untrusted inputs.** Photos, filenames, EXIF and model output are data: intake applies the EXIF orientation, then drops Exif/XMP; filenames and
   model text cannot pick a tool or an argument outside the schema (tests with an instruction-like filename, an
   EXIF block and malicious model proposals: same tools, same verdict, nothing published).
 - **Scoped files.** Every path is built from checked seller and job ids and must stay inside that job's folder.
@@ -180,17 +180,19 @@ pairs is a small sample, not a rate.
 
 **Self-comparison on this path, closed after the run (SC1, 31 Oct).** A red-team question: what stops a seller
 answering the replace request with the image to publish itself? Nothing did. Since SC1 the agent's gate runner
-checks every run: when the image to publish is a source photo byte for byte, a fidelity RELEASE becomes REVIEW (a
+checks every run: when the image to publish is a source photo byte for byte (SC1; SC2, below, adds near-copies), a fidelity RELEASE becomes REVIEW (a
 person looks; REVIEW and REFUSE stay as they are), and the receipt's fidelity entry says "self_comparison: the image
 to publish is source photo N ... byte for byte ... the seller's own photo, nothing generated". The thresholds, the
 gate rules and `src/fidelity.ts` are unchanged. The two RELEASEs above were exactly this case, so **run again
 today, both would be REVIEW, not RELEASE**; their committed records are kept as they happened. The keyless demo's
 image to publish is now a photo the seller never lists, so its RELEASE is not a self-comparison either.
-SC2 closes the next step of the same trick: the image to publish re-saved, re-encoded, stripped of EXIF or resized.
-Both pictures are reduced to a 32x32 grid of mean colours; a mean difference of at most 3 (0-255) counts as the same
-picture, and the RELEASE becomes REVIEW with that distance in the receipt. Measured on a committed photo: copies
-0.00 to 0.49, other photos of the same garment at the same size above 40. A crop, rotation, mirror, other aspect
-ratio or heavy edit is not caught (CLAIMS_AUDIT).
+SC2 narrows the next step of the same trick: a JPEG or PNG copy of the image to publish that was re-saved,
+re-encoded, stripped of EXIF or resized, and is within the grid threshold, is moved to REVIEW. Both pictures are
+reduced to a 32x32 grid of mean colours; a mean difference of at most 3 (0-255) counts as the same picture, and the
+RELEASE becomes REVIEW with that distance in the receipt. Measured on a committed photo: copies 0.00 to 0.49, other
+photos of the same garment at the same size above 40. Not caught (CLAIMS_AUDIT): a crop, rotation, mirror, an
+aspect ratio more than 2% different, heavy edits, a file that is neither JPEG nor PNG, or a new photo taken of the
+printed or on-screen image.
 
 **Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for

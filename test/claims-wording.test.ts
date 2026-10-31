@@ -47,6 +47,23 @@ test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the
   }
 });
 
+test("wording 5 (SC2g + EX1r): SC2 and intake are worded to what they do, with the limits beside them", () => {
+  const sub = read("SUBMISSION.md");
+  const audit = read("CLAIMS_AUDIT.md");
+  const readme = read("README.md");
+  assert.doesNotMatch(sub, /SC2 closes/);
+  assert.doesNotMatch(audit, /cannot pass either/);
+  const sc2 = sub.slice(sub.indexOf("SC2 narrows"), sub.indexOf("**Keyless demo**"));
+  assert.match(sc2, /within the grid threshold, is moved to REVIEW/);
+  for (const miss of ["crop", "rotation", "mirror", "more than 2%", "neither JPEG nor PNG", "new photo taken of the"]) assert.ok(sc2.includes(miss), `SUBMISSION SC2 lists '${miss}' as not caught`);
+  assert.match(sub, /byte for byte \(SC1; SC2, below, adds near-copies\)/);
+  assert.doesNotMatch(readme, /# garment photos in: strips metadata/);
+  assert.match(readme, /applies EXIF orientation, drops Exif\/XMP\/vendor data, keeps JFIF\/ICC/);
+  const intake = audit.split("\n").find((l) => l.startsWith("| Intake strips photo metadata"))!;
+  assert.doesNotMatch(intake, /there was nothing to strip/);
+  assert.match(intake, /grey shirt.*stripped before EX1.*still sideways/);
+});
+
 test("wording 4: DEMO v7 runs 170 s or less with the end card, the beats are back to back, and the prior-work line opens beat 1", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
