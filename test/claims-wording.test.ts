@@ -20,11 +20,22 @@ test("wording 1 (SC2r): every 31 Oct agent RELEASE in SUBMISSION and CLAIMS_AUDI
   for (const [doc, l] of claims) assert.ok(l.includes(CAVEAT), `${doc}: ${l.slice(0, 80)}`);
 });
 
-test("wording 2: the SUBMISSION opening uses the evidence-recovery agent wording, not 'analyzes images' or 'checks photos'", () => {
-  const form = read("SUBMISSION.md").split("**Long description:**")[0]!;
-  assert.match(form, /\*\*Tagline:\*\* An evidence-recovery agent/);
-  assert.match(form, /segment.*render.*verify.*recover.*refuse/s);
+test("wording 2 (Grok 21:52): the SUBMISSION opening says evidence-checking agent that requests missing evidence, not 'evidence-recovery', 'analyzes images' or 'checks photos'", () => {
+  const sub = read("SUBMISSION.md");
+  const form = sub.split("**Long description:**")[0]!;
+  const firstLong = sub.split("**Long description:**")[1]!.split("\n\n").filter((p) => p.trim())[1]!;
+  assert.match(form, /\*\*Tagline:\*\* An evidence-checking agent/);
+  assert.match(form, /segment.*render.*verify.*request missing evidence from the seller, or refuse/s);
+  assert.match(firstLong, /^ProofShot is an evidence-checking agent/);
+  for (const part of [form, firstLong]) assert.doesNotMatch(part, /evidence-recovery|recover missing/i);
   assert.doesNotMatch(form, /analy[sz]es images|checks photos|checks a candidate/i);
+});
+
+test("wording 6 (Grok 21:52): the beat 3 composite v2 breakdown is stated in evidence/tryon/SUMMARY.md and cited in the beat's source column", () => {
+  assert.match(read("evidence/tryon/SUMMARY.md"), /composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE/);
+  const beat3 = read("docs/DEMO.md").split("\n").find((l) => l.startsWith("| 3 Results"))!;
+  const source = beat3.split("|").map((c) => c.trim())[5]!;
+  assert.match(source, /evidence\/tryon\/SUMMARY\.md.*composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE/);
 });
 
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {

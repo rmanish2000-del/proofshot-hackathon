@@ -46,6 +46,7 @@ treated as the same garment and not taken in again:
 - REVIEW 3: each a composite, cut off at the photo's edge, with no render made.
 - REFUSE 6: all 5 try-ons and the grey shirt's composite.
 - AI try-ons released: **0 of 5**.
+- By method: Pruna try-on 0 RELEASE, 0 REVIEW, 5 REFUSE; composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE.
 
 **Spend:** 0.3028 USD of the 15 USD cap, as recorded in the two run files.
 - Meta (SAM 3.1 and Muse Spark): 0.2277 USD.
