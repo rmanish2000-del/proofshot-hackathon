@@ -56,6 +56,15 @@ test("wording 7 (Grok 21:57, 22:10): no 'Evidence Recovery' name in SUBMISSION, 
   assert.ok(v7.includes("\nEvidence-checking agent: it asks the seller for missing evidence, or refuses.\n"));
 });
 
+test("wording 8 (Grok 22:25, AGW4): the README 'Public repo' row says every commit carries the noreply address since the 30 Oct re-authoring, not 'from 28 Oct'", () => {
+  const readme = read("README.md");
+  const row = readme.split("\n").find((l) => l.startsWith("| Public repo |"))!;
+  assert.match(row, /since the 30 Oct history re-authoring every commit's author and committer email is a GitHub noreply address/);
+  assert.match(row, /docs\/HISTORY\.md/);
+  assert.doesNotMatch(readme, /noreply address from 28 Oct/);
+  assert.match(read("docs/HISTORY.md"), /30 Oct history\s+re-authoring \(emails only/);
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
