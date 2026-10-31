@@ -17,15 +17,15 @@ and in README.md. Anything not in the repository is **TBD**.
 
 **Project name:** ProofShot
 
-**Tagline:** A release gate for seller listing images: each candidate image is checked against the seller's own photos, a deterministic gate decides RELEASE, REVIEW or REFUSE, and every decision gets a hash-chained receipt.
+**Tagline:** An evidence-recovery agent for seller listing images: it decides the next action (segment, render, verify, recover or refuse), a deterministic gate decides RELEASE, REVIEW or REFUSE, and every decision gets a hash-chained receipt.
 
-**Short description:** ProofShot checks a candidate listing image against the seller's own phone photos before it goes on sale. SAM 3.1 segments the garment, Muse Spark 1.3 on the Meta Model API checks nine attributes, a fidelity check measures the masked regions, and a deterministic code gate (not a model) decides RELEASE, REVIEW or REFUSE. Every step goes into a SHA-256 hash-chained receipt that a single web page verifies in the browser with no server.
+**Short description:** ProofShot is an evidence-recovery agent for a seller's listing image. Before the image goes on sale, it decides the next action: segment the seller's phone photos, render or take the candidate, verify it, recover missing evidence from the seller, or refuse. SAM 3.1 segments the garment, Muse Spark 1.3 on the Meta Model API checks nine attributes, a fidelity check measures the masked regions, and a deterministic code gate (not a model) decides RELEASE, REVIEW or REFUSE. Every step goes into a SHA-256 hash-chained receipt that a single web page verifies in the browser with no server.
 
 **Long description:**
 
 An Indian boutique seller lists garments online from their own phone photos. Any image that goes on the listing, a cleaned-up product shot or an AI try-on, can quietly change the garment: its colour, its print, its length. The buyer then gets something other than what was photographed.
 
-ProofShot is a release gate for those images. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a ghost mannequin with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
+ProofShot is an evidence-recovery agent for those images, with a release gate at the end. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a ghost mannequin with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
 
 Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of the receipt and it says TAMPERED, with the entry number.
 
@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->379<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->382<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -157,9 +157,9 @@ seller text for a mismatch or a fidelity breach now says what would change the o
 
 | Garment | Photo 1 | Agent asked to replace? | Live verdict before | Live verdict after |
 |---|---|---|---|---|
-| Pink polo | angled, hem cut off | yes: cropped (mask box at the bottom edge; the verifier notes did not say so) | REFUSE (texture 0.531 below 0.650) | **RELEASE** |
+| Pink polo | angled, hem cut off | yes: cropped (mask box at the bottom edge; the verifier notes did not say so) | REFUSE (texture 0.531 below 0.650) | **RELEASE** (recorded 31 Oct self-comparison; would be REVIEW today) |
 | Mustard kurta, first run | the back, sleeve cut off | **no** | REFUSE (hem mismatch; fidelity delta_e 92.3, area 0.103) | not run |
-| Mustard kurta, re-run with the label signal | the same | yes: partial view (photo 1 is labelled `full_length_back`) | REFUSE (the same hem mismatch and fidelity numbers) | **RELEASE** |
+| Mustard kurta, re-run with the label signal | the same | yes: partial view (photo 1 is labelled `full_length_back`) | REFUSE (the same hem mismatch and fidelity numbers) | **RELEASE** (recorded 31 Oct self-comparison; would be REVIEW today) |
 
 In the first run the kurta was missed. Its mask box is clear of the top and bottom edges. This time Muse Spark
 wrote "Source shows back view which is plain" and "Source shows only back round neckline", and neither matches
@@ -171,7 +171,7 @@ text, and it still only counts after a fidelity REVIEW or REFUSE. The note patte
 was then re-run once as a fresh job (`evidence/agent-replace-2026-10-31-label.json`, `--jobs kurta-mustard`).
 The first live result is kept as it happened.
 
-**Resolved: 2 of 2 with the label signal (1 of 2 before it).** Caveat: the stand-in render is the seller's own
+**Resolved: 2 of 2 with the label signal (1 of 2 before it) (recorded 31 Oct self-comparison; would be REVIEW today).** Caveat: the stand-in render is the seller's own
 full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001
 polo, 0.0023 kurta). This shows the evidence path now works, not that a generated image is faithful. Seller
 steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 5 live gate runs, 0.1189 USD on the
@@ -456,7 +456,7 @@ reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x wit
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
 fidelity check returned REVIEW or REFUSE on all <!--f:tryon_total-->7<!--/f--> try-on images.
 
-On two real seller pairs, the Evidence Recovery Agent got both to RELEASE by
+On two real seller pairs, the Evidence Recovery Agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
 asking the seller to replace a bad first photo (2 of 2 with the seller's photo
 label as a trigger, 1 of 2 before I added it). The caveat comes first: the
 render was a stand-in, the seller's own new photo 1, so render and photo were
