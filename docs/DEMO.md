@@ -59,7 +59,7 @@ generated.
 
 Prior-work caption (beat 1, 0:00 to 0:05) and optional end card, on screen exactly:
 
-Prior work: the written specification and config boilerplate only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public.
+Prior work: the written specification and config boilerplate only. Everything you see running was coded during the hackathon, from 27 Oct (first commit 15658a4). git log is public.
 
 Beat 1 narration is verbatim from Manish's recorded voiceover and is not
 re-recorded (Grok 21:57 IST 31 Oct): its agent wording claims only catching. The agent is named in the caption instead, on screen over the last

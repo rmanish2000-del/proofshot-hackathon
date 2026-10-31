@@ -115,8 +115,11 @@ test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISS
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
   assert.match(read("SUBMISSION.md"), /the written specification and config boilerplate only/);
-  assert.match(v7, /\nPrior work: the written specification and config boilerplate only\. .*git log is public\.\n/);
+  assert.match(v7, /\nPrior work: the written specification and config boilerplate only\. Everything you see running was coded during the hackathon, from 27 Oct \(first commit 15658a4\)\. git log is public\.\n/);
   assert.doesNotMatch(md, /spec document only/);
+  // AGW10 (Grok 00:05 1 Nov): the build range stays open-ended, like SUBMISSION ("from 15658a4 on"), so 1 Nov+ commits cannot make it untrue.
+  assert.doesNotMatch(v7, /27\s*[–-]\s*31 Oct|by 31 Oct/);
+  assert.match(read("SUBMISSION.md"), /from 15658a4 on/);
   const beat3 = v7.split("\n").find((l) => l.startsWith("| 3 Results"))!;
   const cells = beat3.split("|").map((c) => c.trim());
   assert.match(cells[3]!, /^From 1:10, before Pruna is named: the receipt caption \(below\)/);
@@ -148,7 +151,7 @@ test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the
   assert.match(v7, /Pruna \(via Replicate\)/);
   assert.match(v7, /one RELEASE, three REVIEW and one REFUSE/);
   assert.match(v7, /npm run agent:demo/);
-  assert.ok(v7.includes("Prior work: the written specification and config boilerplate only. Everything you see running was coded 27–31 Oct (first commit 15658a4). git log is public."));
+  assert.ok(v7.includes("Prior work: the written specification and config boilerplate only. Everything you see running was coded during the hackathon, from 27 Oct (first commit 15658a4). git log is public."));
   const rows = v7.split("\n").filter((l) => /^\| \d [A-Z]/.test(l));
   assert.equal(rows.length, 5, "five narrated beats");
   for (const row of rows) {
