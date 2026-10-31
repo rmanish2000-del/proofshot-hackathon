@@ -65,6 +65,17 @@ test("wording 8 (Grok 22:25, AGW4): the README 'Public repo' row says every comm
   assert.match(read("docs/HISTORY.md"), /30 Oct history\s+re-authoring \(emails only/);
 });
 
+test("wording 9 (Grok 22:40, AGW5): README Limits and the SUBMISSION evidence paragraph scope the 4 garments and the 5 of the 31 Oct run, and give 9 only beside the no-shared-photo check", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const limit = readme.slice(readme.indexOf("**Small sample.**"), readme.indexOf("**Verifier accuracy is not measured"));
+  assert.match(limit, /cover <!--f:garments-->4<!--\/f--> real garments \(two women's kurtas, two shirts: kurta-01, kurta-02, shirt-plaid, shirt-zebra\)/);
+  assert.match(limit, /31 Oct try-on run .* used <!--f:tryon_run31_garments-->5<!--\/f--> other real garments \(pink polo, mustard kurta, pink patchwork kurta, red floral kurta, grey shirt/);
+  assert.match(limit, /No photo is shared between the two sets .* <!--f:garments_all-->9<!--\/f--> real garments in all/);
+  const sub = read("SUBMISSION.md");
+  assert.doesNotMatch(sub, /That is <!--f:garments-->4<!--\/f--> garments/);
+  assert.match(sub, /on <!--f:garments-->4<!--\/f--> garments \(kurta-01, kurta-02, shirt-plaid, shirt-zebra\), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--\/f--> other real garments, with no photo shared between the two sets, so <!--f:garments_all-->9<!--\/f--> garments in all/);
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));

@@ -50,6 +50,13 @@ export function computeFigures(root: string): Record<string, string> {
     ? readdirSync(runDir, { withFileTypes: true }).filter((d) => d.isDirectory())
       .flatMap((g) => readdirSync(join(runDir, g.name)).map((r) => join(runDir, g.name, r, "receipt.jsonl")))
     : []);
+  // AGW5 (31 Oct): the 31 Oct run's garments are the evidence/tryon folders with a receipt (not logs/).
+  // garments_all adds them to the receipt garments by name; figures 5 checks the two sets share no photo.
+  const run31Garments = existsSync(runDir)
+    ? readdirSync(runDir, { withFileTypes: true }).filter((d) => d.isDirectory())
+      .map((d) => d.name)
+      .filter((g) => readdirSync(join(runDir, g)).some((r) => existsSync(join(runDir, g, r, "receipt.jsonl"))))
+    : [];
 
   const r = pack.receipts as Json;
   return {
@@ -66,6 +73,8 @@ export function computeFigures(root: string): Record<string, string> {
     live_renders: String(r.live_renders),
     fixture_renders: String(r.renders - r.live_renders),
     garments: String((r.garments_with_receipts as string[]).length),
+    tryon_run31_garments: String(run31Garments.length),
+    garments_all: String(new Set([...(r.garments_with_receipts as string[]), ...run31Garments]).size),
     cal_cases: String(x1.same + x1.different),
     cal_same: String(x1.same),
     cal_different: String(x1.different),

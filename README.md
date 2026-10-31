@@ -51,9 +51,15 @@ Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`).
 
 ## Limits
 
-- **Small sample.** <!--f:garments-->4<!--/f--> real garments (two women's kurtas, two shirts), all
-  from one household. Every rate in this README describes those pairs, not
-  ProofShot in general.
+- **Small sample.** The jobs, calibration, MS4 cross-check and evidence pack
+  cover <!--f:garments-->4<!--/f--> real garments (two women's kurtas, two shirts: kurta-01, kurta-02,
+  shirt-plaid, shirt-zebra), all from one household. The 31 Oct try-on run
+  (`evidence/tryon/SUMMARY.md`) used <!--f:tryon_run31_garments-->5<!--/f--> other real garments (pink polo,
+  mustard kurta, pink patchwork kurta, red floral kurta, grey shirt; photos in
+  `data/seller-pairs`). No photo is shared between the two sets (sha256 in each
+  `intake.json`, checked by a test), and by eye none of the 5 is kurta-01 or
+  kurta-02, so <!--f:garments_all-->9<!--/f--> real garments in all. Every rate in this README describes
+  the pairs of the set it names, not ProofShot in general.
 - **Verifier accuracy is not measured in general.** The Muse Spark cross-check
   (MS4) refused <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f-->
   same-garment runs, on these four garments only.
@@ -117,7 +123,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->388<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->390<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -564,7 +570,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->388<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->390<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f-->, muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/results.csv` |
