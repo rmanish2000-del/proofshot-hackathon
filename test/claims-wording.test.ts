@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { parseReceipt } from "../src/core.js";
+import { computeFigures } from "../src/figures.ts";
 import { verifyChain } from "../src/receipt.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -16,7 +17,7 @@ test("wording 1 (SC2r): every 31 Oct agent RELEASE in SUBMISSION and CLAIMS_AUDI
     ...read("CLAIMS_AUDIT.md").split("\n").map((l) => ["CLAIMS_AUDIT.md", l] as const),
   ];
   const claims = lines.filter(([, l]) =>
-    /Resolved: 2 of 2|got both to RELEASE|REFUSE → RELEASE|2 of 2 with replacement and the label signal|^\| (Pink polo|Mustard kurta, re-run).*\*\*RELEASE\*\*/.test(l),
+    /Resolved: 2 of 2|Recorded 31 Oct: 2 of 2 RELEASE|got both to RELEASE|REFUSE → RELEASE|2 of 2 with replacement and the label signal|^\| (Pink polo|Mustard kurta, re-run).*\*\*RELEASE\*\*/.test(l),
   );
   assert.equal(claims.length, 7, "the 7 places PS-SC2r listed");
   for (const [doc, l] of claims) assert.ok(l.includes(CAVEAT), `${doc}: ${l.slice(0, 80)}`);
@@ -306,4 +307,33 @@ test("RM4 (Grok 18:30 1 Nov): README cites call logs, names the demo jobs, says 
   assert.doesNotMatch(sub, /SP1 list on #23/);
   assert.match(sub.replace(/\s+/g, " "), /seven of them, cases 2 to 6, 11 and 12, need a real phone photo/);
   assert.match(read("docs/DEMO.md").split("## What exists today")[0]!.replace(/\s+/g, " "), /Current status .* v7 re-render script below .* still drive `npm run demo:capture`/);
+});
+
+test("RV2 (Grok 19:50 1 Nov): today's agent verdict beside the recorded one, scoped pack/fidelity sentences, tail truncation qualified, JUDGE_QA_GATE numbers are the figures", () => {
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(sub, /Resolved: 2 of 2/);
+  assert.match(sub, /Today's gate: 0 of 2 RELEASE, both REVIEW/);
+  assert.match(sub, /same tree SHA before and after/);
+  assert.match(sub, /`by_expected\.same` \(`answered` 30, `correct` 24\)/);
+  assert.match(sub, /actions\/runs\/\d+\), green on [0-9a-f]{7} at \d+ tests/);
+  assert.match(sub, /`test\/render\.test\.ts` "a Muse Image model is refused on every provider before any request"/);
+  assert.match(read("test/render.test.ts"), /test\("a Muse Image model is refused on every provider before any request"/);
+  assert.match(readme, /every receipt in `data\/jobs` that has a render/);
+  assert.match(readme, /on the <!--f:tryon_total-->7<!--\/f--> committed kurta try-on jobs those 21 checks were run on/);
+  assert.match(readme, /quote the pack-only counts/);
+  // A chain cut short at the end still verifies; no doc says the chain alone catches any deleted entry.
+  for (const doc of ["README.md", "docs/JUDGE_QA_TAMPER.md", "docs/JUDGE_QA_GATE.md", "evidence/pack/README.md", "web/verify.html"]) {
+    const text = read(doc).replace(/\s+/g, " ");
+    assert.doesNotMatch(text, /reordered or deleted (entry|line)|reordering and deleted lines/, doc);
+  }
+  assert.match(readme, /Entries cut off the end leave a shorter chain that still verifies/);
+  assert.match(read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " "), /the recorded voiceover still says/);
+  const gate = read("docs/JUDGE_QA_GATE.md").replace(/\s+/g, " ");
+  const f = computeFigures(root);
+  for (const n of [`${f.muse13_calls} logged calls`, `plus ${f.muse13_calls_runs} in`, `${f.baseten_calls} logged calls`, `${f.cal_cases} labelled renders`, `${f.ms4_changed_passed} checks`, `reproduced ${f.cal_reproduced}`, `${f.cal_false_refuse} false refusals`]) {
+    assert.ok(gate.includes(n), `JUDGE_QA_GATE says '${n}'`);
+  }
+  assert.match(gate, /two settings at two times/);
+  assert.doesNotMatch(gate, /cannot catch verifier misses like length changes alone/);
 });

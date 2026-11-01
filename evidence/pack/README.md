@@ -32,7 +32,8 @@ Open `web/verify.html` from disk or served over local HTTP (both checked: over H
 | wrong garment (render of B against photos of A) | REFUSE | MS4 matrix, other_garment pairs | 153 of 153 runs REFUSE |
 | deliberate mismatch job (kurta-02 photo as kurta-01's render) | REFUSE | data/jobs/live-kurta-01-mismatch, ms3-live-kurta-01-mismatch | live-kurta-01-mismatch REFUSE; ms3-live-kurta-01-mismatch REFUSE |
 | try-on that changed the garment (length) | REVIEW or REFUSE | MS4 matrix, changed pairs (Muse Spark findings alone) | 17 of 21 runs held |
-| tampered receipt: edited payload, reordered or deleted line, forged entry | chain FAIL | test/receipt.test.ts, test/check.test.ts (TAMPERED); by hand: web/verify.html | in npm test |
+| tampered receipt: edited payload, reordered line, line deleted from the middle, forged entry | chain FAIL | test/receipt.test.ts, test/check.test.ts (TAMPERED); by hand: web/verify.html | in npm test |
+| receipt cut short at the end (release entry removed) | chain still verifies; the image reads NOT RELEASED, not VALID | test/check.test.ts RV2 8 | in npm test |
 | banned model id (muse-image-*) | refused before any request | test/render.test.ts, test/verifier-meta.test.ts MS2 2 | in npm test |
 | verifier gives no usable answer (timeout, network error, empty, or an answer that is not JSON) | REFUSE not_verified | test/gate-edge.test.ts; live: every receipt in the Result column | live-kurta-01 REFUSE (VerifierProtocolError); live-kurta-01-composite REFUSE (VerifierProtocolError); live-kurta-01-tryon REFUSE (VerifierTransportError); live-kurta-02-tryon-2 REFUSE (VerifierTransportError); live-shirt-plaid-composite-v2 REFUSE (VerifierTransportError); live-shirt-plaid-composite-v2-r2 REFUSE (VerifierTransportError) |
 

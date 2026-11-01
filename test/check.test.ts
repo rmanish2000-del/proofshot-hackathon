@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { checkImage } from "../src/check.ts";
 import { fixtureProviders, runJob } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
-import { Receipt, parseReceipt, recordedClock } from "../src/receipt.ts";
+import { Receipt, parseReceipt, recordedClock, verifyChain } from "../src/receipt.ts";
 import type { ReceiptEntry } from "../src/receipt.ts";
 import { ATTRIBUTES } from "../src/types.ts";
 import { sha256Hex } from "../src/util.ts";
@@ -74,4 +74,23 @@ test("an image in no entry, a malformed hash, or a record that does not verify i
     assert.match(r.reason, /does not verify/);
   }
   assert.equal(checkImage([], STUDIO).status, "TAMPERED");
+});
+
+test("RV2 8: entries cut off the end still verify as a chain, but the released image then reads NOT RELEASED or TAMPERED, never VALID", async () => {
+  const entries = await record();
+  const release = entries.findIndex((e) => e.kind === "release");
+  const render = entries.findIndex((e) => e.kind === "render" && (e.payload as { sha256: string }).sha256 === STUDIO);
+  assert.ok(render >= 0 && release > render);
+  // Cut just before the release entry: the chain is a valid prefix, and the gate's RELEASE is still in it.
+  const noRelease = entries.slice(0, release);
+  assert.equal(verifyChain(noRelease).ok, true);
+  assert.deepEqual(checkImage(noRelease, STUDIO), {
+    status: "NOT RELEASED", render_id: "job-r0", decision: "RELEASE", reason: "this image was rendered but not released: the gate decided RELEASE",
+  });
+  // Cut before the render entry: the image is in no entry.
+  const noRender = entries.slice(0, render);
+  assert.equal(verifyChain(noRender).ok, true);
+  const r = checkImage(noRender, STUDIO);
+  assert.equal(r.status, "TAMPERED");
+  assert.match(r.reason, /in no entry/);
 });

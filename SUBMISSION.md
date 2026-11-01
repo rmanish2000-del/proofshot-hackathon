@@ -46,7 +46,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 | Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier. Built with Muse Spark Open | <!--f:baseten_calls-->19<!--/f--> |
 | muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy, written after the gate | <!--f:fireworks_calls-->293<!--/f--> |
 
-The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime. AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
+The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime (`refuseMuseImage` in `src/render.ts` throws `MuseImageRefused`; `test/render.test.ts` "a Muse Image model is refused on every provider before any request"). AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
 
 **Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
@@ -69,13 +69,13 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->401<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->403<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
 | Calibration: false refusals at 1x | <!--f:cal_false_refuse-->4<!--/f-->, all verifier failures (2 failed calls, 2 non-JSON answers), not a threshold effect | same; Calibration below |
 | Muse Spark cross-check: wrong-garment runs refused | <!--f:ms4_wrong_refused-->153 of 153<!--/f--> | `evidence/ms4-summary.json` |
-| Muse Spark cross-check: same-garment runs released | <!--f:ms4_same_released-->24 of 30<!--/f--> | same |
+| Muse Spark cross-check: same-garment runs released | <!--f:ms4_same_released-->24 of 30<!--/f--> | `evidence/ms4-summary.json` `by_expected.same` (`answered` 30, `correct` 24); per pair: the 10 `pair_scores` rows with `expected` `same`, 3 runs each |
 | Muse Spark cross-check: same decision on all 3 runs | <!--f:ms4_consistent-->65 of 68<!--/f--> pairs | same |
 | AI try-ons held by the gate | <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW): <!--f:tryon_total-->7<!--/f--> kurta try-ons 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> in the 31 Oct run; on the 28–29 Oct set the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`, `evidence/ms4-summary.json` |
 | Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
@@ -173,7 +173,7 @@ text, and it still only counts after a fidelity REVIEW or REFUSE. The note patte
 was then re-run once as a fresh job (`evidence/agent-replace-2026-10-31-label.json`, `--jobs kurta-mustard`).
 The first live result is kept as it happened.
 
-**Resolved: 2 of 2 with the label signal (1 of 2 before it) (recorded 31 Oct self-comparison; would be REVIEW today).** Caveat: the stand-in render is the seller's own
+**Recorded 31 Oct: 2 of 2 RELEASE with the label signal (1 of 2 before it) (recorded 31 Oct self-comparison; would be REVIEW today). Today's gate: 0 of 2 RELEASE, both REVIEW (SC1, below), so 0 of 2 are resolved today.** Caveat: the stand-in render is the seller's own
 full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001
 polo, 0.0023 kurta). This shows the evidence path now works, not that a generated image is faithful. Seller
 steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 5 live gate runs, 0.1189 USD on the
@@ -191,8 +191,8 @@ image to publish is now a photo the seller never lists, so its RELEASE is not a 
 SC2 narrows the next step of the same trick: a JPEG or PNG copy of the image to publish that was re-saved,
 re-encoded, stripped of EXIF or resized, and is within the grid threshold, is moved to REVIEW. Both pictures are
 reduced to a 32x32 grid of mean colours; a mean difference of at most 3 (0-255) counts as the same picture, and the
-RELEASE becomes REVIEW with that distance in the receipt. Measured on a committed photo: copies 0.00 to 0.49, other
-photos of the same garment at the same size above 40. Not caught (CLAIMS_AUDIT): a crop, rotation, mirror, an
+RELEASE becomes REVIEW with that distance in the receipt. Measured (`test/agent-replace.test.ts` replace 10) on a half-size copy of a
+committed photo: copies 0.00 to 0.74, other photos of the same garment at the same size above 40. Not caught (CLAIMS_AUDIT): a crop, rotation, mirror, an
 aspect ratio more than 2% different, heavy edits, a file that is neither JPEG nor PNG, or a new photo taken of the
 printed or on-screen image.
 
@@ -400,7 +400,7 @@ IST. `git log` has no commit dated before it. The prior work used is
 `docs/SPEC.md` and the config boilerplate only, as listed under Prior work used
 below; the code was written here from that specification.
 
-History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones.
+History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones. Checked on 1 Nov against the pre-rewrite commits (kept in a local backup tag, `backup/pre-rewrite-20261030`): the first commit has the same tree SHA before and after (3658a64, in 4aa99f9 and 15658a4), the last re-authored commit has the same tree SHA as its original (22f2330, in 96f7724 and 60edb33), and both histories have 186 commits up to it.
 
 **Prior work used:**
 

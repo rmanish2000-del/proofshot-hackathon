@@ -10,9 +10,13 @@ figures, so if those files change, they win over the numbers here.
 ## 1. If I rewrite the whole receipt file, does your page notice?
 
 No. The receipt is a SHA-256 hash chain, not a signature. It catches an edited
-payload, a reordered or deleted line, or a forged entry, but not a file
-rewritten from the first entry. Source: `docs/SPEC.md` §3 threat model;
-`CLAIMS_AUDIT.md`, row "The receipt is a hash chain, not a signature".
+payload, a reordered line, a line deleted from the middle, or a forged entry,
+but not a file rewritten from the first entry, and not lines cut off the end:
+the shorter chain still verifies. If the cut removes an image's `release`
+entry, the page says NOT RELEASED for that image, not VALID
+(`test/check.test.ts` RV2 8). Source: `docs/SPEC.md` §3 threat model;
+`CLAIMS_AUDIT.md`, row "The receipt is a hash chain, not a signature";
+README "Receipt format".
 
 Weak spot: there is no signature, append-only store or external witness, so a
 VALID result shows the file is consistent with itself, not that nobody rewrote it.
@@ -25,7 +29,7 @@ blank lines or an extra top-level field still read VALID. Source:
 `evidence/pack/README.md` "Verify a receipt offline"; `CLAIMS_AUDIT.md`, row
 "Change one byte" (scoped, CA1).
 
-Weak spot: the recorded narration still says "Change one byte"; only the written
+Weak spot: the recorded voiceover still says "Change one byte"; only the written
 docs carry the scope.
 
 ## 3. Does VALID prove that this image is the one the seller published?
@@ -41,9 +45,10 @@ weights ran.
 
 ## 4. How many receipts actually verify, and who checked them?
 
-43 of 43 committed receipts verify; the evidence pack counts 42 of 42 chains,
-one per job with a render (43 renders), because one receipt stopped before a
-render. `npm run figures` and `npm run evidence:pack` recompute these counts
+43 receipts are committed and all 43 verify. The evidence pack counts chains
+per job with a render: 42 jobs, 42 of 42 chains, 43 renders (fixture-shirt-01
+has more than one render). The 43rd receipt is a job that stopped before any
+render, so the pack has no row or chain count for it. `npm run figures` and `npm run evidence:pack` recompute these counts
 from the committed receipts, and a test fails if they drift.
 Source: `CLAIMS_AUDIT.md`, rows "Every step ... hash-chained receipt" and
 "42 jobs, 43 renders"; `evidence/pack/README.md` "Receipts".

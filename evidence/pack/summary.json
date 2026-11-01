@@ -204,9 +204,15 @@
       "result": "17 of 21 runs held"
     },
     {
-      "case": "tampered receipt: edited payload, reordered or deleted line, forged entry",
+      "case": "tampered receipt: edited payload, reordered line, line deleted from the middle, forged entry",
       "expected": "chain FAIL",
       "evidence": "test/receipt.test.ts, test/check.test.ts (TAMPERED); by hand: web/verify.html",
+      "result": "in npm test"
+    },
+    {
+      "case": "receipt cut short at the end (release entry removed)",
+      "expected": "chain still verifies; the image reads NOT RELEASED, not VALID",
+      "evidence": "test/check.test.ts RV2 8",
       "result": "in npm test"
     },
     {

@@ -54,7 +54,8 @@ Counts are from `evidence/pack/summary.json` (`npm run evidence:pack`), which re
 `evidence/ms4/` only. The 30–31 Oct agent and try-on runs keep their logs in their own folders
 (`evidence/<run>/logs/`, <!--f:run_log_dirs-->4<!--/f--> folders); those calls are counted apart by `npm run figures`, so
 in all SAM 3.1 has <!--f:sam_calls_all-->177<!--/f--> logged calls and Muse Spark 1.3 <!--f:muse13_calls_all-->242<!--/f-->. The deck and the
-rendered videos quote the pack counts.
+rendered videos quote the pack-only counts (SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f-->), not
+these all-logs totals; they were made before the run logs were counted (NUM10).
 
 ## Limits
 
@@ -135,7 +136,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->401<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->403<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -329,9 +330,14 @@ measures nothing. A live job's fidelity entry carries the measured metrics, or
 REVIEW with the reason when it could not measure (`live-kurta-01-2` in
 `data/jobs` is one).
 
-The chain catches an edited, reordered or deleted entry. It does not stop
-someone from rewriting the whole file from entry 0, because there is no
-signature or outside witness (`docs/SPEC.md` §3, threat model).
+The chain catches an edited, reordered or forged entry, and an entry deleted
+from the middle. Entries cut off the end leave a shorter chain that still
+verifies; if the cut removes an image's `release` entry, the verify page says
+NOT RELEASED for that image (or TAMPERED, in no entry, if its `render` entry is
+cut too), never VALID (`checkImageWith` in `src/core.js`; `test/check.test.ts`
+RV2 8). It does not stop someone from rewriting the whole file from entry 0,
+because there is no signature or outside witness (`docs/SPEC.md` §3, threat
+model).
 
 ## Verify page
 
@@ -427,7 +433,8 @@ garment's intake photos from the command line, and refuses to start unless the
 verifier is live. The first two live jobs committed under `data/jobs/` were
 `live-kurta-01` (REFUSE: the model's answer was cut off at 1500 tokens, so the
 gate saw no findings; this job ran on 28 Oct with `max_tokens` 1500, before
-the limit was raised to 8192 with a retry at 16384, see its call log
+the limit was raised to 4096 and then to 8192 with a retry at 16384
+(`docs/HISTORY.md`), see its call log
 `evidence/verifier-2026-10-28T03-55-00-289Z.json`, `finish_reason` `length`) and `live-kurta-01-2` (REVIEW: all nine findings
 `match` at 0.96 or above, fidelity unmeasured because no mask exists); the
 second is recorded as `demo/recordings/live-kurta-01-2`.
@@ -597,7 +604,7 @@ The renderer takes an injected transport.
 
 ## Evidence pack
 
-`evidence/pack/` is built by `npm run evidence:pack` from committed material only: every receipt in `data/jobs` (one row per render in `results.csv`, with chain check, providers, model ids and tokens), the call logs in `evidence/` (latency median and p90, and cost from logged usage, per stage), the MS4 cross-check, the calibration report and the copy. Museum samples (the Met, Rijksmuseum) are **not used**: no museum-image fetch is logged in `evidence/`, so the pack covers the 4 real garments only (`kurta-01`, `kurta-02`, `shirt-plaid`, `shirt-zebra`), not the 12 #10 first asked for. A test fails if the committed pack no longer matches the receipts. Summary: `evidence/pack/README.md`.
+`evidence/pack/` is built by `npm run evidence:pack` from committed material only: every receipt in `data/jobs` that has a render (one row per render in `results.csv`; the <!--f:receipts_no_render-->1<!--/f--> receipt that stopped before a render has no row, with chain check, providers, model ids and tokens), the call logs in `evidence/` (latency median and p90, and cost from logged usage, per stage), the MS4 cross-check, the calibration report and the copy. Museum samples (the Met, Rijksmuseum) are **not used**: no museum-image fetch is logged in `evidence/`, so the pack covers the 4 real garments only (`kurta-01`, `kurta-02`, `shirt-plaid`, `shirt-zebra`), not the 12 #10 first asked for. A test fails if the committed pack no longer matches the receipts. Summary: `evidence/pack/README.md`.
 
 ## What is verified and what is not
 
@@ -606,11 +613,11 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->401<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->403<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
-| Verifier accuracy | **not measured in general.** The Muse Spark cross-check (MS4, verifier alone, no fidelity check): <!--f:ms4_pairs-->68<!--/f--> pairs, <!--f:ms4_runs-->204<!--/f--> runs; wrong garment refused <!--f:ms4_wrong_refused-->153 of 153<!--/f-->; same garment released <!--f:ms4_same_released-->24 of 30<!--/f-->; shortened try-ons held <!--f:ms4_changed_held-->17 of 21<!--/f-->, so the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and the gate's fidelity check returned REVIEW or REFUSE on all of those try-ons (the gate cited fidelity for 4 of the 7 and the verifier for 3); the same decision on all 3 runs for <!--f:ms4_consistent-->65 of 68<!--/f--> pairs. Four garments only | `evidence/ms4-summary.json` |
+| Verifier accuracy | **not measured in general.** The Muse Spark cross-check (MS4, verifier alone, no fidelity check): <!--f:ms4_pairs-->68<!--/f--> pairs, <!--f:ms4_runs-->204<!--/f--> runs; wrong garment refused <!--f:ms4_wrong_refused-->153 of 153<!--/f-->; same garment released <!--f:ms4_same_released-->24 of 30<!--/f-->; shortened try-ons held <!--f:ms4_changed_held-->17 of 21<!--/f-->, so the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f-->, and on the <!--f:tryon_total-->7<!--/f--> committed kurta try-on jobs those 21 checks were run on, the gate's fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of the 7 and the verifier for 3); the same decision on all 3 runs for <!--f:ms4_consistent-->65 of 68<!--/f--> pairs. Four garments only | `evidence/ms4-summary.json` |
 | Calibration | <!--f:cal_cases-->37<!--/f--> labelled renders (<!--f:cal_same-->18<!--/f--> same, <!--f:cal_different-->19<!--/f--> different) at the shipped thresholds: <!--f:cal_false_match-->0<!--/f--> false matches, <!--f:cal_false_refuse-->4<!--/f--> false refusals (all where the verifier gave no answer), <!--f:cal_unmeasured-->6<!--/f--> unmeasured; recorded decisions reproduced <!--f:cal_reproduced-->37 of 37<!--/f-->. A self-check, not an error rate | `evidence/calibration-jobs-2026-10-29.json` |
 | Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
 | Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. From disk (`file://`): **checked in headless Edge** by `npm run demo:capture` (29 Oct, no flags that loosen security): `ms2-shirt-plaid` receipt and image → VALID, its one-byte copy → TAMPERED. Not yet checked from disk in a normal browser window: the in-app browser used for the HTTP check shows `file://` pages outside its project as a static snapshot | also tested in Node against the same core |
