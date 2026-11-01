@@ -89,11 +89,14 @@ npm test             # the whole suite, offline: no network, no keys
 npm run typecheck
 npm run page         # rewrites the inlined core in web/verify.html from src/core.js
 npm run intake -- <folder>   # garment photos in: applies EXIF orientation, drops Exif/XMP/vendor data, keeps JFIF/ICC, records both hashes
-npm run call:baseten         # one live Muse Spark Open call, logged to evidence/
+npm run call:baseten         # one live Muse Spark Open call (the first verifier), logged to evidence/
 ```
 
 Of these, `npm run call:baseten` is the only command that makes a live model
-API call, and it needs `BASETEN_API_KEY` set.
+API call, and it needs `BASETEN_API_KEY` set. It calls Muse Spark Open on
+Baseten, the first verifier; the verifier today is Muse Spark 1.3 on the Meta
+Model API, turned on by `VERIFIER_PROVIDER=meta` with `MODEL_API_KEY` (see
+"Optional: live providers").
 
 ## Quick verify in 2 minutes
 
@@ -130,7 +133,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->396<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->398<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -264,7 +267,8 @@ npm run serve -- --jobs out/ui-jobs --shop out/ui-shop
 You do not need these for the quickstart. Without them, every provider is a
 fixture and the run is fixture mode.
 
-- Live verifier: Muse Spark Open on Baseten: set env var `BASETEN_API_KEY` (do not put a key value here).
+- Live verifier today: Muse Spark 1.3 on the Meta Model API (`api.meta.ai`, `src/verifier-meta.ts`): set env vars `VERIFIER_PROVIDER=meta` and `MODEL_API_KEY` (in the process, or the Windows User env) for `npm run job:live`; the live batch scripts set `VERIFIER_PROVIDER=meta` themselves. `npm run serve` does not wire this verifier yet: with `VERIFIER_PROVIDER=meta` the page stays in fixture mode and its label says so.
+- First verifier: Muse Spark Open on Baseten (`src/verifier.ts`): set env var `BASETEN_API_KEY` and leave `VERIFIER_PROVIDER` unset (`npm run job:live`, `npm run serve`, `npm run call:baseten`). Do not put a key value here.
 - Live SAM 3.1 segmentation: SAM 3.1 on `api.meta.ai`: set env vars `MODEL_API_KEY` and `MODEL_SEGMENT` (do not put key values here).
 
 ## How the gate decides
@@ -392,8 +396,11 @@ shop build, so the job is listed only if its receipt verifies.
 With no model key set the page says **fixture mode**: the metadata strip, the
 receipt chain and the gate are real; the render is the stand-in (the seller's
 own front photo, tagged as such) and the findings are recorded as matching, not
-judged by a model. The receipt says `fixture` too. With `BASETEN_API_KEY` set
-the verifier is Muse Spark Open on Baseten (`src/verifier.ts`), the fidelity
+judged by a model. The receipt says `fixture` too. On this page the live
+verifier is the first one, Muse Spark Open on Baseten (`src/verifier.ts`), with
+`BASETEN_API_KEY` set; `npm run serve` gives the Muse Spark 1.3 verifier no
+fetch, so `VERIFIER_PROVIDER=meta` leaves the page in fixture mode, while
+`npm run job:live` and the batch scripts use Muse Spark 1.3. With a live verifier the fidelity
 check is the masked one of SPEC §10, and the run is live; until a segmenter
 runs there is no mask, so fidelity is REVIEW and the gate can say REVIEW at
 best. The segmenter becomes SAM 3.1 once `MODEL_SEGMENT` and `MODEL_API_KEY`
@@ -455,8 +462,12 @@ The inline scripts are also parse-checked in `test/present.test.ts`.
 Only environment variable names are listed here. Values are never printed or
 committed.
 
-- `RENDER_PROVIDER`: `openai-images` (the default), `fal`, `meta` or
-  `stand-in`. `MODEL_RENDER` sets the model. `openai-images` defaults to
+- `RENDER_PROVIDER`: `openai-images` (the default of `rendererFromEnv` in
+  `src/render.ts`), `fal`, `meta`, `stand-in` or `composite`. `npm run serve`
+  and `npm run job:live` default to `stand-in` (`src/serve.ts`). `openai-images`,
+  `fal` and `meta` need an injected transport today (none is written, see
+  below): in `npm run serve` and `npm run job:live` every render from them is
+  refused (`render_failed`), so none of them works out of the box. `MODEL_RENDER` sets the model. `openai-images` defaults to
   `gpt-image-1`, and `fal` and `meta` require it. `stand-in` generates nothing:
   it returns the owner's own front photo and records `owner-photo` as its
   model; any other `MODEL_RENDER` with it is refused (`src/render.ts`).
@@ -509,9 +520,14 @@ committed.
   `sam-3.1`). `MODEL_SEGMENT` must be `meta/sam-3.1 (api.meta.ai)` for that
   transport; `SEGMENT_PROMPT` overrides the noun phrase (default "the
   garment"). Every SAM call is logged under `evidence/sam-*.json`.
-- `BASETEN_API_KEY`: the verifier call to Muse Spark Open
-  (`meta-models/muse-spark-open-1026`) on Baseten (`src/verifier.ts`, one
-  chat completion per render with the photos as `image_url` parts).
+- `VERIFIER_PROVIDER=meta` with `MODEL_API_KEY`: the verifier today, Muse
+  Spark 1.3 (`muse-spark-1.3`) on the Meta Model API (`src/verifier-meta.ts`),
+  used by `npm run job:live` and the live batch scripts (not by `npm run
+  serve`). `MODEL_VERIFIER_META` picks another listed id.
+- `BASETEN_API_KEY` (with `VERIFIER_PROVIDER` unset): the first verifier, the
+  call to Muse Spark Open (`meta-models/muse-spark-open-1026`) on Baseten
+  (`src/verifier.ts`, one chat completion per render with the photos as
+  `image_url` parts); also what `npm run call:baseten` uses.
   `MODEL_VERIFIER` overrides the model id.
 - `FIREWORKS_API_KEY`: the plain-language receipt summary and listing copy
   (`npm run copy:fireworks -- <job>`, `src/fireworks-copy.ts`), written by
@@ -577,7 +593,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->396<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->398<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |

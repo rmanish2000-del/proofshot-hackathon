@@ -205,6 +205,27 @@ test("CA1 2: CLAIMS_AUDIT does not lean on the gitignored judge-run file or a st
   assert.doesNotMatch(audit, /was not observed in our committed runs/);
 });
 
+test("RM2 1 (Grok 12:15 1 Nov): README names the verifier each env var selects, and says serve wires only Baseten, as the scripts do", () => {
+  const readme = read("README.md");
+  assert.doesNotMatch(readme, /Live verifier: Muse Spark Open on Baseten/);
+  assert.doesNotMatch(readme, /With `BASETEN_API_KEY` set\s+the verifier is Muse Spark Open/);
+  assert.match(readme, /Live verifier today: Muse Spark 1\.3 on the Meta Model API/);
+  assert.match(readme, /`VERIFIER_PROVIDER=meta` with `MODEL_API_KEY`: the verifier today/);
+  assert.match(readme, /First verifier: Muse Spark Open on Baseten/);
+  // The claims hold only while the scripts do this: job:live gives the Meta verifier a fetch, serve does not.
+  assert.match(read("scripts/live-job.ts"), /metaVerifierFetch:/);
+  assert.doesNotMatch(read("scripts/serve.ts"), /metaVerifierFetch/);
+  assert.match(read("src/serve.ts"), /env\.VERIFIER_PROVIDER/);
+});
+
+test("RM2 2: README says openai-images, fal and meta need an injected transport, and serve and job:live default to stand-in", () => {
+  const readme = read("README.md");
+  assert.doesNotMatch(readme, /`openai-images` \(the default\), `fal`/);
+  assert.match(readme, /`openai-images`,\s+`fal` and `meta` need an injected transport today/);
+  assert.match(read("src/serve.ts"), /\|\| "stand-in";/);
+  assert.match(read("src/render.ts"), /\|\| "openai-images";/);
+});
+
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
