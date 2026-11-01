@@ -473,3 +473,20 @@ test("RV8 (Grok 00:15 2 Nov): upload page says up to 3 and has a fixture-mode fi
   assert.match(gen, /on 29 Oct \(v6\) 7 live try-on receipts were committed/);
   assert.match(gen, /so 12 now \(10 kurta, 2 shirt, as in the Status line above\), all held/);
 });
+
+test("RV9 (Grok 00:23 2 Nov): JUDGE_QA_TRYON_MODELS cites config/fidelity.json and its UNCALIBRATED note for the thresholds, the badge text where it is defined, 19 as verifier calls, and scopes the image sources", () => {
+  const qa = read("docs/JUDGE_QA_TRYON_MODELS.md").replace(/\s+/g, " ");
+  // 1: the numbers' source is the config file, and its note is quoted as it stands.
+  const note = (JSON.parse(read("config/fidelity.json")) as { _note: string })._note;
+  assert.ok(note.startsWith("Starting values, UNCALIBRATED (SPEC section 10)."));
+  assert.match(qa, /the threshold numbers are `config\/fidelity\.json`, whose `_note` marks them "Starting values, UNCALIBRATED \(SPEC section 10\)"/);
+  // 2: the badge text is the page's own.
+  const page = read("web/upload.html");
+  assert.match(page, /REVIEW: "REVIEW: a person must look first", REFUSE: "REFUSE: not released"/);
+  assert.match(qa, /`badge` in `web\/upload\.html`: "REVIEW: a person must look first", "REFUSE: not released"/);
+  // 3: 19 are verifier calls; the smoke calls are apart.
+  assert.match(qa, /<!--f:baseten_calls-->19<!--\/f--> verifier calls in `evidence\/verifier-\*\.json`; the two `npm run call:baseten` smoke calls in `evidence\/baseten-\*\.json` are not among them/);
+  // 4: the same scope as README's opening.
+  assert.match(qa, /The candidate images in the committed runs come from the composite/);
+  assert.match(read("README.md").replace(/\s+/g, " "), /The candidate images in the committed runs come from two paths/);
+});

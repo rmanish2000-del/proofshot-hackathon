@@ -43,8 +43,9 @@ render's masked share of the frame over the source's (REVIEW below 0.4 or
 above 2.5). With no mask it measures nothing, and in a live run that is REVIEW
 at best, with the reason on the receipt. A fixture run's stub measures nothing
 and returns RELEASE with `"metrics":null`, and its receipt says provenance
-`fixture`. Source: README opening section and "Receipt format";
-`config/fidelity.json`.
+`fixture`. Source: the threshold numbers are `config/fidelity.json`, whose
+`_note` marks them "Starting values, UNCALIBRATED (SPEC section 10)"; the
+no-mask and fixture behaviour is README opening section and "Receipt format".
 
 Weak spot: the thresholds are starting values marked UNCALIBRATED in
 `config/fidelity.json`; `area` can only ask for REVIEW, never REFUSE, so a
@@ -63,12 +64,14 @@ Weak spot: this is <!--f:tryon_total-->7<!--/f--> jobs on two kurtas, not a meas
 
 ## 5. What does a seller see when an image is held?
 
-The result card shows the badge (REVIEW: a person must look first; REFUSE: not
-released), the gate's reasons in words under "Why", and, when an image was
+The result card shows the badge (the page's own badge text, `badge` in
+`web/upload.html`: "REVIEW: a person must look first", "REFUSE: not
+released"), the gate's reasons in words under "Why", and, when an image was
 made, "View receipt", which opens `verify.html` with the image hash filled in. "Publish to shop" is made
 only on RELEASE, and the server refuses to publish anything else
 (`UploadServer.publish` in `src/serve.ts`; `test/serve.test.ts`, "was REVIEW,
-not RELEASE"). Source: README "Seller upload (built during the hackathon)".
+not RELEASE"). Source: README "Seller upload (built during the hackathon)";
+`web/upload.html` for the badge text.
 
 Weak spot: the page runs on the seller's own machine (`npm run serve`, on
 127.0.0.1); nothing in this repo measures whether sellers understand the
@@ -83,7 +86,9 @@ Model API) is the verifier: <!--f:muse13_calls-->226<!--/f--> in the pack (`evid
 `evidence/ms4/`) plus <!--f:muse13_calls_runs-->16<!--/f--> in the run logs, <!--f:muse13_calls_all-->242<!--/f--> in all. muse-spark-open on
 Fireworks writes listing copy after the gate (<!--f:fireworks_calls-->293<!--/f--> calls,
 `evidence/fireworks-*.json`), and Muse Spark Open on Baseten was the first
-verifier (<!--f:baseten_calls-->19<!--/f--> calls). The <!--f:sam_calls-->130<!--/f--> and <!--f:muse13_calls-->226<!--/f--> are evidence-pack counts, the ones
+verifier (<!--f:baseten_calls-->19<!--/f--> verifier calls in `evidence/verifier-*.json`; the two
+`npm run call:baseten` smoke calls in `evidence/baseten-*.json` are not among
+them, README "What each Meta model does", Baseten row). The <!--f:sam_calls-->130<!--/f--> and <!--f:muse13_calls-->226<!--/f--> are evidence-pack counts, the ones
 the deck and rendered videos quote. Source: README "What each Meta model does".
 
 Weak spot: a model id in a log is the provider's answer, not proof of which
@@ -94,8 +99,8 @@ weights ran.
 No. Muse Image is refused on every provider before any request, because Meta's
 Geographic Use Policy excludes India; the renderer is checked when it is built
 and again before each request (`src/render.ts`; `test/render.test.ts`, "a Muse
-Image model is refused on every provider before any request"). The images come
-from the composite (the seller's own pixels cut out by a SAM 3.1 mask, placed
+Image model is refused on every provider before any request"). The candidate
+images in the committed runs come from the composite (the seller's own pixels cut out by a SAM 3.1 mask, placed
 by deterministic code) or from the Pruna try-on. Source: README opening section
 and "Providers".
 
