@@ -418,7 +418,7 @@ test("UX-EASY1 web/upload.html: two steps, no attribute fields to type, optional
     for (const key of ["sample", "readTitle", "dropSub", "noFindings"]) assert.match(table, new RegExp(`\\b${key}: "`), `${lang} has ${key}`);
     assert.match(table, /chip: \{ match: "[^"]+", mismatch: "[^"]+", unmeasured: "[^"]+" \}/, `${lang} names the three chip states`);
   }
-  assert.match(page, /drop: "Drop 3 phone photos of one garment"/);
+  assert.match(page, /drop: "Drop up to 3 phone photos of one garment"/); // RV8 1: the page takes 1 to 3
   assert.match(page, /sample: "Try with our sample shirt"/);
 });
 

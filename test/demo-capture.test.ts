@@ -255,11 +255,13 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
     const p = join(jobs, d, "receipt.jsonl");
     return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
   });
-  assert.match(gen, new RegExp(`the ${tryons.length} live try-on calls committed so far \\(${tryons.length} receipts`));
+  // RV8 7: the row is scoped to 29 Oct / v6, then gives today's total, as the Status line does.
+  assert.match(gen, new RegExp(`on 29 Oct \\(v6\\) ${tryons.length} live try-on receipts were committed`));
+  assert.doesNotMatch(gen, /committed so far|All of them are kurta jobs/);
   // v6 dropped the try-on beat because on 29 Oct no committed shirt job had a try-on render; every
   // data/jobs try-on is still a kurta job. RV5: the 31 Oct run added shirt try-ons under evidence/tryon.
   assert.ok(tryons.length > 0 && tryons.every((d) => d.includes("kurta")), "every data/jobs try-on is a kurta job");
-  assert.match(gen, /there was no shirt try-on on 29 Oct, so v6 has no try-on beat/);
+  assert.match(gen, /all kurta jobs and all held by the gate, and there was no shirt try-on, so v6 has no try-on beat/);
   const run31 = readdirSync(join(root, "evidence/tryon")).filter((g) => {
     const p = join(root, "evidence/tryon", g, "pruna", "receipt.jsonl");
     return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
@@ -270,6 +272,7 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
   const flat = md.replace(/\s+/g, " ");
   assert.ok(flat.includes(`so ${tryons.length + run31.length} committed try-on receipts now: ${tryons.length + kurtas.length} kurta`), "DEMO.md counts the try-on receipts by garment");
   assert.ok(flat.includes(`and ${shirts.length} shirt (shirt-pink, shirt-grey-mufti)`));
+  assert.ok(gen.includes(`so ${tryons.length + run31.length} now (${tryons.length + kurtas.length} kurta, ${shirts.length} shirt`), "the row's total matches the Status line");
   assert.match(flat, /That was true for v6 only/);
 });
 

@@ -168,12 +168,13 @@
       lead: "Just the photos already on your phone: no form to fill in. The pipeline strips the metadata, segments the garment, renders, reads nine attributes from your photos, checks the render against them and decides. Nothing reaches the shop unless the gate says RELEASE.",
       noteLabel: "What is it? (optional)",
       notePlaceholder: "e.g. kurta",
-      drop: "Drop 3 phone photos of one garment",
+      drop: "Drop up to 3 phone photos of one garment",
       dropSub: "or tap to choose them (JPEG: front, back, a close-up)",
       sample: "Try with our sample shirt",
       sampleNote: "No garment at hand? The sample button uploads three committed photos of a shirt (no person in them) through the same steps.",
       readTitle: "What we read from your photos",
       readLead: "The verifier's own findings for each attribute, from the receipt; nothing here was typed.",
+      readLeadFixture: "The findings recorded on the receipt for each attribute; fixture mode, not judged by a model.",
       chip: { match: "matches", mismatch: "does not match", unmeasured: "not measured" },
       noFindings: "No verifier findings were recorded for this render.",
       correctLink: "Something wrong? Correct it",
@@ -228,12 +229,13 @@
       lead: "बस आपके फ़ोन में पहले से रखी तस्वीरें: कोई फ़ॉर्म नहीं भरना। पाइपलाइन मेटाडेटा हटाती है, कपड़े को सेगमेंट करती है, रेंडर करती है, आपकी तस्वीरों से नौ गुण पढ़ती है, रेंडर को उनसे मिलाती है और फ़ैसला करती है। गेट RELEASE कहे बिना कुछ भी दुकान तक नहीं पहुँचता।",
       noteLabel: "यह क्या है? (वैकल्पिक)",
       notePlaceholder: "जैसे: कुर्ता",
-      drop: "एक कपड़े की 3 फ़ोन तस्वीरें यहाँ छोड़ें",
+      drop: "एक कपड़े की 3 तक फ़ोन तस्वीरें यहाँ छोड़ें",
       dropSub: "या उन्हें चुनने के लिए टैप करें (JPEG: सामने, पीछे, क़रीब से)",
       sample: "हमारी नमूना शर्ट से आज़माएँ",
       sampleNote: "पास में कोई कपड़ा नहीं? नमूना बटन एक शर्ट की तीन रखी हुई तस्वीरें (उनमें कोई व्यक्ति नहीं) इन्हीं चरणों से अपलोड करता है।",
       readTitle: "हमने आपकी तस्वीरों से क्या पढ़ा",
       readLead: "हर गुण पर जाँचकर्ता के अपने निष्कर्ष, रसीद से; यहाँ कुछ भी टाइप नहीं किया गया।",
+      readLeadFixture: "हर गुण पर रसीद में दर्ज निष्कर्ष; फ़िक्स्चर मोड, किसी मॉडल ने नहीं जाँचे।",
       chip: { match: "मेल खाता है", mismatch: "मेल नहीं खाता", unmeasured: "मापा नहीं गया" },
       noFindings: "इस रेंडर के लिए जाँचकर्ता का कोई निष्कर्ष दर्ज नहीं है।",
       correctLink: "कुछ ग़लत है? सुधारें",
@@ -608,7 +610,8 @@
   function paintChips(box, findings) {
     box.replaceChildren();
     box.hidden = false;
-    box.append(el("h2", null, T().readTitle), el("div", "tip", T().readLead));
+    // RV8: in fixture mode no model judged the findings, so the lead says so (as the mode banner does).
+    box.append(el("h2", null, T().readTitle), el("div", "tip", mode && mode.fixture ? T().readLeadFixture : T().readLead));
     if (findings.length === 0) { box.append(el("div", "tip", T().noFindings)); return; }
     const chips = el("div", "chips");
     for (const name of ATTRS) {

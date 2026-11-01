@@ -442,3 +442,34 @@ test("RV7 (Grok 00:06 2 Nov): two-step upload page and the public Space in READM
   assert.match(tamper, /NOT RELEASED when a matching `render` entry exists, and TAMPERED otherwise/);
   assert.match(read("src/core.js"), /return no\("this image is in no entry of this record"\)/);
 });
+
+test("RV8 (Grok 00:15 2 Nov): upload page says up to 3 and has a fixture-mode findings lead; README 2 of 2 carries today's caveat and the 0.0756 run cost; SUBMISSION gate_head and 0.1058; DEMO try-on row scoped", () => {
+  // 1: up to 3 photos, EN and HI, matching MAX_PHOTOS.
+  const page = read("web/upload.html");
+  assert.match(page, /const MAX_PHOTOS = 3;/);
+  assert.match(page, /drop: "Drop up to 3 phone photos of one garment"/);
+  assert.match(page, /drop: "एक कपड़े की 3 तक फ़ोन तस्वीरें यहाँ छोड़ें"/);
+  // 2: the findings lead follows mode.fixture, as the banner does; both languages have both texts.
+  assert.match(page, /readLeadFixture: "The findings recorded on the receipt for each attribute; fixture mode, not judged by a model\."/);
+  assert.equal([...page.matchAll(/readLeadFixture: "/g)].length, 2);
+  assert.equal([...page.matchAll(/readLead: "/g)].length, 2);
+  assert.match(page, /mode && mode\.fixture \? T\(\)\.readLeadFixture : T\(\)\.readLead/);
+  // 3, 4: README.
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.match(readme, /That first replace run cost 0\.0756 USD and resolved 1 of 2/);
+  assert.doesNotMatch(readme, /missed the verifier's wording \(0\.0756 USD\)/);
+  assert.match(readme, /2 of 2 with the label \(recorded 31 Oct against a stand-in render that is the new photo 1; today's gate says REVIEW for both: the SC1 self-comparison check, SUBMISSION\.md "Self-comparison on this path, closed after the run"\)/);
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  assert.match(sub, /\*\*Self-comparison on this path, closed after the run \(SC1, 31 Oct\)\.\*\*/);
+  assert.equal(String((JSON.parse(read("evidence/agent-replace-2026-10-31.json")) as { meta_spend_usd_this_run: number }).meta_spend_usd_this_run), "0.0756");
+  // 5, 6: SUBMISSION.
+  assert.match(sub, /the final gate decision by reference: its final entry copies the last run's decision and names that run's receipt head \(`gate_head`\); it is not a gate receipt entry/);
+  assert.match(read("src/agent/runner.ts"), /event: "final".*gate_decision: latestDecision\(\), gate_head:/);
+  assert.doesNotMatch(sub, /\b0\.106\b/);
+  assert.match(sub, /Cost: 4 live gate runs, 0\.1058 USD on the Meta ledger/);
+  assert.match(sub, /\(0\.1058 \+ 0\.0756 \+ 0\.0433 \+ 0\.2277\)/);
+  // 7: DEMO.md generated-image row (also checked against the receipts in test/demo-capture.test.ts).
+  const gen = read("docs/DEMO.md").split("\n").find((l) => l.startsWith("| A generated on-model image"))!;
+  assert.match(gen, /on 29 Oct \(v6\) 7 live try-on receipts were committed/);
+  assert.match(gen, /so 12 now \(10 kurta, 2 shirt, as in the Status line above\), all held/);
+});

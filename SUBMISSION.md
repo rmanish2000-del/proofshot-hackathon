@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->415<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
+| Automated tests | <!--f:tests-->416<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -83,7 +83,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
 | Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run) |
 | Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` |
-| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; the 30–31 Oct agent and try-on runs add about 0.45 USD more (0.106 + 0.0756 + 0.0433 + 0.2277), each a sum of per-call estimates taken from that run's own report (`meta_spend_usd_this_run` in `evidence/agent-real-2026-10-30.json` and the two `evidence/agent-replace-2026-10-31*.json`, and the Meta line of `evidence/tryon/SUMMARY.md` Spend), not a later ledger reading and not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
+| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; the 30–31 Oct agent and try-on runs add about 0.45 USD more (0.1058 + 0.0756 + 0.0433 + 0.2277), each a sum of per-call estimates taken from that run's own report (`meta_spend_usd_this_run` in `evidence/agent-real-2026-10-30.json` and the two `evidence/agent-replace-2026-10-31*.json`, and the Meta line of `evidence/tryon/SUMMARY.md` Spend), not a later ledger reading and not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
 | General verifier accuracy | **not measured** (4 garments, all the owner's own; the rates above are for these pairs only) | README "What is verified and what is not" |
 | False-match rate on real sellers' listings | **not measured** | none |
 | End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
@@ -114,7 +114,9 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
   and per-seller caps on paid model calls and spend; a paid re-check needs the seller's approval first (with the
   estimate shown), and publishing needs the seller's approval and a RELEASE. Nothing auto-publishes.
 - **Records.** Each job's agent section (`agent.jsonl`, hash-chained) holds every proposal, its validation,
-  approvals (who, when), tool results, cost, latency and the final gate decision; no secrets (test).
+  approvals (who, when), tool results, cost, latency and the final gate decision by reference: its final entry
+  copies the last run's decision and names that run's receipt head (`gate_head`); it is not a gate receipt entry
+  (`src/agent/runner.ts`); no secrets (test).
 - **Design guidance:** OWASP Top 10 for LLM Applications, LLM06 Excessive Agency (limit tools, permissions and
   autonomy). This is design guidance we followed, not a certification or an audit.
 
@@ -142,7 +144,7 @@ full-length front unprompted and approved a second paid re-check: Muse Spark the
 both garments (it had already matched every attribute of the polo from the cropped photo alone), and the gate
 still said REFUSE with the same fidelity numbers, because the fidelity check compares the render with the
 listing's first photo only (`src/fidelity.ts`), and the bad photo was first. Seller steps per garment: list,
-approve, add a photo, approve; no listing completed. Cost: 4 live gate runs, 0.106 USD on the Meta ledger
+approve, add a photo, approve; no listing completed. Cost: 4 live gate runs, 0.1058 USD on the Meta ledger
 (0.03 USD per run was the estimate shown before approval). What this shows: on these two pairs the blocker was
 not the request logic but a bad *first* photo, which no added photo can fix. At the time the agent could not
 replace or reorder photos, and its seller text ("More photos will not change this") did not say what would.
