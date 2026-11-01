@@ -59,6 +59,8 @@ export function computeFigures(root: string): Record<string, string> {
 
   const ms4 = readJson(join(root, "evidence/ms4-summary.json"));
   const changed = ms4.by_expected.changed;
+  // RV1 (1 Nov): the agent evaluation's classes, so "Results, measured" can say what every receipt got.
+  const agentEval = readJson(join(root, "evidence/agent-eval-2026-10-30.json"));
 
   // SUB26: Pruna calls on Replicate are counted from the receipts' render entries (attempts per render).
   // NUM6 (31 Oct): two committed sets, kept apart so every sentence can name the one it means:
@@ -143,6 +145,7 @@ export function computeFigures(root: string): Record<string, string> {
     tryon_all_release: String((kurta.by.RELEASE ?? 0) + (run31.by.RELEASE ?? 0)),
     pruna_all_calls: String(kurta.calls + run31.calls),
     pruna_all_usd_est: (kurta.usd + run31.usd).toFixed(3),
+    agent_release: String(agentEval.by_class.release),
     copy_texts: String(pack.copy.texts),
     copy_model: String(pack.copy.by_model),
     copy_template: String(pack.copy.template),

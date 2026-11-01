@@ -39,6 +39,16 @@ const unmeasuredSplit = {
   false_refuse: unmeasuredIn((c) => c.label === "same" && c.decision === "REFUSE"),
   same_review: unmeasuredIn((c) => c.label === "same" && c.decision === "REVIEW"),
 };
+// RV1: unmeasured is the fidelity check (no metrics); not_verified is the verifier. Different measures, so name the overlap.
+const calCases = (cal?.cases ?? []) as { job_id: string; metrics: unknown; unmeasuredReasons?: string[] }[];
+const unmeasuredJobs = calCases.filter((c) => c.metrics === null).map((c) => c.job_id);
+const unmeasuredWhy: Record<string, number> = {};
+for (const c of calCases.filter((x) => x.metrics === null)) {
+  const why = (c.unmeasuredReasons?.[0] ?? "no reason recorded").split(":")[0]!;
+  unmeasuredWhy[why] = (unmeasuredWhy[why] ?? 0) + 1;
+}
+const notVerifiedJobs = rows.filter((r) => r.verifier_error !== "").map((r) => r.job_id);
+const unmeasuredAndNotVerified = unmeasuredJobs.filter((j) => notVerifiedJobs.includes(j));
 
 let texts = 0;
 let byModel = 0;
@@ -71,7 +81,7 @@ const pack = {
   ms4: ms4
     ? { pairs: ms4.pairs, runs: ms4.runs, answered: ms4.answered, by_expected: ms4.by_expected, mismatch_catch: ms4.mismatch_catch, consistency: ms4.consistency, gate_agreement: { compared: ms4.gate_agreement.compared, agree: ms4.gate_agreement.agree }, spend: ms4.spend }
     : null,
-  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, cases: x1Cases.length, judged_as_labelled: asLabelled, same_released: sameReleased, different_held: asLabelled - sameReleased, false_match: x1.false_match, false_refuse: sameRefused, same_sent_to_review: sameReview, unmeasured: x1.unmeasured, unmeasured_within: unmeasuredSplit } : null,
+  calibration: x1 ? { factor: "x1 (config/fidelity.json)", same: x1.same, different: x1.different, cases: x1Cases.length, judged_as_labelled: asLabelled, same_released: sameReleased, different_held: asLabelled - sameReleased, false_match: x1.false_match, false_refuse: sameRefused, same_sent_to_review: sameReview, unmeasured: x1.unmeasured, unmeasured_within: unmeasuredSplit, unmeasured_why: unmeasuredWhy, unmeasured_also_not_verified: unmeasuredAndNotVerified } : null,
   copy: {
     jobs: copyJobs.length, texts, by_model: byModel, template: texts - byModel,
     note: "texts are the final records in data/copy; the answered copy calls in stages are more, because retries, superseded runs and rewrites are logged too",
@@ -121,7 +131,7 @@ const md = [
   ...adversarial.map((a) => `| ${a.case} | ${a.expected} | ${a.evidence} | ${a.result} |`),
   "",
   ...(pack.ms4 ? ["## Muse Spark cross-check (MS4)", "", `${pack.ms4.pairs} pairs, ${pack.ms4.answered} of ${pack.ms4.runs} runs answered. Same garment: ${pack.ms4.by_expected.same.correct} of ${pack.ms4.by_expected.same.answered} released. Wrong garment: ${pack.ms4.mismatch_catch.refused} of ${pack.ms4.mismatch_catch.answered} refused. Changed by a try-on: ${pack.ms4.by_expected.changed.correct} of ${pack.ms4.by_expected.changed.answered} held. Same decision on all 3 runs: ${pack.ms4.consistency.same_decision_all_reps} of ${pack.ms4.consistency.pairs_scored} pairs.`, ""] : []),
-  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders, ${pack.calibration.cases} in all, in three groups that add up: ${pack.calibration.judged_as_labelled} judged as their label says (${pack.calibration.same_released} same released + ${pack.calibration.different_held} different held), ${pack.calibration.false_refuse} false refusals and ${pack.calibration.same_sent_to_review} same-garment renders sent to REVIEW: ${pack.calibration.judged_as_labelled} + ${pack.calibration.false_refuse} + ${pack.calibration.same_sent_to_review} = ${pack.calibration.cases}. ${pack.calibration.false_match} false matches. The ${pack.calibration.unmeasured} unmeasured renders are inside those groups, not added to them (${pack.calibration.unmeasured_within.as_labelled} judged as labelled, ${pack.calibration.unmeasured_within.false_refuse} false refusal, ${pack.calibration.unmeasured_within.same_review} REVIEW). Source: \`evidence/calibration-jobs-2026-10-29.json\`.`, ""] : []),
+  ...(pack.calibration ? ["## Calibration at the shipped thresholds", "", `${pack.calibration.same} same and ${pack.calibration.different} different recorded renders, ${pack.calibration.cases} in all, in three groups that add up: ${pack.calibration.judged_as_labelled} judged as their label says (${pack.calibration.same_released} same released + ${pack.calibration.different_held} different held), ${pack.calibration.false_refuse} false refusals and ${pack.calibration.same_sent_to_review} same-garment renders sent to REVIEW: ${pack.calibration.judged_as_labelled} + ${pack.calibration.false_refuse} + ${pack.calibration.same_sent_to_review} = ${pack.calibration.cases}. ${pack.calibration.false_match} false matches. The ${pack.calibration.unmeasured} unmeasured renders are inside those groups, not added to them (${pack.calibration.unmeasured_within.as_labelled} judged as labelled, ${pack.calibration.unmeasured_within.false_refuse} false refusal, ${pack.calibration.unmeasured_within.same_review} REVIEW). Unmeasured means the fidelity check had no metrics (${totals(pack.calibration.unmeasured_why)}); it is a different measure from the ${summary.verifier_errors} renders with no usable verifier answer under Receipts, and ${pack.calibration.unmeasured_also_not_verified.length} ${pack.calibration.unmeasured_also_not_verified.length === 1 ? "render is" : "renders are"} in both (${pack.calibration.unmeasured_also_not_verified.join(", ") || "none"}). Source: \`evidence/calibration-jobs-2026-10-29.json\`.`, ""] : []),
   "## Copy",
   "",
   `${texts} final texts for ${copyJobs.length} jobs (English and Hindi summary and listing): ${byModel} by Meta muse-spark-open on Fireworks, ${texts - byModel} from the template. The answered copy calls above are more: retries, superseded runs and rewrites are logged too.`,

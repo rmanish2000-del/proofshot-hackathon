@@ -29,7 +29,7 @@ ProofShot is an evidence-checking agent for those images, with a release gate at
 
 Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of an entry's content (its sequence number, time, kind, payload or a hash) and it says TAMPERED, with the entry number. The hash covers each entry's parsed JSON fields, not the file's layout, so whitespace or key order alone does not count as a change.
 
-What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_all_total-->12<!--/f--> committed AI try-on images were held by the gate (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none released): the <!--f:tryon_total-->7<!--/f--> kurta try-ons of 28–29 Oct (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and the <!--f:tryon_run31_total-->5<!--/f--> of the 31 Oct try-on run (<!--f:tryon_run31_refuse-->5<!--/f--> REFUSE). For the 28–29 Oct kurta try-ons, the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). The jobs, calibration, cross-check and 28–29 Oct try-ons are on <!--f:garments-->4<!--/f--> garments (kurta-01, kurta-02, shirt-plaid, shirt-zebra), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--/f--> other real garments; no photo is shared between the two sets (sha256) and by eye none of the 5 is one of the 4, so <!--f:garments_all-->9<!--/f--> garments in all. That is not a general accuracy claim.
+What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all verifier failures (no usable verifier answer), not a threshold effect. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_all_total-->12<!--/f--> committed AI try-on images were held by the gate (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none released): the <!--f:tryon_total-->7<!--/f--> kurta try-ons of 28–29 Oct (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and the <!--f:tryon_run31_total-->5<!--/f--> of the 31 Oct try-on run (<!--f:tryon_run31_refuse-->5<!--/f--> REFUSE). For the 28–29 Oct kurta try-ons, the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). The jobs, calibration, cross-check and 28–29 Oct try-ons are on <!--f:garments-->4<!--/f--> garments (kurta-01, kurta-02, shirt-plaid, shirt-zebra), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--/f--> other real garments; no photo is shared between the two sets (sha256) and by eye none of the 5 is one of the 4, so <!--f:garments_all-->9<!--/f--> garments in all. That is not a general accuracy claim.
 
 English and Hindi listing copy is written after the gate, from the receipt, by muse-spark-open on Fireworks.
 
@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->398<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->400<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -120,7 +120,8 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
 receipts in `data/jobs` (the <!--f:jobs-->42<!--/f--> jobs with a render, the fixture job among them, plus <!--f:receipts_no_render-->1<!--/f--> that stopped before
 a render), one offline agent step each, no seller action and no model call: 0 decisions
 changed by the agent; 20 real violations left alone; 5 missing-evidence cases got a photo request (4 full-length
-front, 1 label close-up); 4 verifier failures got a paid re-check proposal that waits for approval; **0 resolved**,
+front, 1 label close-up); 4 verifier failures got a paid re-check proposal that waits for approval; the other
+<!--f:agent_release-->14<!--/f--> were already RELEASE, so the agent only read and explained the receipt; **0 resolved**,
 because resolving needs a new seller photo or an approved paid call, which the committed data does not have. On
 length: the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks; the gate held the <!--f:tryon_total-->7<!--/f--> of <!--f:tryon_total-->7<!--/f--> 28–29 Oct kurta try-ons in data/jobs (the 31 Oct run was not in this evaluation)
 before the agent and after it, and the agent attempted no recovery on them (they are real violations). Agent
@@ -294,8 +295,10 @@ Checked against:
 `npm run calibrate:jobs` re-judges <!--f:cal_cases-->37<!--/f--> labelled renders from committed receipts
 (<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different) at threshold factors 0.5x to 2x. At 1x,
 <!--f:cal_reproduced-->37 of 37<!--/f--> rows match the gate decision each receipt recorded. <!--f:cal_unmeasured-->6<!--/f--> of those <!--f:cal_cases-->37<!--/f--> are
-unmeasured (no mask, so the fidelity check could not run); they stay in the
-<!--f:cal_cases-->37<!--/f--> and in the counts below. A further <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped,
+unmeasured (no source or render mask, or a JPEG source from before the decoder, so the fidelity check could not run); they stay in the
+<!--f:cal_cases-->37<!--/f--> and in the counts below. Unmeasured is the fidelity check, not the verifier: these <!--f:cal_unmeasured-->6<!--/f--> are a
+different set from the 6 renders with no usable verifier answer (`evidence/pack/README.md`, Receipts), and only
+`live-kurta-01` is in both. A further <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped,
 outside the <!--f:cal_cases-->37<!--/f-->, because their fidelity values were written, not measured.
 The gate reports <!--f:cal_false_match-->0<!--/f--> false matches at 1x (0 at every factor in the report).
 At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals: two failed verifier calls

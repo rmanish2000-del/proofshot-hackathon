@@ -42,7 +42,7 @@ Open `web/verify.html` from disk or served over local HTTP (both checked: over H
 
 ## Calibration at the shipped thresholds
 
-18 same and 19 different recorded renders, 37 in all, in three groups that add up: 29 judged as their label says (10 same released + 19 different held), 4 false refusals and 4 same-garment renders sent to REVIEW: 29 + 4 + 4 = 37. 0 false matches. The 6 unmeasured renders are inside those groups, not added to them (2 judged as labelled, 1 false refusal, 3 REVIEW). Source: `evidence/calibration-jobs-2026-10-29.json`.
+18 same and 19 different recorded renders, 37 in all, in three groups that add up: 29 judged as their label says (10 same released + 19 different held), 4 false refusals and 4 same-garment renders sent to REVIEW: 29 + 4 + 4 = 37. 0 false matches. The 6 unmeasured renders are inside those groups, not added to them (2 judged as labelled, 1 false refusal, 3 REVIEW). Unmeasured means the fidelity check had no metrics (source mask is missing 4, source image is not a PNG 1, render mask is missing 1); it is a different measure from the 6 renders with no usable verifier answer under Receipts, and 1 render is in both (live-kurta-01). Source: `evidence/calibration-jobs-2026-10-29.json`.
 
 ## Copy
 

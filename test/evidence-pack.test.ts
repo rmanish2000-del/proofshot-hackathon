@@ -94,3 +94,13 @@ test("#10 pack 5 (SUB18): the calibration groups in the committed pack add up to
   assert.equal(c.same_released + c.different_held, c.judged_as_labelled);
   assert.equal(Object.values(c.unmeasured_within).reduce((a, b) => a + b, 0), c.unmeasured);
 });
+
+test("#10 pack 6 (RV1): unmeasured (fidelity) and not_verified (verifier) are named as different sets, with their overlap from the receipts", () => {
+  const summary = JSON.parse(readFileSync(new URL("../evidence/pack/summary.json", import.meta.url), "utf8")) as { calibration: { unmeasured: number; unmeasured_why: Record<string, number>; unmeasured_also_not_verified: string[] } };
+  const c = summary.calibration;
+  assert.equal(Object.values(c.unmeasured_why).reduce((a, b) => a + b, 0), c.unmeasured);
+  const notVerified = jobRows(fileURLToPath(new URL("../data/jobs", import.meta.url))).filter((r) => r.verifier_error !== "").map((r) => r.job_id);
+  assert.equal(c.unmeasured_also_not_verified.every((j) => notVerified.includes(j)), true);
+  const md = readFileSync(new URL("../evidence/pack/README.md", import.meta.url), "utf8");
+  assert.match(md, /it is a different measure from the \d+ renders with no usable verifier answer/);
+});

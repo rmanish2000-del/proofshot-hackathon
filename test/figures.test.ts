@@ -70,6 +70,19 @@ test("figures 6 (NUM10): run-folder call logs and receipts without a render are 
   assert.doesNotMatch(readme, /held all of them only because the fidelity check/, "the gate cited the verifier for 3 of the 7");
 });
 
+test("figures 7 (RV1): the summary carries the false refusals, and Results, measured accounts for every receipt the agent read", () => {
+  const f = computeFigures(root);
+  const evalReport = JSON.parse(readFileSync(join(root, "evidence/agent-eval-2026-10-30.json"), "utf8"));
+  const c = evalReport.by_class as { violation: number; missing_evidence: number; verifier_failure: number; release: number };
+  assert.equal(f.agent_release, String(c.release));
+  assert.equal(c.violation + c.missing_evidence + c.verifier_failure + c.release, Number(f.receipts), "the four classes cover every receipt");
+  const sub = readFileSync(join(root, "SUBMISSION.md"), "utf8").replace(/\s+/g, " ");
+  const summary = sub.slice(sub.indexOf("What the evidence shows, with its limits:"));
+  assert.match(summary.slice(0, summary.indexOf(". In a Muse")), /<!--f:cal_false_refuse-->\d+<!--\/f--> false refusals/);
+  assert.match(sub, /the other <!--f:agent_release-->\d+<!--\/f--> were already RELEASE/);
+  assert.match(sub, /Unmeasured is the fidelity check, not the verifier/);
+});
+
 test("figures 5 (AGW5): the 4 receipt garments and the 5 garments of the 31 Oct run share no photo, so garments_all adds them", () => {
   const f = computeFigures(root);
   assert.equal(f.garments, "4");

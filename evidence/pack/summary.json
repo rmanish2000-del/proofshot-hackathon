@@ -167,7 +167,15 @@
       "as_labelled": 2,
       "false_refuse": 1,
       "same_review": 3
-    }
+    },
+    "unmeasured_why": {
+      "source mask is missing": 4,
+      "source image is not a PNG": 1,
+      "render mask is missing": 1
+    },
+    "unmeasured_also_not_verified": [
+      "live-kurta-01"
+    ]
   },
   "copy": {
     "jobs": 42,
