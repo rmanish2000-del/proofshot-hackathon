@@ -1,7 +1,8 @@
 // npm run figures [-- --check]
 //
-// Writes every marked figure (`<!--f:key-->value<!--/f-->`) in README.md and
-// SUBMISSION.md from committed evidence (src/figures.ts). With --check it
+// Writes every marked figure (`<!--f:key-->value<!--/f-->`) in the docs of
+// FIGURE_DOCS (README.md, SUBMISSION.md, CLAIMS_AUDIT.md and two judge Q and A
+// files) from committed evidence (src/figures.ts). With --check it
 // writes nothing and exits 1 if a doc is out of date. Run `npm run evidence:pack`
 // first when receipts or call logs changed.
 

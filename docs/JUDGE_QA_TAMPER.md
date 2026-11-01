@@ -1,25 +1,27 @@
 # Judge Q and A: the tamper check and the receipt chains
 
 Five hard questions a skeptical judge could ask about the receipts, with what the
-repo can and cannot back. Each answer cites the section it comes from. Numbers
-are copied from generated files (`evidence/pack/README.md`, written by
-`npm run evidence:pack`, and the figure markers in `CLAIMS_AUDIT.md`, written by
-`npm run figures`), as of 1 Nov 2026 after 4a511cb; this file is not wired into
-figures, so if those files change, they win over the numbers here.
+repo can and cannot back. Each answer cites the section it comes from. Counts
+are figure markers written by `npm run figures` from the committed receipts
+(this file is in `FIGURE_DOCS`, so a test fails if they drift). The model and
+try-on questions are in `docs/JUDGE_QA_TRYON_MODELS.md`.
 
 ## 1. If I rewrite the whole receipt file, does your page notice?
 
 No. The receipt is a SHA-256 hash chain, not a signature. It catches an edited
 payload, a reordered line, a line deleted from the middle, or a forged entry,
 but not a file rewritten from the first entry, and not lines cut off the end:
-the shorter chain still verifies. If the cut removes an image's `release`
+deleting the last entries leaves a shorter file that still verifies, and only
+the git history shows it. If the cut removes an image's `release`
 entry, the page says NOT RELEASED for that image, not VALID
 (`test/check.test.ts` RV2 8). Source: `docs/SPEC.md` §3 threat model;
 `CLAIMS_AUDIT.md`, row "The receipt is a hash chain, not a signature";
 README "Receipt format".
 
-Weak spot: there is no signature, append-only store or external witness, so a
-VALID result shows the file is consistent with itself, not that nobody rewrote it.
+Weak spot: there is no signature, no enforced append-only store and no external
+witness ("append-only" in the README is a write convention: the code only
+appends, but nothing stops a later rewrite), so a VALID result shows the file
+is consistent with itself, not that nobody rewrote it.
 
 ## 2. You say one changed byte reads TAMPERED. Is that true for every byte in the file?
 
@@ -45,11 +47,12 @@ weights ran.
 
 ## 4. How many receipts actually verify, and who checked them?
 
-43 receipts are committed and all 43 verify. The evidence pack counts chains
-per job with a render: 42 jobs, 42 of 42 chains, 43 renders (fixture-shirt-01
-has more than one render). The 43rd receipt is a job that stopped before any
-render, so the pack has no row or chain count for it. `npm run figures` and `npm run evidence:pack` recompute these counts
-from the committed receipts, and a test fails if they drift.
+As in the README Receipts row: <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders, <!--f:chains-->42 of 42<!--/f--> hash
+chains verify (fixture-shirt-01 has more than one render). With the <!--f:receipts_no_render-->1<!--/f--> job
+that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify;
+the pack has no row or chain count for that one. `npm run figures` and
+`npm run evidence:pack` recompute these counts from the committed receipts,
+and a test fails if they drift.
 Source: `CLAIMS_AUDIT.md`, rows "Every step ... hash-chained receipt" and
 "42 jobs, 43 renders"; `evidence/pack/README.md` "Receipts".
 

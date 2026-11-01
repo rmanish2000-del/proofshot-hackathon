@@ -186,4 +186,4 @@ export function applyFigures(text: string, figures: Readonly<Record<string, stri
   return { text: out, unknown, count };
 }
 
-export const FIGURE_DOCS = ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md"] as const;
+export const FIGURE_DOCS = ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md", "docs/JUDGE_QA_TAMPER.md", "docs/JUDGE_QA_TRYON_MODELS.md"] as const;

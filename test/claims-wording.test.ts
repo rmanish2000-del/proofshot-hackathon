@@ -337,3 +337,40 @@ test("RV2 (Grok 19:50 1 Nov): today's agent verdict beside the recorded one, sco
   assert.match(gate, /two settings at two times/);
   assert.doesNotMatch(gate, /cannot catch verifier misses like length changes alone/);
 });
+
+test("RV3 (Grok 20:00 1 Nov): tail cut named with git history, append-only is a convention, receipt counts as figures, try-on and models Q and A cites what exists", () => {
+  const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.match(tamper, /deleting the last entries leaves a shorter file that still verifies, and only the git history shows it/);
+  assert.match(readme, /Entries cut off the end leave a shorter chain that still verifies, and only the git history shows the cut/);
+  assert.match(tamper, /no enforced append-only store and no external witness \("append-only" in the README is a write convention/);
+  assert.match(readme, /append-only by convention/);
+  // Q4 reads like the README Receipts row, with the same markers.
+  for (const key of ["jobs", "renders", "chains", "receipts_no_render", "receipts", "receipt_chains"]) assert.ok(tamper.includes(`<!--f:${key}-->`), `Q4 marks ${key}`);
+  assert.doesNotMatch(tamper, /this file is not wired into figures/);
+
+  const qa = read("docs/JUDGE_QA_TRYON_MODELS.md");
+  const flat = qa.replace(/\s+/g, " ");
+  assert.match(readme, /`docs\/JUDGE_QA_TAMPER\.md` \(the tamper check and receipt chains\), `docs\/JUDGE_QA_TRYON_MODELS\.md`/);
+  // Every README heading the file cites exists.
+  const headings = new Set(read("README.md").split("\n").filter((l) => /^#{2,3} /.test(l)).map((l) => l.replace(/^#+ /, "")));
+  for (const m of flat.matchAll(/README "([^"]+)"/g)) assert.ok(headings.has(m[1]!), `README has a section "${m[1]}"`);
+  // The thresholds quoted are the ones in config/fidelity.json.
+  const t = JSON.parse(read("config/fidelity.json")) as Record<string, Record<string, number>>;
+  assert.ok(flat.includes(`\`delta_e\` (REVIEW above ${t.delta_e!.review_above}, REFUSE above ${t.delta_e!.refuse_above})`));
+  assert.ok(flat.includes(`\`hist\` (REVIEW above ${t.hist!.review_above}, REFUSE above ${t.hist!.refuse_above})`));
+  assert.ok(flat.includes(`\`texture\` similarity (REVIEW below ${t.texture!.review_below}, REFUSE below ${t.texture!.refuse_below})`));
+  assert.ok(flat.includes(`(REVIEW below ${t.area!.review_below} or above ${t.area!.review_above})`));
+  assert.match(read("src/fidelity.ts"), /the garment shrank in frame/, "area is the shrink metric");
+  // Cited tests exist with those names.
+  assert.match(read("test/render.test.ts"), /test\("a Muse Image model is refused on every provider before any request"/);
+  assert.match(read("test/serve.test.ts"), /was REVIEW, not RELEASE/);
+  // Pack counts are labelled as pack counts beside the all-logs totals; 21 checks are over the 7 kurta try-ons.
+  assert.match(flat, /are evidence-pack counts/);
+  assert.ok(qa.includes("<!--f:sam_calls_all-->") && qa.includes("<!--f:muse13_calls_all-->"));
+  assert.match(flat, /the 21 checks are over those <!--f:tryon_total-->7<!--\/f--> jobs/);
+  assert.match(flat, /first commit was 4aa99f9 before/);
+  assert.match(flat, /`15658a4`, on 27 Oct 2026 at 11:10 IST/);
+  assert.match(flat, /not a provider bill/);
+  assert.match(flat, /not a Replicate invoice/);
+});
