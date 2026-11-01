@@ -48,7 +48,9 @@ const badFirst: ProvidersFor = (input) => {
 function setup() {
   let gateCalls = 0;
   const store = new Store(mkdtempSync(join(tmpdir(), "agent-rp-")));
-  const config = makeConfig({});
+  // FLK1: the config maximum step time (5 min), not the 30 s default: a step re-runs the offline gate on
+  // full-size photos, which went past 30 s of wall clock on a loaded suite run.
+  const config = makeConfig({ stepTimeoutMs: 300_000 });
   const inner = pipelineGate({ offline: badFirst, live: badFirst, clock: CLOCK });
   const gate: GateRunner = (i) => { gateCalls++; return inner(i); };
   return { store, config, gate, calls: () => gateCalls };

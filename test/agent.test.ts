@@ -26,10 +26,16 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const G = join(ROOT, "data", "garments", "shirt-plaid");
 const photo = (f: string) => new Uint8Array(readFileSync(join(G, f)));
 const CLOCK = () => "2026-10-30T00:00:00.000Z";
+/**
+ * FLK1: the step timeout is real wall-clock time (default 30 s) and a step that re-runs the offline gate decodes and
+ * measures full-size photos, which took over 30 s on a loaded 24-min suite run. Tests that are not about the
+ * timeout use the config maximum (5 min); "agent 8" sets its own 100 ms cap to test the timeout itself.
+ */
+const STEP_MS = { stepTimeoutMs: 300_000 };
 
 function setup(overrides: Record<string, unknown> = {}) {
   const store = new Store(mkdtempSync(join(tmpdir(), "agent-")));
-  const config = makeConfig(overrides);
+  const config = makeConfig({ ...STEP_MS, ...overrides });
   const gate = pipelineGate({ offline: cannedDemoProviders, clock: CLOCK });
   return { store, config, gate };
 }
@@ -116,7 +122,7 @@ test("agent 4: the gate verdict is identical with or without the agent for the s
 
 test("agent 5: a real violation never triggers recovery", async () => {
   const store = new Store(mkdtempSync(join(tmpdir(), "agent-")));
-  const config = makeConfig({});
+  const config = makeConfig(STEP_MS);
   const mismatch: ProvidersFor = (input) => {
     const p = cannedDemoProviders(input);
     return { ...p, verifier: { ...p.verifier, verify: async () => ({ raw: { findings: ((await p.verifier.verify({} as never)).raw as { findings: { attribute: string }[] }).findings.map((f) => (f.attribute === "color" ? { attribute: "color", verdict: "mismatch", confidence: 0.99, note: "" } : f)) } }) } };
@@ -220,7 +226,7 @@ test("agent 9: paid re-checks need approval and stay inside per-job and per-sell
   const live: ProvidersFor = (input) => { liveCalls++; return cannedDemoProviders({ ...input, views: { a: "full_length_front", b: "collar_closeup", c: "label_closeup", d: "print_closeup" } }); };
   const mk = (overrides: Record<string, unknown> = {}) => {
     const store = new Store(mkdtempSync(join(tmpdir(), "agent-")));
-    return { store, config: makeConfig(overrides), gate: pipelineGate({ offline: cannedDemoProviders, live, clock: CLOCK }) };
+    return { store, config: makeConfig({ ...STEP_MS, ...overrides }), gate: pipelineGate({ offline: cannedDemoProviders, live, clock: CLOCK }) };
   };
   // No approval: a live re-run is refused and no model is called.
   {
@@ -300,7 +306,7 @@ test("agent 11: the agent never imports the gate or the pipeline; only rerun_gat
 
 test("agent 12: the queue runs two sellers' jobs at the same time without mixing files, and keeps one seller to its limit", async () => {
   const store = new Store(mkdtempSync(join(tmpdir(), "agent-q-")));
-  const config = makeConfig({ workers: 2 });
+  const config = makeConfig({ ...STEP_MS, workers: 2 });
   const base = pipelineGate({ offline: cannedDemoProviders, clock: CLOCK });
   const slow: GateRunner = async (i) => { await new Promise((r) => setTimeout(r, 150)); return base(i); };
   await lengthCase(store, base, config, "seller-a", "job-a");
