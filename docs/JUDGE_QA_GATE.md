@@ -2,9 +2,10 @@
 
 Five hard questions a skeptical judge could ask about who decides and what the
 verifier did, with what the repo can and cannot back. Each answer cites the
-README section it comes from. Numbers are copied from figure markers in
-`README.md` (written by `npm run figures`) as of 1 Nov 2026; this file is not
-wired into figures, so if README changes, README wins over the numbers here.
+README section it comes from. Numbers in a figure marker are written by
+`npm run figures` (this file is in `FIGURE_DOCS`, so a test fails if they
+drift); the other numbers are copied from README as of 1 Nov 2026 and a test
+compares them with the figures.
 
 ## 1. Who actually decides RELEASE, REVIEW or REFUSE?
 
@@ -19,13 +20,16 @@ findings and never decides. Source: README "How the gate decides"; "What each
 Meta model does".
 
 Weak spot: the gate is only as good as the findings it reads, and README
-"Limits" says verifier accuracy is not measured in general.
+"Limits" says verifier accuracy is not measured in general. What was measured
+is small: in the Muse Spark cross-check (MS4) the verifier refused
+<!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f--> same-garment runs, on
+four garments only (README "Limits").
 
 ## 2. What happens when the verifier gives no answer or is cut off?
 
 It fails closed. An attribute with no finding is REFUSE, and `NaN` confidence
-counts as 0 (README "How the gate decides"). The 1500 and the 8192 / 16384 are
-two settings at two times. On 28 Oct the first live job, `live-kurta-01`, ran
+counts as 0 (README "How the gate decides"). The answer limit has had three
+settings over time: 1500, then 4096, then 8192 with one retry at 16384. On 28 Oct the first live job, `live-kurta-01`, ran
 with `max_tokens` 1500 on Muse Spark Open (Baseten); the answer stopped at that
 limit (`finish_reason` `length` in
 `evidence/verifier-2026-10-28T03-55-00-289Z.json`), so the gate saw no findings
@@ -40,7 +44,7 @@ upload" (the `live-kurta-01` paragraph); "Built with Muse Spark";
 
 Weak spot: a failed or cut-off call costs a RELEASE, not safety: all
 4 false refusals in the calibration set are renders where the verifier gave no
-usable answer.
+answer.
 
 ## 3. How large is the calibration set, and how many false refusals did it find?
 
@@ -74,7 +78,8 @@ Two things. First, the receipt chain catches an edited, reordered or forged
 entry and one deleted from the middle, but there is no signature or outside
 witness, so a file rewritten from entry 0, or cut short at the end, still
 verifies as a chain; a cut that removes the `release` entry makes the verify
-page say NOT RELEASED for that image, not VALID (README "Receipt format").
+page say NOT RELEASED for that image (or TAMPERED, in no entry, if its `render`
+entry is cut too), never VALID (README "Receipt format").
 Second, the verifier alone misses some length changes: in the Muse Spark
 cross-check it passed 4 of 21 checks of try-ons that had shortened the garment
 (3 checks each of the 7 committed kurta try-on jobs of 28–29 Oct). On those 7

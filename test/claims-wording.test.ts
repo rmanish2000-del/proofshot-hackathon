@@ -334,7 +334,7 @@ test("RV2 (Grok 19:50 1 Nov): today's agent verdict beside the recorded one, sco
   for (const n of [`${f.muse13_calls} logged calls`, `plus ${f.muse13_calls_runs} in`, `${f.baseten_calls} logged calls`, `${f.cal_cases} labelled renders`, `${f.ms4_changed_passed} checks`, `reproduced ${f.cal_reproduced}`, `${f.cal_false_refuse} false refusals`]) {
     assert.ok(gate.includes(n), `JUDGE_QA_GATE says '${n}'`);
   }
-  assert.match(gate, /two settings at two times/);
+  assert.match(gate, /three settings over time: 1500, then 4096, then 8192 with one retry at 16384/); // RV7 4
   assert.doesNotMatch(gate, /cannot catch verifier misses like length changes alone/);
 });
 
@@ -412,4 +412,33 @@ test("RV6 (Grok 23:41 1 Nov): README by-eye check names all 4, photo count match
   assert.match(readme, /measured 316 s to 423 s on one laptop/);
   assert.match(read("SUBMISSION.md"), /`npm test` 316 s to 423 s on the same laptop/);
   assert.match(readme, /through the 3-step form \(the 29 Oct page, before UX-EASY1 made it two steps: Photos, Result;/);
+});
+
+test("RV7 (Grok 00:06 2 Nov): two-step upload page and the public Space in README and SUBMISSION; JUDGE_QA_GATE and JUDGE_QA_TAMPER say what the code and tests show", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  // 1: the upload paragraph.
+  assert.doesNotMatch(readme, /seller upload page with the five-step board/);
+  assert.doesNotMatch(readme, /The seller upload page is local only/);
+  assert.match(readme, /two steps since UX-EASY1: Photos, then Result/);
+  assert.match(readme, /local in this repo \(`npm run serve`\); the public Space is named at the top \("Live demo"\), and what it runs is UNVERIFIED here/);
+  // 2 and 3: the no-install option.
+  const q = sub.slice(sub.indexOf("*What can I run without a key?*"));
+  assert.match(q.slice(0, 400), /With no install, the Live demo Space, https:\/\/rmanish2000-proofshot\.hf\.space\/ \(which build and providers it runs is UNVERIFIED here/);
+  const quick = readme.slice(readme.indexOf("## Quick start"), readme.indexOf("## Quick verify"));
+  assert.match(quick, /No install: the Live demo line at the top names the public Space \(what it runs is UNVERIFIED here\)/);
+  // 4-7: JUDGE_QA_GATE.
+  const gate = read("docs/JUDGE_QA_GATE.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(gate, /two settings at two times|usable answer/);
+  assert.match(gate, /<!--f:ms4_wrong_refused-->153 of 153<!--\/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--\/f--> same-garment runs/);
+  assert.match(readme, /refused <!--f:ms4_wrong_refused-->153 of 153<!--\/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--\/f-->/);
+  const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
+  const cut = /NOT RELEASED for that image \(or TAMPERED, in no entry, if its `render` entry is cut too\), never VALID/;
+  for (const [name, text] of [["README.md", readme], ["docs/JUDGE_QA_GATE.md", gate], ["docs/JUDGE_QA_TAMPER.md", tamper]] as const) assert.match(text, cut, name);
+  // 8: the layout cases are cited to the test that checks them, and that test still names all four.
+  assert.match(tamper, /`test\/claims-wording\.test\.ts` "CA1 1" checks each of the four/);
+  assert.match(read("test/claims-wording.test.ts"), /Layout: whitespace between tokens, key order, a blank line and an extra top-level field all still verify/);
+  // 9: NOT RELEASED needs a render entry; otherwise TAMPERED, as checkImageWith does.
+  assert.match(tamper, /NOT RELEASED when a matching `render` entry exists, and TAMPERED otherwise/);
+  assert.match(read("src/core.js"), /return no\("this image is in no entry of this record"\)/);
 });

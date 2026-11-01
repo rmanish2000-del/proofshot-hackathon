@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->414<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
+| Automated tests | <!--f:tests-->415<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -458,7 +458,9 @@ endpoint URL in `src/` and `scripts/`.
   demo shows the two shirts only and has no AI on-model image (v7 shows the 31 Oct verdict table, not the try-on images), and no new
   paid call was made for the video (`docs/DEMO.md`,
   `test/demo-capture.test.ts`).
-- *What can I run without a key?* `npm ci`, `npm test`, `npm run serve` and
+- *What can I run without a key?* With no install, the Live demo Space,
+  https://rmanish2000-proofshot.hf.space/ (which build and providers it runs is
+  UNVERIFIED here, as in the Live demo line at the top). In this repository, `npm ci`, `npm test`, `npm run serve` and
   `npm run demo:replay` need no key; without keys every provider is a fixture
   and the page and receipt say so (README "Judge quickstart"). In the README's
   command list, `npm run call:baseten` is the one live model call and needs
