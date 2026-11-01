@@ -25,6 +25,8 @@ import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, sta
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, resolve, sep } from "node:path";
 
+import { CorrectionError, readCorrections, saveCorrection } from "./corrections.ts";
+import type { CorrectionRecord } from "./corrections.ts";
 import { maskedFidelityChecker } from "./fidelity.ts";
 import { intakeJpeg } from "./intake.ts";
 import type { IntakeFile } from "./intake.ts";
@@ -259,6 +261,8 @@ export interface UploadServerOptions {
   readonly shopDir: string;
   /** data/garments: where the source photos of committed jobs are found, by recorded hash (NR5 side-by-side). */
   readonly garmentsDir?: string;
+  /** UX-EASY2: where seller corrections are stored (data/corrections), outside every receipt. Without it the correction routes answer 404. */
+  readonly correctionsDir?: string;
   readonly providers: ServeProviders;
   readonly clock?: Clock;
   readonly now?: () => Date;
@@ -487,9 +491,14 @@ export class UploadServer {
       if (req.method === "GET" && path === "/api/mode") return sendJson(res, 200, this.mode);
       if (req.method === "POST" && path === "/api/jobs") return sendJson(res, 202, this.submit(await readJson(req)));
       if (req.method === "GET" && path === "/api/sample") return sendJson(res, 200, this.sample());
-      const jobMatch = /^\/api\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})(\/publish)?$/.exec(path);
+      const jobMatch = /^\/api\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})(\/publish|\/correction)?$/.exec(path);
       if (jobMatch) {
         const id = jobMatch[1]!;
+        if (jobMatch[2] === "/correction") {
+          if (req.method === "GET") return sendJson(res, 200, { job_id: id, records: this.corrections(id) });
+          if (req.method === "POST") return sendJson(res, 200, this.correct(id, await readJson(req)));
+          return sendJson(res, 405, { error: "method not allowed" });
+        }
         if (jobMatch[2] && req.method === "POST") return sendJson(res, 200, { job_id: id, rows: this.publish(id) });
         if (!jobMatch[2] && req.method === "GET") {
           const status = this.status(id);
@@ -552,6 +561,34 @@ export class UploadServer {
       .map((name) => ({ name, base64: readFileSync(join(dir, name)).toString("base64") }));
     if (files.length === 0) throw new UploadError("no sample garment on this server", 404);
     return { garment: SAMPLE_GARMENT, files };
+  }
+
+  private correctionsDir(): string {
+    if (!this.opts.correctionsDir) throw new UploadError("corrections are not stored on this server", 404);
+    return this.opts.correctionsDir;
+  }
+
+  /** The saved corrections of a job, oldest first; empty when there are none. */
+  corrections(id: string): readonly CorrectionRecord[] {
+    this.receiptText(id);
+    return readCorrections(this.correctionsDir(), id)?.records ?? [];
+  }
+
+  /**
+   * UX-EASY2: stores the seller's correction outside the chain, naming the
+   * receipt head it refers to. The receipt file is only read; the gate is not
+   * run, and the job's decision is whatever the receipt already says.
+   */
+  correct(id: string, body: unknown): CorrectionRecord {
+    const dir = this.correctionsDir();
+    const chain = verifyChain(parseReceipt(this.receiptText(id)));
+    if (!chain.ok) throw new UploadError(`the receipt of ${id} does not verify, so a correction cannot name it`, 409);
+    try {
+      return saveCorrection(dir, id, chain.head, body, this.opts.now?.() ?? new Date());
+    } catch (err) {
+      if (err instanceof CorrectionError) throw new UploadError(err.message);
+      throw err;
+    }
   }
 
   /** One job's source photo, served only when a file's bytes hash to the receipt's recorded sha256. */

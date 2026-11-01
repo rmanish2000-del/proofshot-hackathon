@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { createServer } from "node:http";
 import type { Server } from "node:http";
 import { tmpdir } from "node:os";
@@ -7,9 +7,11 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { CORRECTION_EFFECT, SELLER_VIEWS, correctionPath, readCorrections } from "../src/corrections.ts";
 import { stripJpegMetadata } from "../src/intake.ts";
 import { fixtureProviders } from "../src/pipeline.ts";
 import type { Providers } from "../src/pipeline.ts";
+import { presentJob } from "../src/present.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { standInRenderer } from "../src/render.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
@@ -418,4 +420,81 @@ test("UX-EASY1 web/upload.html: two steps, no attribute fields to type, optional
   }
   assert.match(page, /drop: "Drop 3 phone photos of one garment"/);
   assert.match(page, /sample: "Try with our sample shirt"/);
+});
+
+test("UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical", async () => {
+  const corrections = tmp("corr-dir");
+  const jobs = tmp("corr-jobs");
+  const srv = new UploadServer({ webDir: WEB, jobsRoot: jobs, shopDir: tmp("corr-shop"), correctionsDir: corrections, providers: providers({ verdict: "mismatch" }), jobId: () => "upload-corr-1", now: () => new Date("2026-11-01T18:30:00Z") });
+  const { job_id } = srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }]));
+  await srv.settled(job_id);
+  const receiptFile = join(jobs, job_id, RECEIPT_FILE);
+  const before = readFileSync(receiptFile);
+  const decision = srv.status(job_id)!.result!.decision;
+  assert.equal(decision, "REFUSE", "a colour mismatch is refused");
+  const chain = verifyChain(parseReceipt(before.toString("utf8")));
+  assert.ok(chain.ok);
+  const jobFiles = readdirSync(join(jobs, job_id)).sort();
+
+  assert.deepEqual(srv.corrections(job_id), []);
+  const saved = srv.correct(job_id, { attributes: { color: "matches", hem: "not_sure" }, note: " it is the same shirt " });
+  assert.deepEqual(saved, { job_id, receipt_head: chain.head, saved_at: "2026-11-01T18:30:00.000Z", attributes: { color: "matches", hem: "not_sure" }, note: "it is the same shirt", effect: CORRECTION_EFFECT });
+  assert.deepEqual(readFileSync(receiptFile), before, "receipt bytes unchanged");
+  assert.deepEqual(readdirSync(join(jobs, job_id)).sort(), jobFiles, "nothing new in the job folder");
+  assert.equal(srv.status(job_id)!.result!.decision, decision, "the decision is the one the gate made");
+  assert.equal(presentJob(parseReceipt(readFileSync(receiptFile, "utf8"))).renders[0]!.decision, decision);
+  assert.ok(existsSync(correctionPath(corrections, job_id)), "data/corrections/<job>.json");
+  assert.deepEqual(readCorrections(corrections, job_id)!.records, [saved]);
+  srv.correct(job_id, { attributes: {}, note: "second thought" });
+  assert.equal(srv.corrections(job_id).length, 2, "records are appended, oldest first");
+  assert.doesNotMatch(readFileSync(receiptFile, "utf8"), /correction|second thought/);
+
+  assert.throws(() => srv.correct(job_id, { attributes: { colour: "matches" } }), (e: unknown) => e instanceof UploadError && e.status === 400 && /not one of the nine/.test(e.message));
+  assert.throws(() => srv.correct(job_id, { attributes: { color: "yes" } }), /must be one of matches, does_not_match, not_sure/);
+  assert.throws(() => srv.correct(job_id, {}), /nothing to save/);
+  assert.throws(() => srv.correct(job_id, { note: "x".repeat(301) }), /longer than 300/);
+  assert.throws(() => srv.correct("missing", { note: "x" }), (e: unknown) => e instanceof UploadError && e.status === 404);
+  const bare = server(providers(), "nocorr");
+  const other = bare.srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }]));
+  await bare.srv.settled(other.job_id);
+  assert.throws(() => bare.srv.correct(other.job_id, { note: "x" }), (e: unknown) => e instanceof UploadError && e.status === 404 && /not stored on this server/.test(e.message));
+
+  // Over HTTP: GET lists, POST saves, other methods are refused.
+  const http: Server = createServer((req, res) => void srv.handler(req, res));
+  await new Promise<void>((resolve) => http.listen(0, "127.0.0.1", resolve));
+  const url = `http://127.0.0.1:${(http.address() as { port: number }).port}/api/jobs/${job_id}/correction`;
+  try {
+    const posted = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ attributes: { buttons: "does_not_match" } }) });
+    assert.equal(posted.status, 200);
+    assert.equal(((await posted.json()) as { effect: string }).effect, CORRECTION_EFFECT);
+    const listed = await (await fetch(url)).json() as { records: unknown[] };
+    assert.equal(listed.records.length, 3);
+    assert.equal((await fetch(url, { method: "POST", body: JSON.stringify({}) })).status, 400);
+    assert.equal((await fetch(url, { method: "DELETE" })).status, 405);
+  } finally {
+    await new Promise<void>((resolve) => http.close(() => resolve()));
+  }
+  assert.deepEqual(readFileSync(receiptFile), before, "still unchanged after the HTTP saves");
+});
+
+test("UX-EASY2: .gitignore keeps upload-* corrections out of every commit, like the upload job folders", () => {
+  const ignore = readFileSync(join(ROOT, ".gitignore"), "utf8").split(/\r?\n/);
+  assert.ok(ignore.includes(`data/corrections/${UPLOAD_JOB_PREFIX}*.json`));
+  assert.ok(ignore.includes(`data/jobs/${UPLOAD_JOB_PREFIX}*/`));
+  assert.match(correctionPath("data/corrections", "upload-20261101-000000-abcd").replace(/\\/g, "/"), /^data\/corrections\/upload-[^/]*\.json$/);
+});
+
+test("UX-EASY2 web/upload.html: optional Correct it with three toggles per attribute, saved outside the receipt, the page says the decision does not change", () => {
+  const page = readFileSync(join(WEB, "upload.html"), "utf8");
+  for (const lang of ["en", "hi"]) {
+    const table = new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0];
+    for (const key of ["correctLink", "correctLead", "correctNote", "correctSave", "correctSaved", "correctYours"]) assert.match(table, new RegExp(`\\b${key}: "`), `${lang} has ${key}`);
+    assert.match(table, /views: \{ matches: "[^"]+", does_not_match: "[^"]+", not_sure: "[^"]+" \}/, `${lang} names the three toggles`);
+  }
+  assert.match(page, /correctLink: "Something wrong\? Correct it"/);
+  assert.match(page, /correctSaved: "Saved with this job\. It does not change the decision: that comes only from what the agent read in your photos and the receipt\."/);
+  assert.match(page, /\/correction`/, "the page posts to the correction route");
+  assert.equal([...page.matchAll(/\["matches", "does_not_match", "not_sure"\]/g)].length, 1);
+  assert.deepEqual(SELLER_VIEWS, ["matches", "does_not_match", "not_sure"], "page toggles and server views agree");
+  assert.doesNotMatch(page, /reviews? (your|the) correction/i, "no claim that a person reviews corrections");
 });

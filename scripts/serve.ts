@@ -9,7 +9,9 @@
 // call's to evidence/sam-<started_at>.json). Jobs are
 // written under --jobs (default data/jobs, the folder npm run shop reads; the
 // upload-* job folders are gitignored), and "Publish to shop" rebuilds --shop
-// (default web/shop) from it.
+// (default web/shop) from it. A seller's optional correction (UX-EASY2) goes to
+// --corrections (default data/corrections), outside every receipt; the
+// upload-* correction files are gitignored too.
 
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
@@ -43,6 +45,7 @@ const server = new UploadServer({
   jobsRoot: option("--jobs", `${root}data/jobs`),
   shopDir: option("--shop", `${root}web/shop`),
   garmentsDir: option("--garments", `${root}data/garments`),
+  correctionsDir: option("--corrections", `${root}data/corrections`),
   providers,
 });
 

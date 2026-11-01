@@ -136,7 +136,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->407<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->410<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -464,7 +464,17 @@ read from the receipt's verifier entry. An upload with no note records
 `garment (the seller typed no note)` as its `garment_note`; the gate rules, the
 receipt format and the hash chain did not change. The earlier three-step form
 (one typed field per attribute) is gone; the 29 Oct browser check below was
-made on that form. The result card shows the seller's
+made on that form. Under the chips, an optional "Something wrong? Correct it"
+link (UX-EASY2) opens the nine attributes as toggles (matches / does not match
+/ not sure) and one optional line. Saving stores the correction outside the
+hash chain, the way listing copy lives in `data/copy`: one record per save in
+`data/corrections/<job>.json` (`npm run serve -- --corrections <dir>` moves
+it), naming the receipt head it refers to. It is never a receipt entry and never
+a gate input, so the receipt bytes and the decision stay exactly as they were
+(tested in `test/serve.test.ts`); the page says so in English and Hindi. No one
+reviews corrections; the file only keeps what the seller said, and
+`data/corrections/upload-*.json` is gitignored like the upload job folders.
+The result card shows the seller's
 photos beside the result with the render-method badge read from the receipt.
 `http://127.0.0.1:8787/judge` is the judge view: a job picker (last 20 jobs
 under `--jobs`, with RELEASE / REVIEW / REFUSE counts), the pipeline for that
@@ -624,7 +634,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->407<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->410<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |

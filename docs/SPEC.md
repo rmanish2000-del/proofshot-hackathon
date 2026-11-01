@@ -709,7 +709,11 @@ drop up to three JPEGs of one garment (a one-line type note is optional since
 UX-EASY1, 1 Nov: an empty note is recorded as `garment (the seller typed no
 note)`, and the result shows the verifier's nine findings as "What we read from
 your photos"; `GET /api/sample` returns the committed sample shirt's photos for
-a one-tap trial); the real pipeline of
+a one-tap trial; since UX-EASY2 an optional "Something wrong? Correct it"
+stores the seller's view of the nine attributes, matches / does not match / not
+sure, plus one optional line, in `data/corrections/<job>.json` with the receipt
+head it refers to, outside the chain: never a receipt entry, never a gate
+input, so the decision does not change, and no one reviews it); the real pipeline of
 §3 runs on their machine; they see each step as it happens, then one result
 card; "Publish to shop" exists only when the gate said RELEASE. The page
 decides nothing: every decision, reason and hash on it was read from the

@@ -67,6 +67,12 @@
   .chip.match { border-color: var(--ok); } .chip.match b { color: var(--ok); }
   .chip.mismatch { border-color: var(--bad); background: var(--badbg); } .chip.mismatch b { color: var(--bad); }
   .chip.unmeasured { border-style: dashed; } .chip.unmeasured b { color: var(--muted); }
+  /* UX-EASY2: the optional correction, three toggles per attribute. */
+  fieldset.view { border: 1px solid var(--line); border-radius: 10px; margin: 0.5rem 0 0; padding: 0.3rem 0.7rem 0.5rem; display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; }
+  fieldset.view legend { font-weight: 600; font-size: 0.9rem; padding: 0 0.3rem; }
+  fieldset.view label { font-weight: 400; font-size: 0.88rem; margin: 0; min-height: 44px; display: inline-flex; align-items: center; }
+  .correct label { font-weight: 500; font-size: 0.92rem; }
+  .correct input[type=text] { margin-top: 0.3rem; }
   ol.wizard { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; padding: 0; margin: 0 0 1rem; counter-reset: w; }
   ol.wizard li { counter-increment: w; font-size: 0.85rem; text-align: center; padding: 0.5rem 0.2rem; border-bottom: 4px solid var(--line); color: var(--muted); min-height: 44px; }
   ol.wizard li::before { content: counter(w) ". "; font-weight: 700; }
@@ -170,6 +176,14 @@
       readLead: "The verifier's own findings for each attribute, from the receipt; nothing here was typed.",
       chip: { match: "matches", mismatch: "does not match", unmeasured: "not measured" },
       noFindings: "No verifier findings were recorded for this render.",
+      correctLink: "Something wrong? Correct it",
+      correctLead: "Mark what you think for any attribute. This is kept beside the job, not in the receipt.",
+      views: { matches: "matches", does_not_match: "does not match", not_sure: "not sure" },
+      correctNote: "Anything else (optional)",
+      correctSave: "Save correction",
+      correctCancel: "Cancel",
+      correctSaved: "Saved with this job. It does not change the decision: that comes only from what the agent read in your photos and the receipt.",
+      correctYours: "Your correction",
       start: "Check and render",
       running: "Running…",
       remove: "Remove",
@@ -222,6 +236,14 @@
       readLead: "हर गुण पर जाँचकर्ता के अपने निष्कर्ष, रसीद से; यहाँ कुछ भी टाइप नहीं किया गया।",
       chip: { match: "मेल खाता है", mismatch: "मेल नहीं खाता", unmeasured: "मापा नहीं गया" },
       noFindings: "इस रेंडर के लिए जाँचकर्ता का कोई निष्कर्ष दर्ज नहीं है।",
+      correctLink: "कुछ ग़लत है? सुधारें",
+      correctLead: "किसी भी गुण पर अपनी राय चुनें। यह जॉब के साथ रखा जाता है, रसीद में नहीं।",
+      views: { matches: "मेल खाता है", does_not_match: "मेल नहीं खाता", not_sure: "पक्का नहीं" },
+      correctNote: "कुछ और (वैकल्पिक)",
+      correctSave: "सुधार सहेजें",
+      correctCancel: "रद्द करें",
+      correctSaved: "इस जॉब के साथ सहेजा गया। इससे फ़ैसला नहीं बदलता: फ़ैसला सिर्फ़ इससे आता है कि एजेंट ने आपकी तस्वीरों में क्या पढ़ा और रसीद में क्या है।",
+      correctYours: "आपका सुधार",
       start: "जाँचें और रेंडर करें",
       running: "चल रहा है…",
       remove: "हटाएँ",
@@ -543,6 +565,7 @@
           method.hidden = false;
           tip.textContent = r.badge.tooltip;
           paintChips(read, r.findings || []);
+          paintCorrection(read, status.job_id);
         })
         .catch(() => {});
       if (status.mode && status.mode.fixture) line.append(el("span", "tag", T().fixtureTag));
@@ -598,6 +621,89 @@
       chips.append(chip);
     }
     box.append(chips);
+  }
+
+  /**
+   * UX-EASY2: the optional correction. Saved beside the job (data/corrections),
+   * never in the receipt and never read by the gate; the page says so and
+   * repaints nothing about the decision.
+   */
+  function paintCorrection(box, jobId) {
+    const wrap = el("div", "correct");
+    box.append(wrap);
+    const api = `api/jobs/${encodeURIComponent(jobId)}/correction`;
+    const showSaved = (records, justSaved) => {
+      wrap.replaceChildren();
+      const last = records[records.length - 1];
+      if (justSaved) wrap.append(el("div", "published", T().correctSaved));
+      if (last) {
+        wrap.append(el("h2", null, T().correctYours));
+        const chips = el("div", "chips");
+        for (const name of ATTRS) if (last.attributes[name]) chips.append(el("span", "chip", `${T().attrs[name]}: ${T().views[last.attributes[name]]}`));
+        wrap.append(chips);
+        if (last.note) wrap.append(el("div", "tip", last.note));
+        if (!justSaved) wrap.append(el("div", "tip", T().correctSaved));
+      }
+      const link = el("button", "again", T().correctLink);
+      link.type = "button";
+      link.addEventListener("click", () => openForm(records));
+      wrap.append(link);
+    };
+    const openForm = (records) => {
+      wrap.replaceChildren();
+      const form = el("form");
+      form.append(el("h2", null, T().correctLink), el("div", "tip", T().correctLead));
+      for (const name of ATTRS) {
+        const field = el("fieldset", "view");
+        field.append(el("legend", null, T().attrs[name]));
+        for (const v of ["matches", "does_not_match", "not_sure"]) {
+          const label = el("label");
+          const input = el("input");
+          input.type = "radio";
+          input.name = `c-${name}`;
+          input.value = v;
+          label.append(input, document.createTextNode(` ${T().views[v]}`));
+          field.append(label);
+        }
+        form.append(field);
+      }
+      const noteLabel = el("label", null, T().correctNote);
+      const note = el("input");
+      note.type = "text";
+      note.maxLength = 300;
+      noteLabel.append(note);
+      form.append(noteLabel);
+      const err = el("div", "error");
+      const save = el("button", "primary", T().correctSave);
+      save.type = "submit";
+      const cancel = el("button", "again", T().correctCancel);
+      cancel.type = "button";
+      cancel.addEventListener("click", () => showSaved(records, false));
+      form.append(err, save, cancel);
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const attributes = {};
+        for (const name of ATTRS) {
+          const picked = form.querySelector(`input[name="c-${name}"]:checked`);
+          if (picked) attributes[name] = picked.value;
+        }
+        save.disabled = true;
+        try {
+          const res = await fetch(api, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ attributes, note: note.value.trim() }) });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(body.error || String(res.status));
+          showSaved([...records, body], true);
+        } catch (e) {
+          save.disabled = false;
+          err.textContent = e && e.message ? e.message : T().errServer;
+        }
+      });
+      wrap.append(form);
+    };
+    fetch(api, { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body) => { if (body) showSaved(body.records || [], false); })
+      .catch(() => {});
   }
 
   function publishControl(status) {

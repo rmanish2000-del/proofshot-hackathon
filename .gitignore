@@ -4,3 +4,5 @@ out/
 *.log
 # Seller uploads from npm run serve: a seller's photos must never be committed by a sync.
 data/jobs/upload-*/
+# A seller's corrections to those uploads (UX-EASY2), stored outside the receipt chain.
+data/corrections/upload-*.json
