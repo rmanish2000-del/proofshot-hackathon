@@ -17,6 +17,8 @@ and in README.md. Anything not in the repository is **TBD**.
 
 **Project name:** ProofShot
 
+**Live demo:** https://rmanish2000-proofshot.hf.space/ (a public Hugging Face Space, `rmanish2000/proofshot`; the root opens the seller upload page, `/upload.html`, checked by Grok on 1 Nov 2026 at 20:10 IST). Which build and which providers the Space runs is not read from the Space repo in this file: UNVERIFIED here. Every claim below is about this repository, which runs offline per README "Quick start".
+
 **Tagline:** An evidence-checking agent for seller listing images: it decides the next action (segment, render, verify, request missing evidence from the seller, or refuse), a deterministic gate decides RELEASE, REVIEW or REFUSE, and every decision gets a hash-chained receipt.
 
 **Short description:** ProofShot is an evidence-checking agent for a seller's listing image. Before the image goes on sale, it decides the next action: segment the seller's phone photos, render or take the candidate, verify it, request missing evidence from the seller, or refuse. SAM 3.1 segments the garment, Muse Spark 1.3 on the Meta Model API checks nine attributes, a fidelity check measures the masked regions, and a deterministic code gate (not a model) decides RELEASE, REVIEW or REFUSE. Every step goes into a SHA-256 hash-chained receipt that a single web page verifies in the browser with no server.
@@ -69,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->411<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
+| Automated tests | <!--f:tests-->412<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |

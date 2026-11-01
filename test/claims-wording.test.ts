@@ -374,3 +374,28 @@ test("RV3 (Grok 20:00 1 Nov): tail cut named with git history, append-only is a 
   assert.match(flat, /not a provider bill/);
   assert.match(flat, /not a Replicate invoice/);
 });
+
+test("RV4 (Grok 20:10 1 Nov): the public Space is named, no 'No public deploy', the agent log is outside the gate chain, agent:real cost is the report's ledger delta", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  const URL_ = "https://rmanish2000-proofshot.hf.space/";
+  for (const [name, text] of [["README.md", readme], ["SUBMISSION.md", sub]] as const) {
+    assert.doesNotMatch(text, /No public deploy/i, name);
+    assert.ok(text.includes(`**Live demo:** ${URL_}`), `${name} names the live demo`);
+    assert.match(text, /Which build and which providers the Space runs is not read from the Space repo/, `${name} says what was not checked`);
+  }
+  assert.ok(readme.indexOf(URL_) < readme.indexOf("## What each Meta model does"), "near the top of README");
+  assert.match(readme, /## Keyless static demo \(`out\/static-demo\/`, not hosted\)/);
+  // Agent steps: a separate hash-chained agent.jsonl, not the gate receipt; said as a limit.
+  assert.match(readme, /go into a separate file per job, `records\/<seller>\/<job>\/agent\.jsonl`/);
+  assert.match(readme, /the replacement is not inside the gate's hash chain/);
+  assert.match(read("src/agent/store.ts"), /agent\.jsonl\s+the agent section, hash-chained like a receipt/);
+  assert.match(read("src/agent/service.ts"), /event: "replaced_primary"/);
+  // agent:real cost is the report's own field.
+  const real = JSON.parse(read("evidence/agent-real-2026-10-30.json")) as { meta_spend_usd_this_run: number; metrics: { spend_usd: number } };
+  assert.ok(readme.includes(`moved the Meta ledger by ${real.meta_spend_usd_this_run} USD`));
+  assert.ok(readme.includes(`budget estimate of ${real.metrics.spend_usd} USD`));
+  for (const [file, usd] of [["evidence/agent-replace-2026-10-31.json", "0.0756"], ["evidence/agent-replace-2026-10-31-label.json", "0.0433"]] as const) {
+    assert.equal(String((JSON.parse(read(file)) as { meta_spend_usd_this_run: number }).meta_spend_usd_this_run), usd, file);
+  }
+});

@@ -1,5 +1,11 @@
 # ProofShot (hackathon build)
 
+**Live demo:** https://rmanish2000-proofshot.hf.space/, a public Hugging Face
+Space (`rmanish2000/proofshot`) whose root opens the seller upload page
+(`/upload.html`), checked by Grok on 1 Nov 2026 at 20:10 IST. Which build and
+which providers the Space runs is not read from the Space repo in this README,
+so it is UNVERIFIED here; everything below is about this repository.
+
 ProofShot checks a candidate listing image against the seller's own phone
 photos of the garment (three or four of them) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
@@ -80,7 +86,9 @@ these all-logs totals; they were made before the run logs were counted (NUM10).
   <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all of them where the verifier gave no
   answer; that is a self-check on few garments, not an error rate.
 - **No generated on-model photo has been released**, and nothing here claims an
-  effect on returns or sales. No public deploy.
+  effect on returns or sales. The only public deploy is the Hugging Face
+  Space above (live demo), and what it runs is UNVERIFIED here; the static demo
+  below is not published anywhere.
 
 ## Quick start
 
@@ -136,7 +144,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->411<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->412<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -152,7 +160,11 @@ npm run agent:metrics   # local monitoring summary of the demo store
 ```
 
 `npm run agent:real` ran the agent once on two real seller photo pairs with the live gate (paid, metered on the
-Meta ledger; it refuses to run again over its own records): resolved 0 of 2, see SUBMISSION.md.
+Meta ledger; it refuses to run again over its own records): resolved 0 of 2, see SUBMISSION.md. That run
+moved the Meta ledger by 0.1058 USD (`meta_spend_usd_this_run` in `evidence/agent-real-2026-10-30.json`, the
+ledger's spent after minus before; the ledger is a sum of per-call estimates, not a bill), against the agent's
+own budget estimate of 0.12 USD for its 4 gate re-runs (`metrics.spend_usd` there). The replace runs' figures
+below are the same `meta_spend_usd_this_run` field.
 `npm run agent:replace` ran it once more on the same pairs with the replace-the-first-photo action
 (`request_replace_primary`: when fidelity fails and the receipt shows photo 1 is cropped, angled or partial, the
 seller is asked to replace photo 1 and the gate re-runs from the start): resolved 1 of 2. The polo went
@@ -162,10 +174,20 @@ because the note patterns missed the verifier's wording (0.0756 USD). After phot
 2026-10-31-label`): asked, REFUSE → RELEASE, same stand-in caveat, 0.0433 USD. 2 of 2 with the label; 0.1189 USD
 in total.
 
+Where the agent's steps are recorded: not in the gate receipt. Each gate re-run writes its own receipt
+(`records/<seller>/<job>/runs/run-<n>/receipt.jsonl`, the format below). The agent's proposals (a
+`request_replace_primary` included), tool results, the seller's approval and the replacement of photo 1
+(`replaced_primary`, old and new sha256) go into a separate file per job, `records/<seller>/<job>/agent.jsonl`,
+hash-chained like a receipt with entry kind `agent` (`src/agent/store.ts`, `src/agent/service.ts`; the
+committed ones are under `evidence/agent-real-2026-10-30/` and `evidence/agent-replace-2026-10-31*/`). The
+job record (`job.json`) keeps the request and the `replaced` list but is not chained. Limit: the two chains
+are not linked into one; the agent log's final entry names the last run's receipt head (`gate_head`), but no
+gate receipt names the agent log, so the replacement is not inside the gate's hash chain.
+
 The demo's verifier is a labelled canned stand-in (no model judged the images): it shows the mechanics, not
 accuracy. Nothing in it calls a model or publishes without the seller's approval.
 
-## Keyless static demo (not hosted)
+## Keyless static demo (`out/static-demo/`, not hosted)
 
 `npm run demo:static` builds `out/static-demo/`: the judge view, the verify page and the shop as plain files,
 for every committed job (local `upload-*` jobs are left out). It needs no server and no API key, and nothing in
@@ -640,7 +662,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->411<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->412<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
