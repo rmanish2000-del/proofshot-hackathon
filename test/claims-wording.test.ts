@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { parseReceipt } from "../src/core.js";
+import { verifyChain } from "../src/receipt.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const read = (doc: string) => readFileSync(join(root, doc), "utf8");
@@ -164,6 +166,43 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
   assert.match(sub, /updated 1 Nov 2026, on master after 3d2f94e/);
+});
+
+test("CA1 1 (Grok 08:15 1 Nov): one byte of an entry's content breaks the chain, file layout does not; SUBMISSION, the pack README and CLAIMS_AUDIT say so", () => {
+  const text = read("data/jobs/fixture-shirt-01/receipt.jsonl");
+  assert.equal(verifyChain(parseReceipt(text)).ok, true);
+  // Content: one byte of the first entry's time.
+  const content = text.replace('"at":"2026-10-27T15:00:00.000Z"', '"at":"2026-10-27T15:00:01.000Z"');
+  assert.notEqual(content, text);
+  const broken = verifyChain(parseReceipt(content));
+  assert.equal(broken.ok, false);
+  assert.equal(broken.ok === false && broken.index, 0);
+  // Layout: whitespace between tokens, key order, a blank line and an extra top-level field all still verify.
+  const lines = text.split("\n");
+  const first = JSON.parse(lines[0]!) as Record<string, unknown>;
+  const reordered = JSON.stringify({ hash: first.hash, prev: first.prev, payload: first.payload, kind: first.kind, at: first.at, seq: first.seq, note: "added" });
+  for (const layout of [text.replace('"seq":0,', '"seq": 0 ,'), [reordered, ...lines.slice(1)].join("\n"), text.replace("\n", "\n\n")]) {
+    assert.notEqual(layout, text);
+    assert.equal(verifyChain(parseReceipt(layout)).ok, true);
+  }
+  const scoped = /one byte of an entry's content/;
+  assert.match(read("SUBMISSION.md"), scoped);
+  assert.doesNotMatch(read("SUBMISSION.md"), /Change one byte of the receipt/);
+  assert.match(read("evidence/pack/README.md"), /Change one byte of an entry's content/);
+  const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| Change one byte and it says TAMPERED"))!;
+  assert.match(row, /\*\*weak, scoped \(CA1\)\*\*/);
+  assert.match(row, /whitespace between JSON tokens, key order, blank lines/);
+});
+
+test("CA1 2: CLAIMS_AUDIT does not lean on the gitignored judge-run file or a stale line range", () => {
+  const audit = read("CLAIMS_AUDIT.md");
+  for (const l of audit.split("\n").filter((l) => l.includes("out/final/JUDGE_RUN.md"))) {
+    assert.match(l, /gitignored local build folder/, l.slice(0, 80));
+  }
+  assert.doesNotMatch(audit, /`src\/gate\.ts` lines 39-48/);
+  assert.match(audit, /`src\/gate\.ts` `decide\(\)` \(lines 44-55/);
+  assert.match(read("src/gate.ts").split("\n")[43]!, /^export function decide\(/);
+  assert.doesNotMatch(audit, /was not observed in our committed runs/);
 });
 
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {
