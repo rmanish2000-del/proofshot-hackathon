@@ -7,7 +7,7 @@ which providers the Space runs is not read from the Space repo in this README,
 so it is UNVERIFIED here; everything below is about this repository.
 
 ProofShot checks a candidate listing image against the seller's own phone
-photos of the garment (three or four of them) before the image goes on sale. A
+photos of the garment (up to three; the upload page takes one to three JPEGs) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
 code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
 from those structured findings and a fidelity check, measured on the garment
@@ -71,8 +71,8 @@ these all-logs totals; they were made before the run logs were counted (NUM10).
   (`evidence/tryon/SUMMARY.md`) used <!--f:tryon_run31_garments-->5<!--/f--> other real garments (pink polo,
   mustard kurta, pink patchwork kurta, red floral kurta, grey shirt; photos in
   `data/seller-pairs`). No photo is shared between the two sets (sha256 in each
-  `intake.json`, checked by a test), and by eye none of the 5 is kurta-01 or
-  kurta-02, so <!--f:garments_all-->9<!--/f--> real garments in all. Every rate in this README describes
+  `intake.json`, checked by a test), and by eye none of the 5 is any of the 4
+  (kurta-01, kurta-02, shirt-plaid, shirt-zebra; front photos compared 2 Nov), so <!--f:garments_all-->9<!--/f--> real garments in all. Every rate in this README describes
   the pairs of the set it names, not ProofShot in general.
 - **Verifier accuracy is not measured in general.** The Muse Spark cross-check
   (MS4) refused <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs and released <!--f:ms4_same_released-->24 of 30<!--/f-->
@@ -143,8 +143,8 @@ minutes:
 Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
-The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->413<!--/f--> tests, the gate, receipt chain and verify core
+The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->414<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -662,7 +662,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->413<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->414<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
@@ -670,7 +670,7 @@ Dated experiment rows (each live run and when it happened) are in
 | Calibration | <!--f:cal_cases-->37<!--/f--> labelled renders (<!--f:cal_same-->18<!--/f--> same, <!--f:cal_different-->19<!--/f--> different) at the shipped thresholds: <!--f:cal_false_match-->0<!--/f--> false matches, <!--f:cal_false_refuse-->4<!--/f--> false refusals (all where the verifier gave no answer), <!--f:cal_unmeasured-->6<!--/f--> unmeasured; recorded decisions reproduced <!--f:cal_reproduced-->37 of 37<!--/f-->. A self-check, not an error rate | `evidence/calibration-jobs-2026-10-29.json` |
 | Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
 | Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. From disk (`file://`): **checked in headless Edge** by `npm run demo:capture` (29 Oct, no flags that loosen security): `ms2-shirt-plaid` receipt and image → VALID, its one-byte copy → TAMPERED. Not yet checked from disk in a normal browser window: the in-app browser used for the HTTP check shows `file://` pages outside its project as a static snapshot | also tested in Node against the same core |
-| Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form, every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
+| Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form (the 29 Oct page, before UX-EASY1 made it two steps: Photos, Result; this row does not cover the two-step page), every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
 | Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 6c6837f, no EXIF/GPS, no phone number; since the 30 Oct history re-authoring every commit's author and committer email is a GitHub noreply address, see the history note below and `docs/HISTORY.md`) | made public by Manish on 28 Oct after the history scan |
 
 ## Built during the event

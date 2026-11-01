@@ -399,3 +399,17 @@ test("RV4 (Grok 20:10 1 Nov): the public Space is named, no 'No public deploy', 
     assert.equal(String((JSON.parse(read(file)) as { meta_spend_usd_this_run: number }).meta_spend_usd_this_run), usd, file);
   }
 });
+
+test("RV6 (Grok 23:41 1 Nov): README by-eye check names all 4, photo count matches the upload page, suite time is the measured range, the 3-step browser check is dated", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const limit = readme.slice(readme.indexOf("**Small sample.**"), readme.indexOf("**Verifier accuracy is not measured"));
+  assert.match(limit, /by eye none of the 5 is any of the 4 \(kurta-01, kurta-02, shirt-plaid, shirt-zebra;/);
+  assert.doesNotMatch(readme, /none of the 5 is kurta-01 or kurta-02/);
+  assert.doesNotMatch(readme, /three or four of them/);
+  assert.match(read("web/upload.html"), /const MAX_PHOTOS = 3;/);
+  assert.match(readme, /\(up to three; the upload page takes one to three JPEGs\)/);
+  assert.doesNotMatch(readme, /about five minutes/);
+  assert.match(readme, /measured 316 s to 423 s on one laptop/);
+  assert.match(read("SUBMISSION.md"), /`npm test` 316 s to 423 s on the same laptop/);
+  assert.match(readme, /through the 3-step form \(the 29 Oct page, before UX-EASY1 made it two steps: Photos, Result;/);
+});
