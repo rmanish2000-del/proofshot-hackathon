@@ -1,5 +1,13 @@
 # ProofShot demo script v6 (proofshot-hackathon)
 
+Current status (1 Nov 2026): the narration and beats of the video to submit
+are the v7 re-render script below (31 Oct: five beats, 2:45, or 2:50 with the
+optional end card; five real garments in beat 3, as a verdict table and one
+composite). The v6 sections (the status note, "What exists today", the
+timecode table ending at 1:16 and the shot list) still drive
+`npm run demo:capture`, which records the v6 frames; v7 reuses some of them
+(beat 4 is v6 S7/S8). Where the two differ, v7 is what the video says.
+
 Status: v6, 29 Oct 2026, from Manish: the demo shows the two shirts only (plaid
 and zebra), no kurta anywhere. v5's try-on beat (`live-kurta-01-tryon-m`) is
 dropped, not replaced: no committed shirt job has a try-on render (all 7 of

@@ -279,3 +279,31 @@ test("wording 4: DEMO v7 runs 170 s or less with the end card, the beats are bac
   assert.ok(clock <= 170, `v7 runs ${clock} s, target 170 s or less`);
   assert.match(rows[0]!, /prior-work caption .* from 0:00 to 0:05/);
 });
+
+test("RM4 (Grok 18:30 1 Nov): README cites call logs, names the demo jobs, says what the keyless capture proves; no private-issue cite in SUBMISSION; DEMO.md says v7 is current", () => {
+  const readme = read("README.md");
+  const flat = readme.replace(/\s+/g, " ");
+  assert.doesNotMatch(flat, /no generative render transport exists/);
+  assert.match(flat, /only the Pruna try-on is written/);
+  assert.doesNotMatch(flat, /No new paid call was made for the video/);
+  assert.match(flat, /`providersFromEnv\(\{\}\)` in `scripts\/demo-capture\.ts`/);
+  assert.match(read("scripts/demo-capture.ts"), /const providers = providersFromEnv\(\{\}\);/);
+  assert.doesNotMatch(flat, /every job in the demo video is one of those/);
+  for (const job of ["ms2-shirt-plaid", "live-shirt-plaid-composite-v2-r3", "live-shirt-plaid-mismatch"]) {
+    assert.match(flat, new RegExp(`shows three of them: .*\`${job}\``), job);
+    assert.ok(readdirSync(join(root, "data/jobs")).includes(job), `${job} is committed`);
+  }
+  // The cited call logs exist and say what the README says of them.
+  const v = read("evidence/verifier-2026-10-28T03-55-00-289Z.json");
+  assert.match(v, /"max_tokens": 1500/);
+  assert.match(v, /"finish_reason": "length"/);
+  assert.match(flat, /`evidence\/verifier-2026-10-28T03-55-00-289Z\.json`/);
+  const f = read("evidence/fireworks-2026-10-29T04-39-45-711Z.json");
+  assert.match(f, /llama-v3p3-70b-instruct/);
+  assert.match(f, /"status": 404/);
+  assert.match(flat, /`evidence\/fireworks-2026-10-29T04-39-45-711Z\.json`/);
+  const sub = read("SUBMISSION.md");
+  assert.doesNotMatch(sub, /SP1 list on #23/);
+  assert.match(sub.replace(/\s+/g, " "), /seven of them, cases 2 to 6, 11 and 12, need a real phone photo/);
+  assert.match(read("docs/DEMO.md").split("## What exists today")[0]!.replace(/\s+/g, " "), /Current status .* v7 re-render script below .* still drive `npm run demo:capture`/);
+});

@@ -60,7 +60,8 @@ export function selfComparisonReview(checker: FidelityChecker): FidelityChecker 
  * SC2 (Grok, 31 Oct): a byte match misses the same picture re-saved, re-encoded, resized or stripped of EXIF. Both
  * images are box-averaged onto a NEAR_COPY_GRID x NEAR_COPY_GRID grid of RGB cells and compared by the mean absolute
  * cell difference (0 to 255). At or below NEAR_COPY_MAX it is the same picture. Measured in test/agent-replace.test.ts
- * "replace 10": re-encodes and a half-size copy of a committed photo stay below 1; a different photo of the same
+ * "replace 10", on a half-size copy of a committed photo (FLK2, to keep the Windows suite fast): its re-encodes and a
+ * further half-size copy stay below 1; a different photo of the same
  * garment (front vs back) is far above 10. Not caught: a crop, a rotation or a mirror (the aspect ratio or the grid
  * changes), and anything that is not a JPEG or PNG. Only ever stricter: it turns a RELEASE into REVIEW, and is not
  * run on a REVIEW or REFUSE, which it could not change.

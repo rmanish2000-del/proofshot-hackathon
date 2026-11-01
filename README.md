@@ -31,8 +31,10 @@ That is why the demo video shows no AI on-model image: when the v6 script was
 written (29 Oct) every committed try-on receipt (<!--f:tryon_total-->7<!--/f-->, <!--f:tryon_review-->2<!--/f--> REVIEW and <!--f:tryon_refuse-->5<!--/f--> REFUSE) was a kurta job held by
 the gate, the demo shows the two shirts only, and there was no shirt try-on. The
 31 Oct run's try-ons show the synthetic model, so the v7 re-render shows only their verdict table.
-No new paid call was made for the video (`docs/DEMO.md`,
-`test/demo-capture.test.ts`). The video to submit is the v7 re-render in
+The demo capture reads no API key (fixture providers only,
+`providersFromEnv({})` in `scripts/demo-capture.ts`) and every captured frame
+points at a committed job, recording or file (`test/demo-capture.test.ts`,
+DEMO1). The video to submit is the v7 re-render in
 `docs/DEMO.md`: its script runs 2:45, or 2:50 with the optional end card. That
 is the script length; the rendered file is not committed, so its measured
 length is not stated here. The v6 capture (9 shots) is 76 s; that is capture
@@ -133,7 +135,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (about five minutes on
-a laptop): `npm test` runs <!--f:tests-->400<!--/f--> tests, the gate, receipt chain and verify core
+a laptop): `npm test` runs <!--f:tests-->401<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -191,7 +193,12 @@ receipt). The receipt's job entry says provenance `fixture`, the upload page
 shows a "Fixture mode: no model key is set" banner and tags each result
 "fixture job", and the verifier is named "fixture verifier (no model judged the
 image)". Verified results are the committed live jobs in
-`data/jobs` (provenance `live`); every job in the demo video is one of those.
+`data/jobs` (provenance `live`). The demo capture (v6 shot list in
+`docs/DEMO.md`) shows three of them: `ms2-shirt-plaid`,
+`live-shirt-plaid-composite-v2-r3` and `live-shirt-plaid-mismatch`. The v7
+re-render adds the keyless `npm run agent:demo` run (a labelled canned
+verifier, not a `data/jobs` job) and the 31 Oct try-on run's verdict table and
+shirt-pink composite from `evidence/tryon/` (`evidence/tryon/SUMMARY.md`).
 
 1. Install dependencies from the committed lockfile:
 
@@ -358,7 +365,10 @@ reason, provenance, a "Verify it yourself offline" link to
 and image. The shop decides nothing and calls no model; it reads.
 
 It shows fixture jobs, written by the same script with a recorded clock, and
-the committed live jobs; no generative render transport exists (SPEC §8).
+the committed live jobs. Of the generative render transports (SPEC §8), only
+the Pruna try-on is written (`src/render-replicate.ts`, see Providers), and
+the gate held all <!--f:tryon_all_total-->12<!--/f--> of its committed outputs, so no shop card shows one; the
+`openai-images`, `fal` and `meta` transports are not written.
 `data/jobs/fixture-shirt-01` has synthetic images. `data/jobs/kurta-01` and
 `kurta-02` are preview jobs for the two photographed garments under
 `data/garments/`: the sources are the intake photos with their `intake.json`
@@ -416,7 +426,9 @@ committed by a sync. Pass `--jobs <dir> --shop <dir>` for a scratch run.
 garment's intake photos from the command line, and refuses to start unless the
 verifier is live. The first two live jobs committed under `data/jobs/` were
 `live-kurta-01` (REFUSE: the model's answer was cut off at 1500 tokens, so the
-gate saw no findings) and `live-kurta-01-2` (REVIEW: all nine findings
+gate saw no findings; this job ran on 28 Oct with `max_tokens` 1500, before
+the limit was raised to 8192 with a retry at 16384, see its call log
+`evidence/verifier-2026-10-28T03-55-00-289Z.json`, `finish_reason` `length`) and `live-kurta-01-2` (REVIEW: all nine findings
 `match` at 0.96 or above, fidelity unmeasured because no mask exists); the
 second is recorded as `demo/recordings/live-kurta-01-2`.
 
@@ -534,7 +546,8 @@ committed.
   Meta's `accounts/fireworks/models/muse-spark-open` on Fireworks from facts
   already in the receipt and the seller's note, stored in `data/copy/`, never
   in the hash chain. `FIREWORKS_MODEL` overrides the model id. Llama 3.3 70B
-  is not served to this key (404, cfaa582), so no text here is from Llama. An
+  is not served to this key (404; call log
+  `evidence/fireworks-2026-10-29T04-39-45-711Z.json`, cfaa582), so no text here is from Llama. An
   answer that drops, changes or softens the gate's decision word, or is cut
   off, is not used: the record holds the template text and says why.
 - Spend caps (CAP1 / CAP1b, 29 Oct, enforced in code with a ledger entry per
@@ -593,7 +606,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->400<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->401<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
