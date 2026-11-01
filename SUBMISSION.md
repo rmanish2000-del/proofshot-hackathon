@@ -41,8 +41,8 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 | Model | Served by | Role | Logged calls |
 |---|---|---|---|
-| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: masks for the composite and the fidelity check | <!--f:sam_calls-->130<!--/f--> |
-| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
+| SAM 3.1 (`meta/sam-3.1`) | Meta Model API, `api.meta.ai` | Garment segmentation: masks for the composite and the fidelity check | <!--f:sam_calls_all-->177<!--/f--> (<!--f:sam_calls-->130<!--/f--> in the evidence pack, <!--f:sam_calls_runs-->47<!--/f--> in the 30–31 Oct run logs) |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Meta Model API, `api.meta.ai` | Verifier: per-attribute findings the gate reads | <!--f:muse13_calls_all-->242<!--/f--> (<!--f:muse13_calls-->226<!--/f--> in the evidence pack, <!--f:muse13_calls_runs-->16<!--/f--> in the 30–31 Oct run logs) |
 | Muse Spark Open (`meta-models/muse-spark-open-1026`) | Baseten | The first verifier. Built with Muse Spark Open | <!--f:baseten_calls-->19<!--/f--> |
 | muse-spark-open (`accounts/fireworks/models/muse-spark-open`) | Fireworks | English and Hindi listing copy, written after the gate | <!--f:fireworks_calls-->293<!--/f--> |
 
@@ -69,8 +69,8 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->392<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
-| Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify | `evidence/pack/summary.json` |
+| Automated tests | <!--f:tests-->393<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
 | Calibration: false refusals at 1x | <!--f:cal_false_refuse-->4<!--/f-->, all verifier failures (2 failed calls, 2 non-JSON answers), not a threshold effect | same; Calibration below |
@@ -81,7 +81,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
 | Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run) |
 | Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` |
-| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
+| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; the 30–31 Oct agent and try-on runs add about 0.45 USD on the Meta ledger by their own reports (0.106 + 0.0756 + 0.0433 + 0.2277), not in that reading; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
 | General verifier accuracy | **not measured** (4 garments, all the owner's own; the rates above are for these pairs only) | README "What is verified and what is not" |
 | False-match rate on real sellers' listings | **not measured** | none |
 | End-to-end latency of one live job | **not measured** as a single number (per-call medians only) | none |
@@ -116,8 +116,9 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
 - **Design guidance:** OWASP Top 10 for LLM Applications, LLM06 Excessive Agency (limit tools, permissions and
   autonomy). This is design guidance we followed, not a certification or an audit.
 
-**Results, measured** (`evidence/agent-eval-2026-10-30.json`, `npm run agent:eval`): on the <!--f:jobs-->42<!--/f--> committed jobs
-plus the fixture job (43 receipts), one offline agent step each, no seller action and no model call: 0 decisions
+**Results, measured** (`evidence/agent-eval-2026-10-30.json`, `npm run agent:eval`): on the <!--f:receipts-->43<!--/f--> committed
+receipts in `data/jobs` (the <!--f:jobs-->42<!--/f--> jobs with a render, the fixture job among them, plus <!--f:receipts_no_render-->1<!--/f--> that stopped before
+a render), one offline agent step each, no seller action and no model call: 0 decisions
 changed by the agent; 20 real violations left alone; 5 missing-evidence cases got a photo request (4 full-length
 front, 1 label close-up); 4 verifier failures got a paid re-check proposal that waits for approval; **0 resolved**,
 because resolving needs a new seller photo or an approved paid call, which the committed data does not have. On
@@ -207,8 +208,8 @@ limits, local metrics (`npm run agent:metrics`); the managed-queue path is a pla
 An Indian boutique seller lists every garment from their own phone photos.
 Any image that goes on that listing, a cleaned-up product shot or an AI
 try-on, can quietly change the colour, the print or the length, and the buyer
-gets something else. In my live try-on calls, long kurtas came back shorter,
-and the gate held all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none
+gets something else. In my 28–29 Oct live try-on calls, long kurtas came back shorter,
+and across both try-on sets the gate held all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none
 released; <!--f:tryon_total-->7<!--/f--> kurta try-ons on 28–29 Oct and <!--f:tryon_run31_total-->5<!--/f--> on 31 Oct). So I wanted a deterministic check against the seller's own photos
 before any candidate image can be listed.
 
@@ -236,8 +237,8 @@ Any image that goes on the listing, whether a cleaned-up product shot or an AI
 try-on, can quietly change the garment: its colour, its print, its length. A
 buyer then gets something other than what the photo showed.
 
-In our live try-on calls, long kurtas came back shorter, and the gate caught
-every one: <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed try-on images were held (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW), none released.
+In our 28–29 Oct live try-on calls, long kurtas came back shorter. Across both
+try-on sets (kurtas and shirts), <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed try-on images were held (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW), none released.
 ProofShot checks each candidate image against the seller's own photos before it
 can be listed, and a deterministic gate, not a model, decides.
 
@@ -322,8 +323,8 @@ chain in the browser with WebCrypto.
 
 | Model | Served by | Role | Logged calls |
 |---|---|---|---|
-| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | <!--f:sam_calls-->130<!--/f--> |
-| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls-->226<!--/f--> |
+| SAM 3.1 | Meta Model API, `api.meta.ai` | Garment segmentation for the composite and the fidelity masks | <!--f:sam_calls_all-->177<!--/f--> (<!--f:sam_calls-->130<!--/f--> in the evidence pack, <!--f:sam_calls_runs-->47<!--/f--> in the 30–31 Oct run logs) |
+| Muse Spark 1.3 | Meta Model API, `api.meta.ai` | Verifier only: per-attribute findings the gate reads | <!--f:muse13_calls_all-->242<!--/f--> (<!--f:muse13_calls-->226<!--/f--> in the evidence pack, <!--f:muse13_calls_runs-->16<!--/f--> in the 30–31 Oct run logs) |
 | muse-spark-open | Fireworks | English and Hindi listing copy and receipt summaries | <!--f:fireworks_calls-->293<!--/f--> |
 | Muse Spark Open | Baseten | The first verifier (calls logged 28 Oct 09:25 IST to 29 Oct 06:13 IST; 2 earlier one-word smoke calls in `evidence/baseten-*.json` are not counted here) | <!--f:baseten_calls-->19<!--/f--> |
 | Pruna try-on (`prunaai/p-image-try-on`) | Replicate | AI try-on candidates; all held by the gate | <!--f:pruna_all_calls-->12<!--/f--> (render entries in the receipts: <!--f:pruna_calls-->7<!--/f--> for the 28–29 Oct kurta jobs, the rest in the 31 Oct try-on run) |

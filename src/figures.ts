@@ -11,6 +11,9 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
+import { callStats } from "./evidence-pack.ts";
+import { parseReceipt, verifyChain } from "./receipt.ts";
+
 type Json = Record<string, any>;
 const readJson = (p: string): Json => JSON.parse(readFileSync(p, "utf8")) as Json;
 const of = (n: number, d: number) => `${n} of ${d}`;
@@ -23,6 +26,24 @@ export function testCount(root: string): number {
   return readdirSync(dir)
     .filter((n) => n.endsWith(".test.ts"))
     .reduce((n, f) => n + (readFileSync(join(dir, f), "utf8").match(/^test\(/gm)?.length ?? 0), 0);
+}
+
+/** evidence/<run>/logs folders: call logs of the dated agent and try-on runs, outside the pack's count. */
+export function runLogDirs(root: string): string[] {
+  const ev = join(root, "evidence");
+  return readdirSync(ev, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && existsSync(join(ev, d.name, "logs")))
+    .map((d) => join(ev, d.name, "logs"))
+    .sort();
+}
+
+/** Every committed receipt in data/jobs (upload-* jobs are not committed), with or without a render. */
+export function committedReceipts(root: string): string[] {
+  const jobs = join(root, "data/jobs");
+  return readdirSync(jobs).sort()
+    .filter((job) => !job.startsWith("upload-"))
+    .map((job) => join(jobs, job, "receipt.jsonl"))
+    .filter((p) => existsSync(p));
 }
 
 export function computeFigures(root: string): Record<string, string> {
@@ -58,6 +79,15 @@ export function computeFigures(root: string): Record<string, string> {
       .filter((g) => readdirSync(join(runDir, g)).some((r) => existsSync(join(runDir, g, r, "receipt.jsonl"))))
     : [];
 
+  // NUM10 (1 Nov): the 30–31 Oct agent and try-on runs keep their call logs in evidence/<run>/logs/,
+  // which the pack (evidence/ and evidence/ms4 only) does not count; counted here and named apart.
+  const runStages = callStats(runLogDirs(root));
+  const runCalls = (prefix: string) => runStages.filter((s) => s.stage.startsWith(prefix)).reduce((n, s) => n + s.calls, 0);
+  // NUM10: the pack's `jobs` counts jobs with a render; every committed receipt (the agent evaluation's unit)
+  // includes the ones that stopped before a render, so it is counted here with its own chain check.
+  const receipts = committedReceipts(root);
+  const receiptChainsOk = receipts.filter((p) => verifyChain(parseReceipt(readFileSync(p, "utf8"))).ok).length;
+
   const r = pack.receipts as Json;
   return {
     tests: String(testCount(root)),
@@ -67,6 +97,14 @@ export function computeFigures(root: string): Record<string, string> {
     fireworks_calls: calls("copy: accounts/fireworks/models/muse-spark-open"),
     baseten_calls: calls("verify: meta-models/muse-spark-open-1026"),
     llama_calls: calls("copy: accounts/fireworks/models/llama"),
+    sam_calls_runs: String(runCalls("segment: SAM")),
+    muse13_calls_runs: String(runCalls("verify: muse-spark-1.3")),
+    sam_calls_all: String(Number(calls("segment: SAM")) + runCalls("segment: SAM")),
+    muse13_calls_all: String(Number(calls("verify: muse-spark-1.3")) + runCalls("verify: muse-spark-1.3")),
+    run_log_dirs: String(runLogDirs(root).length),
+    receipts: String(receipts.length),
+    receipts_no_render: String(receipts.length - Number(r.jobs)),
+    receipt_chains: of(receiptChainsOk, receipts.length),
     jobs: String(r.jobs),
     renders: String(r.renders),
     chains: of(r.chains_ok, r.jobs),

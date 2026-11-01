@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { FIGURE_DOCS, applyFigures, computeFigures, testCount } from "../src/figures.ts";
+import { FIGURE_DOCS, applyFigures, computeFigures, runLogDirs, testCount } from "../src/figures.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
@@ -44,6 +44,30 @@ test("figures 4 (NUM6): the 31 Oct try-on run is counted, all = 28–29 Oct kurt
     const text = readFileSync(join(root, doc), "utf8").replace(/\s+/g, " ");
     assert.doesNotMatch(text, /all <!--f:tryon_total-->\d+<!--\/f--> (committed|try-on|AI)|<!--f:tryon_total-->\d+<!--\/f--> of <!--f:tryon_total-->\d+<!--\/f--> committed/i, `${doc}: the kurta set is named, not 'all committed'`);
   }
+});
+
+test("figures 6 (NUM10): run-folder call logs and receipts without a render are counted, and the docs say so", () => {
+  const f = computeFigures(root);
+  // The 30–31 Oct agent and try-on runs: evidence/{agent-real-2026-10-30,agent-replace-2026-10-31,agent-replace-2026-10-31-label,tryon}/logs.
+  assert.deepEqual(runLogDirs(root).map((d) => d.split(/[\\/]/).at(-2)).sort(), ["agent-real-2026-10-30", "agent-replace-2026-10-31", "agent-replace-2026-10-31-label", "tryon"]);
+  assert.ok(Number(f.sam_calls_runs) > 0 && Number(f.muse13_calls_runs) > 0);
+  assert.equal(Number(f.sam_calls_all), Number(f.sam_calls) + Number(f.sam_calls_runs));
+  assert.equal(Number(f.muse13_calls_all), Number(f.muse13_calls) + Number(f.muse13_calls_runs));
+  // Receipts: every committed one verifies, and the agent evaluation read exactly these.
+  assert.equal(f.receipt_chains, `${f.receipts} of ${f.receipts}`);
+  assert.equal(Number(f.receipts), Number(f.jobs) + Number(f.receipts_no_render));
+  const evalReport = JSON.parse(readFileSync(join(root, "evidence/agent-eval-2026-10-30.json"), "utf8"));
+  assert.equal(evalReport.jobs, Number(f.receipts), "agent-eval counts every committed receipt");
+  const sub = readFileSync(join(root, "SUBMISSION.md"), "utf8").replace(/\s+/g, " ");
+  assert.doesNotMatch(sub, /committed jobs plus the fixture job/, "the fixture job is one of the jobs, not an extra one");
+  assert.doesNotMatch(sub, /In (my|our) live try-on calls, long kurtas came back shorter/, "the shortening was seen on the 28–29 Oct kurta set, not on all 12");
+  for (const doc of FIGURE_DOCS) {
+    const text = readFileSync(join(root, doc), "utf8");
+    if (text.includes("<!--f:sam_calls-->")) assert.ok(text.includes("<!--f:sam_calls_runs-->"), `${doc}: a SAM count names the run-log calls too`);
+    if (text.includes("<!--f:muse13_calls-->")) assert.ok(text.includes("<!--f:muse13_calls_runs-->"), `${doc}: a Muse Spark 1.3 count names the run-log calls too`);
+  }
+  const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\s+/g, " ");
+  assert.doesNotMatch(readme, /held all of them only because the fidelity check/, "the gate cited the verifier for 3 of the 7");
 });
 
 test("figures 5 (AGW5): the 4 receipt garments and the 5 garments of the 31 Oct run share no photo, so garments_all adds them", () => {
