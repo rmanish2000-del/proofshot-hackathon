@@ -272,7 +272,11 @@ function resize(bytes: Uint8Array, width: number, height: number): Uint8Array {
 }
 
 test("replace 10 (SC2): a new photo 1 that is the image to publish re-encoded or resized is REVIEW too; a different photo is not", async (t) => {
-  const candidate = photo("2-back.jpg");
+  // FLK2: the threshold measurements run on a half-size copy of the committed photo. At full size this test
+  // took 222 s alone on Windows (jpeg-js decodes and encodes in pure JS) and held the full suite past 20 min.
+  // A quarter-size base is too coarse: its half copy measured 1.83. The through-the-agent part uses the full photo.
+  const full = photo("2-back.jpg");
+  const candidate = resave(full, 95, 2);
   // exif: the same pixels with an Exif APP1 block after SOI, as a phone file differs from its stripped copy.
   const exif = new Uint8Array([0xff, 0xd8, 0xff, 0xe1, 0x00, 0x0a, 0x45, 0x78, 0x69, 0x66, 0, 0, 0, 0, ...candidate.subarray(2)]);
   const copies = { exif, q50: resave(candidate, 50), q95: resave(candidate, 95), half: resave(candidate, 70, 2) };
@@ -303,7 +307,7 @@ test("replace 10 (SC2): a new photo 1 that is the image to publish re-encoded or
   const { store, config, gate } = setup();
   await badJob(store, gate, config);
   await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
-  replacePrimary(store, "seller-a", "polo-1", { file: "front.jpg", bytes: copies.q50, view: "full_length_front" }, "seller A", config, CLOCK);
+  replacePrimary(store, "seller-a", "polo-1", { file: "front.jpg", bytes: resave(full, 50), view: "full_length_front" }, "seller A", config, CLOCK);
   const s2 = await runAgentStep({ store, seller: "seller-a", job: "polo-1", gate, config, clock: CLOCK });
   assert.equal(s2.decision, "REVIEW", "a re-saved copy of the image to publish is not a fidelity pass");
   assert.notEqual(s2.status, "ready_to_publish");
