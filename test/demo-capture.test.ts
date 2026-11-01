@@ -256,9 +256,40 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
     return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
   });
   assert.match(gen, new RegExp(`the ${tryons.length} live try-on calls committed so far \\(${tryons.length} receipts`));
-  // The try-on beat was dropped, not swapped, because no committed shirt job has a try-on render.
-  assert.ok(tryons.length > 0 && tryons.every((d) => d.includes("kurta")), "every committed try-on is a kurta job");
-  assert.match(gen, /there is no shirt try-on, so this video has no try-on beat/);
+  // v6 dropped the try-on beat because on 29 Oct no committed shirt job had a try-on render; every
+  // data/jobs try-on is still a kurta job. RV5: the 31 Oct run added shirt try-ons under evidence/tryon.
+  assert.ok(tryons.length > 0 && tryons.every((d) => d.includes("kurta")), "every data/jobs try-on is a kurta job");
+  assert.match(gen, /there was no shirt try-on on 29 Oct, so v6 has no try-on beat/);
+  const run31 = readdirSync(join(root, "evidence/tryon")).filter((g) => {
+    const p = join(root, "evidence/tryon", g, "pruna", "receipt.jsonl");
+    return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
+  });
+  const shirts = run31.filter((g) => g.startsWith("shirt-")).sort();
+  const kurtas = run31.filter((g) => g.startsWith("kurta-"));
+  assert.deepEqual(shirts, ["shirt-grey-mufti", "shirt-pink"]);
+  const flat = md.replace(/\s+/g, " ");
+  assert.ok(flat.includes(`so ${tryons.length + run31.length} committed try-on receipts now: ${tryons.length + kurtas.length} kurta`), "DEMO.md counts the try-on receipts by garment");
+  assert.ok(flat.includes(`and ${shirts.length} shirt (shirt-pink, shirt-grey-mufti)`));
+  assert.match(flat, /That was true for v6 only/);
+});
+
+test("RV5 (Grok 23:25 1 Nov): DEMO.md beats 2 to 4 name their sources and timing; SUBMISSION spend, chain and 9-call lines are scoped", () => {
+  const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
+  const beat = (n: number) => md.split("\n").find((l) => l.startsWith(`| ${n} `) && !l.startsWith(`| ${n} |`))!;
+  assert.match(beat(2), /`label_closeup`/);
+  assert.match(beat(2), /`publish` in `src\/agent\/service\.ts` refuses without that approval/);
+  assert.match(readFileSync(join(root, "src/agent/service.ts"), "utf8"), /not publishable: the seller has not approved publishing/);
+  assert.match(readFileSync(join(root, "scripts/agent-demo.ts"), "utf8"), /view: "label_closeup"/);
+  assert.match(beat(3), /AI try-ons released: \*\*0 of 5\*\*/);
+  assert.match(readFileSync(join(root, "evidence/tryon/SUMMARY.md"), "utf8"), /AI try-ons released: \*\*0 of 5\*\*/);
+  assert.match(beat(4), /6 s each, 12 s of frames inside v6 beat 6, 0:54 to 1:10, 16 s/);
+  assert.match(beat(4), /holding them longer/);
+  assert.doesNotMatch(md, /\| Hosted service, public deploy \| \*\*none\*\*/);
+  const sub = readFileSync(join(root, "SUBMISSION.md"), "utf8").replace(/\s+/g, " ");
+  assert.doesNotMatch(sub, /on the Meta ledger by their own reports/);
+  assert.match(sub, /not a later ledger reading and not a bill/);
+  assert.match(sub, /<!--f:chains-->[^<]+<!--\/f--> hash chains verify; with the <!--f:receipts_no_render-->[^<]+<!--\/f--> job that stopped before a render, <!--f:receipt_chains-->[^<]+<!--\/f--> committed receipts verify\. In calibration/);
+  assert.match(sub, /Those 9 are Meta call logs in the pack's own folders/);
 });
 
 test("DEMO1b: the replay log page shows the replay lines and one line per receipt entry, with no key and no home path", () => {
