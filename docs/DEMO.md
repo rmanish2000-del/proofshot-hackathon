@@ -11,7 +11,7 @@ are in git history. Every job on screen is a committed receipt; "What exists
 today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
 v6 capture timing 76 s (the video to submit is the v7 re-render below: script
-length 2:45, or 2:50 with the optional end card). Screen recording only, burned-in captions. Voice: Manish's own (an
+length 2:45, or 2:50 with the optional end card). Screen recording only, burned-in captions. Voice: the recorded voiceover (an
 AI voice is UNVERIFIED against the rules). Word cap per beat = seconds x 2.5
 (150 wpm).
 
@@ -45,7 +45,7 @@ Grok 21:10 IST 31 Oct: the prior-work line comes at the opening, as an
 on-screen caption over the first 5 s of beat 1; beat 3 is 10 s shorter (40 s,
 same narration, which fits its cap) and the later beats move up; the end card
 is optional. The narration text is unchanged from the first v7 (72db20c). The
-narration audio is Manish's own recorded voiceover; nothing is re-recorded or
+narration audio is the recorded voiceover; nothing is re-recorded or
 generated.
 
 | Beat | Time | Screen | Narration | Source |
@@ -61,7 +61,7 @@ Prior-work caption (beat 1, 0:00 to 0:05) and optional end card, on screen exact
 
 Prior work: the written specification and config boilerplate only. Everything you see running was coded during the hackathon, from 27 Oct (first commit 15658a4). git log is public.
 
-Beat 1 narration is verbatim from Manish's recorded voiceover and is not
+Beat 1 narration is verbatim from the recorded voiceover and is not
 re-recorded (Grok 21:57 IST 31 Oct): its agent wording claims only catching. The agent is named in the caption instead, on screen over the last
 sentence of beat 1, exactly:
 
@@ -141,4 +141,4 @@ recording (checklist).
 - [ ] No person in any frame.
 - [ ] Captions burned in; each beat under its word cap; total 76 s.
 - [ ] End slide URL is `github.com/rmanish2000-del/proofshot-hackathon`; licence only if `LICENSE` exists.
-- [ ] Manish's own voice.
+- [ ] The recorded voiceover; no synthesized audio.

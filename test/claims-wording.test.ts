@@ -52,7 +52,7 @@ test("wording 7 (Grok 21:57, 22:10): no 'Evidence Recovery' name in SUBMISSION, 
   for (const doc of ["README.md", "SUBMISSION.md", "src/agent/vocab.ts"]) assert.match(read(doc), /docs\/EVIDENCE_CHECKING_PLAN\.md/, doc);
   assert.match(beat1, /the agent caption \(below\) over the last sentence/);
   assert.match(beat1.split("|")[4]!, /ProofShot is an evidence-recovery agent that catches that/);
-  assert.match(v7, /verbatim from Manish's recorded voiceover/);
+  assert.match(v7, /verbatim from the recorded voiceover/);
   assert.ok(v7.includes("\nEvidence-checking agent: it asks the seller for missing evidence, or refuses.\n"));
 });
 
@@ -141,6 +141,29 @@ test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISS
   assert.match(plan, /Built since: the agent's local `check_photo_quality` \(`src\/agent\/quality\.ts`/);
   assert.match(plan, /Still plan: crop, which needs a garment mask/);
   assert.match(read("src/agent/quality.ts"), /crop: "not checked \(no garment mask\)"/);
+});
+
+test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded voiceover is; the rest-of-v7 voice stays UNVERIFIED; the SUBMISSION header is current", () => {
+  const skip = new Set(["node_modules", "out", ".git"]);
+  const walk = (dir: string): string[] =>
+    readdirSync(join(root, dir), { withFileTypes: true }).flatMap((e) => {
+      const rel = dir ? `${dir}/${e.name}` : e.name;
+      if (e.isDirectory()) return skip.has(e.name) ? [] : walk(rel);
+      return e.name.endsWith(".md") ? [rel] : [];
+    });
+  const docs = walk("");
+  assert.ok(docs.includes("docs/DEMO.md") && docs.includes("CLAIMS_AUDIT.md"));
+  for (const doc of docs) {
+    const text = read(doc).replace(/\s+/g, " ");
+    assert.doesNotMatch(text, /manish.{0,20}(voice|narrat)|\b(his|own) voice\b|voice: manish/i, doc);
+  }
+  const v7 = read("docs/DEMO.md").replace(/\s+/g, " ");
+  assert.match(v7, /The narration audio is the recorded voiceover; nothing is re-recorded or generated\./);
+  const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
+  assert.match(row, /beat 1 is the recorded voiceover \(`docs\/DEMO\.md`\); which voice the rest of the submitted v7 uses is \*\*UNVERIFIED\*\*/);
+  const sub = read("SUBMISSION.md");
+  assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
+  assert.match(sub, /updated 1 Nov 2026, on master after 3d2f94e/);
 });
 
 test("wording 3: the DEMO.md v7 re-render script keeps the corrected claims, the prior-work card and each beat's word cap", () => {

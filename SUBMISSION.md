@@ -4,8 +4,8 @@
 
 Every field below is written from committed evidence in this repository
 (receipts in `data/jobs`, call logs and reports in `evidence/`, the README).
-The source is named under each section. Updated 29 Oct 2026 from the Codex
-review, on master after 7de2c9c. Earlier Challenges and Calibration drafts were
+The source is named under each section. First written 29 Oct 2026 from the Codex
+review; updated 1 Nov 2026, on master after 3d2f94e. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
 
@@ -56,7 +56,7 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Demo video:** YOUTUBE_URL_TBD
 
-**Still TBD:** the video link; whether the narration is the TTS voice or Manish's own; any form field not listed here (for example a thumbnail or social links).
+**Still TBD:** the video link; which voice the rest of the v7 narration uses (beat 1 is the recorded voiceover); any form field not listed here (for example a thumbnail or social links).
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -69,7 +69,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->393<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
+| Automated tests | <!--f:tests-->394<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml` |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
