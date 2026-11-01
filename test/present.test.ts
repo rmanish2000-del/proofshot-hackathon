@@ -38,6 +38,16 @@ test("present: a live composite RELEASE names SAM 3.1, Muse Spark Open and the g
   assert.equal(view.cards[1]!.prev, view.cards[0]!.hash);
 });
 
+test("present (UX-EASY1): each render carries the verifier entry's findings as recorded, for the upload page chips", () => {
+  const entries = load("live-kurta-01-composite-r2");
+  const r = presentJob(entries).renders[0]!;
+  const recorded = entries.find((e) => e.kind === "verifier" && (e.payload as { render_id?: string }).render_id === r.render_id)!.payload as { findings: { attribute: string; verdict: string; confidence: number; note: string }[] };
+  assert.equal(r.findings.length, recorded.findings.length);
+  assert.ok(r.findings.length > 0);
+  assert.deepEqual(r.findings.map((f) => [f.attribute, f.verdict, f.confidence]), recorded.findings.map((f) => [f.attribute, f.verdict, f.confidence]));
+  assert.deepEqual(new Set(r.findings.map((f) => f.attribute)), new Set(ATTRIBUTES));
+});
+
 test("present: the v2 quality pre-check REVIEW shows render and verifier as UNVERIFIED and names no verifier model", () => {
   const view = presentJob(load("live-kurta-02-composite-v2"));
   const r = view.renders[0]!;

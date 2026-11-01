@@ -705,7 +705,11 @@ it shows what the record already says, after checking the record itself.
 ## 12. Seller upload *(event, 28 Oct)*
 
 What a seller does: one page, no login, phone first, Hindi or English. They
-drop up to three JPEGs of one garment and say what it is; the real pipeline of
+drop up to three JPEGs of one garment (a one-line type note is optional since
+UX-EASY1, 1 Nov: an empty note is recorded as `garment (the seller typed no
+note)`, and the result shows the verifier's nine findings as "What we read from
+your photos"; `GET /api/sample` returns the committed sample shirt's photos for
+a one-tap trial); the real pipeline of
 §3 runs on their machine; they see each step as it happens, then one result
 card; "Publish to shop" exists only when the gate said RELEASE. The page
 decides nothing: every decision, reason and hash on it was read from the

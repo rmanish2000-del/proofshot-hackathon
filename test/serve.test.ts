@@ -13,7 +13,7 @@ import type { Providers } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { standInRenderer } from "../src/render.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
-import { STEPS, UPLOAD_JOB_PREFIX, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
+import { NO_NOTE, SAMPLE_GARMENT, STEPS, UPLOAD_JOB_PREFIX, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
 import type { ServeProviders, StepName, StepState } from "../src/serve.ts";
 import { CATALOG_FILE } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
@@ -154,7 +154,7 @@ test("a seller upload the server names itself is upload-* and .gitignore keeps d
 
 test("parseUpload refuses what the page must never send, with the reason", () => {
   assert.throws(() => parseUpload(null), /not a JSON object/);
-  assert.throws(() => parseUpload({ files: [{ name: "a.jpg", base64: b64(PHONE) }] }), /garment_note/);
+  assert.throws(() => parseUpload({ garment_note: "x".repeat(301), files: [{ name: "a.jpg", base64: b64(PHONE) }] }), /longer than 300/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [] }), /at least one photo/);
   assert.throws(() => parseUpload({ garment_note: "x", files: Array(7).fill({ name: "a.jpg", base64: "AA==" }) }), /at most 6/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [{ name: "../a.jpg", base64: "AA==" }] }), /not a plain file name/);
@@ -166,6 +166,40 @@ test("parseUpload refuses what the page must never send, with the reason", () =>
   assert.deepEqual(ok.scenes, ["studio"]);
   assert.deepEqual(ok.files[0]!.bytes, PHONE);
   assert.throws(() => parseUpload(null), (e: unknown) => e instanceof UploadError && e.status === 400);
+});
+
+test("UX-EASY1: no typed note is accepted and recorded as NO_NOTE; the gate and receipt are the same shape as with a note", async () => {
+  assert.equal(parseUpload({ files: [{ name: "a.jpg", base64: b64(PHONE) }] }).garment_note, NO_NOTE);
+  assert.equal(parseUpload({ garment_note: "   ", files: [{ name: "a.jpg", base64: b64(PHONE) }] }).garment_note, NO_NOTE);
+  const { srv, jobs } = server(providers(), "nonote");
+  const { job_id } = srv.submit({ files: [{ name: "1-front.jpg", base64: b64(PHONE) }] });
+  await srv.settled(job_id);
+  const s = srv.status(job_id)!;
+  assert.equal(s.result!.decision, "RELEASE");
+  const entries = parseReceipt(readFileSync(join(jobs, job_id, RECEIPT_FILE), "utf8"));
+  assert.ok(verifyChain(entries).ok);
+  assert.equal((entries[0]!.payload as { garment_note: string }).garment_note, NO_NOTE);
+  const withNote = server(providers(), "withnote");
+  const typed = withNote.srv.submit(upload([{ name: "1-front.jpg", bytes: PHONE }]));
+  await withNote.srv.settled(typed.job_id);
+  const kinds = (dir: string, id: string) => parseReceipt(readFileSync(join(dir, id, RECEIPT_FILE), "utf8")).map((e) => e.kind);
+  assert.deepEqual(kinds(jobs, job_id), kinds(withNote.jobs, typed.job_id), "same receipt entries with or without a note");
+});
+
+test("UX-EASY1: /api/sample serves the committed sample shirt (at most 3 JPEGs) and 404s without a garments dir", async () => {
+  const garments = join(ROOT, "data", "garments");
+  const srv = new UploadServer({ webDir: WEB, jobsRoot: tmp("sample-jobs"), shopDir: tmp("sample-shop"), garmentsDir: garments, providers: providers() });
+  const sample = srv.sample();
+  assert.equal(sample.garment, SAMPLE_GARMENT);
+  assert.ok(sample.files.length >= 1 && sample.files.length <= 3);
+  for (const f of sample.files) {
+    assert.match(f.name, /\.jpe?g$/i);
+    assert.deepEqual(new Uint8Array(Buffer.from(f.base64, "base64")), new Uint8Array(readFileSync(join(garments, SAMPLE_GARMENT, f.name))));
+  }
+  // The page uploads them as an ordinary job: parseUpload takes the files as they are.
+  assert.equal(parseUpload({ files: sample.files }).files.length, sample.files.length);
+  const bare = server(providers(), "nosample").srv;
+  assert.throws(() => bare.sample(), (e: unknown) => e instanceof UploadError && e.status === 404);
 });
 
 test("RELEASE: metadata stripped, every step done, the image is the stripped front photo, the receipt verifies, publish lists it", async () => {
@@ -366,4 +400,22 @@ test("web/upload.html: same-origin only, both languages name every step, publish
   assert.match(page, /fetch\("api\/jobs"/);
   assert.match(page, /fetch\("api\/mode"/);
   assert.match(page, /name="viewport" content="width=device-width, initial-scale=1"/);
+});
+
+test("UX-EASY1 web/upload.html: two steps, no attribute fields to type, optional note, sample button, chips read from the receipt's findings", () => {
+  const page = readFileSync(join(WEB, "upload.html"), "utf8");
+  assert.equal([...page.matchAll(/<li data-step="\d"/g)].length, 2, "Photos, then Result");
+  assert.doesNotMatch(page, /attr-\$\{name\}|id="attrs"|id="step2"|id="step3"/, "no typed-claims step");
+  assert.equal([...page.matchAll(/<input type="text"/g)].length, 1, "the only text field is the optional type note");
+  assert.doesNotMatch(page, /errNoNote/, "an empty note is never an error");
+  assert.match(page, /garment_note: \$\("note"\)\.value\.trim\(\)/);
+  assert.match(page, /fetch\("api\/sample"/);
+  assert.match(page, /paintChips\(read, r\.findings \|\| \[\]\)/, "chips come from the receipt API view, not from the page");
+  for (const lang of ["en", "hi"]) {
+    const table = new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0];
+    for (const key of ["sample", "readTitle", "dropSub", "noFindings"]) assert.match(table, new RegExp(`\\b${key}: "`), `${lang} has ${key}`);
+    assert.match(table, /chip: \{ match: "[^"]+", mismatch: "[^"]+", unmeasured: "[^"]+" \}/, `${lang} names the three chip states`);
+  }
+  assert.match(page, /drop: "Drop 3 phone photos of one garment"/);
+  assert.match(page, /sample: "Try with our sample shirt"/);
 });

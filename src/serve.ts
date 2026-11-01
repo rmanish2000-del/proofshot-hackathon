@@ -53,6 +53,15 @@ import type { VerifierCallLog, VerifierFetch } from "./verifier.ts";
 /** Jobs the upload server names itself start with this; .gitignore keeps the data/jobs/upload-* folders out of every commit. */
 export const UPLOAD_JOB_PREFIX = "upload-";
 
+/**
+ * The garment_note recorded when the seller typed no note (UX-EASY1). The
+ * seller claims nothing; the verifier reads the nine attributes from her photos.
+ */
+export const NO_NOTE = "garment (the seller typed no note)";
+
+/** The committed garment the page's "Try with our sample shirt" button uploads (owner's photos, no person). */
+export const SAMPLE_GARMENT = "shirt-zebra";
+
 export const STEPS = ["exif", "segment", "render", "verify", "gate"] as const;
 export type StepName = (typeof STEPS)[number];
 export type StepState = "pending" | "running" | "done" | "failed" | "skipped";
@@ -78,7 +87,8 @@ export interface ServeProviders {
 }
 
 export interface UploadRequest {
-  readonly garment_note: string;
+  /** Optional since UX-EASY1: empty or absent records NO_NOTE. */
+  readonly garment_note?: string;
   readonly scenes?: readonly string[];
   readonly files: readonly { readonly name: string; readonly base64: string }[];
 }
@@ -259,8 +269,9 @@ export interface UploadServerOptions {
 export function parseUpload(body: unknown): { garment_note: string; scenes: string[]; files: SourceImage[] } {
   if (typeof body !== "object" || body === null) throw new UploadError("the request body is not a JSON object");
   const b = body as Partial<UploadRequest>;
-  const garment_note = typeof b.garment_note === "string" ? b.garment_note.trim() : "";
-  if (garment_note === "") throw new UploadError("say what the garment is (garment_note)");
+  // UX-EASY1: the note is optional; the verifier reads every attribute from the photos.
+  const typed = typeof b.garment_note === "string" ? b.garment_note.trim() : "";
+  const garment_note = typed === "" ? NO_NOTE : typed;
   if (garment_note.length > 300) throw new UploadError("garment_note is longer than 300 characters");
   const scenes = b.scenes === undefined ? [...DEFAULT_SCENES] : Array.isArray(b.scenes) ? b.scenes.map(String).map((s) => s.trim()).filter((s) => s !== "") : [];
   if (scenes.length === 0 || scenes.length > 3) throw new UploadError("scenes must name 1 to 3 scenes");
@@ -475,6 +486,7 @@ export class UploadServer {
       const path = decodeURIComponent(url.pathname);
       if (req.method === "GET" && path === "/api/mode") return sendJson(res, 200, this.mode);
       if (req.method === "POST" && path === "/api/jobs") return sendJson(res, 202, this.submit(await readJson(req)));
+      if (req.method === "GET" && path === "/api/sample") return sendJson(res, 200, this.sample());
       const jobMatch = /^\/api\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})(\/publish)?$/.exec(path);
       if (jobMatch) {
         const id = jobMatch[1]!;
@@ -526,6 +538,20 @@ export class UploadServer {
     const file = join(this.opts.jobsRoot, id, RECEIPT_FILE);
     if (!existsSync(file)) throw new UploadError(`no receipt for job ${id}`, 404);
     return readFileSync(file, "utf8");
+  }
+
+  /**
+   * The sample garment's photos (UX-EASY1), for a judge with no garment at hand:
+   * the page uploads them as a normal job, so the run goes through the same
+   * steps and the same mode label as any upload.
+   */
+  sample(): { garment: string; files: { name: string; base64: string }[] } {
+    const dir = this.opts.garmentsDir ? join(this.opts.garmentsDir, SAMPLE_GARMENT) : null;
+    if (!dir || !existsSync(dir)) throw new UploadError("no sample garment on this server", 404);
+    const files = readdirSync(dir).filter((n) => /\.jpe?g$/i.test(n) && SAFE_NAME.test(n)).sort().slice(0, 3)
+      .map((name) => ({ name, base64: readFileSync(join(dir, name)).toString("base64") }));
+    if (files.length === 0) throw new UploadError("no sample garment on this server", 404);
+    return { garment: SAMPLE_GARMENT, files };
   }
 
   /** One job's source photo, served only when a file's bytes hash to the receipt's recorded sha256. */

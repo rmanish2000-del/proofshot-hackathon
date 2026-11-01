@@ -56,7 +56,18 @@
   footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2rem 1rem; }
   [hidden] { display: none !important; }
   /* NR5: three-step flow, photo guide, input vs result. */
-  ol.wizard { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; padding: 0; margin: 0 0 1rem; counter-reset: w; }
+  /* UX-EASY1: two steps, photos then result; no typing required. */
+  .drop.big { min-height: 11rem; flex-direction: column; gap: 0.3rem; }
+  .drop.big strong { font-size: 1.2rem; color: var(--ink); }
+  button.sample { width: 100%; margin-top: 0.6rem; min-height: 44px; padding: 0.7rem; font: inherit; font-weight: 600; color: var(--accent); background: #fff; border: 1px solid var(--accent); border-radius: 10px; cursor: pointer; }
+  button.sample:disabled { color: #9fb0c8; border-color: #9fb0c8; cursor: default; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+  .chip { border: 1px solid var(--line); border-radius: 10px; padding: 0.35rem 0.6rem; font-size: 0.85rem; background: #fff; max-width: 100%; }
+  .chip b { margin-right: 0.3rem; } .chip .val { color: var(--muted); display: block; font-size: 0.78rem; overflow-wrap: anywhere; }
+  .chip.match { border-color: var(--ok); } .chip.match b { color: var(--ok); }
+  .chip.mismatch { border-color: var(--bad); background: var(--badbg); } .chip.mismatch b { color: var(--bad); }
+  .chip.unmeasured { border-style: dashed; } .chip.unmeasured b { color: var(--muted); }
+  ol.wizard { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; padding: 0; margin: 0 0 1rem; counter-reset: w; }
   ol.wizard li { counter-increment: w; font-size: 0.85rem; text-align: center; padding: 0.5rem 0.2rem; border-bottom: 4px solid var(--line); color: var(--muted); min-height: 44px; }
   ol.wizard li::before { content: counter(w) ". "; font-weight: 700; }
   ol.wizard li.now { border-color: var(--accent); color: var(--ink); font-weight: 600; }
@@ -98,12 +109,23 @@
   <ol class="wizard" id="wizard" aria-label="Steps">
     <li data-step="1" data-t="w1"></li>
     <li data-step="2" data-t="w2"></li>
-    <li data-step="3" data-t="w3"></li>
   </ol>
 
   <form id="form">
     <fieldset id="step1" style="border:0;padding:0;margin:0">
-      <div class="guide">
+      <div class="drop big" id="drop" tabindex="0" role="button">
+        <strong data-t="drop"></strong>
+        <span data-t="dropSub"></span>
+        <input type="file" id="file" accept="image/jpeg,.jpg,.jpeg" multiple>
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+      <button type="button" class="sample" id="sample" data-t="sample"></button>
+      <p class="tip" data-t="sampleNote"></p>
+      <label for="note" data-t="noteLabel"></label>
+      <input type="text" id="note" maxlength="120" autocomplete="off">
+      <div class="error" id="error" role="alert"></div>
+      <button type="submit" class="primary" id="start" data-t="start"></button>
+      <div class="guide" style="margin-top:1rem">
         <h2 data-t="guideTitle"></h2>
         <ul>
           <li data-t="guide1"></li>
@@ -119,32 +141,8 @@
           <figure class="bad"><svg viewBox="0 0 60 80" role="img" aria-labelledby="ex-busy"><rect width="60" height="80" fill="#9bb07a"/><circle cx="8" cy="10" r="7" fill="#d9a13b"/><rect x="46" y="40" width="14" height="30" fill="#6b4c8a"/><path d="M22 8 L30 12 L38 8 L50 16 L46 30 L42 28 L44 72 L16 72 L18 28 L14 30 L10 16 Z" fill="#c8642a"/><circle cx="52" cy="12" r="6" fill="#3b7fd9"/></svg><figcaption id="ex-busy" data-t="exBusy"></figcaption></figure>
         </div>
       </div>
-      <label data-t="photosLabel"></label>
-      <div class="drop" id="drop" tabindex="0" role="button">
-        <span data-t="drop"></span>
-        <input type="file" id="file" accept="image/jpeg,.jpg,.jpeg" multiple>
-      </div>
-      <div class="thumbs" id="thumbs"></div>
       <div class="exif" data-t="exifNote"></div>
     </fieldset>
-
-    <fieldset id="step2" style="border:0;padding:0;margin:0" hidden>
-      <label for="note" data-t="noteLabel"></label>
-      <input type="text" id="note" maxlength="120" autocomplete="off">
-      <p class="tip" data-t="attrsLead"></p>
-      <div class="attrs" id="attrs"></div>
-    </fieldset>
-
-    <fieldset id="step3" style="border:0;padding:0;margin:0" hidden>
-      <div class="summary" id="summary"></div>
-    </fieldset>
-
-    <div class="error" id="error" role="alert"></div>
-    <div class="nav">
-      <button type="button" class="secondary" id="back" data-t="back" hidden></button>
-      <button type="button" class="primary" id="next" data-t="next"></button>
-      <button type="submit" class="primary" id="start" data-t="start" hidden></button>
-    </div>
   </form>
 
   <section id="progress" hidden>
@@ -161,11 +159,17 @@
   const STRINGS = {
     en: {
       title: "ProofShot: seller upload",
-      lead: "Drop up to 3 photos of one garment (front, back, a close-up). The pipeline strips the metadata, segments the garment, renders, checks the render against your photos and decides. Nothing reaches the shop unless the gate says RELEASE.",
-      noteLabel: "What is the garment? (type)",
-      notePlaceholder: "e.g. women's cotton kurta",
-      photosLabel: "Photos",
-      drop: "Tap to choose photos, or drop them here (JPEG, up to 3)",
+      lead: "Just the photos already on your phone: no form to fill in. The pipeline strips the metadata, segments the garment, renders, reads nine attributes from your photos, checks the render against them and decides. Nothing reaches the shop unless the gate says RELEASE.",
+      noteLabel: "What is it? (optional)",
+      notePlaceholder: "e.g. kurta",
+      drop: "Drop 3 phone photos of one garment",
+      dropSub: "or tap to choose them (JPEG: front, back, a close-up)",
+      sample: "Try with our sample shirt",
+      sampleNote: "No garment at hand? The sample button uploads three committed photos of a shirt (no person in them) through the same steps.",
+      readTitle: "What we read from your photos",
+      readLead: "The verifier's own findings for each attribute, from the receipt; nothing here was typed.",
+      chip: { match: "matches", mismatch: "does not match", unmeasured: "not measured" },
+      noFindings: "No verifier findings were recorded for this render.",
       start: "Check and render",
       running: "Running…",
       remove: "Remove",
@@ -191,9 +195,8 @@
       errNoPhotos: "Choose at least one photo.",
       errTooMany: "Up to 3 photos.",
       errNotJpeg: "Only JPEG photos (the metadata strip is written for JPEG).",
-      errNoNote: "Say what the garment is.",
       errServer: "The server did not answer. Is npm run serve running?",
-      w1: "Photos", w2: "Details", w3: "Review & submit",
+      w1: "Photos", w2: "Result",
       guideTitle: "Photo guide",
       guide1: "Front, back, and one close-up of the detail or label.",
       guide2: "Flat on a plain surface or on a hanger, never worn: no people in the photo.",
@@ -201,22 +204,24 @@
       guide4: "The whole garment in frame, with a little space around it.",
       exGood: "Good: whole, plain, even", exCrop: "Bad: cut off", exDark: "Bad: dark, uneven", exBusy: "Bad: busy background",
       exifNote: "Location, camera and date (EXIF) are removed from every photo on upload, before anything else runs.",
-      attrsLead: "What you claim about the garment. The verifier checks each of these against your photos; leave a field empty if it does not apply.",
       attrs: { color: "Colour", print_pattern: "Print or pattern", logo_text: "Logo or text", collar: "Collar or neckline", sleeve_length: "Sleeve length", hem: "Hem", pocket_count: "Pockets", buttons: "Buttons", fabric_texture: "Fabric" },
-      next: "Next", back: "Back",
-      sumPhotos: "Photos", sumGarment: "Garment", sumClaims: "Claims",
-      errTooLong: "The description is too long (300 characters at most): shorten some fields.",
       input: "Your photos", output: "Result",
       openJudge: "Side-by-side, receipt and pipeline",
       noImage: "No image was made (see Why).",
     },
     hi: {
       title: "ProofShot: विक्रेता अपलोड",
-      lead: "एक कपड़े की अधिकतम 3 तस्वीरें डालें (सामने, पीछे, क़रीब से)। पाइपलाइन मेटाडेटा हटाती है, कपड़े को सेगमेंट करती है, रेंडर करती है, रेंडर को आपकी तस्वीरों से मिलाती है और फ़ैसला करती है। गेट RELEASE कहे बिना कुछ भी दुकान तक नहीं पहुँचता।",
-      noteLabel: "कपड़ा क्या है? (प्रकार)",
-      notePlaceholder: "जैसे: महिलाओं का सूती कुर्ता",
-      photosLabel: "तस्वीरें",
-      drop: "तस्वीरें चुनने के लिए टैप करें, या यहाँ छोड़ें (JPEG, अधिकतम 3)",
+      lead: "बस आपके फ़ोन में पहले से रखी तस्वीरें: कोई फ़ॉर्म नहीं भरना। पाइपलाइन मेटाडेटा हटाती है, कपड़े को सेगमेंट करती है, रेंडर करती है, आपकी तस्वीरों से नौ गुण पढ़ती है, रेंडर को उनसे मिलाती है और फ़ैसला करती है। गेट RELEASE कहे बिना कुछ भी दुकान तक नहीं पहुँचता।",
+      noteLabel: "यह क्या है? (वैकल्पिक)",
+      notePlaceholder: "जैसे: कुर्ता",
+      drop: "एक कपड़े की 3 फ़ोन तस्वीरें यहाँ छोड़ें",
+      dropSub: "या उन्हें चुनने के लिए टैप करें (JPEG: सामने, पीछे, क़रीब से)",
+      sample: "हमारी नमूना शर्ट से आज़माएँ",
+      sampleNote: "पास में कोई कपड़ा नहीं? नमूना बटन एक शर्ट की तीन रखी हुई तस्वीरें (उनमें कोई व्यक्ति नहीं) इन्हीं चरणों से अपलोड करता है।",
+      readTitle: "हमने आपकी तस्वीरों से क्या पढ़ा",
+      readLead: "हर गुण पर जाँचकर्ता के अपने निष्कर्ष, रसीद से; यहाँ कुछ भी टाइप नहीं किया गया।",
+      chip: { match: "मेल खाता है", mismatch: "मेल नहीं खाता", unmeasured: "मापा नहीं गया" },
+      noFindings: "इस रेंडर के लिए जाँचकर्ता का कोई निष्कर्ष दर्ज नहीं है।",
       start: "जाँचें और रेंडर करें",
       running: "चल रहा है…",
       remove: "हटाएँ",
@@ -242,9 +247,8 @@
       errNoPhotos: "कम से कम एक तस्वीर चुनें।",
       errTooMany: "अधिकतम 3 तस्वीरें।",
       errNotJpeg: "केवल JPEG तस्वीरें (मेटाडेटा हटाना JPEG के लिए लिखा गया है)।",
-      errNoNote: "बताएँ कि कपड़ा क्या है।",
       errServer: "सर्वर ने जवाब नहीं दिया। क्या npm run serve चल रहा है?",
-      w1: "तस्वीरें", w2: "विवरण", w3: "जाँचें और भेजें",
+      w1: "तस्वीरें", w2: "नतीजा",
       guideTitle: "तस्वीर गाइड",
       guide1: "सामने, पीछे, और डिज़ाइन या लेबल की एक क़रीबी तस्वीर।",
       guide2: "सादी सतह पर बिछाकर या हैंगर पर, पहना हुआ नहीं: तस्वीर में कोई व्यक्ति नहीं।",
@@ -252,11 +256,7 @@
       guide4: "पूरा कपड़ा फ़्रेम में, चारों ओर थोड़ी जगह के साथ।",
       exGood: "सही: पूरा, सादा, एक जैसी रोशनी", exCrop: "गलत: कटा हुआ", exDark: "गलत: अँधेरा, असमान", exBusy: "गलत: भरी हुई पृष्ठभूमि",
       exifNote: "अपलोड पर हर तस्वीर से जगह, कैमरा और तारीख़ (EXIF) हटा दी जाती है, बाकी सब से पहले।",
-      attrsLead: "कपड़े के बारे में आपका दावा। जाँचकर्ता हर बात को आपकी तस्वीरों से मिलाता है; जो लागू न हो वह खाली छोड़ें।",
       attrs: { color: "रंग", print_pattern: "प्रिंट या पैटर्न", logo_text: "लोगो या लिखावट", collar: "कॉलर या गला", sleeve_length: "आस्तीन की लंबाई", hem: "किनारा (हेम)", pocket_count: "जेबें", buttons: "बटन", fabric_texture: "कपड़ा" },
-      next: "आगे", back: "पीछे",
-      sumPhotos: "तस्वीरें", sumGarment: "कपड़ा", sumClaims: "दावे",
-      errTooLong: "विवरण बहुत लंबा है (अधिकतम 300 अक्षर): कुछ फ़ील्ड छोटे करें।",
       input: "आपकी तस्वीरें", output: "नतीजा",
       openJudge: "साथ-साथ तुलना, रसीद और पाइपलाइन",
       noImage: "कोई तस्वीर नहीं बनी (कारण देखें)।",
@@ -286,8 +286,6 @@
     for (const node of document.querySelectorAll("[data-t]")) node.textContent = T()[node.dataset.t];
     $("lang").textContent = lang === "en" ? "हिन्दी" : "English";
     $("note").placeholder = T().notePlaceholder;
-    paintAttrs();
-    if (stepNow === 3) paintSummary();
     paintMode();
     if (current) paintJob(current.status);
   }
@@ -374,114 +372,65 @@
 
   function setError(text) { $("error").textContent = text; }
 
-  // ---- steps: 1 photos, 2 details, 3 review & submit -------------------------
-  let stepNow = 1;
-
-  function paintAttrs() {
-    const box = $("attrs");
-    for (const name of ATTRS) {
-      let input = $(`attr-${name}`);
-      if (!input) {
-        const label = el("label");
-        label.htmlFor = `attr-${name}`;
-        label.id = `attr-label-${name}`;
-        input = el("input");
-        input.type = "text";
-        input.id = `attr-${name}`;
-        input.maxLength = 60;
-        input.autocomplete = "off";
-        box.append(label, input);
-      }
-      $(`attr-label-${name}`).textContent = T().attrs[name];
-    }
-  }
-
-  /** The claims the seller filled in, in ATTRIBUTES order. */
-  function claims() {
-    return ATTRS.map((name) => [name, $(`attr-${name}`).value.trim()]).filter(([, v]) => v !== "");
-  }
-
-  /** The garment_note the pipeline records: the type, then each claimed attribute by its vocabulary name. */
-  function garmentNote() {
-    return [$("note").value.trim(), ...claims().map(([n, v]) => `${n}: ${v}`)].join("; ");
-  }
-
+  // ---- steps: 1 photos, 2 result (UX-EASY1: nothing to type) -----------------
   function showStep(n) {
-    stepNow = n;
-    for (const i of [1, 2, 3]) $(`step${i}`).hidden = i !== n;
     for (const li of $("wizard").children) {
       const i = Number(li.dataset.step);
       li.className = i === n ? "now" : i < n ? "past" : "";
       if (i === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
     }
-    $("back").hidden = n === 1;
-    $("next").hidden = n === 3;
-    $("start").hidden = n !== 3;
-    if (n === 3) paintSummary();
   }
-
-  function paintSummary() {
-    const box = $("summary");
-    box.replaceChildren();
-    box.append(el("strong", null, T().sumGarment), el("div", null, $("note").value.trim()));
-    const list = claims();
-    if (list.length > 0) {
-      box.append(el("strong", null, T().sumClaims));
-      const ul = el("ul");
-      for (const [n, v] of list) ul.append(el("li", null, `${T().attrs[n]}: ${v}`));
-      box.append(ul);
-    }
-    box.append(el("strong", null, `${T().sumPhotos} (${photos.length})`));
-    const thumbs = el("div", "thumbs");
-    for (const p of photos) {
-      const img = el("img");
-      img.src = p.url;
-      img.alt = p.file.name;
-      thumbs.append(img);
-    }
-    box.append(thumbs);
-  }
-
-  $("next").addEventListener("click", () => {
-    setError("");
-    if (stepNow === 1) {
-      if (photos.length === 0) return setError(T().errNoPhotos);
-      return showStep(2);
-    }
-    if (stepNow === 2) {
-      if (!$("note").value.trim()) return setError(T().errNoNote);
-      if (garmentNote().length > 300) return setError(T().errTooLong);
-      return showStep(3);
-    }
-  });
-  $("back").addEventListener("click", () => { setError(""); showStep(Math.max(1, stepNow - 1)); });
 
   // ---- submit --------------------------------------------------------------
-  $("form").addEventListener("submit", async (ev) => {
+  $("form").addEventListener("submit", (ev) => {
     ev.preventDefault();
+    start();
+  });
+
+  /** Uploads the chosen photos; the type note is optional and is the only text sent. */
+  async function start() {
     setError("");
-    if (stepNow !== 3) return;
-    const note = garmentNote();
-    if (!$("note").value.trim()) return setError(T().errNoNote);
-    if (note.length > 300) return setError(T().errTooLong);
     if (photos.length === 0) return setError(T().errNoPhotos);
     $("start").disabled = true;
-    $("back").hidden = true;
+    $("sample").disabled = true;
     $("start").textContent = T().running;
     try {
       const files = await Promise.all(photos.map(async (p) => ({ name: safeName(p.file.name), base64: await toBase64(p.file) })));
-      const res = await fetch("api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ garment_note: note, files }) });
+      const res = await fetch("api/jobs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ garment_note: $("note").value.trim(), files }) });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || String(res.status));
       current = { job_id: body.job_id, status: null };
       $("form").hidden = true;
       $("progress").hidden = false;
+      showStep(2);
       poll();
     } catch (err) {
       setError(err && err.message ? err.message : T().errServer);
       $("start").disabled = false;
+      $("sample").disabled = false;
       $("start").textContent = T().start;
-      $("back").hidden = false;
+    }
+  }
+
+  // The sample shirt: the server's committed photos, uploaded as an ordinary job in one tap.
+  $("sample").addEventListener("click", async () => {
+    setError("");
+    $("sample").disabled = true;
+    try {
+      const res = await fetch("api/sample", { cache: "no-store" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || String(res.status));
+      for (const p of photos) URL.revokeObjectURL(p.url);
+      photos = body.files.map((f) => {
+        const bytes = Uint8Array.from(atob(f.base64), (c) => c.charCodeAt(0));
+        const file = new File([bytes], f.name, { type: "image/jpeg" });
+        return { file, url: URL.createObjectURL(file) };
+      });
+      paintThumbs();
+      await start();
+    } catch (err) {
+      setError(err && err.message ? err.message : T().errServer);
+      $("sample").disabled = false;
     }
   });
 
@@ -579,6 +528,10 @@
       line.append(method);
       const tip = el("div", "tip");
       body.append(tip);
+      // UX-EASY1: what the verifier read, one chip per attribute, from the receipt's verifier entry.
+      const read = el("div");
+      read.hidden = true;
+      body.append(read);
       fetch(`api/receipts/${encodeURIComponent(status.job_id)}`, { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
         .then((view) => {
@@ -589,6 +542,7 @@
           method.title = r.badge.tooltip;
           method.hidden = false;
           tip.textContent = r.badge.tooltip;
+          paintChips(read, r.findings || []);
         })
         .catch(() => {});
       if (status.mode && status.mode.fixture) line.append(el("span", "tag", T().fixtureTag));
@@ -627,6 +581,25 @@
     box.append(card);
   }
 
+  /** One chip per ATTRS entry: match, mismatch, or not measured (uncertain or no finding), with the verifier's note. */
+  function paintChips(box, findings) {
+    box.replaceChildren();
+    box.hidden = false;
+    box.append(el("h2", null, T().readTitle), el("div", "tip", T().readLead));
+    if (findings.length === 0) { box.append(el("div", "tip", T().noFindings)); return; }
+    const chips = el("div", "chips");
+    for (const name of ATTRS) {
+      const f = findings.find((x) => x.attribute === name);
+      const state = f && f.verdict === "match" ? "match" : f && f.verdict === "mismatch" ? "mismatch" : "unmeasured";
+      const chip = el("span", `chip ${state}`);
+      chip.append(el("b", null, state === "match" ? "✓" : state === "mismatch" ? "✕" : "?"));
+      chip.append(document.createTextNode(`${T().attrs[name]}: ${T().chip[state]}`));
+      if (f && f.note) chip.append(el("span", "val", f.note));
+      chips.append(chip);
+    }
+    box.append(chips);
+  }
+
   function publishControl(status) {
     const wrap = el("div");
     if (status.published) {
@@ -663,13 +636,13 @@
     photos = [];
     paintThumbs();
     $("note").value = "";
-    for (const name of ATTRS) $(`attr-${name}`).value = "";
     showStep(1);
     $("result").hidden = true;
     $("result").replaceChildren();
     $("progress").hidden = true;
     $("form").hidden = false;
     $("start").disabled = false;
+    $("sample").disabled = false;
     $("start").textContent = T().start;
   }
 

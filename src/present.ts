@@ -61,6 +61,19 @@ export interface RenderView {
   /** data/models/<id>, for the licence link, only on a generative render. */
   readonly model_image_id: string | null;
   readonly released: boolean;
+  /**
+   * The verifier entry's findings for this render, as recorded (UX-EASY1: the
+   * upload page shows them as "what we read from your photos"); empty when no
+   * verifier entry exists. Display only: the gate entry holds the decision.
+   */
+  readonly findings: readonly FindingView[];
+}
+
+export interface FindingView {
+  readonly attribute: string;
+  readonly verdict: string | null;
+  readonly confidence: number | null;
+  readonly note: string | null;
 }
 
 export type NodeKey = "upload" | "segment" | "render" | "verify" | "gate" | "receipt";
@@ -269,6 +282,12 @@ export function presentJob(entries: readonly ReceiptEntry[]): JobView {
       fallback_reason: str(rp.fallback_reason),
       model_image_id: badge.kind === "ai-generated" ? str(rp.model_image_id) : null,
       released: release !== undefined,
+      findings: findings.filter((f) => typeof f.attribute === "string").map((f) => ({
+        attribute: f.attribute as string,
+        verdict: str(f.verdict),
+        confidence: num(f.confidence),
+        note: str(f.note),
+      })),
     };
   });
 
