@@ -58,7 +58,7 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Demo video:** https://youtu.be/cOeRYwRZBlA
 
-**Still TBD:** the video link (the Demo video line above); any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
+**Still TBD:** any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->433<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->434<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |

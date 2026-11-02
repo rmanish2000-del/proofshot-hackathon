@@ -616,7 +616,22 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.match(sub, /actions\/runs\/41379178357/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
-  assert.match(checklist, /\| pending; SUBMISSION\.md \*\*Still TBD\*\* \|/);
+  assert.match(checklist, /\| nothing prepared; SUBMISSION\.md \*\*Still TBD\*\* \|/); // RV16 4: not "pending"
+});
+
+test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resync, spend has a cutoff, Anything else is not pending; SUBMISSION Still TBD drops the filled video link", () => {
+  const checklist = read("docs/SUBMIT_CHECKLIST.md");
+  const row = (name: string) => checklist.split("\n").find((l) => l.startsWith(`| ${name} |`))!;
+  assert.match(row("Live demo"), /UNVERIFIED here .*the build commit is stated here only after the Space is resynced to 67fda16 or later/);
+  assert.doesNotMatch(row("Live demo"), /Baseten|Meta Model API|Replicate|Fireworks|Muse Spark|SAM/);
+  assert.match(row("Spend"), /ledger readings of 29 Oct, .*later calls not included, so not a current total/);
+  const anything = row("Anything else (thumbnail, social links)");
+  assert.doesNotMatch(anything, /pending/);
+  assert.match(anything, /what the official form asks for in this field is not recorded in this repository \(UNVERIFIED\)/);
+  assert.doesNotMatch(row("Demo video"), /human step/);
+  const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
+  assert.doesNotMatch(tbd, /video link/);
+  assert.match(tbd, /whether the rules allow a generated voice is UNVERIFIED/);
 });
 
 test("SAMPLE1 (Grok 09:33 2 Nov): every doc paragraph about the sample shirt button calls it a recorded replay and never says it runs live or through the steps", () => {
