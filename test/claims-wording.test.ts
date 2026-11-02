@@ -101,17 +101,19 @@ test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one vid
   const without = end(rows.at(-2)!);
   assert.deepEqual([without, withCard], ["2:45", "2:50"]);
   assert.match(v7, new RegExp(`${withCard} in all with the optional end card\\s+\\(${without} without it\\)`));
-  const claim = `script runs ${without}, or ${withCard} with the optional end card. That is the script length`;
+  // RV10: v8 is the video to submit; its reported length is UNVERIFIED and the v7 script is named superseded.
+  const claim = `The v7 re-render script (its script runs ${without}, or ${withCard} with the optional end card) is superseded`;
   for (const doc of ["README.md", "SUBMISSION.md"]) {
     const text = read(doc).replace(/\s+/g, " ");
-    assert.ok(text.includes(claim), `${doc} states the v7 script length`);
+    assert.ok(text.includes(claim), `${doc} names the v7 script superseded`);
+    assert.match(text, /167\.9 s \(about 2:48\) as reported by Grok on 2 Nov; the rendered file is not committed, so that length is UNVERIFIED here/, doc);
     assert.doesNotMatch(text, /about 2\.5 minutes|Demo script \(76 s\)/, doc);
     for (const m of text.matchAll(/76 s/g)) {
       const around = text.slice(Math.max(0, m.index! - 160), m.index! + 40);
       assert.match(around, /v6|clone \+ `npm ci`/, `${doc}: '76 s' not labelled v6: ${around}`);
     }
   }
-  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is the v7 re-render below: script length 2:45, or 2:50 with the optional end card\)/);
+  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is v8, above: 167\.9 s as reported by Grok, UNVERIFIED here\)/);
 });
 
 test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISSION says; beat 3 shows a replicate-pruna-tryon receipt entry before Pruna is named; the plan doc says check_photo_quality is built", () => {
@@ -161,9 +163,11 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
     assert.doesNotMatch(text, /manish.{0,20}(voice|narrat)|\b(his|own) voice\b|voice: manish/i, doc);
   }
   const v7 = read("docs/DEMO.md").replace(/\s+/g, " ");
-  assert.match(v7, /The narration audio is the recorded voiceover; nothing is re-recorded or generated\./);
+  // RV10: the voice is named for what it is, a generated Edge TTS voice; the rules question stays UNVERIFIED.
+  assert.match(v7, /The narration audio is the recorded voiceover \(a generated Edge TTS voice, en-IN-PrabhatNeural\); nothing new is recorded for it\./);
   const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
-  assert.match(row, /beat 1 is the recorded voiceover \(`docs\/DEMO\.md`\); which voice the rest of the submitted v7 uses is \*\*UNVERIFIED\*\*/);
+  assert.match(row, /the v8 narration .* is the recorded voiceover, a generated Edge TTS voice \(en-IN-PrabhatNeural\), not a model API in this project and not a paid call; whether the rules allow a generated voice is \*\*UNVERIFIED\*\*/);
+  assert.doesNotMatch(row, /v3\/v3d/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
   assert.match(sub, /updated 1 Nov 2026, on master after 3d2f94e/);
@@ -489,4 +493,43 @@ test("RV9 (Grok 00:23 2 Nov): JUDGE_QA_TRYON_MODELS cites config/fidelity.json a
   // 4: the same scope as README's opening.
   assert.match(qa, /The candidate images in the committed runs come from the composite/);
   assert.match(read("README.md").replace(/\s+/g, " "), /The candidate images in the committed runs come from two paths/);
+});
+
+test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a person's own; v8 is the video, its spoken figures match the generated ones, and the video link is one token", () => {
+  // 5: the docs guard, over README, SUBMISSION, CLAIMS_AUDIT and every docs/*.md (DEMO.md among them).
+  const docs = ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md", ...readdirSync(join(root, "docs")).filter((f) => f.endsWith(".md")).map((f) => `docs/${f}`)];
+  assert.ok(docs.includes("docs/DEMO.md"));
+  for (const doc of docs) {
+    const text = read(doc).replace(/\s+/g, " ");
+    assert.doesNotMatch(text, /no synthesi[sz]ed audio|Manish's voice|Manish's recorded|own voice/i, doc);
+  }
+  // 1: the checklist and the voice line say what the voice is.
+  const md = read("docs/DEMO.md");
+  assert.ok(md.includes("- [ ] The recorded voiceover: a generated Edge TTS voice (en-IN-PrabhatNeural)."));
+  assert.match(md.replace(/\s+/g, " "), /Voice: the recorded voiceover \(a generated Edge TTS voice, en-IN-PrabhatNeural; whether the rules allow it is UNVERIFIED\)/);
+  // 2: the v8 section comes first, has the 46 spoken lines, and v7 is marked superseded.
+  const v8 = md.slice(md.indexOf("## v8: the video to submit"), md.indexOf("## What exists today"));
+  assert.ok(md.indexOf("## v8: the video to submit") < md.indexOf("## Re-render script v7"));
+  const spoken = v8.split("### v8 fact check")[0]!.split("\n").filter((l) => /^\| \d \| /.test(l));
+  assert.equal(spoken.length, 46);
+  assert.match(md, /## Re-render script v7 \(31 Oct, for the out\/final video\)\n\nSuperseded on 2 Nov by v8 \(above\); kept as history\./);
+  // The figures v8 speaks are the generated ones today.
+  const f = computeFigures(root);
+  const words: Record<string, string> = { "10": "Ten", "12": "twelve", "2": "two", "43": "forty-three" };
+  assert.equal(f.tryon_all_total, "12");
+  assert.ok(v8.includes(`| 5 | Across our runs, ${words[f.tryon_all_total]} AI try-on images were generated. | Across our runs, ${f.tryon_all_total} AI try-on images were generated. |`));
+  assert.ok(v8.includes(`| 5 | ${words[f.tryon_all_refuse!]} refused, ${words[f.tryon_all_review!]} sent for review. | ${f.tryon_all_refuse} refused, ${f.tryon_all_review} sent for review. |`));
+  assert.equal(f.receipt_chains, `${f.receipts} of ${f.receipts}`);
+  assert.ok(v8.includes(`| 6 | All ${words[f.receipts!]} committed receipts verify. | All ${f.receipts} committed receipts verify. |`));
+  assert.match(v8, /matches for the 31 Oct try-on run only; UNVERIFIED as a statement about every committed run/);
+  assert.doesNotMatch(v8, /\b\d{3} tests\b/);
+  // 3: one token for the link in both files; the voice is no longer TBD.
+  const sub = read("SUBMISSION.md");
+  assert.match(sub, /\*\*Demo video:\*\* VIDEO_URL_PENDING/);
+  assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
+  assert.match(read("README.md"), /Video link: VIDEO_URL_PENDING\./);
+  // 4: the tamper weak spot quotes v8.
+  const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
+  assert.match(tamper, /in v8 the recorded voiceover still says "Now change a single byte\." with no scope/);
+  assert.ok(v8.includes("| 6 | Now change a single byte. |"));
 });

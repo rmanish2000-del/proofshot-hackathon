@@ -33,8 +33,8 @@ receipt. Source:
 `evidence/pack/README.md` "Verify a receipt offline"; `CLAIMS_AUDIT.md`, row
 "Change one byte" (scoped, CA1).
 
-Weak spot: the recorded voiceover still says "Change one byte"; only the written
-docs carry the scope.
+Weak spot: in v8 the recorded voiceover still says "Now change a single byte."
+with no scope; only the written docs carry it.
 
 ## 3. Does VALID prove that this image is the one the seller published?
 

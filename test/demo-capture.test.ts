@@ -361,7 +361,11 @@ test("DEMO1k: the judge page opens a linked job even when it is not among the 20
 
 test("DM10: DEMO.md has no never/cannot absolutes, and says intake stripped metadata only if an intake record removed some", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
-  assert.doesNotMatch(md, /\b(never|cannot|can't)\b/i);
+  // RV10: the v8 spoken lines are the rendered audio, quoted verbatim ("if we cannot prove the photo is true"), so they are left out.
+  const spoken = md.slice(md.indexOf("## v8: the video to submit"), md.indexOf("### v8 fact check"));
+  const ours = md.replace(spoken, "");
+  assert.equal(spoken.split("\n").filter((l) => /\b(never|cannot|can't)\b/i.test(l)).length, 1, "only the one v8 line");
+  assert.doesNotMatch(ours, /\b(never|cannot|can't)\b/i);
   const intake = readFileSync(join(root, "data/garments/shirt-plaid/intake.json"), "utf8");
   const files = (JSON.parse(intake) as { files: { removed: unknown[] }[] }).files;
   if (/metadata stripped/i.test(md)) assert.ok(files.every((f) => f.removed.length > 0), "DEMO.md says metadata stripped, but intake removed nothing");

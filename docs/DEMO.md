@@ -1,12 +1,91 @@
-# ProofShot demo script v6 (proofshot-hackathon)
+# ProofShot demo script v8 (proofshot-hackathon)
 
-Current status (1 Nov 2026): the narration and beats of the video to submit
-are the v7 re-render script below (31 Oct: five beats, 2:45, or 2:50 with the
-optional end card; five real garments in beat 3, as a verdict table and one
-composite). The v6 sections (the status note, "What exists today", the
-timecode table ending at 1:16 and the shot list) still drive
-`npm run demo:capture`, which records the v6 frames; v7 reuses some of them
-(beat 4 is v6 S7/S8). Where the two differ, v7 is what the video says.
+Current status (2 Nov 2026): the video to submit is v8, in the next section.
+Its narration is the recorded voiceover: a generated Edge TTS voice
+(en-IN-PrabhatNeural). The v7 re-render script below is superseded and kept as
+history. The v6 sections (the status note, "What exists today", the timecode
+table ending at 1:16 and the shot list) still drive `npm run demo:capture`,
+which records the v6 frames.
+
+## v8: the video to submit
+
+Grok 07:20 IST 2 Nov (#23). The narration was approved by Manish on 1 Nov 2026
+and the audio is already rendered (`ProofShot_demo_v8.mp4`, 167.9 s, about
+2:48, as reported by Grok). The rendered file is not committed, so its length
+is UNVERIFIED here. The spoken text below is verbatim from the staged
+`V8_NARRATION.md` and is not edited here. Voice: the recorded voiceover (a
+generated Edge TTS voice, en-IN-PrabhatNeural). Whether the hackathon rules
+allow a generated voice is UNVERIFIED. What v8 shows on screen in each beat is
+not recorded in this repository (UNVERIFIED).
+
+| Beat | Spoken | Caption |
+|---|---|---|
+| 1 | Hello. | Hello. |
+| 1 | This is ProofShot. | This is ProofShot. |
+| 1 | Everything you are about to see running was built during this hackathon, from the twenty-seventh of October. | Everything you are about to see running was built during this hackathon, from 27 October. |
+| 1 | Before that, there was only the written specification and some config boilerplate. | Before that, there was only the written specification and some config boilerplate. |
+| 2 | Picture a small boutique seller in India. | Picture a small boutique seller in India. |
+| 2 | She photographs every shirt on her own phone. | She photographs every shirt on her own phone. |
+| 2 | But a cleaned-up shot, or an AI try-on, can quietly change the garment. | But a cleaned-up shot, or an AI try-on, can quietly change the garment. |
+| 2 | Its colour. | Its colour. |
+| 2 | Its print. | Its print. |
+| 2 | And the buyer is misled. | And the buyer is misled. |
+| 3 | ProofShot stands between that image and the listing. | ProofShot stands between that image and the listing. |
+| 3 | It is an evidence-checking agent. | It is an evidence-checking agent. |
+| 3 | It checks the image against the seller's own photos, and decides. | It checks the image against the seller's own photos, and decides. |
+| 4 | Here is the agent at work. | Here is the agent at work. |
+| 4 | This run uses a labelled stand-in verifier, so it shows the mechanics, not accuracy. | This run uses a labelled stand-in verifier, so it shows the mechanics, not accuracy. |
+| 4 | The seller gives three close-ups, but no full-length view. | The seller gives three close-ups, but no full-length view. |
+| 4 | The gate says: review. | The gate says: REVIEW. |
+| 4 | The agent reads the receipt, and asks for the missing photo. | The agent reads the receipt, and asks for the missing photo. |
+| 4 | The seller adds it. | The seller adds it. |
+| 4 | The same gate runs again, | The same gate runs again, |
+| 4 | and says: release. | and says: RELEASE. |
+| 4 | Nothing is published until the seller approves. | Nothing is published until the seller approves. |
+| 4 | And when a proposal carries injected text, it is rejected. | And when a proposal carries injected text, it is rejected. |
+| 5 | Now, real garments. | Now, real garments. |
+| 5 | Across our runs, twelve AI try-on images were generated. | Across our runs, 12 AI try-on images were generated. |
+| 5 | The gate held all twelve. | The gate held all 12. |
+| 5 | Ten refused, two sent for review. | 10 refused, 2 sent for review. |
+| 5 | Not one was released. | Not one was released. |
+| 5 | And the one image that was released here is built from the seller's own pixels, | And the one image that was released here is built from the seller's own pixels, |
+| 5 | cut out and placed, not generated. | cut out and placed, not generated. |
+| 6 | Every decision is written into a hash-chained receipt. | Every decision is written into a hash-chained receipt. |
+| 6 | All forty-three committed receipts verify. | All 43 committed receipts verify. |
+| 6 | This page checks every hash in the browser, with no server. | This page checks every hash in the browser, with no server. |
+| 6 | Valid. | VALID. |
+| 6 | Now change a single byte. | Now change a single byte. |
+| 6 | Tampered, | TAMPERED, |
+| 6 | and it shows exactly which entry. | and it shows exactly which entry. |
+| 7 | SAM three point one segments the garment. | SAM 3.1 segments the garment. |
+| 7 | Muse Spark one point three, on the Meta Model API, checks nine attributes. | Muse Spark 1.3, on the Meta Model API, checks nine attributes. |
+| 7 | Every call is logged. | Every call is logged. |
+| 7 | And a plain code gate, not a model, makes the final call. | And a plain code gate, not a model, makes the final call. |
+| 8 | This is early. | This is early. |
+| 8 | Our numbers come from a handful of garments, not a general accuracy claim. | Our numbers come from a handful of garments, not a general accuracy claim. |
+| 8 | But the principle holds: | But the principle holds: |
+| 8 | if we cannot prove the photo is true, | if we cannot prove the photo is true, |
+| 8 | it does not go live. | it does not go live. |
+
+### v8 fact check
+
+Each figure or factual claim spoken in v8, checked on 2 Nov against the
+committed files. v8 speaks no test count. The audio is rendered, so a mismatch
+is recorded here, not fixed in the narration.
+
+| Spoken claim | Status | Source |
+|---|---|---|
+| Built during this hackathon, from 27 October; before that only the written specification and some config boilerplate | matches | SUBMISSION "Built during the hackathon" (first commit `15658a4`, 27 Oct 2026 at 11:10 IST; prior work: the written specification and config boilerplate only) |
+| A labelled stand-in verifier; three close-ups and no full-length view; REVIEW, the agent asks, the seller adds the photo, RELEASE; nothing published until the seller approves; injected text rejected | matches | the v7 beat 2 sources below (`scripts/agent-demo.ts`, `publish` in `src/agent/service.ts`) |
+| Twelve AI try-on images generated and all twelve held: ten refused, two sent for review, none released | matches | README intro and SUBMISSION Metrics, "AI try-ons held by the gate" (figures `tryon_all_total` 12, `tryon_all_refuse` 10, `tryon_all_review` 2) |
+| "the one image that was released here is built from the seller's own pixels" | matches for the 31 Oct try-on run only; UNVERIFIED as a statement about every committed run | `evidence/tryon/SUMMARY.md` (composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE; Pruna try-on 0 RELEASE). Other committed receipts are RELEASE too (for example the pipeline smoke example `ms2-shirt-plaid`, the owner's photo against itself; SUBMISSION "the other 14 were already RELEASE"), so "the one" holds only with "here" read as that run |
+| All forty-three committed receipts verify | matches | SUBMISSION Metrics, "Committed jobs with receipts" (figure `receipt_chains` 43 of 43) |
+| The page checks every hash in the browser, with no server; a changed byte reads TAMPERED and shows which entry | matches, scoped | `web/verify.html`; one byte of an entry's content, not the file layout (CLAIMS_AUDIT row "Change one byte", CA1; `docs/JUDGE_QA_TAMPER.md` question 2) |
+| SAM 3.1 segments the garment; Muse Spark 1.3 on the Meta Model API checks nine attributes | matches | README "What each Meta model does". Record-day rule 1 asks for their log entries on screen in that beat; what v8 shows there is UNVERIFIED |
+| Every call is logged | matches for the committed call logs; UNVERIFIED as a statement about every call ever made | README "What each Meta model does" (logged calls per model) |
+| A plain code gate, not a model, makes the final call | matches | `src/gate.ts`; README intro |
+| A handful of garments, not a general accuracy claim | matches | README "Limits" (9 real garments in all) |
+| "She photographs every shirt on her own phone" | differs from record-day rule 6 (the seller is spoken of as "the seller") | rule 6 below; the narration was approved by Manish on 1 Nov and is not edited |
 
 Status: v6, 29 Oct 2026, from Manish: the demo shows the two shirts only (plaid
 and zebra), no kurta anywhere. v5's try-on beat (`live-kurta-01-tryon-m`) is
@@ -23,9 +102,9 @@ Framed for "Build for Your World" with an Indian boutique seller. v5, v4 and v3
 are in git history. Every job on screen is a committed receipt; "What exists
 today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
-v6 capture timing 76 s (the video to submit is the v7 re-render below: script
-length 2:45, or 2:50 with the optional end card). Screen recording only, burned-in captions. Voice: the recorded voiceover (an
-AI voice is UNVERIFIED against the rules). Word cap per beat = seconds x 2.5
+v6 capture timing 76 s (the video to submit is v8, above: 167.9 s as reported
+by Grok, UNVERIFIED here). Screen recording only, burned-in captions. Voice: the recorded voiceover (a
+generated Edge TTS voice, en-IN-PrabhatNeural; whether the rules allow it is UNVERIFIED). Word cap per beat = seconds x 2.5
 (150 wpm).
 
 ## What exists today (master), so the script claims nothing else
@@ -47,6 +126,8 @@ screen. SAM 3.1 and Muse Spark 1.3 have logs in the shirt jobs' receipts.
 
 ## Re-render script v7 (31 Oct, for the out/final video)
 
+Superseded on 2 Nov by v8 (above); kept as history.
+
 Grok 17:35 IST 31 Oct (#23). This is the script for re-rendering the
 assembled video in out/final (first commit cited: 15658a4). It does not
 change the v6 timecode table and shot list below: those still drive
@@ -58,8 +139,8 @@ Grok 21:10 IST 31 Oct: the prior-work line comes at the opening, as an
 on-screen caption over the first 5 s of beat 1; beat 3 is 10 s shorter (40 s,
 same narration, which fits its cap) and the later beats move up; the end card
 is optional. The narration text is unchanged from the first v7 (72db20c). The
-narration audio is the recorded voiceover; nothing is re-recorded or
-generated.
+narration audio is the recorded voiceover (a generated Edge TTS voice,
+en-IN-PrabhatNeural); nothing new is recorded for it.
 
 | Beat | Time | Screen | Narration | Source |
 |---|---|---|---|---|
@@ -154,4 +235,4 @@ recording (checklist).
 - [ ] No person in any frame.
 - [ ] Captions burned in; each beat under its word cap; total 76 s.
 - [ ] End slide URL is `github.com/rmanish2000-del/proofshot-hackathon`; licence only if `LICENSE` exists.
-- [ ] The recorded voiceover; no synthesized audio.
+- [ ] The recorded voiceover: a generated Edge TTS voice (en-IN-PrabhatNeural).
