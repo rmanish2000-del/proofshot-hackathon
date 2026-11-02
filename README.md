@@ -168,7 +168,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->429<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->430<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -682,7 +682,8 @@ The renderer takes an injected transport.
   streaming parser for SAM 3 segmentation tokens, no runtime dependencies of
   its own; glue in `src/sam-parser.ts`). Its licence is the **SAM License**
   (`node_modules/@meta-sam/parser/LICENSE`, not MIT): read it before
-  redistributing anything built on it. `jpeg-js` 0.4.4 (BSD-3-Clause), used
+  redistributing anything built on it. Its full text and the jpeg-js notice
+  are in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). `jpeg-js` 0.4.4 (BSD-3-Clause), used
   only to decode JPEG photos and renders for the fidelity check
   (`src/image.ts`). Everything else uses only Node's
   standard library (`node:crypto`, `node:fs`, `node:zlib` for PNG masks,
@@ -705,7 +706,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->429<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->430<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
@@ -720,9 +721,14 @@ Dated experiment rows (each live run and when it happened) are in
 
 Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
-IST. `git log` has no commit dated before it. The prior work used is
-`docs/SPEC.md` and the config boilerplate only (below); the code was written
-here from that specification.
+IST. `git log` has no commit dated before it. Prior work: a written
+specification; two config files (`tsconfig.json`, `.gitignore`); one
+AI-generated synthetic model image (`data/models/synthetic-01/model.png`,
+generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and
+an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag
+`pre-hackathon-baseline`, 1485431) whose code is not in this repository: the
+code here was rewritten from the specification from 27 Oct, not copied. Each
+is listed below.
 
 History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones.
 
@@ -744,6 +750,14 @@ History note: on 30 Oct 2026 the commit history was re-authored to replace a per
   repository's `docs/SPEC.md` and code.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
+- One AI-generated synthetic model image,
+  [`data/models/synthetic-01/model.png`](data/models/synthetic-01/LICENSE.md):
+  a fictional adult, generated from text only on 23 Oct 2026, before the
+  event, for MirrorOS (`google/nano-banana` on Replicate); provenance and terms
+  in its `LICENSE.md`. It is a try-on model image, not code.
+- The earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct 2026;
+  tag `pre-hackathon-baseline`, 1485431): its code is not in this repository.
+  The code here was rewritten from the specification from 27 Oct, not copied.
 
 The demo and every committed receipt use only the code in this repository and
 the hosted models named above (SAM 3.1 and Muse Spark 1.3 on

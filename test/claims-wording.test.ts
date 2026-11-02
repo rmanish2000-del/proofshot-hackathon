@@ -119,7 +119,8 @@ test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one vid
 test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISSION says; beat 3 shows a replicate-pruna-tryon receipt entry before Pruna is named; the plan doc says check_photo_quality is built", () => {
   const md = read("docs/DEMO.md");
   const v7 = md.slice(md.indexOf("## Re-render script v7"), md.indexOf("## Rules for record day"));
-  assert.match(read("SUBMISSION.md"), /the written specification and config boilerplate only/);
+  // DOC3 (2 Nov): SUBMISSION now names every prior-work item; the v7 caption below is kept as history.
+  assert.match(read("SUBMISSION.md"), /Prior work: a written specification; two config files/);
   assert.match(v7, /\nPrior work: the written specification and config boilerplate only\. Everything you see running was coded during the hackathon, from 27 Oct \(first commit 15658a4\)\. git log is public\.\n/);
   assert.doesNotMatch(md, /spec document only/);
   // AGW10 (Grok 00:05 1 Nov): the build range stays open-ended, like SUBMISSION ("from 15658a4 on"), so 1 Nov+ commits cannot make it untrue.
@@ -624,4 +625,31 @@ test("SAMPLE1 (Grok 09:33 2 Nov): every doc paragraph about the sample shirt but
   const readme = read("README.md").replace(/\s+/g, " ");
   assert.match(readme, /"Recorded run from 2026-10-29, not live"/);
   assert.match(readme, /`data\/jobs\/ms2-shirt-zebra`/);
+});
+
+test("DOC3 + DOC2 (Grok 2 Nov): prior work names the pre-event model image and the prototype; audience is global; third-party licence texts ship", () => {
+  const headline = /Prior work: a written specification; two config files \(`tsconfig\.json`, `\.gitignore`\); one AI-generated synthetic model image \(`data\/models\/synthetic-01\/model\.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE\.md\); and an earlier private prototype \(`rmanish2000-del\/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431\) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied\./;
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  assert.match(readme, headline);
+  assert.equal([...sub.matchAll(new RegExp(headline.source, "g"))].length, 2, "SUBMISSION form line and Built during the event");
+  for (const text of [readme, sub]) {
+    assert.doesNotMatch(text, /config boilerplate only/);
+    assert.match(text, /- One AI-generated synthetic model image, \[?`data\/models\/synthetic-01\/model\.png`/);
+  }
+  // The date the disclosure states is the one in the image's own provenance file.
+  assert.match(read("data/models/synthetic-01/LICENSE.md"), /Generated 2026-10-23 00:48–00:56 UTC/);
+  assert.doesNotMatch(read("CLAIMS_AUDIT.md"), /\| Prior work is the written specification and config boilerplate only/);
+  // DOC2: India is an example, not the audience.
+  assert.doesNotMatch(sub, /Indian boutique/);
+  assert.equal([...sub.matchAll(/A seller anywhere, from a boutique in India to a market stall in Lagos, lists/g)].length, 3);
+  assert.match(sub, /\*\*Theme:\*\* Build for Your World \(small sellers' listing images, anywhere; built and tested in India, with an English and Hindi seller page\)\./);
+  // Licences: SAM License 1.b.i asks for a copy of the Agreement; the notices file carries both texts.
+  const notices = read("THIRD_PARTY_NOTICES.md");
+  assert.match(notices, /SAM License\nLast Updated: November 19, 2025/);
+  assert.match(notices, /you shall provide a copy of this Agreement with any such SAM Materials\./);
+  assert.match(notices, /8\. Modifications and Amendments\./);
+  assert.match(notices, /Copyright \(c\) 2014, Eugene Ware/);
+  assert.match(readme, /\[`THIRD_PARTY_NOTICES\.md`\]\(THIRD_PARTY_NOTICES\.md\)/);
+  assert.equal(JSON.parse(read("package.json")).license, "MIT");
 });

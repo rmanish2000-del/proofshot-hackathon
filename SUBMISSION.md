@@ -25,7 +25,7 @@ and in README.md. Anything not in the repository is **TBD**.
 
 **Long description:**
 
-An Indian boutique seller lists garments online from their own phone photos. Any image that goes on the listing, a cleaned-up product shot or an AI try-on, can quietly change the garment: its colour, its print, its length. The buyer then gets something other than what was photographed.
+A seller anywhere, from a boutique in India to a market stall in Lagos, lists garments online from their own phone photos. Any image that goes on the listing, a cleaned-up product shot or an AI try-on, can quietly change the garment: its colour, its print, its length. The buyer then gets something other than what was photographed.
 
 ProofShot is an evidence-checking agent for those images, with a release gate at the end. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a ghost mannequin with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
 
@@ -37,7 +37,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 **Track and team:** Indie Developer track. Solo: Manish Patel.
 
-**Theme:** Build for Your World (Indian boutique sellers' listing images).
+**Theme:** Build for Your World (small sellers' listing images, anywhere; built and tested in India, with an English and Hindi seller page).
 
 **Meta models used (logged calls):**
 
@@ -50,7 +50,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime (`refuseMuseImage` in `src/render.ts` throws `MuseImageRefused`; `test/render.test.ts` "a Muse Image model is refused on every provider before any request"). AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
 
-**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: the written specification and config boilerplate only; the specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
+**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: a written specification; two config files (`tsconfig.json`, `.gitignore`); one AI-generated synthetic model image (`data/models/synthetic-01/model.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied. The specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
 **Repository:** https://github.com/rmanish2000-del/proofshot-hackathon
 
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->429<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->430<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -211,7 +211,7 @@ limits, local metrics (`npm run agent:metrics`); the managed-queue path is a pla
 
 ## Inspiration
 
-An Indian boutique seller lists every garment from their own phone photos.
+A seller anywhere, from a boutique in India to a market stall in Lagos, lists every garment from their own phone photos.
 Any image that goes on that listing, a cleaned-up product shot or an AI
 try-on, can quietly change the colour, the print or the length, and the buyer
 gets something else. In my 28–29 Oct live try-on calls, long kurtas came back shorter,
@@ -238,7 +238,7 @@ Checked against: README "What each Meta model does" (the model table) and
 
 ## Problem
 
-An Indian boutique seller lists garments online from their own phone photos.
+A seller anywhere, from a boutique in India to a market stall in Lagos, lists garments online from their own phone photos.
 Any image that goes on the listing, whether a cleaned-up product shot or an AI
 try-on, can quietly change the garment: its colour, its print, its length. A
 buyer then gets something other than what the photo showed.
@@ -407,9 +407,14 @@ every committed try-on a kurta job).
 
 Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
-IST. `git log` has no commit dated before it. The prior work used is
-`docs/SPEC.md` and the config boilerplate only, as listed under Prior work used
-below; the code was written here from that specification.
+IST. `git log` has no commit dated before it. Prior work: a written
+specification; two config files (`tsconfig.json`, `.gitignore`); one
+AI-generated synthetic model image (`data/models/synthetic-01/model.png`,
+generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and
+an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag
+`pre-hackathon-baseline`, 1485431) whose code is not in this repository: the
+code here was rewritten from the specification from 27 Oct, not copied. Each
+is listed under Prior work used below.
 
 History note: on 30 Oct 2026 the commit history was re-authored to replace a personal email address in the author and committer fields with a GitHub noreply address. Names, dates, messages and file contents are unchanged, but every commit hash changed (the first commit was 4aa99f9 before, 15658a4 now); the hashes cited in this repository's documents are the new ones. Checked on 1 Nov against the pre-rewrite commits (kept in a local backup tag, `backup/pre-rewrite-20261030`): the first commit has the same tree SHA before and after (3658a64, in 4aa99f9 and 15658a4), the last re-authored commit has the same tree SHA as its original (22f2330, in 96f7724 and 60edb33), and both histories have 186 commits up to it.
 
@@ -431,6 +436,13 @@ History note: on 30 Oct 2026 the commit history was re-authored to replace a per
   repository's `docs/SPEC.md` and code.
 - Config boilerplate (`tsconfig.json`, `.gitignore`) mirrors the earlier
   private repository.
+- One AI-generated synthetic model image, `data/models/synthetic-01/model.png`:
+  a fictional adult, generated from text only on 23 Oct 2026, before the
+  event, for MirrorOS (`google/nano-banana` on Replicate); provenance and terms
+  in `data/models/synthetic-01/LICENSE.md`. It is a try-on model image, not code.
+- The earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct 2026;
+  tag `pre-hackathon-baseline`, 1485431): its code is not in this repository.
+  The code here was rewritten from the specification from 27 Oct, not copied.
 
 The demo and every committed receipt use only the code in this repository and
 the hosted models named under Built with (SAM 3.1 and Muse Spark 1.3 on
@@ -448,8 +460,10 @@ endpoint URL in `src/` and `scripts/`.
   `git log` has no commit dated before it, and the gate, receipt chain, verify
   page, provider code, demo and evidence are all in commits from 15658a4 on.
 - *What was carried over?* Only `docs/SPEC.md` (the written specification,
-  with event changes marked *(event)*) and the config boilerplate
-  (`tsconfig.json`, `.gitignore`), as listed under Prior work used.
+  with event changes marked *(event)*), the config boilerplate
+  (`tsconfig.json`, `.gitignore`) and one AI-generated synthetic model image
+  (`data/models/synthetic-01/model.png`, 23 Oct 2026), as listed under Prior
+  work used. No code from the earlier private prototype.
 - *What do the demo and the receipts call?* The demo and every receipt use
   only this repository's code and the hosted models named under Built with
   (the `provider` field of each receipt in `data/jobs`, and the endpoint URLs

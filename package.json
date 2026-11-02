@@ -2,6 +2,7 @@
   "name": "proofshot-hackathon",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "ProofShot, rewritten during the hackathon: a deterministic release gate and a hash-chained receipt for AI product photos.",
   "engines": {

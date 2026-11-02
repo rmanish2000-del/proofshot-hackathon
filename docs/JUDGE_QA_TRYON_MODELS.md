@@ -113,8 +113,9 @@ address; dates, messages and file contents are unchanged, but every hash
 changed (the first commit was 4aa99f9 before). Source: README "Built during
 the event"; `docs/HISTORY.md`.
 
-Weak spot: the prior work used, `docs/SPEC.md` and the config boilerplate,
-predates the event; README "Prior work used" lists it.
+Weak spot: the prior work used, `docs/SPEC.md`, the config boilerplate and
+the synthetic-01 model image (generated 23 Oct 2026), predates the event;
+README "Prior work used" lists it.
 
 ## 9. Are the spend caps real money limits?
 
