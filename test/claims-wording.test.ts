@@ -608,3 +608,20 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
   assert.match(checklist, /\| pending; SUBMISSION\.md \*\*Still TBD\*\* \|/);
 });
+
+test("SAMPLE1 (Grok 09:33 2 Nov): every doc paragraph about the sample shirt button calls it a recorded replay and never says it runs live or through the steps", () => {
+  const docs = ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md", ...readdirSync(join(root, "docs")).filter((f) => f.endsWith(".md")).map((f) => `docs/${f}`)];
+  let seen = 0;
+  for (const doc of docs) {
+    for (const para of read(doc).split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " "))) {
+      if (!/sample shirt|sample button/i.test(para)) continue;
+      seen++;
+      assert.match(para, /recorded/i, `${doc}: ${para.slice(0, 120)}`);
+      assert.doesNotMatch(para, /through the same steps|uploads the committed|fixture-mode sample shirt|sample[^.|]{0,60}\b(is|runs) live\b/i, `${doc}: ${para.slice(0, 120)}`);
+    }
+  }
+  assert.ok(seen >= 3, "README, SPEC and DEMO describe the button");
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.match(readme, /"Recorded run from 2026-10-29, not live"/);
+  assert.match(readme, /`data\/jobs\/ms2-shirt-zebra`/);
+});

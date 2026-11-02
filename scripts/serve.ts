@@ -11,12 +11,13 @@
 // upload-* job folders are gitignored), and "Publish to shop" rebuilds --shop
 // (default web/shop) from it. A seller's optional correction (UX-EASY2) goes to
 // --corrections (default data/corrections), outside every receipt; the
-// upload-* correction files are gitignored too.
+// upload-* correction files are gitignored too. The sample button (SAMPLE1)
+// replays the committed receipt of data/jobs/ms2-shirt-zebra: no call is made.
 
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 
-import { UploadServer, providersFromEnv } from "../src/serve.ts";
+import { SAMPLE_RECORDED_JOB, UploadServer, providersFromEnv } from "../src/serve.ts";
 import { accountLedger, meteredFetch } from "../src/spend-meta.ts";
 import { writeSamLog, writeVerifierLog } from "./verifier-log.ts";
 
@@ -46,6 +47,7 @@ const server = new UploadServer({
   shopDir: option("--shop", `${root}web/shop`),
   garmentsDir: option("--garments", `${root}data/garments`),
   correctionsDir: option("--corrections", `${root}data/corrections`),
+  sampleJobDir: `${root}data/jobs/${SAMPLE_RECORDED_JOB}`,
   providers,
 });
 

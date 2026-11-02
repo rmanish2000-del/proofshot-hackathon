@@ -100,6 +100,9 @@
   .method { display: inline-block; font-weight: 600; font-size: 0.85rem; border: 1px solid currentColor; border-radius: 999px; padding: 0.15rem 0.6rem; margin-left: 0.4rem; }
   .method.ai-generated { color: var(--warn); background: var(--warnbg); } .method.not-ai { color: var(--ok); background: var(--okbg); } .method.fixture, .method.none { color: var(--muted); background: #eee; }
   .tip { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+  /* SAMPLE1: the recorded replay is labelled on the card itself, above everything else. */
+  .replay { background: var(--warnbg); color: var(--warn); font-weight: 700; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); }
+  .replay .tip { font-weight: 400; color: var(--warn); }
   @media (min-width: 768px) { main { max-width: 48rem; } .compare .ins { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
@@ -171,7 +174,11 @@
       drop: "Drop up to 3 phone photos of one garment",
       dropSub: "or tap to choose them (JPEG: front, back, a close-up)",
       sample: "Try with our sample shirt",
-      sampleNote: "No garment at hand? The sample button uploads three committed photos of a shirt (no person in them) through the same steps.",
+      sampleNote: "No garment at hand? The sample button shows a recorded run on three committed photos of a shirt (no person in them): its saved receipt, at once, with no model called. Your own photos always run live.",
+      replayLabel: "Recorded run from {date}, not live",
+      replayNote: "This replays the saved receipt of a real run on these sample photos (verifier: {verifier}). Nothing was called just now; the decision is the one that receipt records. Upload your own photos for a live check.",
+      readLeadReplay: "The verifier's findings for each attribute, as recorded on that run's receipt.",
+      verifyOffline: "Verify offline",
       readTitle: "What we read from your photos",
       readLead: "The verifier's own findings for each attribute, from the receipt; nothing here was typed.",
       readLeadFixture: "The findings recorded on the receipt for each attribute; fixture mode, not judged by a model.",
@@ -232,7 +239,11 @@
       drop: "एक कपड़े की 3 तक फ़ोन तस्वीरें यहाँ छोड़ें",
       dropSub: "या उन्हें चुनने के लिए टैप करें (JPEG: सामने, पीछे, क़रीब से)",
       sample: "हमारी नमूना शर्ट से आज़माएँ",
-      sampleNote: "पास में कोई कपड़ा नहीं? नमूना बटन एक शर्ट की तीन रखी हुई तस्वीरें (उनमें कोई व्यक्ति नहीं) इन्हीं चरणों से अपलोड करता है।",
+      sampleNote: "पास में कोई कपड़ा नहीं? नमूना बटन एक शर्ट की तीन रखी हुई तस्वीरों (उनमें कोई व्यक्ति नहीं) पर हुआ एक रिकॉर्ड किया गया रन तुरंत दिखाता है: उसकी सहेजी गई रसीद, बिना किसी मॉडल को बुलाए। आपकी अपनी तस्वीरें हमेशा लाइव चलती हैं।",
+      replayLabel: "{date} का रिकॉर्ड किया गया रन, लाइव नहीं",
+      replayNote: "यह इन नमूना तस्वीरों पर हुए एक असली रन की सहेजी गई रसीद दोबारा दिखाता है (जाँचकर्ता: {verifier})। अभी कुछ भी नहीं बुलाया गया; फ़ैसला वही है जो उस रसीद में दर्ज है। लाइव जाँच के लिए अपनी तस्वीरें अपलोड करें।",
+      readLeadReplay: "हर गुण पर जाँचकर्ता के निष्कर्ष, जैसे उस रन की रसीद में दर्ज हैं।",
+      verifyOffline: "ऑफ़लाइन जाँचें",
       readTitle: "हमने आपकी तस्वीरों से क्या पढ़ा",
       readLead: "हर गुण पर जाँचकर्ता के अपने निष्कर्ष, रसीद से; यहाँ कुछ भी टाइप नहीं किया गया।",
       readLeadFixture: "हर गुण पर रसीद में दर्ज निष्कर्ष; फ़िक्स्चर मोड, किसी मॉडल ने नहीं जाँचे।",
@@ -303,6 +314,7 @@
   let photos = [];
   let mode = null;
   let current = null; // { job_id, status }
+  let replay = null; // SAMPLE1: the recorded run on show, from api/sample/replay
   let timer = null;
 
   function applyLanguage() {
@@ -312,6 +324,7 @@
     $("note").placeholder = T().notePlaceholder;
     paintMode();
     if (current) paintJob(current.status);
+    if (replay) paintReplay(replay);
   }
 
   $("lang").addEventListener("click", () => {
@@ -436,27 +449,104 @@
     }
   }
 
-  // The sample shirt: the server's committed photos, uploaded as an ordinary job in one tap.
+  // SAMPLE1: the sample shirt is a recorded run, replayed from its committed receipt.
+  // The button never starts a job: no upload, no model, no render; live uploads go through start().
   $("sample").addEventListener("click", async () => {
     setError("");
     $("sample").disabled = true;
     try {
-      const res = await fetch("api/sample", { cache: "no-store" });
+      const res = await fetch("api/sample/replay", { cache: "no-store" });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || String(res.status));
-      for (const p of photos) URL.revokeObjectURL(p.url);
-      photos = body.files.map((f) => {
-        const bytes = Uint8Array.from(atob(f.base64), (c) => c.charCodeAt(0));
-        const file = new File([bytes], f.name, { type: "image/jpeg" });
-        return { file, url: URL.createObjectURL(file) };
-      });
-      paintThumbs();
-      await start();
+      replay = body;
+      paintReplay(replay);
     } catch (err) {
       setError(err && err.message ? err.message : T().errServer);
       $("sample").disabled = false;
     }
   });
+
+  /** The recorded run: label first, then the receipt's own decision, reasons and findings. Nothing here is computed. */
+  function paintReplay(view) {
+    $("form").hidden = true;
+    $("progress").hidden = true;
+    showStep(2);
+    const box = $("result");
+    box.replaceChildren();
+    box.hidden = false;
+    const card = el("article", "card");
+    card.dataset.replay = "recorded";
+    const banner = el("div", "replay", T().replayLabel.replace("{date}", view.recorded_on));
+    banner.append(el("div", "tip", T().replayNote.replace("{verifier}", view.verifier || "?")));
+    card.append(banner);
+    const compare = el("div", "compare");
+    const left = el("div");
+    left.append(el("h3", null, T().input));
+    const ins = el("div", "ins");
+    for (const s of view.sources) {
+      const img = el("img");
+      img.src = s.url;
+      img.alt = s.label;
+      ins.append(img);
+    }
+    left.append(ins);
+    const right = el("div");
+    right.append(el("h3", null, T().output));
+    if (view.image) {
+      const img = el("img");
+      img.src = view.image;
+      img.alt = view.render_id || "";
+      right.append(img);
+    } else {
+      right.append(el("div", "tip", T().noImage));
+    }
+    compare.append(left, right);
+    card.append(compare);
+    const body = el("div", "body");
+    const line = el("div");
+    body.append(line);
+    line.append(el("span", `badge ${view.decision}`, T().badge[view.decision] || view.decision || "?"));
+    if (view.badge) {
+      const method = el("span", `method ${view.badge.kind}`, view.badge.label);
+      method.title = view.badge.tooltip;
+      line.append(method);
+      body.append(el("div", "tip", view.badge.tooltip));
+    }
+    const read = el("div");
+    body.append(read);
+    paintChips(read, view.findings || [], T().readLeadReplay);
+    body.append(el("h2", null, T().reasons));
+    const ul = el("ul");
+    if (view.reasons.length === 0) ul.append(el("li", null, T().noReasons));
+    for (const r of view.reasons) ul.append(el("li", null, r));
+    body.append(ul);
+    const links = el("div", "links");
+    if (view.verify) {
+      const a = el("a", null, T().verifyOffline);
+      a.href = view.verify;
+      a.target = "_blank";
+      a.rel = "noopener";
+      links.append(a);
+    }
+    const dl = el("a", null, T().downloadReceipt);
+    dl.href = view.receipt;
+    dl.setAttribute("download", `${view.job_id}-receipt.jsonl`);
+    links.append(dl);
+    if (view.judge) {
+      const judge = el("a", null, T().openJudge);
+      judge.href = view.judge;
+      links.append(judge);
+    }
+    body.append(links);
+    if (view.image_sha256) body.append(el("div", "hash", `sha256 ${view.image_sha256}`));
+    if (view.head) body.append(el("div", "hash", `head ${view.head}`));
+    const again = el("button", "again", T().again);
+    again.type = "button";
+    again.addEventListener("click", reset);
+    body.append(again);
+    card.append(body);
+    box.append(card);
+  }
 
   /** A name the server accepts: letters, digits, dot, dash, underscore, space; ends in .jpg. */
   function safeName(name) {
@@ -607,11 +697,12 @@
   }
 
   /** One chip per ATTRS entry: match, mismatch, or not measured (uncertain or no finding), with the verifier's note. */
-  function paintChips(box, findings) {
+  function paintChips(box, findings, lead) {
     box.replaceChildren();
     box.hidden = false;
     // RV8: in fixture mode no model judged the findings, so the lead says so (as the mode banner does).
-    box.append(el("h2", null, T().readTitle), el("div", "tip", mode && mode.fixture ? T().readLeadFixture : T().readLead));
+    // SAMPLE1: a recorded replay passes its own lead; the server's mode says nothing about that run.
+    box.append(el("h2", null, T().readTitle), el("div", "tip", lead || (mode && mode.fixture ? T().readLeadFixture : T().readLead)));
     if (findings.length === 0) { box.append(el("div", "tip", T().noFindings)); return; }
     const chips = el("div", "chips");
     for (const name of ATTRS) {
@@ -741,6 +832,7 @@
   function reset() {
     if (timer) clearTimeout(timer);
     current = null;
+    replay = null;
     for (const p of photos) URL.revokeObjectURL(p.url);
     photos = [];
     paintThumbs();

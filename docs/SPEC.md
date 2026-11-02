@@ -708,8 +708,10 @@ What a seller does: one page, no login, phone first, Hindi or English. They
 drop up to three JPEGs of one garment (a one-line type note is optional since
 UX-EASY1, 1 Nov: an empty note is recorded as `garment (the seller typed no
 note)`, and the result shows the verifier's nine findings as "What we read from
-your photos"; `GET /api/sample` returns the committed sample shirt's photos for
-a one-tap trial; since UX-EASY2 an optional "Something wrong? Correct it"
+your photos"; since SAMPLE1 (2 Nov) the sample button replays a recorded run,
+`GET /api/sample/replay`: the committed receipt of `data/jobs/ms2-shirt-zebra`,
+labelled "Recorded run from <date>, not live", with no job, no provider call
+and no write (`GET /api/sample`, the photos alone, is still served); since UX-EASY2 an optional "Something wrong? Correct it"
 stores the seller's view of the nine attributes, matches / does not match / not
 sure, plus one optional line, in `data/corrections/<job>.json` with the receipt
 head it refers to, outside the chain: never a receipt entry, never a gate

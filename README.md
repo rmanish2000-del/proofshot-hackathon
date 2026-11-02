@@ -168,7 +168,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->422<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->429<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -513,15 +513,27 @@ a non-JPEG upload, the HTTP surface, the page's CSP and strings), SPEC §12.
 
 **Presentation (NR5, then UX-EASY1 on 1 Nov).** The upload page is two steps:
 photos, then the result. Step 1 is a big drop zone for three phone photos, a
-"Try with our sample shirt" button (it uploads the committed `shirt-zebra`
-photos through the same steps, from `GET /api/sample`), an optional one-line
+"Try with our sample shirt" button (a recorded replay, see below), an optional one-line
 type note, the drawn photo guide and the EXIF-strip notice. The seller types no
 attributes: the agent reads nine attributes from the seller's photos, and the
 result card shows them under "What we read from your photos", one chip per
 attribute (matches / does not match / not measured) with the verifier's note,
 read from the receipt's verifier entry. An upload with no note records
 `garment (the seller typed no note)` as its `garment_note`; the gate rules, the
-receipt format and the hash chain did not change. The earlier three-step form
+receipt format and the hash chain did not change.
+
+**Sample button: a recorded replay, not a live run (SAMPLE1, 2 Nov).** "Try
+with our sample shirt" runs nothing. It replays the committed receipt of
+`data/jobs/ms2-shirt-zebra` (a live run on 29 Oct 2026 on the three committed
+`shirt-zebra` photos; verifier `meta / muse-spark-1.3`, nine findings; gate
+REVIEW, because no source mask was stored), from `GET /api/sample/replay`. The
+card is labelled "Recorded run from 2026-10-29, not live" (Hindi: "2026-10-29
+का रिकॉर्ड किया गया रन, लाइव नहीं"), and shows the receipt's own decision,
+reasons and nine findings, the photos side by side, a Verify offline link
+(`verify.html#sha=<image sha256>`) and the receipt download. The replay starts
+no job, calls no provider and writes nothing (`test/sample-replay.test.ts`
+counts zero provider calls); it offers no Correct it and no Publish. Uploading
+your own photos is unchanged and runs live. The earlier three-step form
 (one typed field per attribute) is gone; the 29 Oct browser check below was
 made on that form. Under the chips, an optional "Something wrong? Correct it"
 link (UX-EASY2) opens the nine attributes as toggles (matches / does not match
@@ -693,7 +705,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->422<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->429<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |

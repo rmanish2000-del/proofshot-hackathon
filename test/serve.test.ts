@@ -411,7 +411,7 @@ test("UX-EASY1 web/upload.html: two steps, no attribute fields to type, optional
   assert.equal([...page.matchAll(/<input type="text"/g)].length, 1, "the only text field is the optional type note");
   assert.doesNotMatch(page, /errNoNote/, "an empty note is never an error");
   assert.match(page, /garment_note: \$\("note"\)\.value\.trim\(\)/);
-  assert.match(page, /fetch\("api\/sample"/);
+  assert.match(page, /fetch\("api\/sample\/replay"/); // SAMPLE1: the sample button replays a recorded run
   assert.match(page, /paintChips\(read, r\.findings \|\| \[\]\)/, "chips come from the receipt API view, not from the page");
   for (const lang of ["en", "hi"]) {
     const table = new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0];

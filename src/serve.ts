@@ -64,6 +64,39 @@ export const NO_NOTE = "garment (the seller typed no note)";
 /** The committed garment the page's "Try with our sample shirt" button uploads (owner's photos, no person). */
 export const SAMPLE_GARMENT = "shirt-zebra";
 
+/**
+ * SAMPLE1: the committed live job the sample button replays instead of running
+ * a new one. Same three shirt-zebra photos, Muse Spark 1.3 on the Meta Model
+ * API, nine findings; its gate said REVIEW, and the replay shows that as it is.
+ */
+export const SAMPLE_RECORDED_JOB = "ms2-shirt-zebra";
+
+/** What the sample button paints: one recorded receipt, read and never re-run. */
+export interface SampleReplay {
+  readonly replay: true;
+  readonly job_id: string;
+  /** The job entry's time, and its UTC date (YYYY-MM-DD) for the page's label. */
+  readonly recorded_at: string;
+  readonly recorded_on: string;
+  readonly provenance: string | null;
+  /** The verifier the receipt names, e.g. "meta / muse-spark-1.3"; null when it names none. */
+  readonly verifier: string | null;
+  readonly decision: Decision | null;
+  readonly render_id: string | null;
+  readonly image_sha256: string | null;
+  readonly badge: { readonly kind: string; readonly label: string; readonly tooltip: string } | null;
+  readonly reasons: readonly string[];
+  readonly findings: readonly { readonly attribute: string; readonly verdict: string | null; readonly confidence: number | null; readonly note: string | null }[];
+  /** URL paths on this server. */
+  readonly image: string | null;
+  readonly sources: readonly { readonly label: string; readonly url: string }[];
+  readonly receipt: string;
+  readonly head: string | null;
+  readonly chain_ok: boolean;
+  readonly verify: string | null;
+  readonly judge: string | null;
+}
+
 export const STEPS = ["exif", "segment", "render", "verify", "gate"] as const;
 export type StepName = (typeof STEPS)[number];
 export type StepState = "pending" | "running" | "done" | "failed" | "skipped";
@@ -263,6 +296,8 @@ export interface UploadServerOptions {
   readonly garmentsDir?: string;
   /** UX-EASY2: where seller corrections are stored (data/corrections), outside every receipt. Without it the correction routes answer 404. */
   readonly correctionsDir?: string;
+  /** SAMPLE1: the folder of the recorded job the sample button replays (data/jobs/ms2-shirt-zebra). Without it the replay answers 404. */
+  readonly sampleJobDir?: string;
   readonly providers: ServeProviders;
   readonly clock?: Clock;
   readonly now?: () => Date;
@@ -491,6 +526,15 @@ export class UploadServer {
       if (req.method === "GET" && path === "/api/mode") return sendJson(res, 200, this.mode);
       if (req.method === "POST" && path === "/api/jobs") return sendJson(res, 202, this.submit(await readJson(req)));
       if (req.method === "GET" && path === "/api/sample") return sendJson(res, 200, this.sample());
+      // SAMPLE1: the sample button's recorded replay; every route here only reads committed files.
+      const replayMatch = /^\/api\/sample\/replay(?:\/(receipt\.jsonl|image|source\/(\d{1,2})))?$/.exec(path);
+      if (replayMatch) {
+        if (req.method !== "GET") return sendJson(res, 405, { error: "method not allowed" });
+        if (!replayMatch[1]) return sendJson(res, 200, this.sampleReplay());
+        if (replayMatch[1] === "receipt.jsonl") return sendFile(res, join(this.sampleDir(), RECEIPT_FILE));
+        if (replayMatch[1] === "image") return sendFile(res, this.sampleImage());
+        return sendFile(res, this.sampleSource(Number(replayMatch[2])));
+      }
       const jobMatch = /^\/api\/jobs\/([A-Za-z0-9][A-Za-z0-9._-]{0,63})(\/publish|\/correction)?$/.exec(path);
       if (jobMatch) {
         const id = jobMatch[1]!;
@@ -561,6 +605,73 @@ export class UploadServer {
       .map((name) => ({ name, base64: readFileSync(join(dir, name)).toString("base64") }));
     if (files.length === 0) throw new UploadError("no sample garment on this server", 404);
     return { garment: SAMPLE_GARMENT, files };
+  }
+
+  private sampleDir(): string {
+    const dir = this.opts.sampleJobDir;
+    if (!dir || !existsSync(join(dir, RECEIPT_FILE))) throw new UploadError("no recorded sample run on this server", 404);
+    return dir;
+  }
+
+  private sampleEntries(): ReturnType<typeof parseReceipt> {
+    return parseReceipt(readFileSync(join(this.sampleDir(), RECEIPT_FILE), "utf8"));
+  }
+
+  /**
+   * SAMPLE1: the recorded run the sample button shows. It reads the committed
+   * receipt and nothing else: no job is made, no provider is called, nothing
+   * is written. The decision, reasons and findings are the receipt's own.
+   */
+  sampleReplay(): SampleReplay {
+    const entries = this.sampleEntries();
+    const view = presentJob(entries);
+    const chain = verifyChain(entries);
+    const first = view.renders[0] ?? null;
+    const job = entries.find((e) => e.kind === "job");
+    const recorded_at = job?.at ?? "";
+    const verifierEntry = entries.find((e) => e.kind === "verifier" && (e.payload as { render_id?: unknown }).render_id === first?.render_id);
+    const named = (verifierEntry?.payload as { verifier?: { provider?: unknown; model?: unknown } } | undefined)?.verifier;
+    const verifier = named && typeof named.provider === "string" && typeof named.model === "string" ? `${named.provider} / ${named.model}` : null;
+    const hasImage = first !== null && imageFile(this.sampleDir(), first.render_id) !== null;
+    return {
+      replay: true,
+      job_id: view.job_id ?? SAMPLE_RECORDED_JOB,
+      recorded_at,
+      recorded_on: recorded_at.slice(0, 10),
+      provenance: view.provenance,
+      verifier,
+      decision: first?.decision ?? null,
+      render_id: first?.render_id ?? null,
+      image_sha256: first?.image_sha256 ?? null,
+      badge: first ? first.badge : null,
+      reasons: first ? first.reasons.map((r) => r.plain ?? r.reason) : [],
+      findings: first ? first.findings : [],
+      image: hasImage ? "/api/sample/replay/image" : null,
+      sources: view.sources.map((s, i) => ({ label: s.label, url: `/api/sample/replay/source/${i}` })),
+      receipt: "/api/sample/replay/receipt.jsonl",
+      head: chain.ok ? chain.head : null,
+      chain_ok: chain.ok,
+      verify: first?.image_sha256 ? `verify.html#sha=${first.image_sha256}` : null,
+      // /judge reads the jobs root, so the link is offered only when the recorded job is there too.
+      judge: view.job_id && existsSync(join(this.opts.jobsRoot, view.job_id, RECEIPT_FILE)) ? `judge?job=${encodeURIComponent(view.job_id)}` : null,
+    };
+  }
+
+  private sampleImage(): string {
+    const first = presentJob(this.sampleEntries()).renders[0];
+    const file = first ? imageFile(this.sampleDir(), first.render_id) : null;
+    if (!first || !file) throw new UploadError("not found", 404);
+    return join(this.sampleDir(), file);
+  }
+
+  /** A source photo of the recorded run, served only when its bytes hash to the receipt's sha256. */
+  private sampleSource(index: number): string {
+    const source = presentJob(this.sampleEntries()).sources[index];
+    const dir = this.opts.garmentsDir ? join(this.opts.garmentsDir, SAMPLE_GARMENT) : null;
+    if (!source || !dir || source.name.includes("/") || source.name.includes("\\")) throw new UploadError("not found", 404);
+    const file = join(dir, source.name);
+    if (!existsSync(file) || sha256Hex(new Uint8Array(readFileSync(file))) !== source.sha256) throw new UploadError(`no file matches the recorded hash of ${source.name}`, 404);
+    return file;
   }
 
   private correctionsDir(): string {
