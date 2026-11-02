@@ -626,7 +626,7 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
 test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resync, spend has a cutoff, Anything else is not pending; SUBMISSION Still TBD drops the filled video link", () => {
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   const row = (name: string) => checklist.split("\n").find((l) => l.startsWith(`| ${name} |`))!;
-  assert.match(row("Live demo"), /UNVERIFIED here .*the build commit is stated here only after the Space is resynced to 67fda16 or later/);
+  assert.match(row("Live demo"), /UNVERIFIED here .*the build commit is stated here only after the Space is resynced to the submission commit and the commit it runs is read/); // RV21 5
   assert.doesNotMatch(row("Live demo"), /Baseten|Meta Model API|Replicate|Fireworks|Muse Spark|SAM/);
   assert.match(row("Spend"), /ledger figures read on 29 Oct, .*the 30–31 Oct agent and try-on runs add about 0\.45 USD more/); // RV19 4: same as SUBMISSION
   const anything = row("Anything else (thumbnail, social links)");
@@ -780,4 +780,17 @@ test("RV20 (Grok 2 Nov): SPEC 12 states the serve.ts limits and routes, matching
   assert.match(serve, /env\.PROOFSHOT_RENDER \?\? ""\)\.trim\(\) \|\| \(env\.RENDER_PROVIDER/);
   const row = read("docs/DEMO.md").split("\n").find((l) => l.startsWith("| Built during this hackathon, from 27 October"))!;
   assert.match(row, /the earlier private prototype \(`rmanish2000-del\/proofshot`, code not copied; RV20\)/);
+});
+
+test("RV21 (Grok 3 Nov): README installs with npm ci everywhere, SAM price and Muse Image policy reason UNVERIFIED, two-step page has its own browser row; checklist Live demo waits for the submission commit", () => {
+  const readme = read("README.md");
+  assert.doesNotMatch(readme, /^npm install$/m);
+  assert.doesNotMatch(readme, /2\.50 USD/);
+  assert.match(readme.replace(/\s+/g, " "), /SAM 3\.1 price UNVERIFIED/);
+  assert.match(readme.replace(/\s+/g, " "), /The policy reason \(Meta's Geographic Use Policy excluding India\) is UNVERIFIED here/);
+  const twoStep = readme.split("\n").find((l) => l.startsWith("| Two-step upload page (Photos, Result) in a real browser |"))!;
+  assert.match(twoStep, /\*\*UNVERIFIED\*\*/);
+  assert.doesNotMatch(twoStep, /\*\*checked\*\*/);
+  const live = read("docs/SUBMIT_CHECKLIST.md").split("\n").find((l) => l.startsWith("| Live demo |"))!;
+  assert.doesNotMatch(live, /67fda16/);
 });

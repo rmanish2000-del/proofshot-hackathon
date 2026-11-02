@@ -12,7 +12,7 @@ pending.
 | Link | Value | Status |
 |---|---|---|
 | Repository | https://github.com/rmanish2000-del/proofshot-hackathon | public since 28 Oct 2026 (README "Public repo" row) |
-| Live demo | https://rmanish2000-proofshot.hf.space | a public Hugging Face Space; which build and providers it runs is UNVERIFIED here (README "Live demo" line); the build commit is stated here only after the Space is resynced to 67fda16 or later and the commit it runs is read |
+| Live demo | https://rmanish2000-proofshot.hf.space | a public Hugging Face Space; which build and providers it runs is UNVERIFIED here (README "Live demo" line); the build commit is stated here only after the Space is resynced to the submission commit and the commit it runs is read |
 | Demo video | https://youtu.be/cOeRYwRZBlA | the v8 video on YouTube (link checked by Grok on 2 Nov 2026); the same URL is in SUBMISSION.md and README.md |
 | X post | pending | a human step (a public post); nothing is posted from this repository |
 
@@ -47,7 +47,7 @@ reviewers) and any UNVERIFIED claim stated as fact.
 
 | Figure | Value | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->443<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
+| Automated tests | <!--f:tests-->444<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
 | Committed receipts that verify | <!--f:receipt_chains-->43 of 43<!--/f--> | `npm run figures`; SUBMISSION Metrics, "Committed jobs with receipts" |
 | AI try-on images held by the gate | <!--f:tryon_all_total-->12<!--/f--> (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, <!--f:tryon_all_release-->0<!--/f--> RELEASE) | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`; SUBMISSION Metrics, "AI try-ons held by the gate" |
 | Verifier calls, Muse Spark 1.3 on the Meta Model API | <!--f:muse13_calls_all-->242<!--/f--> logged | `evidence/verifier-*.json`, `evidence/ms4/`, `evidence/<run>/logs/`; README "What each Meta model does" |

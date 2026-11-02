@@ -119,7 +119,7 @@ No install: the Live demo line at the top names the public Space (what it runs
 is UNVERIFIED here). To run this repository yourself: Node 22.6 or later.
 
 ```
-npm install
+npm ci
 npm test             # the whole suite, offline: no network, no keys
 npm run typecheck
 npm run page         # rewrites the inlined core in web/verify.html from src/core.js
@@ -169,7 +169,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->443<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->444<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -628,8 +628,9 @@ committed.
   fields sent were checked against the model's API schema before the live call
   (Grok, 44576a0). Pruna and Replicate data and output terms and India
   availability are UNVERIFIED.
-- **Muse Image is refused on every provider**, before any request (Meta's
-  Geographic Use Policy excludes India). The renderer is checked when it is built
+- **Muse Image is refused on every provider**, before any request. The policy
+  reason (Meta's Geographic Use Policy excluding India) is UNVERIFIED here: no
+  copy or quote of the policy page is committed. The renderer is checked when it is built
   and again before each request (`src/render.ts`). Only that one model is not
   used; ProofShot itself works for sellers anywhere.
 - `MODEL_API_KEY`: the Meta Model API key for SAM 3.1 segmentation
@@ -668,8 +669,9 @@ committed.
   the Baseten account, not the Meta credit): its own ledger, 5 USD, no reserve, until a
   figure is set. Replicate 5 USD. A call over its limit is refused before it is
   sent, so the step fails closed. Prices: muse-spark-open 1.25 / 4.25 USD per
-  million tokens in / out (Fireworks and Baseten pages); SAM 3.1 2.50 USD per
-  1000 images (secondary sources, not read on dev.meta.ai).
+  million tokens in / out (Fireworks and Baseten pages); SAM 3.1 price
+  UNVERIFIED (no source read first-hand or committed; the spend ledger uses a
+  working estimate per image, `src/spend-meta.ts`).
 
 **Built with Muse Spark.** The verifier today is Muse Spark 1.3 on the Meta Model
 API (`api.meta.ai`, <!--f:muse13_calls_all-->242<!--/f--> logged calls, <!--f:muse13_calls_runs-->16<!--/f--> of them in the 30–31 Oct run logs); the first verifier was Muse Spark Open
@@ -713,7 +715,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->443<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->444<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
@@ -722,6 +724,7 @@ Dated experiment rows (each live run and when it happened) are in
 | Listing copy | <!--f:copy_texts-->168<!--/f--> texts (English and Hindi), <!--f:copy_model-->164<!--/f--> by muse-spark-open, <!--f:copy_template-->4<!--/f--> template | `data/copy/` |
 | Verify page in a real browser | **checked, served over HTTP** (29 Oct, Chromium, WebCrypto): the real kurta-01 JPEG with its upload receipt → VALID; `fixture-shirt-01-r1.png` with its receipt → NOT RELEASED (gate REFUSE); the receipt with one character changed → TAMPERED, entry 0; another image → TAMPERED, in no entry. The CSP blocked a fetch from inside the page. From disk (`file://`): **checked in headless Edge** by `npm run demo:capture` (29 Oct, no flags that loosen security): `ms2-shirt-plaid` receipt and image → VALID, its one-byte copy → TAMPERED. Not yet checked from disk in a normal browser window: the in-app browser used for the HTTP check shows `file://` pages outside its project as a static snapshot | also tested in Node against the same core |
 | Seller upload page in a real browser | **checked** (29 Oct, Chromium, fixture mode, keys blanked, jobs and shop in scratch folders): three kurta-01 photos through the 3-step form (the 29 Oct page, before UX-EASY1 made it two steps: Photos, Result; this row does not cover the two-step page), every pipeline step shown, RELEASE, receipt and judge links, Publish, the shop shows the item with the badge, Hindi toggle (`lang="hi"`). Photos were handed to the file input in-page (the browser pane has no OS file picker). Found and fixed: with `--shop <dir>` the shop page read `web/shop`, so a published item never appeared; `/shop/...` is now served from `--shop` (`test/serve.test.ts`) | `test/serve.test.ts`; no live model was called |
+| Two-step upload page (Photos, Result) in a real browser | **UNVERIFIED**: no real-browser check of the current two-step page is committed (the 29 Oct check above was the 3-step page and is not borrowed) | `test/serve.test.ts` and the upload page tests run in Node only |
 | Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 6c6837f, no EXIF/GPS, no phone number; since the 30 Oct history re-authoring every commit's author and committer email is a GitHub noreply address, see the history note below and `docs/HISTORY.md`) | made public by Manish on 28 Oct after the history scan |
 
 ## Built during the event
