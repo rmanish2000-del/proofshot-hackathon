@@ -526,9 +526,13 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   assert.doesNotMatch(v8, /\b\d{3} tests\b/);
   // 3: one token for the link in both files; the voice is no longer TBD.
   const sub = read("SUBMISSION.md");
-  assert.match(sub, /\*\*Demo video:\*\* VIDEO_URL_PENDING/);
+  assert.match(sub, /\*\*Demo video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA\n/);
   assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
-  assert.match(read("README.md"), /\*\*Video:\*\* VIDEO_URL_PENDING/);
+  assert.match(read("README.md"), /\*\*Video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA /);
+  // VID1: the token is gone everywhere it was.
+  for (const doc of ["SUBMISSION.md", "README.md", "docs/SUBMIT_CHECKLIST.md", "docs/DEMO.md"]) {
+    assert.doesNotMatch(read(doc), /VIDEO_URL_PENDING/, doc);
+  }
   // 4: the tamper weak spot quotes v8.
   const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
   assert.match(tamper, /in v8 the recorded voiceover still says "Now change a single byte\." with no scope/);
@@ -541,7 +545,8 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   for (const key of ["tests", "receipt_chains", "tryon_all_total", "tryon_all_refuse", "tryon_all_review", "muse13_calls_all", "baseten_calls", "pruna_all_usd_est"]) {
     assert.ok(list.includes(`<!--f:${key}-->`), `the figures table marks ${key}`);
   }
-  assert.ok(list.includes("| Demo video | `VIDEO_URL_PENDING` |"));
+  assert.ok(list.includes("| Demo video | https://youtu.be/cOeRYwRZBlA |"));
+  assert.doesNotMatch(list, /v8 upload is a human step/);
   assert.match(list, /\| Live demo \| https:\/\/rmanish2000-proofshot\.hf\.space \| .*UNVERIFIED/);
   assert.match(list, /\| X post \| pending \| a human step/);
   // Every SUBMISSION section the list cites exists, and every bold field it cites is in SUBMISSION.
@@ -552,10 +557,10 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   // README first screen: moved, not new.
   const top = read("README.md").split("\n").slice(0, 30).join("\n");
   assert.match(top, /\*\*Live demo:\*\* https:\/\/rmanish2000-proofshot\.hf\.space\//);
-  assert.match(top, /\*\*Video:\*\* VIDEO_URL_PENDING/);
+  assert.match(top, /\*\*Video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA /);
   assert.match(top, /\*\*Verify a receipt offline:\*\* `web\/verify\.html` makes no network request/);
   assert.match(top, /```\nnpm ci\nnpm test\nnpm run serve\n```/);
-  assert.equal([...read("README.md").matchAll(/VIDEO_URL_PENDING/g)].length, 1, "one token in README");
+  assert.equal([...read("README.md").matchAll(/https:\/\/youtu\.be\/cOeRYwRZBlA/g)].length, 1, "one video URL in README");
 });
 
 test("RV12 (Grok 07:20 2 Nov, self red-team): SUBMISSION cites no uncommitted file as proof, the v8 on-screen content is UNVERIFIED, and the recording checklist says it is for v6", () => {

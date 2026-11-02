@@ -6,7 +6,7 @@ Space (`rmanish2000/proofshot`) whose root opens the seller upload page
 which providers the Space runs is not read from the Space repo in this README,
 so it is UNVERIFIED here; everything below is about this repository.
 
-**Video:** VIDEO_URL_PENDING (v8; its length and voice are under "The video to
+**Video:** https://youtu.be/cOeRYwRZBlA (v8; its length and voice are under "The video to
 submit is v8" below).
 
 **Verify a receipt offline:** `web/verify.html` makes no network request. Give

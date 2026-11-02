@@ -13,7 +13,7 @@ pending.
 |---|---|---|
 | Repository | https://github.com/rmanish2000-del/proofshot-hackathon | public since 28 Oct 2026 (README "Public repo" row) |
 | Live demo | https://rmanish2000-proofshot.hf.space | a public Hugging Face Space; which build and providers it runs is UNVERIFIED here (README "Live demo" line) |
-| Demo video | `VIDEO_URL_PENDING` | pending: the v8 upload is a human step; one replace of the token fills SUBMISSION.md and README.md |
+| Demo video | https://youtu.be/cOeRYwRZBlA | the v8 video on YouTube (link checked by Grok on 2 Nov 2026); the same URL is in SUBMISSION.md and README.md |
 | X post | pending | a human step (a public post); nothing is posted from this repository |
 
 ## Form fields and their source
@@ -30,7 +30,7 @@ pending.
 | Built during the hackathon / prior work | SUBMISSION.md **Built during the hackathon**; "Built during the event and prior work" | first commit `15658a4` |
 | Live demo | SUBMISSION.md **Live demo** | see Links |
 | Repository, licence | SUBMISSION.md **Repository**, **Licence** | MIT (`LICENSE`) |
-| Demo video | SUBMISSION.md **Demo video** | `VIDEO_URL_PENDING` until the upload; the video is v8 (`docs/DEMO.md` "v8: the video to submit") |
+| Demo video | SUBMISSION.md **Demo video** | https://youtu.be/cOeRYwRZBlA; the video is v8 (`docs/DEMO.md` "v8: the video to submit") |
 | Inspiration | SUBMISSION.md "Inspiration" | |
 | What it does | SUBMISSION.md "What it does" | |
 | How we built it / Built with | SUBMISSION.md "Built with / How we built it" | |

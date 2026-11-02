@@ -56,7 +56,7 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Licence:** MIT (`LICENSE`).
 
-**Demo video:** VIDEO_URL_PENDING
+**Demo video:** https://youtu.be/cOeRYwRZBlA
 
 **Still TBD:** the video link (the Demo video line above); any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
