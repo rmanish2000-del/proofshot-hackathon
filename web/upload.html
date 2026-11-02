@@ -199,6 +199,7 @@
       modeOff: "We could not reach ProofShot. Check your connection and try again.",
       modeFixture: "Fixture mode: no model key is set. The metadata strip, the receipt and the gate are real; the render is your own front photo, and the findings are recorded, not judged by a model. The receipt says so.",
       modeLive: "Live mode: the providers below ran for real.",
+      modeReplay: "Recorded sample: nothing below ran now. Your own photos run in the mode this server is set to.",
       modeDetails: "Which provider ran each step",
       steps: { exif: "Strip metadata (EXIF, GPS, device)", segment: "Segment the garment", render: "Render", verify: "Verify against your photos", fidelity: "Fidelity check on the garment masks", gate: "Gate decision" },
       states: { pending: "waiting", running: "running", done: "done", failed: "failed", skipped: "did not run" },
@@ -265,6 +266,7 @@
       modeOff: "ProofShot से जुड़ नहीं पाए। कनेक्शन देखें और फिर कोशिश करें।",
       modeFixture: "फ़िक्स्चर मोड: कोई मॉडल कुंजी सेट नहीं है। मेटाडेटा हटाना, रसीद और गेट असली हैं; रेंडर आपकी ही सामने की तस्वीर है, और निष्कर्ष दर्ज किए गए हैं, किसी मॉडल ने नहीं जाँचे। रसीद में यही लिखा है।",
       modeLive: "लाइव मोड: नीचे दिए प्रोवाइडर सच में चले।",
+      modeReplay: "रिकॉर्ड किया गया सैंपल: नीचे का कुछ भी अभी नहीं चला। आपकी अपनी फ़ोटो इस सर्वर के सेट मोड में चलती हैं।",
       modeDetails: "हर चरण में कौन सा प्रोवाइडर चला",
       steps: { exif: "मेटाडेटा हटाना (EXIF, GPS, डिवाइस)", segment: "कपड़े को सेगमेंट करना", render: "रेंडर", verify: "आपकी तस्वीरों से मिलान", fidelity: "कपड़े के मास्क पर मिलान की जाँच", gate: "गेट का फ़ैसला" },
       states: { pending: "प्रतीक्षा", running: "चल रहा है", done: "हो गया", failed: "विफल", skipped: "नहीं चला" },
@@ -354,6 +356,8 @@
     const box = $("mode");
     box.replaceChildren();
     box.className = "";
+    // RV20: while the recorded sample is on show, the server's live or fixture mode says nothing about it.
+    if (replay) { box.className = "fixture"; box.textContent = T().modeReplay; return; }
     if (!mode) return;
     if (mode.off) { box.className = "off"; box.textContent = T().modeOff; return; }
     box.className = mode.fixture ? "fixture" : "live";
@@ -473,6 +477,7 @@
 
   /** The recorded run: label first, then the receipt's own decision, reasons and findings. Nothing here is computed. */
   function paintReplay(view) {
+    paintMode(); // RV20: the Live banner never sits over a recorded run
     $("form").hidden = true;
     $("progress").hidden = true;
     showStep(2);
@@ -838,6 +843,7 @@
     if (timer) clearTimeout(timer);
     current = null;
     replay = null;
+    paintMode(); // RV20: back to the server's own mode
     for (const p of photos) URL.revokeObjectURL(p.url);
     photos = [];
     paintThumbs();

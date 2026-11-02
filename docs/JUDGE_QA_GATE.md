@@ -43,7 +43,8 @@ never a pass (`src/verifier.ts`; the Muse Spark 1.3 client in
 upload" (the `live-kurta-01` paragraph); "Built with Muse Spark";
 `docs/HISTORY.md`.
 
-Weak spot: a failed or cut-off call costs a RELEASE, not safety: all
+Weak spot: a failed or cut-off call never releases an image; the cost is a
+lost release for the seller (REFUSE), not safety: all
 4 false refusals in the calibration set are renders where the verifier gave no
 answer.
 

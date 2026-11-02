@@ -731,6 +731,18 @@ server, which read it from the receipt.
   the job's `sources/` folder, is 404 (`test/serve.test.ts` "over HTTP: the
   page, the mode, a job from submit to publish, job files, and nothing outside
   web/ or the job").
+- Limits and the rest of the routes *(RV20, 2 Nov: what `src/serve.ts` already
+  does, stated here; no behaviour change)*: a request body over 40 MiB
+  (`MAX_BODY_BYTES`) is 413; `parseUpload` refuses a note longer than 300
+  characters; the upload's optional `scenes` field names 1 to 3 scenes and
+  defaults to `studio` (`DEFAULT_SCENES`); `VERIFIER_PROVIDER=meta` with
+  `MODEL_API_KEY` puts Muse Spark 1.3 on the Meta Model API in place of
+  Baseten; `PROOFSHOT_RENDER` wins over `RENDER_PROVIDER` when both are set.
+  Further routes: `GET /api/receipts` and `/api/receipts/<id>`, with
+  `/verify`, `/tamper` and `/source/<n>` under it (the judge view);
+  `GET` and `POST /api/jobs/<id>/correction` (UX-EASY2, 404 when the server
+  stores no corrections); `GET /judge` (`web/judge.html`); and `/shop/...`,
+  served from the shop folder publish writes to.
 - Providers come from the environment (`providersFromEnv`): the renderer from
   `RENDER_PROVIDER`, defaulting to `stand-in` (§8) since no render transport
   exists; the segmenter is SAM 3.1 (§10, the `@meta-sam/parser` glue is the

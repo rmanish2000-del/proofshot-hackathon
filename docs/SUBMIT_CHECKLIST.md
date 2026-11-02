@@ -47,10 +47,10 @@ reviewers) and any UNVERIFIED claim stated as fact.
 
 | Figure | Value | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->440<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
+| Automated tests | <!--f:tests-->443<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
 | Committed receipts that verify | <!--f:receipt_chains-->43 of 43<!--/f--> | `npm run figures`; SUBMISSION Metrics, "Committed jobs with receipts" |
 | AI try-on images held by the gate | <!--f:tryon_all_total-->12<!--/f--> (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, <!--f:tryon_all_release-->0<!--/f--> RELEASE) | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`; SUBMISSION Metrics, "AI try-ons held by the gate" |
 | Verifier calls, Muse Spark 1.3 on the Meta Model API | <!--f:muse13_calls_all-->242<!--/f--> logged | `evidence/verifier-*.json`, `evidence/ms4/`, `evidence/<run>/logs/`; README "What each Meta model does" |
 | Verifier calls, Muse Spark Open on Baseten (the first verifier) | <!--f:baseten_calls-->19<!--/f--> logged | `evidence/verifier-*.json`; README "What each Meta model does" |
 | Segmentation calls, SAM 3.1 | <!--f:sam_calls_all-->177<!--/f--> logged | `evidence/sam-*.json`, `evidence/<run>/logs/`; README "What each Meta model does" |
-| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD (ledger readings of 29 Oct, per-call estimates, not bills; later calls not included, so not a current total); Pruna, all <!--f:pruna_all_calls-->12<!--/f--> calls: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | SUBMISSION Metrics, "Spend" (not generated: a ledger reading); no provider bill was read |
+| Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; the 30–31 Oct agent and try-on runs add about 0.45 USD more (0.1058 + 0.0756 + 0.0433 + 0.2277), each a sum of per-call estimates from that run's own report, not a later ledger reading and not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | SUBMISSION Metrics, "Spend" is the one source (sources for each figure there; not generated: ledger readings and run reports); no provider bill was read |

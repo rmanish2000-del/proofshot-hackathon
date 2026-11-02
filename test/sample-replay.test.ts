@@ -194,3 +194,35 @@ test("SAMPLE1 web/upload.html: the sample button replays, labelled recorded in E
   // Live uploads are unchanged: start() still posts the chosen photos to api/jobs.
   assert.match(page, /fetch\("api\/jobs", \{ method: "POST"/);
 });
+
+test("RV20 web/upload.html: while the recorded sample is shown the mode box never says Live; reset brings the server's mode back", () => {
+  const page = readFileSync(join(WEB, "upload.html"), "utf8");
+  const tables = ["en", "hi"].map((lang) => new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0]);
+  for (const t of tables) assert.match(t, /\bmodeReplay: "/);
+  // Run the page's own paintMode against a stub mode box, in live mode.
+  const src = /function paintMode\(\) \{[\s\S]*?\n  \}\n/.exec(page)![0];
+  const box = {
+    className: "",
+    textContent: "",
+    children: [] as unknown[],
+    replaceChildren() { this.children = []; this.textContent = ""; },
+    append(...n: unknown[]) { this.children.push(...n); },
+  };
+  const el = (_tag: string, _cls?: string | null, text?: string) => ({ text, append() {} });
+  const T = () => ({ modeLive: "LIVE", modeFixture: "FIXTURE", modeOff: "OFF", modeReplay: "RECORDED", modeDetails: "d", steps: {} });
+  const mode = { fixture: false, labels: { segment: "s", render: "r", verify: "v", fidelity: "f" } };
+  const run = (replay: unknown) => {
+    new Function("$", "el", "T", "mode", "replay", `${src}; paintMode();`)(() => box, el, T, mode, replay);
+    return box;
+  };
+  const shown = run({ recorded_on: "2026-10-29" });
+  assert.equal(shown.className, "fixture");
+  assert.equal(shown.textContent, "RECORDED");
+  assert.ok(!JSON.stringify(shown.children).includes("LIVE"), "modeLive is not left showing over a replay");
+  const after = run(null);
+  assert.equal(after.className, "live");
+  assert.ok(JSON.stringify(after.children).includes("LIVE"));
+  // paintReplay and reset both repaint the box.
+  assert.match(/function paintReplay\(view\) \{[\s\S]*?\n  \}\n/.exec(page)![0], /paintMode\(\)/);
+  assert.match(/function reset\(\) \{[\s\S]*?\n  \}\n/.exec(page)![0], /replay = null;\n\s+paintMode\(\)/);
+});

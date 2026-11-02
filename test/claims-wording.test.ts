@@ -616,7 +616,7 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(sub, /The thresholds, the\s+gate rules and `src\/fidelity\.ts` are unchanged/);
   assert.match(sub, /the gate runner added this one check \(SC1\/SC2\),\s+which can only lower a RELEASE to REVIEW/);
   assert.doesNotMatch(sub, /41314918190/);
-  assert.match(sub, /actions\/runs\/41488620996\), green on ab42c11 at 434 tests/); // RV17 2: newest cited green run
+  assert.match(sub, /actions\/runs\/41498491626\), green on b4f331e at 440 tests/); // RV17 2, RV20 nit: newest cited green run
   assert.doesNotMatch(sub, /41379178357|as reported by Grok/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
@@ -628,7 +628,7 @@ test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resy
   const row = (name: string) => checklist.split("\n").find((l) => l.startsWith(`| ${name} |`))!;
   assert.match(row("Live demo"), /UNVERIFIED here .*the build commit is stated here only after the Space is resynced to 67fda16 or later/);
   assert.doesNotMatch(row("Live demo"), /Baseten|Meta Model API|Replicate|Fireworks|Muse Spark|SAM/);
-  assert.match(row("Spend"), /ledger readings of 29 Oct, .*later calls not included, so not a current total/);
+  assert.match(row("Spend"), /ledger figures read on 29 Oct, .*the 30–31 Oct agent and try-on runs add about 0\.45 USD more/); // RV19 4: same as SUBMISSION
   const anything = row("Anything else (thumbnail, social links)");
   assert.doesNotMatch(anything, /pending/);
   assert.match(anything, /what the official form asks for in this field is not recorded in this repository \(UNVERIFIED\)/);
@@ -671,7 +671,7 @@ test("DOC3 + DOC2 (Grok 2 Nov): prior work names the pre-event model image and t
   // DOC2: India is an example, not the audience.
   assert.doesNotMatch(sub, /Indian boutique/);
   assert.equal([...sub.matchAll(/A seller anywhere, from a boutique in India to a market stall in Lagos, lists/g)].length, 3);
-  assert.match(sub, /\*\*Theme:\*\* Build for Your World \(small sellers' listing images, anywhere; built and tested in India, with an English and Hindi seller page\)\./);
+  assert.match(sub, /\*\*Theme:\*\* Build for Your World \(small sellers' listing images, anywhere; the seller page speaks the seller's own language, English and Hindi today; built and tested in India\)\./); // RV19 3
   // Licences: SAM License 1.b.i asks for a copy of the Agreement; the notices file carries both texts.
   const notices = read("THIRD_PARTY_NOTICES.md");
   assert.match(notices, /SAM License\nLast Updated: November 19, 2025/);
@@ -735,4 +735,49 @@ test("RV18 (Grok 2 Nov): SPEC 12 says intake, not the API, ends a non-JPEG job; 
   const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
   assert.match(tbd, /the X post \(a human step;/);
   assert.match(read("docs/SUBMIT_CHECKLIST.md"), /^\| X post \| pending \| a human step/m);
+});
+
+test("RV19 (Grok 2 Nov): composite v2 is never a mannequin in SUBMISSION, SAM log locations, theme claims only EN+HI, checklist spend matches SUBMISSION, gate weak spot never reads as RELEASE", () => {
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(sub, /mannequin/i);
+  assert.equal(sub.match(/on a plain studio backdrop, no body template/g)?.length, 3, "long description, What it does, Built with");
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(readme, /Every SAM call is logged under/);
+  assert.match(readme, /SAM calls in the evidence pack are logged under `evidence\/sam-\*\.json`, and the 30-31 Oct run calls under `evidence\/<run>\/logs\/`\./);
+  const theme = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Theme:**"))!;
+  assert.match(theme, /the seller page speaks the seller's own language, English and Hindi today; built and tested in India/);
+  for (const doc of ["SUBMISSION.md", "README.md", "docs/SUBMIT_CHECKLIST.md"]) {
+    assert.doesNotMatch(read(doc), /for example,? English and Hindi/i, doc);
+  }
+  const spendRow = (doc: string) => read(doc).split("\n").find((l) => l.startsWith("| Spend |"))!;
+  const extra = "the 30–31 Oct agent and try-on runs add about 0.45 USD more (0.1058 + 0.0756 + 0.0433 + 0.2277)";
+  assert.ok(spendRow("SUBMISSION.md").includes(extra));
+  assert.ok(spendRow("docs/SUBMIT_CHECKLIST.md").includes(extra));
+  assert.doesNotMatch(spendRow("docs/SUBMIT_CHECKLIST.md"), /later calls not included/);
+  const gate = read("docs/JUDGE_QA_GATE.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(gate, /costs a RELEASE, not safety/);
+  assert.match(gate, /a failed or cut-off call never releases an image; the cost is a lost release for the seller \(REFUSE\), not safety/);
+});
+
+test("RV20 (Grok 2 Nov): SPEC 12 states the serve.ts limits and routes, matching the code; DEMO prior-work row names the prototype", () => {
+  const spec = read("docs/SPEC.md").replace(/\s+/g, " ");
+  for (const claim of [
+    /a request body over 40 MiB \(`MAX_BODY_BYTES`\) is 413/,
+    /`parseUpload` refuses a note longer than 300 characters/,
+    /optional `scenes` field names 1 to 3 scenes and defaults to `studio` \(`DEFAULT_SCENES`\)/,
+    /`VERIFIER_PROVIDER=meta` with `MODEL_API_KEY` puts Muse Spark 1\.3 on the Meta Model API in place of Baseten/,
+    /`PROOFSHOT_RENDER` wins over `RENDER_PROVIDER`/,
+    /`GET \/api\/receipts` and `\/api\/receipts\/<id>`, with `\/verify`, `\/tamper` and `\/source\/<n>`/,
+    /`GET` and `POST \/api\/jobs\/<id>\/correction`/,
+    /`GET \/judge` \(`web\/judge\.html`\); and `\/shop\/\.\.\.`/,
+  ]) assert.match(spec, claim);
+  // The figures the paragraph states are the code's own.
+  const serve = read("src/serve.ts");
+  assert.match(serve, /export const MAX_BODY_BYTES = 40 \* 1024 \* 1024;/);
+  assert.match(serve, /garment_note\.length > 300/);
+  assert.match(serve, /scenes\.length > 3/);
+  assert.match(serve, /DEFAULT_SCENES: readonly string\[\] = \["studio"\]/);
+  assert.match(serve, /env\.PROOFSHOT_RENDER \?\? ""\)\.trim\(\) \|\| \(env\.RENDER_PROVIDER/);
+  const row = read("docs/DEMO.md").split("\n").find((l) => l.startsWith("| Built during this hackathon, from 27 October"))!;
+  assert.match(row, /the earlier private prototype \(`rmanish2000-del\/proofshot`, code not copied; RV20\)/);
 });

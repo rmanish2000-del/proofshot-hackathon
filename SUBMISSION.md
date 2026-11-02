@@ -27,7 +27,7 @@ and in README.md. Anything not in the repository is **TBD**.
 
 A seller anywhere, from a boutique in India to a market stall in Lagos, lists garments online from their own phone photos. Any image that goes on the listing, a cleaned-up product shot or an AI try-on, can quietly change the garment: its colour, its print, its length. The buyer then gets something other than what was photographed.
 
-ProofShot is an evidence-checking agent for those images, with a release gate at the end. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a ghost mannequin with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
+ProofShot is an evidence-checking agent for those images, with a release gate at the end. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a plain studio backdrop, no body template, with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
 
 Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of an entry's content (its sequence number, time, kind, payload or a hash) and it says TAMPERED, with the entry number. The hash covers each entry's parsed JSON fields, not the file's layout, so whitespace or key order alone does not count as a change.
 
@@ -37,7 +37,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 **Track and team:** Indie Developer track. Solo: Manish Patel.
 
-**Theme:** Build for Your World (small sellers' listing images, anywhere; built and tested in India, with an English and Hindi seller page).
+**Theme:** Build for Your World (small sellers' listing images, anywhere; the seller page speaks the seller's own language, English and Hindi today; built and tested in India).
 
 **Meta models used (logged calls):**
 
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->440<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41488620996](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41488620996), green on ab42c11 at 434 tests (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->443<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41498491626](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41498491626), green on b4f331e at 440 tests (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -223,7 +223,8 @@ before any candidate image can be listed.
 
 For one candidate listing image, ProofShot segments the seller's photos with
 SAM 3.1, takes or makes the candidate (the seller's own photo; composite v2,
-the seller's own garment pixels on a ghost mannequin, no image model; or an AI
+the seller's own garment pixels on a plain studio backdrop, no body template,
+no image model; or an AI
 try-on with Pruna on Replicate),
 verifies it against those photos with Muse Spark 1.3, measures fidelity on the
 SAM 3.1 masks, and lets a deterministic gate decide RELEASE, REVIEW or REFUSE.
@@ -338,7 +339,8 @@ chain in the browser with WebCrypto.
 | Pruna try-on (`prunaai/p-image-try-on`) | Replicate | AI try-on candidates; all held by the gate | <!--f:pruna_all_calls-->12<!--/f--> (render entries in the receipts: <!--f:pruna_calls-->7<!--/f--> for the 28–29 Oct kurta jobs, the rest in the 31 Oct try-on run) |
 
 Candidate images come from a composite v2 renderer (the seller's own garment
-pixels on a ghost mannequin, deterministic code, no image model) or an AI
+pixels on a plain studio backdrop, no body template, deterministic code, no
+image model) or an AI
 try-on (Pruna on Replicate). No Meta image generator is used; Muse Image is
 refused at runtime. The Muse Spark cross-check (MS4) ran <!--f:ms4_runs-->204<!--/f--> checks over <!--f:ms4_pairs-->68<!--/f-->
 (garment, image) pairs: <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs refused, <!--f:ms4_same_released-->24 of 30<!--/f-->
