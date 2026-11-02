@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { parseReceipt } from "../src/core.js";
-import { computeFigures } from "../src/figures.ts";
+import { FIGURE_DOCS, computeFigures } from "../src/figures.ts";
 import { verifyChain } from "../src/receipt.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -527,9 +527,32 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   const sub = read("SUBMISSION.md");
   assert.match(sub, /\*\*Demo video:\*\* VIDEO_URL_PENDING/);
   assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
-  assert.match(read("README.md"), /Video link: VIDEO_URL_PENDING\./);
+  assert.match(read("README.md"), /\*\*Video:\*\* VIDEO_URL_PENDING/);
   // 4: the tamper weak spot quotes v8.
   const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
   assert.match(tamper, /in v8 the recorded voiceover still says "Now change a single byte\." with no scope/);
   assert.ok(v8.includes("| 6 | Now change a single byte. |"));
+});
+
+test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its source, its figures are generated, and README's first 30 lines give the demo, video, offline verify and a 3-command quickstart", () => {
+  const list = read("docs/SUBMIT_CHECKLIST.md");
+  assert.ok((FIGURE_DOCS as readonly string[]).includes("docs/SUBMIT_CHECKLIST.md"), "figure drift fails figures 2");
+  for (const key of ["tests", "receipt_chains", "tryon_all_total", "tryon_all_refuse", "tryon_all_review", "muse13_calls_all", "baseten_calls", "pruna_all_usd_est"]) {
+    assert.ok(list.includes(`<!--f:${key}-->`), `the figures table marks ${key}`);
+  }
+  assert.ok(list.includes("| Demo video | `VIDEO_URL_PENDING` |"));
+  assert.match(list, /\| Live demo \| https:\/\/rmanish2000-proofshot\.hf\.space \| .*UNVERIFIED/);
+  assert.match(list, /\| X post \| pending \| a human step/);
+  // Every SUBMISSION section the list cites exists, and every bold field it cites is in SUBMISSION.
+  const sub = read("SUBMISSION.md");
+  const headings = new Set(sub.split("\n").filter((l) => l.startsWith("## ")).map((l) => l.slice(3)));
+  for (const m of list.matchAll(/SUBMISSION\.md "([^"]+)"/g)) assert.ok(headings.has(m[1]!), `SUBMISSION has "${m[1]}"`);
+  for (const m of list.matchAll(/SUBMISSION\.md(?: "[^"]+",)? \*\*([^*]+)\*\*/g)) assert.ok(sub.includes(`**${m[1]}:**`) || sub.includes(`**${m[1]}**`), `SUBMISSION has **${m[1]}**`);
+  // README first screen: moved, not new.
+  const top = read("README.md").split("\n").slice(0, 30).join("\n");
+  assert.match(top, /\*\*Live demo:\*\* https:\/\/rmanish2000-proofshot\.hf\.space\//);
+  assert.match(top, /\*\*Video:\*\* VIDEO_URL_PENDING/);
+  assert.match(top, /\*\*Verify a receipt offline:\*\* `web\/verify\.html` makes no network request/);
+  assert.match(top, /```\nnpm ci\nnpm test\nnpm run serve\n```/);
+  assert.equal([...read("README.md").matchAll(/VIDEO_URL_PENDING/g)].length, 1, "one token in README");
 });

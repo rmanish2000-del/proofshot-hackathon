@@ -6,6 +6,23 @@ Space (`rmanish2000/proofshot`) whose root opens the seller upload page
 which providers the Space runs is not read from the Space repo in this README,
 so it is UNVERIFIED here; everything below is about this repository.
 
+**Video:** VIDEO_URL_PENDING (v8; its length and voice are under "The video to
+submit is v8" below).
+
+**Verify a receipt offline:** `web/verify.html` makes no network request. Give
+it a `receipt.jsonl` and the image; steps 2 and 3 of "Quick verify in 2
+minutes" walk through VALID and TAMPERED, and "Verify page" says what it checks.
+
+**Quick start** (Node 22.6 or later, no API key), after
+`git clone https://github.com/rmanish2000-del/proofshot-hackathon.git` and
+`cd proofshot-hackathon`; then open the pages in "Quick verify in 2 minutes":
+
+```
+npm ci
+npm test
+npm run serve
+```
+
 ProofShot checks a candidate listing image against the seller's own phone
 photos of the garment (up to three; the upload page takes one to three JPEGs) before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
@@ -47,7 +64,7 @@ voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural), and each figure it
 speaks is checked in the "v8 fact check" table there. The v7 re-render script
 (its script runs 2:45, or 2:50 with the optional end card) is superseded. The
 v6 capture (9 shots) is 76 s; that is capture timing only, not the video's
-length. Video link: VIDEO_URL_PENDING.
+length.
 
 ## What each Meta model does
 
@@ -147,7 +164,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->418<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->419<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -669,7 +686,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->418<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->419<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
