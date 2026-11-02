@@ -225,6 +225,10 @@ recording (checklist).
 
 ## Recording checklist
 
+For the v6 capture. For v8, the video to submit, the frames are not in this
+repository, so whether each item below holds for it is UNVERIFIED here; the
+voice line applies to v8 as written.
+
 - [ ] Every model named has its call log in the receipt on screen; none named otherwise.
 - [ ] No Muse Image anywhere, no `UNVERIFIED` on screen, no price, no claim about returns.
 - [ ] The smoke-example beat shows that the candidate is the owner's own photo.

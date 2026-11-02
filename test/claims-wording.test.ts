@@ -556,3 +556,18 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   assert.match(top, /```\nnpm ci\nnpm test\nnpm run serve\n```/);
   assert.equal([...read("README.md").matchAll(/VIDEO_URL_PENDING/g)].length, 1, "one token in README");
 });
+
+test("RV12 (Grok 07:20 2 Nov, self red-team): SUBMISSION cites no uncommitted file as proof, the v8 on-screen content is UNVERIFIED, and the recording checklist says it is for v6", () => {
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  assert.match(read(".gitignore"), /^out\/$/m, "out/ is not committed");
+  // Every SUBMISSION cite of out/final says it is not committed.
+  for (const m of sub.matchAll(/`out\/final\/[^`]+`[^|]{0,120}/g)) assert.match(m[0], /not committed/, m[0]);
+  assert.match(sub, /what v8, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here/);
+  assert.doesNotMatch(sub, /\(v7 shows the 31 Oct verdict table/);
+  const md = read("docs/DEMO.md").replace(/\s+/g, " ");
+  assert.match(md, /## Recording checklist For the v6 capture\. For v8, the video to submit, the frames are not in this repository/);
+  // The v8 section names eight beats, as SUBMISSION says.
+  const beats = new Set(read("docs/DEMO.md").split("### v8 fact check")[0]!.split("## v8: the video to submit")[1]!.split("\n").filter((l) => /^\| \d \| /.test(l)).map((l) => l[2]));
+  assert.equal(beats.size, 8);
+  assert.match(sub, /The video to submit is v8 \(`docs\/DEMO\.md` "v8: the video to submit"\): eight beats/);
+});

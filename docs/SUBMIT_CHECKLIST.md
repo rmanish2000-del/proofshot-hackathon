@@ -47,7 +47,7 @@ reviewers) and any UNVERIFIED claim stated as fact.
 
 | Figure | Value | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->419<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
+| Automated tests | <!--f:tests-->420<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
 | Committed receipts that verify | <!--f:receipt_chains-->43 of 43<!--/f--> | `npm run figures`; SUBMISSION Metrics, "Committed jobs with receipts" |
 | AI try-on images held by the gate | <!--f:tryon_all_total-->12<!--/f--> (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, <!--f:tryon_all_release-->0<!--/f--> RELEASE) | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`; SUBMISSION Metrics, "AI try-ons held by the gate" |
 | Verifier calls, Muse Spark 1.3 on the Meta Model API | <!--f:muse13_calls_all-->242<!--/f--> logged | `evidence/verifier-*.json`, `evidence/ms4/`, `evidence/<run>/logs/`; README "What each Meta model does" |

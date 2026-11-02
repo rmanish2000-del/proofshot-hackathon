@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->419<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
+| Automated tests | <!--f:tests-->420<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -81,8 +81,8 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 | Muse Spark cross-check: same decision on all 3 runs | <!--f:ms4_consistent-->65 of 68<!--/f--> pairs | same |
 | AI try-ons held by the gate | <!--f:tryon_all_total-->12<!--/f--> of <!--f:tryon_all_total-->12<!--/f--> committed (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW): <!--f:tryon_total-->7<!--/f--> kurta try-ons 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> in the 31 Oct run; on the 28–29 Oct set the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`, `evidence/ms4-summary.json` |
 | Latency per call, median / p90 (answered calls) | SAM 3.1: 2.9 s / 4.4 s; Muse Spark 1.3: 19.1 s / 32.8 s; Muse Spark Open on Baseten: 26.2 s / 169.5 s; muse-spark-open copy on Fireworks: 30.8 s / 110.5 s | `evidence/pack/README.md` (committed call logs, across days and payload sizes; not a controlled benchmark) |
-| Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run) |
-| Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` |
+| Fixture-mode job, no key (upload to RELEASE) | about 1 s for three photos on one Windows laptop | `out/final/JUDGE_RUN.md` run 2 (one run; `out/` is gitignored, so that file is not committed and this row is UNVERIFIED from this repository) |
+| Judge setup on a clean clone | clone + `npm ci` 76 s; `npm test` 316 s to 423 s on the same laptop | `out/final/JUDGE_RUN.md` (not committed, as above: UNVERIFIED from this repository) |
 | Spend | Meta Model API 5.99 USD, Fireworks 4.83 USD, Replicate 0.105 USD: ledger figures read on 29 Oct, each a per-call token estimate, not a bill; the 30–31 Oct agent and try-on runs add about 0.45 USD more (0.1058 + 0.0756 + 0.0433 + 0.2277), each a sum of per-call estimates taken from that run's own report (`meta_spend_usd_this_run` in `evidence/agent-real-2026-10-30.json` and the two `evidence/agent-replace-2026-10-31*.json`, and the Meta line of `evidence/tryon/SUMMARY.md` Spend), not a later ledger reading and not a bill; all <!--f:pruna_all_calls-->12<!--/f--> committed Pruna calls, incl. the 31 Oct run: <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated on the receipts | Built with, below |
 | General verifier accuracy | **not measured** (4 garments, all the owner's own; the rates above are for these pairs only) | README "What is verified and what is not" |
 | False-match rate on real sellers' listings | **not measured** | none |
@@ -200,7 +200,7 @@ committed photo: copies 0.00 to 0.74, other photos of the same garment at the sa
 aspect ratio more than 2% different, heavy edits, a file that is neither JPEG nor PNG, or a new photo taken of the
 printed or on-screen image.
 
-**Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded): a labelled
+**Keyless demo** (`npm run agent:demo`, video `out/final/evidence_recovery_demo.mp4`, not uploaded and not committed): a labelled
 canned verifier (no model judged the images) shows the mechanics: three close-ups → REVIEW → the agent asks for
 the full-length view → the seller adds it → the same gate → RELEASE → the seller approves → published; and an
 injected instruction is rejected. It is a demonstration of the agent's mechanics, not of model accuracy.
@@ -459,7 +459,7 @@ endpoint URL in `src/` and `scripts/`.
   (`evidence/tryon/SUMMARY.md`, all REFUSE). On the 28–29 Oct set the
   verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
   check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). The v6
-  demo shows the two shirts only and has no AI on-model image (v7 shows the 31 Oct verdict table, not the try-on images), and no new
+  demo shows the two shirts only and has no AI on-model image (the v7 script showed the 31 Oct verdict table, not the try-on images; what v8, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here), and no new
   paid call was made for the video (`docs/DEMO.md`,
   `test/demo-capture.test.ts`).
 - *What can I run without a key?* With no install, the Live demo Space,
