@@ -39,9 +39,12 @@ account (checked in Chromium over local HTTP, and opened from disk (`file://`)
 in headless Edge by the demo capture).
 
 The candidate images in the committed runs come from two paths. The composite
-path cuts the seller's own garment pixels out with a SAM 3.1 mask and places
-them on a ghost mannequin, in deterministic code. The try-on path is an AI
-try-on (Pruna on Replicate). No Meta image generator is used anywhere, and
+path cuts the seller's own garment pixels out with a SAM 3.1 mask and frames
+them in deterministic code: by default v2 (`src/composite-v2.ts`), with no
+body template, on a plain studio backdrop; v1 (`src/composite.ts`) warped them
+onto a mannequin template. The try-on path is an AI try-on (Pruna on
+Replicate). Some committed runs use neither: the seller's own photo stands in
+as the candidate (e.g. `ms2-shirt-plaid`, a pipeline smoke example). No Meta image generator is used anywhere, and
 Muse Image is refused at runtime. No committed run has released a generated
 on-model photo: all <!--f:tryon_all_total-->12<!--/f--> committed try-on images were held by the gate (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f-->
 REVIEW): <!--f:tryon_total-->7<!--/f--> kurta try-ons on 28–29 Oct (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and <!--f:tryon_run31_total-->5<!--/f--> in the
@@ -53,7 +56,7 @@ fidelity for 4 of them and the verifier for 3 (two timeouts, one soft mismatch).
 That is why the demo video shows no AI on-model image: when the v6 script was
 written (29 Oct) every committed try-on receipt (<!--f:tryon_total-->7<!--/f-->, <!--f:tryon_review-->2<!--/f--> REVIEW and <!--f:tryon_refuse-->5<!--/f--> REFUSE) was a kurta job held by
 the gate, the demo shows the two shirts only, and there was no shirt try-on. The
-31 Oct run's try-ons show the synthetic model, so the v7 re-render shows only their verdict table.
+31 Oct run's try-ons show the synthetic model, so the v7 re-render shows their verdict table, not the try-on images.
 The demo capture reads no API key (fixture providers only,
 `providersFromEnv({})` in `scripts/demo-capture.ts`) and every captured frame
 points at a committed job, recording or file (`test/demo-capture.test.ts`,
@@ -147,7 +150,8 @@ If port 8787 is taken, `npm run serve` says so; run
 `npm run serve -- --port 8790` and use that port below. Then, in about two
 minutes:
 
-1. Open `http://127.0.0.1:8787/judge?job=live-shirt-plaid-mismatch`: the plaid
+1. (Replace 8787 with your port in every step.) Open
+   `http://127.0.0.1:8787/judge?job=live-shirt-plaid-mismatch`: the plaid
    shirt's photos beside a different shirt, and the gate's **REFUSE**
    (`hard_mismatch` on colour at 0.99). Swap the job for
    `live-shirt-plaid-composite-v2-r3` (**REVIEW**) or `ms2-shirt-plaid`
@@ -164,7 +168,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->421<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->422<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -493,12 +497,15 @@ the limit was raised to 4096 and then to 8192 with a retry at 16384
 second is recorded as `demo/recordings/live-kurta-01-2`.
 
 `--render <image>` makes that file stand in for the render (still nothing
-generated; the render entry's model is `file:<path>`). One deliberate-mismatch
-live job is committed: `live-kurta-01-mismatch`, kurta-01's three photos as
-sources and kurta-02's front photo as the render. The gate said **REFUSE**
+generated; the render entry's model is `file:<path>`). Three deliberate-mismatch
+live jobs are committed, all **REFUSE**: `live-shirt-plaid-mismatch` (the
+shirt-zebra front photo as the plaid shirt's render), `live-kurta-01-mismatch`
+and `ms3-live-kurta-01-mismatch` (a re-run with that job's same render image).
+In `live-kurta-01-mismatch`, kurta-01's three photos are the sources and
+kurta-02's front photo is the render. The gate said **REFUSE**
 (`hard_mismatch`: color mismatch at 0.99; print_pattern mismatch at 0.98 also
-hard; sleeve_length and hem soft mismatches). That is one job (n=1), not an
-accuracy figure.
+hard; sleeve_length and hem soft mismatches). That is three jobs on two
+render swaps, not an accuracy figure.
 
 New in this feature: `src/serve.ts`, `scripts/serve.ts`, `web/upload.html`,
 `test/serve.test.ts` (the three gate states, a failing segmenter and verifier,
@@ -686,7 +693,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->421<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->422<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |

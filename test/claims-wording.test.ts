@@ -583,3 +583,28 @@ test("RV13 (Grok 08:05 2 Nov, DeepSeek CA2): CLAIMS_AUDIT scopes the shirts-only
   assert.match(ca, /they predate the 30–31 Oct run logs, so they show pack-only counts/);
   assert.match(ca, /held to its concurrent limit \(AGENT_SCALING\) \|/);
 });
+
+test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 verdict table, port note, three mismatch jobs, SC1 gate wording, CI run, checklist pending", () => {
+  const readme = read("README.md");
+  assert.doesNotMatch(readme, /places\s+them on a ghost mannequin/);
+  assert.match(readme, /by default v2 \(`src\/composite-v2\.ts`\), with no\s+body template, on a plain studio backdrop/);
+  assert.match(readme, /`ms2-shirt-plaid`, a pipeline smoke example/);
+  assert.match(readme, /the v7 re-render shows their verdict table, not the try-on images/);
+  assert.match(readme, /\(Replace 8787 with your port in every step\.\)/);
+  assert.doesNotMatch(readme, /One deliberate-mismatch\s+live job is committed/);
+  assert.match(readme, /Three deliberate-mismatch\s+live jobs are committed, all \*\*REFUSE\*\*/);
+  const jobs = readdirSync(join(root, "data/jobs")).filter((j) => j.includes("mismatch")).sort();
+  assert.deepEqual(jobs, ["live-kurta-01-mismatch", "live-shirt-plaid-mismatch", "ms3-live-kurta-01-mismatch"]);
+  for (const job of jobs) {
+    const entries = read(`data/jobs/${job}/receipt.jsonl`).trim().split("\n");
+    assert.match(entries[entries.length - 1]!, /"decision":"REFUSE"/, `${job} ends REFUSE`);
+  }
+  const sub = read("SUBMISSION.md");
+  assert.doesNotMatch(sub, /The thresholds, the\s+gate rules and `src\/fidelity\.ts` are unchanged/);
+  assert.match(sub, /the gate runner added this one check \(SC1\/SC2\),\s+which can only lower a RELEASE to REVIEW/);
+  assert.doesNotMatch(sub, /41314918190/);
+  assert.match(sub, /actions\/runs\/41379178357/);
+  const checklist = read("docs/SUBMIT_CHECKLIST.md");
+  assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
+  assert.match(checklist, /\| pending; SUBMISSION\.md \*\*Still TBD\*\* \|/);
+});

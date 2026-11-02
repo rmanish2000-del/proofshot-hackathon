@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->421<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; last CI run read here: [41314918190](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41314918190), green on 09d5b7c at 400 tests (the count is generated; later commits add tests) |
+| Automated tests | <!--f:tests-->422<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -188,8 +188,9 @@ pairs is a small sample, not a rate.
 answering the replace request with the image to publish itself? Nothing did. Since SC1 the agent's gate runner
 checks every run: when the image to publish is a source photo byte for byte (SC1; SC2, below, adds near-copies), a fidelity RELEASE becomes REVIEW (a
 person looks; REVIEW and REFUSE stay as they are), and the receipt's fidelity entry says "self_comparison: the image
-to publish is source photo N ... byte for byte ... the seller's own photo, nothing generated". The thresholds, the
-gate rules and `src/fidelity.ts` are unchanged. The two RELEASEs above were exactly this case, so **run again
+to publish is source photo N ... byte for byte ... the seller's own photo, nothing generated". The thresholds,
+`src/fidelity.ts` and the gate's decision table are unchanged; the gate runner added this one check (SC1/SC2),
+which can only lower a RELEASE to REVIEW. The two RELEASEs above were exactly this case, so **run again
 today, both would be REVIEW, not RELEASE**; their committed records are kept as they happened. The keyless demo's
 image to publish is now a photo the seller never lists, so its RELEASE is not a self-comparison either.
 SC2 narrows the next step of the same trick: a JPEG or PNG copy of the image to publish that was re-saved,
