@@ -116,8 +116,9 @@ changed (the first commit was 4aa99f9 before). Source: README "Built during
 the event"; `docs/HISTORY.md`.
 
 Weak spot: the prior work used, `docs/SPEC.md`, the config boilerplate and
-the synthetic-01 model image (generated 23 Oct 2026), predates the event;
-README "Prior work used" lists it.
+the synthetic-01 model image (generated 23 Oct 2026), predates the event, and
+so does an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct
+2026), code not copied; README "Prior work used" lists them.
 
 ## 9. Are the spend caps real money limits?
 

@@ -723,3 +723,16 @@ test("RV15 (Grok 2 Nov): Muse Spark 1.3 count scoped by model, npm test labelled
     assert.equal(entry.payload.decision, decision, job);
   }
 });
+
+test("RV18 (Grok 2 Nov): SPEC 12 says intake, not the API, ends a non-JPEG job; prior-work lists name the prototype; Still TBD names the X post like the checklist", () => {
+  const spec = read("docs/SPEC.md").replace(/\s+/g, " ");
+  assert.match(spec, /a file that is not a JPEG is not checked by `POST \/api\/jobs`, which answers 202, so it is intake that ends the job, before the pipeline, with no receipt/);
+  const qa = read("docs/JUDGE_QA_TRYON_MODELS.md").replace(/\s+/g, " ");
+  assert.match(qa, /an earlier private prototype \(`rmanish2000-del\/proofshot`, 24–26 Oct 2026\), code not copied/);
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(sub, /\*What was carried over\?\* Only `docs\/SPEC\.md`/);
+  assert.match(sub, /\*What was carried over\?\* The only prior-work items in this repo are `docs\/SPEC\.md`.*the earlier private prototype's code is not here\./);
+  const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
+  assert.match(tbd, /the X post \(a human step;/);
+  assert.match(read("docs/SUBMIT_CHECKLIST.md"), /^\| X post \| pending \| a human step/m);
+});

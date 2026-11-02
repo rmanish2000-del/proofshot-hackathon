@@ -196,11 +196,11 @@
       running: "Running…",
       remove: "Remove",
       footer: "the receipt is a hash chain; this page decides nothing",
-      modeOff: "The server is not running. Start it with: npm run serve",
+      modeOff: "We could not reach ProofShot. Check your connection and try again.",
       modeFixture: "Fixture mode: no model key is set. The metadata strip, the receipt and the gate are real; the render is your own front photo, and the findings are recorded, not judged by a model. The receipt says so.",
       modeLive: "Live mode: the providers below ran for real.",
       modeDetails: "Which provider ran each step",
-      steps: { exif: "Strip metadata (EXIF, GPS, device)", segment: "Segment the garment", render: "Render", verify: "Verify against your photos", gate: "Gate decision" },
+      steps: { exif: "Strip metadata (EXIF, GPS, device)", segment: "Segment the garment", render: "Render", verify: "Verify against your photos", fidelity: "Fidelity check on the garment masks", gate: "Gate decision" },
       states: { pending: "waiting", running: "running", done: "done", failed: "failed", skipped: "did not run" },
       badge: { RELEASE: "RELEASE: can be published", REVIEW: "REVIEW: a person must look first", REFUSE: "REFUSE: not released" },
       reasons: "Why",
@@ -217,7 +217,8 @@
       errNoPhotos: "Choose at least one photo.",
       errTooMany: "Up to 3 photos.",
       errNotJpeg: "Only JPEG photos (the metadata strip is written for JPEG).",
-      errServer: "The server did not answer. Is npm run serve running?",
+      errServer: "We could not reach ProofShot. Check your connection and try again.",
+      stepsLabel: "Steps",
       w1: "Photos", w2: "Result",
       guideTitle: "Photo guide",
       guide1: "Front, back, and one close-up of the detail or label.",
@@ -261,11 +262,11 @@
       running: "चल रहा है…",
       remove: "हटाएँ",
       footer: "रसीद एक हैश चेन है; यह पेज कोई फ़ैसला नहीं करता",
-      modeOff: "सर्वर चल नहीं रहा। इसे शुरू करें: npm run serve",
+      modeOff: "ProofShot से जुड़ नहीं पाए। कनेक्शन देखें और फिर कोशिश करें।",
       modeFixture: "फ़िक्स्चर मोड: कोई मॉडल कुंजी सेट नहीं है। मेटाडेटा हटाना, रसीद और गेट असली हैं; रेंडर आपकी ही सामने की तस्वीर है, और निष्कर्ष दर्ज किए गए हैं, किसी मॉडल ने नहीं जाँचे। रसीद में यही लिखा है।",
       modeLive: "लाइव मोड: नीचे दिए प्रोवाइडर सच में चले।",
       modeDetails: "हर चरण में कौन सा प्रोवाइडर चला",
-      steps: { exif: "मेटाडेटा हटाना (EXIF, GPS, डिवाइस)", segment: "कपड़े को सेगमेंट करना", render: "रेंडर", verify: "आपकी तस्वीरों से मिलान", gate: "गेट का फ़ैसला" },
+      steps: { exif: "मेटाडेटा हटाना (EXIF, GPS, डिवाइस)", segment: "कपड़े को सेगमेंट करना", render: "रेंडर", verify: "आपकी तस्वीरों से मिलान", fidelity: "कपड़े के मास्क पर मिलान की जाँच", gate: "गेट का फ़ैसला" },
       states: { pending: "प्रतीक्षा", running: "चल रहा है", done: "हो गया", failed: "विफल", skipped: "नहीं चला" },
       badge: { RELEASE: "RELEASE: प्रकाशित किया जा सकता है", REVIEW: "REVIEW: पहले किसी व्यक्ति को देखना होगा", REFUSE: "REFUSE: जारी नहीं" },
       reasons: "कारण",
@@ -282,7 +283,8 @@
       errNoPhotos: "कम से कम एक तस्वीर चुनें।",
       errTooMany: "अधिकतम 3 तस्वीरें।",
       errNotJpeg: "केवल JPEG तस्वीरें (मेटाडेटा हटाना JPEG के लिए लिखा गया है)।",
-      errServer: "सर्वर ने जवाब नहीं दिया। क्या npm run serve चल रहा है?",
+      errServer: "ProofShot से जुड़ नहीं पाए। कनेक्शन देखें और फिर कोशिश करें।",
+      stepsLabel: "चरण",
       w1: "तस्वीरें", w2: "नतीजा",
       guideTitle: "तस्वीर गाइड",
       guide1: "सामने, पीछे, और डिटेल या लेबल की एक क़रीबी तस्वीर।",
@@ -322,6 +324,9 @@
     for (const node of document.querySelectorAll("[data-t]")) node.textContent = T()[node.dataset.t];
     $("lang").textContent = lang === "en" ? "हिन्दी" : "English";
     $("note").placeholder = T().notePlaceholder;
+    document.title = T().title;
+    $("wizard").setAttribute("aria-label", T().stepsLabel);
+    paintThumbs(); // the remove buttons' label follows the language
     paintMode();
     if (current) paintJob(current.status);
     if (replay) paintReplay(replay);

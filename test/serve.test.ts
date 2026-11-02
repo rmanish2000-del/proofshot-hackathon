@@ -411,6 +411,23 @@ test("web/upload.html: same-origin only, both languages name every step, publish
   assert.match(page, /name="viewport" content="width=device-width, initial-scale=1"/);
 });
 
+test("RV18: web/upload.html shows sellers no developer command, and the language toggle repaints the title, the steps label, the thumbnails and the fidelity row", () => {
+  const page = readFileSync(join(WEB, "upload.html"), "utf8");
+  const script = page.slice(page.indexOf("<script>"));
+  assert.doesNotMatch(script, /npm run/, "no developer command in any string the page can show");
+  for (const lang of ["en", "hi"]) {
+    const table = new RegExp(`\\n\\s+${lang}: \\{[\\s\\S]*?\\n\\s+\\},\\n`).exec(page)![0];
+    for (const key of ["title", "stepsLabel"]) assert.match(table, new RegExp(`\\b${key}: "`), `${lang} has ${key}`);
+    assert.match(table, /steps: \{[^}]*\bfidelity: "/, `${lang} labels the fidelity step`);
+  }
+  assert.match(page, /modeOff: "We could not reach ProofShot\. Check your connection and try again\."/);
+  assert.match(page, /errServer: "ProofShot से जुड़ नहीं पाए। कनेक्शन देखें और फिर कोशिश करें।"/);
+  const apply = /function applyLanguage\(\) \{[\s\S]*?\n  \}\n/.exec(page)![0];
+  assert.match(apply, /document\.title = T\(\)\.title;/);
+  assert.match(apply, /\$\("wizard"\)\.setAttribute\("aria-label", T\(\)\.stepsLabel\);/);
+  assert.match(apply, /paintThumbs\(\);/);
+});
+
 test("RV17: web/upload.html stores only the language choice in the browser", () => {
   const page = readFileSync(join(WEB, "upload.html"), "utf8");
   assert.deepEqual([...page.matchAll(/localStorage\.(\w+)\(([^,)]*)/g)].map((m) => [m[1], m[2]]), [["getItem", '"proofshot-lang"'], ["setItem", '"proofshot-lang"']]);

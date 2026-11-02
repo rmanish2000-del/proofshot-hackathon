@@ -797,8 +797,10 @@ server, which read it from the receipt.
   (REVIEW: all nine findings `match`, fidelity unmeasured because no mask
   exists), recorded as `demo/recordings/live-kurta-01-2`.
 - A job: the photos are decoded, each goes through intake (metadata stripped,
-  both hashes kept; a file that is not a JPEG ends the job before the pipeline,
-  with no receipt), the stripped bytes are written to
+  both hashes kept; a file that is not a JPEG is not checked by `POST
+  /api/jobs`, which answers 202, so it is intake that ends the job, before the
+  pipeline, with no receipt: `test/serve.test.ts` "a photo that is not a JPEG
+  is refused at intake: no pipeline, no receipt, the board says why"), the stripped bytes are written to
   `<jobs>/<id>/sources/<name>` so `demo:record` (§7) can record the job later,
   then `runJob` runs with the one scene `studio` and writes
   `<jobs>/<id>/receipt.jsonl` and the render images. The jobs root defaults to

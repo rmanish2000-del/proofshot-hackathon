@@ -58,7 +58,7 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Demo video:** https://youtu.be/cOeRYwRZBlA
 
-**Still TBD:** any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
+**Still TBD:** the X post (a human step; `docs/SUBMIT_CHECKLIST.md` "X post", pending), and any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->438<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41488620996](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41488620996), green on ab42c11 at 434 tests (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->440<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41488620996](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41488620996), green on ab42c11 at 434 tests (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -466,11 +466,12 @@ endpoint URL in `src/` and `scripts/`.
   2026 at 11:10 IST, after the 26 Oct 21:30 IST opening (`git log --reverse`).
   `git log` has no commit dated before it, and the gate, receipt chain, verify
   page, provider code, demo and evidence are all in commits from 15658a4 on.
-- *What was carried over?* Only `docs/SPEC.md` (the written specification,
-  with event changes marked *(event)*), the config boilerplate
-  (`tsconfig.json`, `.gitignore`) and one AI-generated synthetic model image
-  (`data/models/synthetic-01/model.png`, 23 Oct 2026), as listed under Prior
-  work used. No code from the earlier private prototype.
+- *What was carried over?* The only prior-work items in this repo are
+  `docs/SPEC.md` (the written specification, with event changes marked
+  *(event)*), the config boilerplate (`tsconfig.json`, `.gitignore`) and one
+  AI-generated synthetic model image (`data/models/synthetic-01/model.png`, 23
+  Oct 2026), as listed under Prior work used; the earlier private prototype's
+  code is not here.
 - *What do the demo and the receipts call?* The demo and every receipt use
   only this repository's code and the hosted models named under Built with
   (the `provider` field of each receipt in `data/jobs`, and the endpoint URLs
