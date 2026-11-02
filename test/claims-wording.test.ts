@@ -106,14 +106,17 @@ test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one vid
   for (const doc of ["README.md", "SUBMISSION.md"]) {
     const text = read(doc).replace(/\s+/g, " ");
     assert.ok(text.includes(claim), `${doc} names the v7 script superseded`);
-    assert.match(text, /167\.9 s \(about 2:48\) as reported by Grok on 2 Nov; the rendered file is not committed, so that length is UNVERIFIED here/, doc);
+    // RV17: no committed file gives the length, so it is UNVERIFIED, not attributed to a reporter.
+    assert.match(text, /167\.9 s \(about 2:48\); the rendered file is not committed and no committed file gives that length, so it is UNVERIFIED here/, doc);
+    assert.doesNotMatch(text, /as reported by Grok/, doc);
     assert.doesNotMatch(text, /about 2\.5 minutes|Demo script \(76 s\)/, doc);
     for (const m of text.matchAll(/76 s/g)) {
       const around = text.slice(Math.max(0, m.index! - 160), m.index! + 40);
       assert.match(around, /v6|clone \+ `npm ci`/, `${doc}: '76 s' not labelled v6: ${around}`);
     }
   }
-  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is v8, above: 167\.9 s as reported by Grok, UNVERIFIED here\)/);
+  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is v8, above: 167\.9 s, UNVERIFIED here\)/);
+  assert.doesNotMatch(md, /as reported by Grok/);
 });
 
 test("wording 11 (Grok 23:45, AGW9): the v7 prior-work caption says what SUBMISSION says; beat 3 shows a replicate-pruna-tryon receipt entry before Pruna is named; the plan doc says check_photo_quality is built", () => {
@@ -416,7 +419,7 @@ test("RV6 (Grok 23:41 1 Nov): README by-eye check names all 4, photo count match
   assert.doesNotMatch(readme, /none of the 5 is kurta-01 or kurta-02/);
   assert.doesNotMatch(readme, /three or four of them/);
   assert.match(read("web/upload.html"), /const MAX_PHOTOS = 3;/);
-  assert.match(readme, /\(up to three; the upload page takes one to three JPEGs\)/);
+  assert.match(readme, /\(up to three; the upload page takes one to three JPEGs, and the server refuses a fourth: `test\/serve\.test\.ts` "RV17: the upload API takes one to three photos and refuses a fourth with 400"\)/);
   assert.doesNotMatch(readme, /about five minutes/);
   assert.match(readme, /measured 316 s to 423 s on one laptop/);
   assert.match(read("SUBMISSION.md"), /`npm test` 316 s to 423 s on the same laptop/);
@@ -613,7 +616,8 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(sub, /The thresholds, the\s+gate rules and `src\/fidelity\.ts` are unchanged/);
   assert.match(sub, /the gate runner added this one check \(SC1\/SC2\),\s+which can only lower a RELEASE to REVIEW/);
   assert.doesNotMatch(sub, /41314918190/);
-  assert.match(sub, /actions\/runs\/41379178357/);
+  assert.match(sub, /actions\/runs\/41488620996\), green on ab42c11 at 434 tests/); // RV17 2: newest cited green run
+  assert.doesNotMatch(sub, /41379178357|as reported by Grok/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
   assert.match(checklist, /\| nothing prepared; SUBMISSION\.md \*\*Still TBD\*\* \|/); // RV16 4: not "pending"

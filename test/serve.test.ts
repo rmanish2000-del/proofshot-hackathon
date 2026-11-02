@@ -15,7 +15,7 @@ import { presentJob } from "../src/present.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { standInRenderer } from "../src/render.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
-import { NO_NOTE, SAMPLE_GARMENT, STEPS, UPLOAD_JOB_PREFIX, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
+import { MAX_FILES, NO_NOTE, SAMPLE_GARMENT, STEPS, UPLOAD_JOB_PREFIX, UploadError, UploadServer, parseUpload, providersFromEnv } from "../src/serve.ts";
 import type { ServeProviders, StepName, StepState } from "../src/serve.ts";
 import { CATALOG_FILE } from "../src/shop.ts";
 import { ATTRIBUTES } from "../src/types.ts";
@@ -158,7 +158,7 @@ test("parseUpload refuses what the page must never send, with the reason", () =>
   assert.throws(() => parseUpload(null), /not a JSON object/);
   assert.throws(() => parseUpload({ garment_note: "x".repeat(301), files: [{ name: "a.jpg", base64: b64(PHONE) }] }), /longer than 300/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [] }), /at least one photo/);
-  assert.throws(() => parseUpload({ garment_note: "x", files: Array(7).fill({ name: "a.jpg", base64: "AA==" }) }), /at most 6/);
+  assert.throws(() => parseUpload({ garment_note: "x", files: Array(7).fill({ name: "a.jpg", base64: "AA==" }) }), /at most 3/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [{ name: "../a.jpg", base64: "AA==" }] }), /not a plain file name/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [{ name: "a.jpg", base64: "AA==" }, { name: "a.jpg", base64: "AA==" }] }), /both named/);
   assert.throws(() => parseUpload({ garment_note: "x", files: [{ name: "a.jpg", base64: "" }] }), /is empty/);
@@ -168,6 +168,13 @@ test("parseUpload refuses what the page must never send, with the reason", () =>
   assert.deepEqual(ok.scenes, ["studio"]);
   assert.deepEqual(ok.files[0]!.bytes, PHONE);
   assert.throws(() => parseUpload(null), (e: unknown) => e instanceof UploadError && e.status === 400);
+});
+
+test("RV17: the upload API takes one to three photos and refuses a fourth with 400", () => {
+  const files = (n: number) => Array.from({ length: n }, (_, i) => ({ name: `${i + 1}.jpg`, base64: b64(PHONE) }));
+  assert.equal(MAX_FILES, 3);
+  for (const n of [1, 2, 3]) assert.equal(parseUpload({ files: files(n) }).files.length, n);
+  assert.throws(() => parseUpload({ files: files(4) }), (e: unknown) => e instanceof UploadError && e.status === 400 && e.message === "at most 3 photos");
 });
 
 test("UX-EASY1: no typed note is accepted and recorded as NO_NOTE; the gate and receipt are the same shape as with a note", async () => {
@@ -402,6 +409,12 @@ test("web/upload.html: same-origin only, both languages name every step, publish
   assert.match(page, /fetch\("api\/jobs"/);
   assert.match(page, /fetch\("api\/mode"/);
   assert.match(page, /name="viewport" content="width=device-width, initial-scale=1"/);
+});
+
+test("RV17: web/upload.html stores only the language choice in the browser", () => {
+  const page = readFileSync(join(WEB, "upload.html"), "utf8");
+  assert.deepEqual([...page.matchAll(/localStorage\.(\w+)\(([^,)]*)/g)].map((m) => [m[1], m[2]]), [["getItem", '"proofshot-lang"'], ["setItem", '"proofshot-lang"']]);
+  for (const other of [/sessionStorage/, /indexedDB/, /document\.cookie/, /\bcaches\./, /localStorage\[/]) assert.doesNotMatch(page, other);
 });
 
 test("UX-EASY1 web/upload.html: two steps, no attribute fields to type, optional note, sample button, chips read from the receipt's findings", () => {

@@ -716,7 +716,8 @@ stores the seller's view of the nine attributes, matches / does not match / not
 sure, plus one optional line, in `data/corrections/<job>.json` with the receipt
 head it refers to, outside the chain: never a receipt entry, never a gate
 input, so the decision does not change, and no one reviews it); the real pipeline of
-§3 runs on their machine; they see each step as it happens, then one result
+§3 runs on their machine when the provider keys are set; without them each step
+is labelled stand-in or fixture (below); they see each step as it happens, then one result
 card; "Publish to shop" exists only when the gate said RELEASE. The page
 decides nothing: every decision, reason and hash on it was read from the
 server, which read it from the receipt.
@@ -727,7 +728,9 @@ server, which read it from the receipt.
   API: `GET /api/mode`, `POST /api/jobs`, `GET /api/jobs/<id>`,
   `POST /api/jobs/<id>/publish`, and `GET /jobs/<id>/<file>` for a job's
   receipt and render images. A path that escapes `web/` or the job, or names
-  the job's `sources/` folder, is 404.
+  the job's `sources/` folder, is 404 (`test/serve.test.ts` "over HTTP: the
+  page, the mode, a job from submit to publish, job files, and nothing outside
+  web/ or the job").
 - Providers come from the environment (`providersFromEnv`): the renderer from
   `RENDER_PROVIDER`, defaulting to `stand-in` (§8) since no render transport
   exists; the segmenter is SAM 3.1 (§10, the `@meta-sam/parser` glue is the
@@ -777,7 +780,11 @@ server, which read it from the receipt.
   completion and cached tokens, each image's bytes and pixel size read from
   the JPEG frame header or PNG IHDR). `onCall` receives the call log with the
   auth header replaced by a placeholder, every image data URL replaced by its
-  byte count and sha256, and the key's value replaced wherever it appears;
+  byte count and sha256, and the key's value replaced wherever it appears
+  (`test/verifier.test.ts` "one call: Baseten chat completions, bearer key,
+  ..." for the header and the images; `test/baseten.test.ts` "the log never
+  holds the key: the auth header is a placeholder and an echoed key is
+  replaced" for a key echoed back in the answer);
   `npm run serve` and `npm run job:live` write it to
   `evidence/verifier-<started_at>.json`. Images are sent as they are, not
   resized (Grok 09:55; jpeg-js is used for fidelity decode only) (Baseten's limits are 10 MB
@@ -817,7 +824,10 @@ server, which read it from the receipt.
   `web/shop`, so the job is listed only if its receipt verifies and the image
   hashes as released; the page then links to the new card.
 - `web/upload.html` is one file: plain HTML, CSS and JavaScript, no framework,
-  CSP `default-src 'none'; connect-src 'self'; img-src 'self' blob:` plus
-  inline script and style; it fetches only its own origin. The language toggle
+  CSP exactly `default-src 'none'; connect-src 'self'; img-src 'self' blob:;
+  script-src 'unsafe-inline'; style-src 'unsafe-inline'` (line 6 of the page);
+  it fetches only its own origin. The language toggle
   switches every string between English and Hindi (Devanagari) and remembers
-  the choice in `localStorage`; nothing else is stored.
+  the choice in `localStorage`; nothing else is stored in the browser
+  (`test/serve.test.ts` "RV17: web/upload.html stores only the language choice
+  in the browser").

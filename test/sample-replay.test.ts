@@ -3,7 +3,7 @@
 // receipt's own; live uploads still run the pipeline.
 
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { copyFileSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import type { Server } from "node:http";
 import { tmpdir } from "node:os";
@@ -15,7 +15,7 @@ import { verifyRecord } from "../src/core.js";
 import type { Providers } from "../src/pipeline.ts";
 import { RECEIPT_FILE } from "../src/prior.ts";
 import { parseReceipt, verifyChain } from "../src/receipt.ts";
-import { SAMPLE_GARMENT, SAMPLE_RECORDED_JOB, UploadServer } from "../src/serve.ts";
+import { SAMPLE_GARMENT, SAMPLE_RECORDED_JOB, UploadError, UploadServer } from "../src/serve.ts";
 import type { SampleReplay, ServeProviders } from "../src/serve.ts";
 import { sha256Hex } from "../src/util.ts";
 
@@ -67,6 +67,10 @@ test("SAMPLE1: the replay's decision, reasons and findings are the receipt's own
   assert.equal(view.decision, gate.decision, "the decision shown is the gate entry's, never altered");
   assert.equal(view.decision, "REVIEW");
   assert.equal(view.reasons.length, (gate.reasons as unknown[]).length);
+  // RV17: the strings themselves, not only the count: the gate entry's one reason, verbatim.
+  const recordedReasons = (gate.reasons as { rule: string; reason: string }[]).map((r) => r.reason);
+  assert.deepEqual(recordedReasons, ["fidelity REVIEW: source mask is missing: no segment with mask bytes for 1-front.jpg"]);
+  assert.deepEqual(view.reasons, recordedReasons);
   assert.equal(view.recorded_at, entries()[0]!.at);
   assert.equal(view.recorded_on, "2026-10-29");
   assert.equal(view.provenance, "live");
@@ -131,6 +135,44 @@ test("SAMPLE1: the replay routes call no provider, start no job and write nothin
 test("SAMPLE1: without a recorded sample the replay answers 404 rather than running a live job", () => {
   const srv = new UploadServer({ webDir: WEB, jobsRoot: tmp("jobs"), shopDir: tmp("shop"), garmentsDir: GARMENTS, providers: countingProviders().serve });
   assert.throws(() => srv.sampleReplay(), /no recorded sample run on this server/);
+});
+
+/** A scratch copy of the recorded sample, with its receipt text rewritten by `edit`. */
+function editedSample(name: string, edit: (text: string) => string): string {
+  const dir = tmp(name);
+  for (const f of readdirSync(SAMPLE_DIR)) copyFileSync(join(SAMPLE_DIR, f), join(dir, f));
+  writeFileSync(join(dir, RECEIPT_FILE), edit(readFileSync(join(SAMPLE_DIR, RECEIPT_FILE), "utf8")));
+  return dir;
+}
+
+test("RV17: a recorded receipt that does not verify answers 409 and shows no decision", async () => {
+  // One changed byte in the gate entry's reason breaks the chain from there on.
+  const dir = editedSample("tampered", (t) => t.replace("source mask is missing", "source mask is m1ssing"));
+  assert.equal(verifyChain(parseReceipt(readFileSync(join(dir, RECEIPT_FILE), "utf8"))).ok, false);
+  const srv = new UploadServer({ webDir: WEB, jobsRoot: tmp("jobs"), shopDir: tmp("shop"), garmentsDir: GARMENTS, sampleJobDir: dir, providers: countingProviders().serve });
+  assert.throws(() => srv.sampleReplay(), (e: unknown) => e instanceof UploadError && e.status === 409 && e.message === "recorded receipt does not verify");
+  const http: Server = createServer((req, res) => void srv.handler(req, res));
+  await new Promise<void>((resolve) => http.listen(0, "127.0.0.1", resolve));
+  try {
+    const res = await fetch(`http://127.0.0.1:${(http.address() as { port: number }).port}/api/sample/replay`);
+    assert.equal(res.status, 409);
+    const body = (await res.json()) as Record<string, unknown>;
+    assert.deepEqual(body, { error: "recorded receipt does not verify" }, "no decision, reasons or findings in the answer");
+  } finally {
+    await new Promise<void>((resolve) => http.close(() => resolve()));
+  }
+});
+
+test("RV17: a recorded render_id that is not a plain file name gets no image (404) from the image route, which reads no chain", () => {
+  const renderId = (payloadOf("render") as { render_id: string }).render_id;
+  for (const bad of ["../" + renderId, "..", "a/b", "a\\b", "a b"]) {
+    const dir = editedSample("badid", (t) => t.split(`"render_id":"${renderId}"`).join(`"render_id":${JSON.stringify(bad)}`));
+    const srv = new UploadServer({ webDir: WEB, jobsRoot: tmp("jobs"), shopDir: tmp("shop"), garmentsDir: GARMENTS, sampleJobDir: dir, providers: countingProviders().serve });
+    // The rewritten receipt no longer verifies, so the JSON route already refuses it (409) ...
+    assert.throws(() => srv.sampleReplay(), (e: unknown) => e instanceof UploadError && e.status === 409, bad);
+    // ... and the image route, which does not need the chain, still refuses the name itself.
+    assert.throws(() => (srv as unknown as { sampleImage(): string }).sampleImage(), (e: unknown) => e instanceof UploadError && e.status === 404, bad);
+  }
 });
 
 test("SAMPLE1 web/upload.html: the sample button replays, labelled recorded in EN and HI; no job, no correction, no publish on the replay", () => {

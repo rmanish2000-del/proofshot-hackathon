@@ -165,11 +165,14 @@ export class UploadError extends Error {
   }
 }
 
-export const MAX_FILES = 6;
+/** RV17/RV18: one to three photos, as README, SPEC §12 and the upload page tell sellers and judges. */
+export const MAX_FILES = 3;
 export const MAX_BODY_BYTES = 40 * 1024 * 1024;
 export const DEFAULT_SCENES: readonly string[] = ["studio"];
 const SOURCES_DIR = "sources";
 const SAFE_NAME = /^[A-Za-z0-9][A-Za-z0-9._ -]{0,99}$/;
+/** RV17: a recorded render id the sample replay will turn into a file name: letters, digits, dot, dash, underscore. */
+const SAMPLE_RENDER_ID = /^[A-Za-z0-9._-]{1,100}$/;
 
 /** The recorded-findings verifier of fixture mode: every attribute matches, and the note says no model judged it. */
 export function fixtureVerifier(): Verifier {
@@ -626,13 +629,15 @@ export class UploadServer {
     const entries = this.sampleEntries();
     const view = presentJob(entries);
     const chain = verifyChain(entries);
+    // RV17: a recorded receipt that does not verify shows no decision at all.
+    if (!chain.ok) throw new UploadError("recorded receipt does not verify", 409);
     const first = view.renders[0] ?? null;
     const job = entries.find((e) => e.kind === "job");
     const recorded_at = job?.at ?? "";
     const verifierEntry = entries.find((e) => e.kind === "verifier" && (e.payload as { render_id?: unknown }).render_id === first?.render_id);
     const named = (verifierEntry?.payload as { verifier?: { provider?: unknown; model?: unknown } } | undefined)?.verifier;
     const verifier = named && typeof named.provider === "string" && typeof named.model === "string" ? `${named.provider} / ${named.model}` : null;
-    const hasImage = first !== null && imageFile(this.sampleDir(), first.render_id) !== null;
+    const hasImage = first !== null && SAMPLE_RENDER_ID.test(first.render_id) && !first.render_id.includes("..") && imageFile(this.sampleDir(), first.render_id) !== null;
     return {
       replay: true,
       job_id: view.job_id ?? SAMPLE_RECORDED_JOB,
@@ -659,7 +664,8 @@ export class UploadServer {
 
   private sampleImage(): string {
     const first = presentJob(this.sampleEntries()).renders[0];
-    const file = first ? imageFile(this.sampleDir(), first.render_id) : null;
+    // RV17: the render id names a file, so it must be a plain file name (no path, no "..").
+    const file = first && SAMPLE_RENDER_ID.test(first.render_id) && !first.render_id.includes("..") ? imageFile(this.sampleDir(), first.render_id) : null;
     if (!first || !file) throw new UploadError("not found", 404);
     return join(this.sampleDir(), file);
   }

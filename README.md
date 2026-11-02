@@ -24,7 +24,8 @@ npm test             # long-running: minutes, see the end of "Quick verify in 2 
 ```
 
 ProofShot checks a candidate listing image against the seller's own phone
-photos of the garment (up to three; the upload page takes one to three JPEGs) before the image goes on sale. A
+photos of the garment (up to three; the upload page takes one to three JPEGs, and the server refuses a
+fourth: `test/serve.test.ts` "RV17: the upload API takes one to three photos and refuses a fourth with 400") before the image goes on sale. A
 verifier model compares the garment attribute by attribute. A deterministic
 code gate, not the model, then decides **RELEASE**, **REVIEW** or **REFUSE**
 from those structured findings and a fidelity check, measured on the garment
@@ -61,8 +62,8 @@ The demo capture reads no API key (fixture providers only,
 `providersFromEnv({})` in `scripts/demo-capture.ts`) and every captured frame
 points at a committed job, recording or file (`test/demo-capture.test.ts`,
 DEMO1). The video to submit is v8 (`docs/DEMO.md` "v8: the video to submit"):
-167.9 s (about 2:48) as reported by Grok on 2 Nov; the rendered file is not
-committed, so that length is UNVERIFIED here. Its narration is the recorded
+167.9 s (about 2:48); the rendered file is not committed and no committed
+file gives that length, so it is UNVERIFIED here. Its narration is the recorded
 voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural), and each figure it
 speaks is checked in the "v8 fact check" table there. The v7 re-render script
 (its script runs 2:45, or 2:50 with the optional end card) is superseded. The
@@ -168,7 +169,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->434<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->438<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -197,7 +198,8 @@ photo 1. The kurta was not asked, because the note patterns missed the verifier'
 label (here `full_length_back`) was added as a trigger signal, the kurta was re-run once (`--jobs kurta-mustard
 --tag 2026-10-31-label`): asked, REFUSE → RELEASE, same stand-in caveat, 0.0433 USD. 2 of 2 with the label
 (recorded 31 Oct against a stand-in render that is the new photo 1; today's gate says REVIEW for both: the SC1
-self-comparison check, SUBMISSION.md "Self-comparison on this path, closed after the run"); 0.1189 USD in total.
+self-comparison check, SUBMISSION.md "Self-comparison on this path, closed after the run"); 0.1189 USD in total for the two replace runs
+(agent runs only, not all project spend).
 
 Where the agent's steps are recorded: not in the gate receipt. Each gate re-run writes its own receipt
 (`records/<seller>/<job>/runs/run-<n>/receipt.jsonl`, the format below). The agent's proposals (a
@@ -267,7 +269,8 @@ npm run serve
 ```
 
 Then open `http://127.0.0.1:8787/` (the URL `npm run serve` prints). You should
-see the seller upload page, two steps since UX-EASY1: Photos, then Result. The
+see the seller upload page, two steps since UX-EASY1: Photos, then Result (the
+375 px English and Hindi screenshot check is pending until those screenshots land). The
 Result step shows the pipeline board (strip metadata, segment, render, verify,
 gate). Each result card shows a RELEASE, REVIEW or REFUSE badge, reasons, and a **View
 receipt** link. This seller upload page is local in this repo (`npm run serve`);
@@ -627,7 +630,8 @@ committed.
   availability are UNVERIFIED.
 - **Muse Image is refused on every provider**, before any request (Meta's
   Geographic Use Policy excludes India). The renderer is checked when it is built
-  and again before each request (`src/render.ts`).
+  and again before each request (`src/render.ts`). Only that one model is not
+  used; ProofShot itself works for sellers anywhere.
 - `MODEL_API_KEY`: the Meta Model API key for SAM 3.1 segmentation
   (`src/sam-meta.ts`, `POST https://api.meta.ai/v1/responses`, request model
   `sam-3.1`). `MODEL_SEGMENT` must be `meta/sam-3.1 (api.meta.ai)` for that
@@ -708,7 +712,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->434<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->438<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |

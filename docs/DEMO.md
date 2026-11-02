@@ -11,8 +11,8 @@ which records the v6 frames.
 
 Grok 07:20 IST 2 Nov (#23). The narration was approved by Manish on 1 Nov 2026
 and the audio is already rendered (`ProofShot_demo_v8.mp4`, 167.9 s, about
-2:48, as reported by Grok). The rendered file is not committed, so its length
-is UNVERIFIED here. The spoken text below is verbatim from the staged
+2:48). The rendered file is not committed and no committed file gives that
+length, so it is UNVERIFIED here. The spoken text below is verbatim from the staged
 `V8_NARRATION.md` and is not edited here. Voice: the recorded voiceover (a
 generated Edge TTS voice, en-IN-PrabhatNeural). Whether the hackathon rules
 allow a generated voice is UNVERIFIED. What v8 shows on screen in each beat is
@@ -76,6 +76,7 @@ is recorded here, not fixed in the narration.
 | Spoken claim | Status | Source |
 |---|---|---|
 | Built during this hackathon, from 27 October; before that only the written specification and some config boilerplate | built from 27 Oct matches; "only the specification and config boilerplate" **differs**: it leaves out the AI-generated model image `data/models/synthetic-01/model.png` (generated 23 Oct 2026). The v9 opening line (Grok, #23 comment 6571603135, 2 Nov; the v9 audio is not committed, UNVERIFIED here) says "Only the specification, two config files and one AI-generated model photo carry over", which matches | SUBMISSION "Built during the hackathon" (first commit `15658a4`, 27 Oct 2026 at 11:10 IST; prior work: a written specification, two config files, the synthetic-01 model image, and an earlier private prototype whose code is not here) |
+| "Everything you are about to see running was built during this hackathon" | matches only scoped to ProofShot's own code (RV17): ProofShot's own code was written from 27 Oct 2026; the Meta models (SAM 3.1, Muse Spark 1.3 on the Meta Model API), Pruna on Replicate and the Edge TTS voice are third-party services it calls or the video uses, not built here; the carry-overs are the written specification, two config files, the synthetic-01 model image and an earlier private prototype whose code is not here | first commit `15658a4`; SUBMISSION "Built during the hackathon"; README "What each Meta model does"; `src/render-replicate.ts` |
 | A labelled stand-in verifier; three close-ups and no full-length view; REVIEW, the agent asks, the seller adds the photo, RELEASE; nothing published until the seller approves; injected text rejected | matches | the v7 beat 2 sources below (`scripts/agent-demo.ts`, `publish` in `src/agent/service.ts`) |
 | Twelve AI try-on images generated and all twelve held: ten refused, two sent for review, none released | matches | README intro and SUBMISSION Metrics, "AI try-ons held by the gate" (figures `tryon_all_total` 12, `tryon_all_refuse` 10, `tryon_all_review` 2) |
 | "the one image that was released here is built from the seller's own pixels" | matches for the 31 Oct try-on run only; UNVERIFIED as a statement about every committed run | `evidence/tryon/SUMMARY.md` (composite v2 1 RELEASE, 3 REVIEW, 1 REFUSE; Pruna try-on 0 RELEASE). Other committed receipts are RELEASE too (for example the pipeline smoke example `ms2-shirt-plaid`, the owner's photo against itself; SUBMISSION "the other 14 were already RELEASE"), so "the one" holds only with "here" read as that run |
@@ -104,8 +105,8 @@ Framed for "Build for Your World" with an Indian boutique seller. v5, v4 and v3
 are in git history. Every job on screen is a committed receipt; "What exists
 today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
-v6 capture timing 76 s (the video to submit is v8, above: 167.9 s as reported
-by Grok, UNVERIFIED here). Screen recording only, burned-in captions. Voice: the recorded voiceover (a
+v6 capture timing 76 s (the video to submit is v8, above: 167.9 s,
+UNVERIFIED here). Screen recording only, burned-in captions. Voice: the recorded voiceover (a
 generated Edge TTS voice, en-IN-PrabhatNeural; whether the rules allow it is UNVERIFIED). Word cap per beat = seconds x 2.5
 (150 wpm).
 
