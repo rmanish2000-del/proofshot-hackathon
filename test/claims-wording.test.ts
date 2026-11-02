@@ -571,3 +571,15 @@ test("RV12 (Grok 07:20 2 Nov, self red-team): SUBMISSION cites no uncommitted fi
   assert.equal(beats.size, 8);
   assert.match(sub, /The video to submit is v8 \(`docs\/DEMO\.md` "v8: the video to submit"\): eight beats/);
 });
+
+test("RV13 (Grok 08:05 2 Nov, DeepSeek CA2): CLAIMS_AUDIT scopes the shirts-only demo row to v6, deck and video counts to their date, and the concurrency row to AGENT_SCALING", () => {
+  const ca = read("CLAIMS_AUDIT.md");
+  const row = ca.split("\n").find((l) => l.includes("shows the two shirts only"));
+  assert.ok(row, "demo row present");
+  assert.match(row!, /^\| The v6 demo capture shows the two shirts only/);
+  assert.match(row!, /\| proven for v6 only \|/);
+  assert.match(row!, /What the v8 video \(the one to submit\) shows on screen is \*\*UNVERIFIED\*\* from the repo/);
+  assert.match(ca, /none released \(README, SUBMISSION; deck 6 and 7 and video C4 quote the earlier 7 of 7\)/);
+  assert.match(ca, /they predate the 30–31 Oct run logs, so they show pack-only counts/);
+  assert.match(ca, /held to its concurrent limit \(AGENT_SCALING\) \|/);
+});
