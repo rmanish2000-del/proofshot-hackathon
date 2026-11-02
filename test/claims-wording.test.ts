@@ -167,7 +167,11 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
   // RV10: the voice is named for what it is, a generated Edge TTS voice; the rules question stays UNVERIFIED.
   assert.match(v7, /The narration audio is the recorded voiceover \(a generated Edge TTS voice, en-IN-PrabhatNeural\); nothing new is recorded for it\./);
   const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
-  assert.match(row, /the v8 narration .* is the recorded voiceover, a generated Edge TTS voice \(en-IN-PrabhatNeural\), not a model API in this project and not a paid call; whether the rules allow a generated voice is \*\*UNVERIFIED\*\*/);
+  assert.match(row, /the v8 narration .* is the recorded voiceover, a generated Edge TTS voice \(en-IN-PrabhatNeural\), not a model API in this project; .* whether the rules allow a generated voice is \*\*UNVERIFIED\*\*/);
+  // RV15 4: scoped to model and project API calls; the voice's cost is not in the repo, so it is not claimed.
+  assert.match(row, /scoped: no new paid model or project API call/);
+  assert.match(row, /whether that voice cost anything is not recorded in this repo \(\*\*UNVERIFIED\*\*\)/);
+  assert.doesNotMatch(row, /not a paid call/);
   assert.doesNotMatch(row, /v3\/v3d/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
@@ -559,7 +563,7 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   assert.match(top, /\*\*Live demo:\*\* https:\/\/rmanish2000-proofshot\.hf\.space\//);
   assert.match(top, /\*\*Video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA /);
   assert.match(top, /\*\*Verify a receipt offline:\*\* `web\/verify\.html` makes no network request/);
-  assert.match(top, /```\nnpm ci\nnpm test\nnpm run serve\n```/);
+  assert.match(top, /```\nnpm ci\nnpm run serve\nnpm test +# long-running[^\n]*\n```/); // RV15 2: npm test last, labelled
   assert.equal([...read("README.md").matchAll(/https:\/\/youtu\.be\/cOeRYwRZBlA/g)].length, 1, "one video URL in README");
 });
 
@@ -670,5 +674,33 @@ test("SYN2 (Grok 2 Nov): the try-on default is synthetic-02; synthetic-01 is sco
     const why = read(`data/garments/${g}/WHY.txt`);
     assert.doesNotMatch(why, /to confirm wording/, g);
     assert.match(why, /Confirmed by Manish Patel on 2 Nov 2026, 13:17 IST/, g);
+  }
+});
+
+test("RV15 (Grok 2 Nov): Muse Spark 1.3 count scoped by model, npm test labelled long-running, chain-fix sentence qualified, 4096 cited, v8 receipt and go-live rows", () => {
+  const qa = read("docs/JUDGE_QA_TRYON_MODELS.md").replace(/\s+/g, " ");
+  assert.match(qa, /only the logs whose model is `muse-spark-1\.3`: `src\/figures\.ts` reads the pack stage `verify: muse-spark-1\.3 \(meta\)`/);
+  assert.match(qa, /`verify: meta-models\/muse-spark-open-1026 \(baseten\)`, so none of them is among the <!--f:muse13_calls-->/);
+  const stages = (JSON.parse(read("evidence/pack/summary.json")).stages as { stage: string }[]).map((s) => s.stage);
+  assert.ok(stages.includes("verify: muse-spark-1.3 (meta)") && stages.includes("verify: meta-models/muse-spark-open-1026 (baseten)"));
+  const quick = read("README.md").replace(/\r\n/g, "\n").split("```")[1]!;
+  assert.match(quick, /npm ci\nnpm run serve\nnpm test +# long-running/);
+  const tamper = read("docs/JUDGE_QA_TAMPER.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(tamper, /The chain fixes their order and content once written\./);
+  assert.match(tamper, /Within this file, the chain fixes their order and content once written.* it is visible only in git history, with no outside witness\./);
+  const gate = read("docs/JUDGE_QA_GATE.md").replace(/\s+/g, " ");
+  assert.match(gate, /verifier-2026-10-28T12-30-54-012Z\.json`: its request has `max_tokens` 4096 and the answer `finish_reason` `length`/);
+  const log = read("evidence/verifier-2026-10-28T12-30-54-012Z.json");
+  assert.match(log, /"max_tokens": 4096/);
+  assert.match(log, /"finish_reason": "length"/);
+  const demo = read("docs/DEMO.md");
+  assert.match(demo, /^\| Every decision is written into a hash-chained receipt \| matches for jobs run through `runJob` \|/m);
+  assert.match(demo, /^\| Beat 8 closing line: an image whose truth is not proven does not go live \| design rule, not measured accuracy \|/m);
+  const decisions: Record<string, string> = { "ms2-shirt-plaid": "RELEASE", "live-shirt-plaid-composite-v2-r3": "REVIEW", "live-shirt-plaid-mismatch": "REFUSE" };
+  for (const [job, decision] of Object.entries(decisions)) {
+    const entry = JSON.parse(read(`data/jobs/${job}/receipt.jsonl`).trim().split("\n")[5]!);
+    assert.equal(entry.seq, 5, job);
+    assert.equal(entry.kind, "gate", job);
+    assert.equal(entry.payload.decision, decision, job);
   }
 });

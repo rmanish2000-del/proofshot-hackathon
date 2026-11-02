@@ -34,7 +34,8 @@ with `max_tokens` 1500 on Muse Spark Open (Baseten); the answer stopped at that
 limit (`finish_reason` `length` in
 `evidence/verifier-2026-10-28T03-55-00-289Z.json`), so the gate saw no findings
 and said REFUSE. The limit then went to 4096, which also cut off a later answer
-(`evidence/verifier-2026-10-28T12-30-54-012Z.json`), and since then the
+(`evidence/verifier-2026-10-28T12-30-54-012Z.json`: its request has `max_tokens`
+4096 and the answer `finish_reason` `length`), and since then the
 verifier sends `max_tokens` 8192 and asks once more at 16384 when the answer
 stops at the limit; a second cut-off answer is REFUSE (`verifier_truncated`),
 never a pass (`src/verifier.ts`; the Muse Spark 1.3 client in

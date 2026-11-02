@@ -64,7 +64,10 @@ no outside party has re-run the check.
 
 ## 5. Can I trust the timestamps, the approver and the gate inputs in the chain?
 
-The chain fixes their order and content once written. Timestamps come from the
+Within this file, the chain fixes their order and content once written: an edit
+to one entry breaks the check from that entry on. A full rewrite from entry 0
+still verifies (question 1); it is visible only in git history, with no outside
+witness. Timestamps come from the
 local clock, so they order events but do not date them credibly; the approver
 is a name, not a logged-in identity. Listing copy is written after the gate,
 outside the chain. Source: `docs/SPEC.md` §6 gaps 3 and 4; `CLAIMS_AUDIT.md`,

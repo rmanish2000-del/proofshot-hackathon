@@ -83,12 +83,14 @@ SAM 3.1 (`meta/sam-3.1`, Meta Model API) segments the garment: <!--f:sam_calls--
 the evidence pack (`evidence/sam-*.json`) plus <!--f:sam_calls_runs-->47<!--/f--> in the 30–31 Oct run logs
 (`evidence/<run>/logs/`), <!--f:sam_calls_all-->177<!--/f--> in all. Muse Spark 1.3 (`muse-spark-1.3`, Meta
 Model API) is the verifier: <!--f:muse13_calls-->226<!--/f--> in the pack (`evidence/verifier-*.json`,
-`evidence/ms4/`) plus <!--f:muse13_calls_runs-->16<!--/f--> in the run logs, <!--f:muse13_calls_all-->242<!--/f--> in all. muse-spark-open on
+`evidence/ms4/`; only the logs whose model is `muse-spark-1.3`: `src/figures.ts` reads the pack stage
+`verify: muse-spark-1.3 (meta)` in `evidence/pack/summary.json`, which is split by logged model) plus <!--f:muse13_calls_runs-->16<!--/f--> in the run logs, <!--f:muse13_calls_all-->242<!--/f--> in all. muse-spark-open on
 Fireworks writes listing copy after the gate (<!--f:fireworks_calls-->293<!--/f--> calls,
 `evidence/fireworks-*.json`), and Muse Spark Open on Baseten was the first
 verifier (<!--f:baseten_calls-->19<!--/f--> verifier calls in `evidence/verifier-*.json`; the two
 `npm run call:baseten` smoke calls in `evidence/baseten-*.json` are not among
-them, README "What each Meta model does", Baseten row). The <!--f:sam_calls-->130<!--/f--> and <!--f:muse13_calls-->226<!--/f--> are evidence-pack counts, the ones
+them; the 19 are the pack stage `verify: meta-models/muse-spark-open-1026 (baseten)`,
+so none of them is among the <!--f:muse13_calls-->226<!--/f-->, README "What each Meta model does", Baseten row). The <!--f:sam_calls-->130<!--/f--> and <!--f:muse13_calls-->226<!--/f--> are evidence-pack counts, the ones
 the deck and rendered videos quote. Source: README "What each Meta model does".
 
 Weak spot: a model id in a log is the provider's answer, not proof of which
