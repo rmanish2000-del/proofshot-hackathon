@@ -50,7 +50,7 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime (`refuseMuseImage` in `src/render.ts` throws `MuseImageRefused`; `test/render.test.ts` "a Muse Image model is refused on every provider before any request"). AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
 
-**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: a written specification; two config files (`tsconfig.json`, `.gitignore`); one AI-generated synthetic model image (`data/models/synthetic-01/model.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied. The specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
+**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: a written specification; two config files (`tsconfig.json`, `.gitignore`); one AI-generated synthetic model image (`data/models/synthetic-01/model.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md), used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov (new jobs use `synthetic-02`, made during the event); and an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied. The specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
 **Repository:** https://github.com/rmanish2000-del/proofshot-hackathon
 
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->430<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->432<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41379178357](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41379178357), green on 7b76132 at 421 tests as reported by Grok on 2 Nov (the count is generated; later commits may add tests) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -410,7 +410,9 @@ Work in this repository starts with its first commit, [`15658a4`](https://github
 IST. `git log` has no commit dated before it. Prior work: a written
 specification; two config files (`tsconfig.json`, `.gitignore`); one
 AI-generated synthetic model image (`data/models/synthetic-01/model.png`,
-generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and
+generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md),
+used only in try-on runs committed on 28 and 31 Oct and in Space jobs made
+before 2 Nov (new jobs use `synthetic-02`, made during the event); and
 an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag
 `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the
 code here was rewritten from the specification from 27 Oct, not copied. Each
@@ -440,6 +442,11 @@ History note: on 30 Oct 2026 the commit history was re-authored to replace a per
   a fictional adult, generated from text only on 23 Oct 2026, before the
   event, for MirrorOS (`google/nano-banana` on Replicate); provenance and terms
   in `data/models/synthetic-01/LICENSE.md`. It is a try-on model image, not code.
+  It is named only by the try-on receipts committed on 28 Oct
+  (`data/jobs/live-kurta-01-tryon`, `live-kurta-02-tryon`,
+  `live-kurta-02-tryon-2`) and 31 Oct (the two shirts in `evidence/tryon/`)
+  and by Space jobs made before 2 Nov; since SYN2 the default is
+  `synthetic-02` (`data/models/synthetic-02/`, made 28 Oct, during the event).
 - The earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct 2026;
   tag `pre-hackathon-baseline`, 1485431): its code is not in this repository.
   The code here was rewritten from the specification from 27 Oct, not copied.

@@ -50,8 +50,12 @@ export const ATTEMPT_TIMEOUT_MS = 120_000;
 export const ATTEMPTS = 2;
 export const POLL_MS = 2_000;
 export const DEFAULT_SEED = 1;
-/** The committed synthetic model image (Grok 3e852fd, AI-generated, LICENSE.md beside it). */
-export const DEFAULT_MODEL_IMAGE = "synthetic-01";
+/**
+ * The default synthetic model image: synthetic-02 (made 28 Oct 2026, during the event, 04d9cd0; AI-generated,
+ * LICENSE.md beside it; outfit covers to the ankle). synthetic-01 (3e852fd, 23 Oct) stays only for the committed
+ * 31 Oct receipts that name it (SYN2).
+ */
+export const DEFAULT_MODEL_IMAGE = "synthetic-02";
 /** The repo's data/models/ folder, one sub-folder per synthetic model image. */
 export const MODELS_DIR = fileURLToPath(new URL("../data/models/", import.meta.url));
 
@@ -117,7 +121,7 @@ export interface ModelImage {
 }
 
 /**
- * data/models/<id>/image.(jpg|png) or model.(jpg|png) (synthetic-01, 3e852fd) and its LICENSE.md (source, licence,
+ * data/models/<id>/image.(jpg|png) or model.(jpg|png) (synthetic-02 by default, 04d9cd0) and its LICENSE.md (source, licence,
  * release, "synthetic, not a real person"). Null with the reason when either is
  * missing, the image is not a JPEG or PNG, or a JPEG still carries metadata.
  */

@@ -122,10 +122,11 @@ test("NR4 2: a missing model image or LICENSE.md falls back with no_model_image"
   }
   assert.equal(calls.length, 0);
   assert.ok("missing" in loadModelImage(modelsDir(), `../${DEFAULT_MODEL_IMAGE}`));
-  // The committed synthetic-01 (3e852fd: model.png + LICENSE.md) loads as the default.
+  // SYN2: the committed synthetic-02 (04d9cd0: model.png + LICENSE.md, made during the event) loads as the default.
+  assert.equal(DEFAULT_MODEL_IMAGE, "synthetic-02");
   const committed = loadModelImage(MODELS_DIR, DEFAULT_MODEL_IMAGE);
   assert.ok(!("missing" in committed), JSON.stringify("missing" in committed ? committed : null));
-  assert.deepEqual([committed.id, committed.ext], [DEFAULT_MODEL_IMAGE, "png"]);
+  assert.deepEqual([committed.id, committed.ext], ["synthetic-02", "png"]);
 });
 
 test("NR4 3: two timed-out attempts fall back with replicate_timeout and the reason, never silently", async () => {
@@ -368,6 +369,19 @@ test("NR4e: a garment claimed longer than the model's own outfit falls back with
   await c.renderer.render(long);
   assert.equal(c.fallback.calls, 0);
   assert.ok(ankle.calls.length > 0);
+});
+
+test("SYN2: with the committed models and no REPLICATE_MODEL_IMAGE, a shirt goes to synthetic-02 and is not model_too_short", async () => {
+  assert.equal(modelCovers(MODELS_DIR, DEFAULT_MODEL_IMAGE), "ankle");
+  for (const note of ["Type: shirt; Length: to the hip", "Type: shirt"]) {
+    const ok = fakeReplicate(sources[0]!.bytes);
+    const b = base({ fetch: ok.fetch, modelsDir: MODELS_DIR });
+    const out = await b.renderer.render({ ...req, garmentNote: note });
+    assert.equal(b.fallback.calls, 0, note);
+    assert.equal(out.record!.fallback_reason, undefined, note);
+    assert.equal(out.record!.model_image_id, "synthetic-02", note);
+    assert.ok(ok.calls.some((c) => c.url === REPLICATE_PREDICTIONS_URL), note);
+  }
 });
 
 test("option B: REPLICATE_GARMENT_CONTEXT=front sends the stripped front photo as a second garment image, both hashed on the record, priced as two; unset sends the cut-out only", async () => {

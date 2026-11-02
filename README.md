@@ -168,7 +168,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->430<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->432<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -607,8 +607,10 @@ committed.
   and reaches the try-on only with `PROOFSHOT_TRYON_LONG=1`. It
   sends the SAM 3.1 garment cut-out (seller pixels only) and
   a synthetic model image from `data/models/<id>/` with its `LICENSE.md`
-  (default `synthetic-01`, an AI-generated fictional adult, 779a67a;
-  `REPLICATE_MODEL_IMAGE` picks another). The render entry's `input` records
+  (default `synthetic-02`, an AI-generated fictional adult made during the
+  event, 28 Oct, 04d9cd0; `REPLICATE_MODEL_IMAGE` picks another;
+  `synthetic-01` remains only as the model named in the committed 31 Oct
+  shirt receipts). The render entry's `input` records
   exactly the fields sent (images by sha256, seed, the prompt when one was
   sent, and `preserve_input_size` only when
   `REPLICATE_PRESERVE_INPUT_SIZE` is `true` or `false`; `reference_pose` is
@@ -706,7 +708,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->430<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->432<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
@@ -724,7 +726,9 @@ Work in this repository starts with its first commit, [`15658a4`](https://github
 IST. `git log` has no commit dated before it. Prior work: a written
 specification; two config files (`tsconfig.json`, `.gitignore`); one
 AI-generated synthetic model image (`data/models/synthetic-01/model.png`,
-generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md); and
+generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md),
+used only in try-on runs committed on 28 and 31 Oct and in Space jobs made
+before 2 Nov (new jobs use `synthetic-02`, made during the event); and
 an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag
 `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the
 code here was rewritten from the specification from 27 Oct, not copied. Each
@@ -754,7 +758,12 @@ History note: on 30 Oct 2026 the commit history was re-authored to replace a per
   [`data/models/synthetic-01/model.png`](data/models/synthetic-01/LICENSE.md):
   a fictional adult, generated from text only on 23 Oct 2026, before the
   event, for MirrorOS (`google/nano-banana` on Replicate); provenance and terms
-  in its `LICENSE.md`. It is a try-on model image, not code.
+  in its `LICENSE.md`. It is a try-on model image, not code. It is named only
+  by the try-on receipts committed on 28 Oct (`data/jobs/live-kurta-01-tryon`,
+  `live-kurta-02-tryon`, `live-kurta-02-tryon-2`) and 31 Oct (the two shirts in
+  `evidence/tryon/`) and by Space jobs made before 2 Nov; since SYN2 the
+  default is `synthetic-02` (`data/models/synthetic-02/`, made 28 Oct, during
+  the event).
 - The earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct 2026;
   tag `pre-hackathon-baseline`, 1485431): its code is not in this repository.
   The code here was rewritten from the specification from 27 Oct, not copied.

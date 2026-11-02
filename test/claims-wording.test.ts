@@ -628,7 +628,7 @@ test("SAMPLE1 (Grok 09:33 2 Nov): every doc paragraph about the sample shirt but
 });
 
 test("DOC3 + DOC2 (Grok 2 Nov): prior work names the pre-event model image and the prototype; audience is global; third-party licence texts ship", () => {
-  const headline = /Prior work: a written specification; two config files \(`tsconfig\.json`, `\.gitignore`\); one AI-generated synthetic model image \(`data\/models\/synthetic-01\/model\.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE\.md\); and an earlier private prototype \(`rmanish2000-del\/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431\) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied\./;
+  const headline = /Prior work: a written specification; two config files \(`tsconfig\.json`, `\.gitignore`\); one AI-generated synthetic model image \(`data\/models\/synthetic-01\/model\.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE\.md\), used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov \(new jobs use `synthetic-02`, made during the event\); and an earlier private prototype \(`rmanish2000-del\/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431\) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied\./;
   const readme = read("README.md").replace(/\s+/g, " ");
   const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
   assert.match(readme, headline);
@@ -652,4 +652,18 @@ test("DOC3 + DOC2 (Grok 2 Nov): prior work names the pre-event model image and t
   assert.match(notices, /Copyright \(c\) 2014, Eugene Ware/);
   assert.match(readme, /\[`THIRD_PARTY_NOTICES\.md`\]\(THIRD_PARTY_NOTICES\.md\)/);
   assert.equal(JSON.parse(read("package.json")).license, "MIT");
+});
+
+test("SYN2 (Grok 2 Nov): the try-on default is synthetic-02; synthetic-01 is scoped to the runs that name it; garment permission confirmed", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.match(readme, /\(default `synthetic-02`, an AI-generated fictional adult made during the event/);
+  assert.doesNotMatch(readme, /default `synthetic-01`/);
+  for (const doc of ["README.md", "SUBMISSION.md"]) {
+    assert.match(read(doc).replace(/\s+/g, " "), /since SYN2 the default is `synthetic-02`/, doc);
+  }
+  for (const g of ["shirt-plaid", "shirt-zebra"]) {
+    const why = read(`data/garments/${g}/WHY.txt`);
+    assert.doesNotMatch(why, /to confirm wording/, g);
+    assert.match(why, /Confirmed by Manish Patel on 2 Nov 2026, 13:17 IST/, g);
+  }
 });
