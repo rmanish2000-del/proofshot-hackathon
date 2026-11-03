@@ -3,7 +3,8 @@
 **Track:** Indie Developer. **Team:** solo, Manish Patel.
 
 Every field below is written from committed evidence in this repository
-(receipts in `data/jobs`, call logs and reports in `evidence/`, the README).
+(receipts in `data/jobs`, call logs and reports in `evidence/`, the README),
+except where a row or line says UNVERIFIED or TBD.
 The source is named under each section. First written 29 Oct 2026 from the Codex
 review; updated 1 Nov 2026, on master after 3d2f94e. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
@@ -68,12 +69,13 @@ work), `docs/DEMO.md`, `docs/prior-work/README.md`, `LICENSE`.
 
 ## Metrics (measured, with their limits)
 
-Every number here is from a committed test, run log or report, named in the last column; numbers with a
+Every number here is from a committed test, run log or report, named in the last column, except where a row
+says UNVERIFIED or TBD; numbers with a
 figure marker are kept current by `npm run figures`. Anything not measured says so.
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->452<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->453<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -99,7 +101,10 @@ same pipeline and gate. Code: `src/agent/`, `src/recovery-gate.ts`; plan: `docs/
 
 - **The gate alone decides.** The agent reaches the gate only through one injected `rerun_gate` function; no file
   in `src/agent/` imports the gate or the pipeline (a test checks this). For the same inputs the gate receipt is
-  byte-identical with or without the agent (test).
+  byte-identical with or without the agent (`test/agent.test.ts` "agent 4": the same gate runner,
+  `pipelineGate` in `src/recovery-gate.ts`, called through the agent and called directly). The SC1/SC2
+  self-comparison check below is part of that gate runner, not of the agent, so it applies the same way on both
+  paths.
 - **Real violations are never recovered.** A mismatch the verifier saw or a measured fidelity breach ends in an
   explanation only (test; on the committed jobs, 20 of 20 violations were left alone). One exception, added
   31 Oct: when the fidelity check says REVIEW or REFUSE and the receipt shows the first photo (the one fidelity
@@ -182,8 +187,8 @@ The first live result is kept as it happened.
 **Recorded 31 Oct: 2 of 2 RELEASE with the label signal (1 of 2 before it) (recorded 31 Oct self-comparison; would be REVIEW today). Today's gate: 0 of 2 RELEASE, both REVIEW (SC1, below), so 0 of 2 are resolved today.** Caveat: the stand-in render is the seller's own
 full-length front, so after the replacement photo 1 and the render are the same file (fidelity delta_e 0.0001
 polo, 0.0023 kurta). This shows the evidence path now works, not that a generated image is faithful. Seller
-steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 5 live gate runs, 0.1189 USD on the
-Meta ledger (0.0756 + 0.0433, under the 0.20 USD cap; estimate shown before approval: 0.03 USD per run). Two
+steps for a resolved garment: 4 (list, approve, replace, approve). Cost: 0.1189 USD in total for the two replace runs, 5 live gate runs
+(3 in the first, 2 in the label re-run), on the Meta ledger (0.0756 + 0.0433, under the 0.20 USD cap; estimate shown before approval: 0.03 USD per run). Two
 pairs is a small sample, not a rate.
 
 **Self-comparison on this path, closed after the run (SC1, 31 Oct).** A red-team question: what stops a seller

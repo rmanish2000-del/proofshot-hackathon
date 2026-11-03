@@ -1057,3 +1057,46 @@ test("RV28 (Grok 3 Nov, DeepSeek PS-SUB13): SUBMISSION and CLAIMS_AUDIT give one
   assert.match(agentTests, /test\("agent 2: file access is scoped to one seller's one job"/);
   assert.match(read("scripts/agent-metrics.ts"), /summarizeMetrics\(root\)/);
 });
+
+test("RV30 (Grok 3 Nov, DeepSeek PS-SUB12/RM11/DM17/CA6): v9 fact check covers 1:06 and 2:24; SUBMISSION lead lines scoped; agent 4 vs SC1 explained; one replace-run cost count; v6/v9 video rows; licences row", () => {
+  const flat = (s: string) => s.replace(/\s+/g, " ");
+  const audit = read("CLAIMS_AUDIT.md");
+  const row = (start: string) => audit.split("\n").find((l) => l.startsWith(start))!;
+  // 1: both spoken lines have a fact-check row; 2:24 is UNVERIFIED, and every cited test exists.
+  const md = read("docs/DEMO.md");
+  const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)"));
+  assert.ok(md.includes("| 1:06 | She can type one line, like shirt, or nothing at all. |"));
+  assert.ok(md.includes("| 2:24 | The same page works on a desktop, a tablet or a phone, so a seller needs only her phone. |"));
+  assert.match(check, /\| She can type one line, like shirt, or nothing at all \(1:06\) \| matches: /);
+  assert.match(check, /\| The same page works on a desktop, a tablet or a phone, so a seller needs only her phone \(2:24\) \| UNVERIFIED in the repo: no committed test or file shows the page at desktop, tablet and phone widths/);
+  const serve = read("test/serve.test.ts");
+  assert.match(serve, /test\("UX-EASY1 web\/upload\.html: two steps, no attribute fields to type, optional note, /);
+  assert.match(serve, /test\("UX-EASY1: no typed note is accepted and recorded as NO_NOTE; /);
+  assert.match(serve, /test\("web\/upload\.html: same-origin only, [\s\S]*?name="viewport" content="width=device-width, initial-scale=1"/);
+  assert.match(read("src/serve.ts"), /export const NO_NOTE = "garment \(the seller typed no note\)";/);
+  assert.ok(check.includes("`garment (the seller typed no note)`"));
+  // 2: the lead lines are scoped to what is not UNVERIFIED or TBD.
+  const sub = flat(read("SUBMISSION.md"));
+  assert.match(sub, /Every field below is written from committed evidence in this repository \([^)]*\), except where a row or line says UNVERIFIED or TBD\./);
+  assert.match(sub, /Every number here is from a committed test, run log or report, named in the last column, except where a row says UNVERIFIED or TBD;/);
+  // 3: agent 4 compares the same gate runner, and SC1/SC2 sits inside it.
+  assert.match(sub, /byte-identical with or without the agent \(`test\/agent\.test\.ts` "agent 4": the same gate runner, `pipelineGate` in `src\/recovery-gate\.ts`, called through the agent and called directly\)\. The SC1\/SC2 self-comparison check below is part of that gate runner, not of the agent/);
+  assert.match(read("src/recovery-gate.ts").split(/\r?\n/)[51]!, /fidelity: selfComparisonReview\(providers\.fidelity\)/);
+  assert.match(row("| For the same inputs the gate receipt is byte-identical with or without the agent;"), /\| proven \| `test\/agent\.test\.ts` "agent 4"/);
+  // 4: one count, named the same way, and it adds up from the two run reports.
+  const runs = ["evidence/agent-replace-2026-10-31.json", "evidence/agent-replace-2026-10-31-label.json"].map((f) => JSON.parse(read(f)) as { meta_spend_usd_this_run: number; jobs: { runs: { mode: string }[] }[] });
+  const live = runs.map((r) => r.jobs.reduce((n, j) => n + j.runs.filter((x) => x.mode === "live").length, 0));
+  assert.deepEqual(live, [3, 2]);
+  assert.equal(Math.round((runs[0]!.meta_spend_usd_this_run + runs[1]!.meta_spend_usd_this_run) * 1e4) / 1e4, 0.1189);
+  const cost = "0.1189 USD in total for the two replace runs, 5 live gate runs (3 in the first, 2 in the label re-run";
+  assert.ok(sub.includes(cost), "SUBMISSION");
+  assert.ok(flat(read("README.md")).includes(cost), "README");
+  assert.doesNotMatch(sub, /Cost: 5 live gate runs, 0\.1189/);
+  // 5: the Codex 2 row is v6 only; v9 has its own row, frames UNVERIFIED.
+  assert.match(row("| Every job in the v6 demo capture is a committed live job"), /\| proven for v6 only \| `test\/demo-capture\.test\.ts` "Codex 2"/);
+  assert.ok(!audit.includes("| Every job in the demo video is a committed live job"));
+  assert.match(row("| The v9 video (the one to submit"), /`upload-20261103-003600-8e63`.*\| proven for the job's receipt; \*\*UNVERIFIED\*\* for the frames \| .*The v9 frames are not committed/);
+  assert.match(read("test/demo-capture.test.ts"), /test\("Codex 2: /);
+  // 6: the licences row points at the RV23 test, which checks what the row says.
+  assert.match(row("| Third-party licences and terms:"), /\*\*UNVERIFIED\*\* for the provider terms .*`test\/claims-wording\.test\.ts` "RV23"/);
+});
