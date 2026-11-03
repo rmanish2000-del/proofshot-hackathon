@@ -1013,3 +1013,36 @@ test("RV27 (Grok 3 Nov): the v9 live Space job is committed; its chain verifies 
   assert.match(audit, /\*\*false\*\* for v9: .*prediction `xxwnmte5p9rmt0d1kvarsnx9j4`/);
   for (const doc of ["SUBMISSION.md", "CLAIMS_AUDIT.md", "docs/DEMO.md"]) assert.doesNotMatch(read(doc), /`upload-20261103-003600-8e63`, not committed|which is not committed in this\s+repository/, doc);
 });
+
+test("RV28 (Grok 3 Nov, DeepSeek PS-SUB13): SUBMISSION and CLAIMS_AUDIT give one replace 10 range on one named photo; CLAIMS_AUDIT has rows for corrections, the MS4 total and the scaling line", () => {
+  const sub = read("SUBMISSION.md").replace(/\s+/g, " ");
+  const audit = read("CLAIMS_AUDIT.md");
+  const row = (start: string) => audit.split("\n").find((l) => l.startsWith(start))!;
+  // 1: the same measured range and the same committed photo, which replace 10 really uses.
+  const test10 = read("test/agent-replace.test.ts");
+  assert.match(test10, /const G = join\(ROOT, "data", "garments", "shirt-plaid"\);/);
+  assert.match(test10, /const full = photo\("2-back\.jpg"\);\s+const candidate = resave\(full, 95, 2\);/);
+  assert.match(sub, /replace 10, re-run 3 Nov\) on a half-size copy of the committed photo `data\/garments\/shirt-plaid\/2-back\.jpg`: copies 0\.00 to 0\.74/);
+  const sc2 = row("| A new photo 1 that is a JPEG or PNG copy");
+  assert.match(sc2, /a half-size copy of `data\/garments\/shirt-plaid\/2-back\.jpg`, as SUBMISSION says; its re-saved, EXIF and half-size copies 0\.000 to 0\.737/);
+  assert.doesNotMatch(sc2.replace("used to say 0.000 to 0.490", ""), /0\.490/);
+  // 2: the seller correction claim has a row citing the test that proves it.
+  assert.match(row("| A seller correction of a chip"), /\| proven \| `test\/serve\.test\.ts` "UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical" \|/);
+  assert.match(read("test/serve.test.ts"), /test\("UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical"/);
+  // 3: the MS4 total is derived from the same summary the figures read.
+  const ms4 = JSON.parse(read("evidence/ms4-summary.json")) as { runs: number; pairs: number; answered: number; failed: number; by_expected: Record<string, { answered: number }> };
+  assert.equal(ms4.answered, ms4.runs);
+  assert.equal(ms4.failed, 0);
+  assert.equal(Object.values(ms4.by_expected).reduce((n, b) => n + b.answered, 0), ms4.runs);
+  const total = row("| The MS4 total:");
+  assert.ok(total.includes(`<!--f:ms4_runs-->${ms4.runs}<!--/f--> checks over <!--f:ms4_pairs-->${ms4.pairs}<!--/f-->`));
+  assert.match(total, /\| proven, derived \| figures ms4_runs and ms4_pairs/);
+  assert.ok(sub.includes(`All <!--f:ms4_runs-->${ms4.runs}<!--/f--> runs were answered; none is a not_verified run.`));
+  // 4: the scaling line has a row; what no test shows is UNVERIFIED.
+  assert.ok(sub.includes("**Scaling:** local queue with N workers, stateless per-job steps, separate photo and record stores, per-seller limits, local metrics (`npm run agent:metrics`)"));
+  const scaling = row("| Scaling line:");
+  assert.match(scaling, /"agent 12" \(`FileQueue` \+ `drainQueue` with `workers: 2`/);
+  assert.match(scaling, /\*\*UNVERIFIED\*\* for "stateless" and for the script/);
+  assert.match(read("test/agent.test.ts"), /test\("agent 12: the queue runs two sellers' jobs at the same time[^"]*", async \(\) => \{\r?\n[^\n]*\n  const config = makeConfig\(\{ \.\.\.STEP_MS, workers: 2 \}\);/);
+  assert.match(read("scripts/agent-metrics.ts"), /summarizeMetrics\(root\)/);
+});

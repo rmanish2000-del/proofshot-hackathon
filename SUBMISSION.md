@@ -73,7 +73,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->450<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->451<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -198,8 +198,9 @@ image to publish is now a photo the seller never lists, so its RELEASE is not a 
 SC2 narrows the next step of the same trick: a JPEG or PNG copy of the image to publish that was re-saved,
 re-encoded, stripped of EXIF or resized, and is within the grid threshold, is moved to REVIEW. Both pictures are
 reduced to a 32x32 grid of mean colours; a mean difference of at most 3 (0-255) counts as the same picture, and the
-RELEASE becomes REVIEW with that distance in the receipt. Measured (`test/agent-replace.test.ts` replace 10) on a half-size copy of a
-committed photo: copies 0.00 to 0.74, other photos of the same garment at the same size above 40. Not caught (CLAIMS_AUDIT): a crop, rotation, mirror, an
+RELEASE becomes REVIEW with that distance in the receipt. Measured (`test/agent-replace.test.ts` replace 10, re-run 3 Nov) on a half-size copy of the
+committed photo `data/garments/shirt-plaid/2-back.jpg`: copies 0.00 to 0.74, the other two photos of the same garment
+(`1-front.jpg`, `3-collar.jpg`) stretched to the same size 41.5 and 47.5. Not caught (CLAIMS_AUDIT): a crop, rotation, mirror, an
 aspect ratio more than 2% different, heavy edits, a file that is neither JPEG nor PNG, or a new photo taken of the
 printed or on-screen image.
 
