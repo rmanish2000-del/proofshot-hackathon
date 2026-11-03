@@ -14,7 +14,7 @@ which records the v6 frames.
 Grok, 3 Nov 2026 (#23, FIN1). The final cut: 172.1 s, 1920x1080, 30 fps. The
 rendered file is not committed, so its length is UNVERIFIED here. Voice: the
 recorded voiceover (a generated Edge TTS voice, en-IN-PrabhatNeural); whether
-the rules allow a generated voice is UNVERIFIED. Link: VIDEO_LINK_TBD. The live
+the rules allow a generated voice is UNVERIFIED. Link: https://youtu.be/JSzJBOU11sA. The live
 job shown is `upload-20261103-003600-8e63` (synthetic-02, gate REFUSE). The
 sample replay it shows is labelled recorded. The spoken lines below are
 verbatim from the cut's subtitle file (given in FIN1; the subtitle file is not

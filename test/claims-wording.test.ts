@@ -534,9 +534,9 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   assert.doesNotMatch(v8, /\b\d{3} tests\b/);
   // 3: one token for the link in both files; the voice is no longer TBD.
   const sub = read("SUBMISSION.md");
-  assert.match(sub, /\*\*Demo video:\*\* VIDEO_LINK_TBD \(v9 final cut, 172\.1 s; replaces v8 https:\/\/youtu\.be\/cOeRYwRZBlA\)\n/); // FIN1
+  assert.match(sub, /\*\*Demo video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut, 172\.1 s; replaces v8 https:\/\/youtu\.be\/cOeRYwRZBlA\)\n/); // FIN1, VID3
   assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
-  assert.match(read("README.md"), /\*\*Video:\*\* VIDEO_LINK_TBD \(v9 final cut, 172\.1 s, 1920x1080;/);
+  assert.match(read("README.md"), /\*\*Video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut, 172\.1 s, 1920x1080;/);
   // VID1: the token is gone everywhere it was.
   for (const doc of ["SUBMISSION.md", "README.md", "docs/SUBMIT_CHECKLIST.md", "docs/DEMO.md"]) {
     assert.doesNotMatch(read(doc), /VIDEO_URL_PENDING/, doc);
@@ -553,7 +553,7 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   for (const key of ["tests", "receipt_chains", "tryon_all_total", "tryon_all_refuse", "tryon_all_review", "muse13_calls_all", "baseten_calls", "pruna_all_usd_est"]) {
     assert.ok(list.includes(`<!--f:${key}-->`), `the figures table marks ${key}`);
   }
-  assert.ok(list.includes("| Demo video | VIDEO_LINK_TBD |")); // FIN1
+  assert.ok(list.includes("| Demo video | https://youtu.be/JSzJBOU11sA |")); // VID3
   assert.doesNotMatch(list, /v8 upload is a human step/);
   assert.match(list, /\| Live demo \| https:\/\/rmanish2000-proofshot\.hf\.space \| .*UNVERIFIED/);
   assert.match(list, /\| X post \| pending \| a human step/);
@@ -565,7 +565,7 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   // README first screen: moved, not new.
   const top = read("README.md").split("\n").slice(0, 30).join("\n");
   assert.match(top, /\*\*Live demo:\*\* https:\/\/rmanish2000-proofshot\.hf\.space\//);
-  assert.match(top, /\*\*Video:\*\* VIDEO_LINK_TBD /); // FIN1
+  assert.match(top, /\*\*Video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA /); // VID3
   assert.match(top, /\*\*Verify a receipt offline:\*\* `web\/verify\.html` makes no network request/);
   assert.match(top, /```\nnpm ci\nnpm run serve\nnpm test +# long-running[^\n]*\n```/); // RV15 2: npm test last, labelled
   assert.equal([...read("README.md").matchAll(/https:\/\/youtu\.be\/cOeRYwRZBlA/g)].length, 1, "the superseded v8 URL once in README");
@@ -593,7 +593,7 @@ test("RV13 (Grok 08:05 2 Nov, DeepSeek CA2): CLAIMS_AUDIT scopes the shirts-only
   assert.ok(row, "demo row present");
   assert.match(row!, /^\| The v6 demo capture shows the two shirts only/);
   assert.match(row!, /\| proven for v6 only \|/);
-  assert.match(row!, /What the v9 video \(the one to submit since 3 Nov, final cut, VIDEO_LINK_TBD; v8 before it\) shows on screen is \*\*UNVERIFIED\*\* from the repo/); // FIN1
+  assert.match(row!, /What the v9 video \(the one to submit since 3 Nov, final cut, https:\/\/youtu\.be\/JSzJBOU11sA; v8 before it\) shows on screen is \*\*UNVERIFIED\*\* from the repo/); // FIN1, VID3
   assert.match(ca, /none released \(README, SUBMISSION; deck 6 and 7 and video C4 quote the earlier 7 of 7\)/);
   assert.match(ca, /they predate the 30–31 Oct run logs, so they show pack-only counts/);
   assert.match(ca, /held to its concurrent limit \(AGENT_SCALING\) \|/);
@@ -636,9 +636,7 @@ test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resy
   assert.match(anything, /what the official form asks for in this field is not recorded in this repository \(UNVERIFIED\)/);
   assert.doesNotMatch(row("Demo video"), /human step/);
   const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
-  // FIN1 (3 Nov): the v9 link is not filled yet, so it is listed again until VID3 fills it.
-  if (read("SUBMISSION.md").includes("**Demo video:** VIDEO_LINK_TBD")) assert.match(tbd, /the demo video link \(VIDEO_LINK_TBD, after upload\)/);
-  else assert.doesNotMatch(tbd, /video link/);
+  assert.doesNotMatch(tbd, /video link/); // VID3: the v9 link is filled again
   assert.match(tbd, /whether the rules allow a generated voice is UNVERIFIED/);
 });
 
@@ -847,7 +845,7 @@ test("FIN1 (Grok 3 Nov, Manish's decision): judge-facing texts lead with what wa
   // 2: v9 everywhere, v8 links only where marked superseded, the draft6b link nowhere.
   for (const doc of ["README.md", "SUBMISSION.md", "docs/DEMO.md", "docs/SUBMIT_CHECKLIST.md", "CLAIMS_AUDIT.md"]) {
     const text = read(doc);
-    assert.doesNotMatch(text, /1zhGuNVFlJA/, doc);
+    assert.doesNotMatch(text, new RegExp(["1zhGu", "NVFlJA"].join("")), doc); // split so a repo grep for it stays empty (VID3 2)
     assert.doesNotMatch(text, /"v8: the video to submit"/, doc);
     for (const line of text.split("\n").filter((l) => l.includes("cOeRYwRZBlA"))) assert.match(line, /superseded|replaces v8/, `${doc}: ${line}`);
   }
@@ -860,10 +858,25 @@ test("FIN1 (Grok 3 Nov, Manish's decision): judge-facing texts lead with what wa
   assert.equal(rows[0], "| 0:01 | Hello. |");
   assert.equal(rows.at(-1), "| 2:44 | But the rule is simple: if we cannot prove the photo is true, it does not go live. |");
   assert.doesNotMatch(v9, /\| [^|]*Everything you will see was written fresh/);
-  assert.match(sub, /the demo video link \(VIDEO_LINK_TBD, after upload\)/);
   assert.match(sub, /the video is v9 \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
   assert.match(readme, /The video to submit is v9 \(`docs\/DEMO\.md` "v9: the video to submit"\); v8 below is superseded\./);
+  assert.doesNotMatch(read("docs/SUBMIT_CHECKLIST.md"), /checked by Grok on 2 Nov/);
+});
+
+test("VID3 (Grok 3 Nov): the final v9 link replaces the FIN1 placeholder; no pending-upload wording; draft6b link nowhere; v8 link only where superseded", () => {
+  const link = "https://youtu.be/JSzJBOU11sA";
+  // Split so a repo grep for the placeholder or the draft6b id stays empty (VID3 2).
+  const gone = new RegExp(["VIDEO_LINK", "_TBD|1zhGu", "NVFlJA"].join(""));
+  for (const doc of ["README.md", "SUBMISSION.md", "docs/DEMO.md", "docs/SUBMIT_CHECKLIST.md", "CLAIMS_AUDIT.md"]) {
+    const text = read(doc);
+    assert.doesNotMatch(text, gone, doc);
+    assert.doesNotMatch(text, /link is added after the upload|link pending upload|after upload\)/, doc);
+    assert.ok(text.includes(link), `${doc} has the v9 link`);
+  }
+  assert.ok(read("docs/DEMO.md").includes(`Link: ${link}.`));
   const list = read("docs/SUBMIT_CHECKLIST.md");
-  assert.match(list, /\| Demo video \| VIDEO_LINK_TBD \| the v9 final cut \(172\.1 s\) on YouTube \(link pending upload\)/);
-  assert.doesNotMatch(list, /checked by Grok on 2 Nov/);
+  assert.ok(list.includes(`| Demo video | ${link} | the v9 final cut (172.1 s) on YouTube (link checked by Grok on 3 Nov 2026);`));
+  assert.ok(list.includes(`| Demo video | SUBMISSION.md **Demo video** | ${link}; the video is the v9 final cut (172.1 s)`));
+  const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
+  assert.doesNotMatch(tbd, /video link/);
 });
