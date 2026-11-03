@@ -115,7 +115,7 @@ test("wording 10 (Grok 23:25, AGW8): README, SUBMISSION and DEMO.md give one vid
       assert.match(around, /v6|clone \+ `npm ci`/, `${doc}: '76 s' not labelled v6: ${around}`);
     }
   }
-  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is v8, above: 167\.9 s, UNVERIFIED here\)/);
+  assert.match(md.replace(/\s+/g, " "), /v6 capture timing 76 s \(the video to submit is v9, above: 172\.1 s, UNVERIFIED here\)/); // FIN1
   assert.doesNotMatch(md, /as reported by Grok/);
 });
 
@@ -170,7 +170,7 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
   // RV10: the voice is named for what it is, a generated Edge TTS voice; the rules question stays UNVERIFIED.
   assert.match(v7, /The narration audio is the recorded voiceover \(a generated Edge TTS voice, en-IN-PrabhatNeural\); nothing new is recorded for it\./);
   const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
-  assert.match(row, /the v8 narration .* is the recorded voiceover, a generated Edge TTS voice \(en-IN-PrabhatNeural\), not a model API in this project; .* whether the rules allow a generated voice is \*\*UNVERIFIED\*\*/);
+  assert.match(row, /the v9 narration .* is the recorded voiceover, a generated Edge TTS voice \(en-IN-PrabhatNeural\), not a model API in this project; .* whether the rules allow a generated voice is \*\*UNVERIFIED\*\*/);
   // RV15 4: scoped to model and project API calls; the voice's cost is not in the repo, so it is not claimed.
   assert.match(row, /scoped: no new paid model or project API call/);
   assert.match(row, /whether that voice cost anything is not recorded in this repo \(\*\*UNVERIFIED\*\*\)/);
@@ -515,9 +515,10 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   const md = read("docs/DEMO.md");
   assert.ok(md.includes("- [ ] The recorded voiceover: a generated Edge TTS voice (en-IN-PrabhatNeural)."));
   assert.match(md.replace(/\s+/g, " "), /Voice: the recorded voiceover \(a generated Edge TTS voice, en-IN-PrabhatNeural; whether the rules allow it is UNVERIFIED\)/);
-  // 2: the v8 section comes first, has the 46 spoken lines, and v7 is marked superseded.
-  const v8 = md.slice(md.indexOf("## v8: the video to submit"), md.indexOf("## What exists today"));
-  assert.ok(md.indexOf("## v8: the video to submit") < md.indexOf("## Re-render script v7"));
+  // 2: the v8 section (superseded by v9 on 3 Nov, FIN1) has the 46 spoken lines, and v7 is marked superseded.
+  const v8 = md.slice(md.indexOf("## v8 (superseded 3 Nov)"), md.indexOf("## What exists today"));
+  assert.ok(md.indexOf("## v9: the video to submit") < md.indexOf("## v8 (superseded 3 Nov)"));
+  assert.ok(md.indexOf("## v8 (superseded 3 Nov)") < md.indexOf("## Re-render script v7"));
   const spoken = v8.split("### v8 fact check")[0]!.split("\n").filter((l) => /^\| \d \| /.test(l));
   assert.equal(spoken.length, 46);
   assert.match(md, /## Re-render script v7 \(31 Oct, for the out\/final video\)\n\nSuperseded on 2 Nov by v8 \(above\); kept as history\./);
@@ -533,9 +534,9 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   assert.doesNotMatch(v8, /\b\d{3} tests\b/);
   // 3: one token for the link in both files; the voice is no longer TBD.
   const sub = read("SUBMISSION.md");
-  assert.match(sub, /\*\*Demo video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA\n/);
+  assert.match(sub, /\*\*Demo video:\*\* VIDEO_LINK_TBD \(v9 final cut, 172\.1 s; replaces v8 https:\/\/youtu\.be\/cOeRYwRZBlA\)\n/); // FIN1
   assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
-  assert.match(read("README.md"), /\*\*Video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA /);
+  assert.match(read("README.md"), /\*\*Video:\*\* VIDEO_LINK_TBD \(v9 final cut, 172\.1 s, 1920x1080;/);
   // VID1: the token is gone everywhere it was.
   for (const doc of ["SUBMISSION.md", "README.md", "docs/SUBMIT_CHECKLIST.md", "docs/DEMO.md"]) {
     assert.doesNotMatch(read(doc), /VIDEO_URL_PENDING/, doc);
@@ -552,7 +553,7 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   for (const key of ["tests", "receipt_chains", "tryon_all_total", "tryon_all_refuse", "tryon_all_review", "muse13_calls_all", "baseten_calls", "pruna_all_usd_est"]) {
     assert.ok(list.includes(`<!--f:${key}-->`), `the figures table marks ${key}`);
   }
-  assert.ok(list.includes("| Demo video | https://youtu.be/cOeRYwRZBlA |"));
+  assert.ok(list.includes("| Demo video | VIDEO_LINK_TBD |")); // FIN1
   assert.doesNotMatch(list, /v8 upload is a human step/);
   assert.match(list, /\| Live demo \| https:\/\/rmanish2000-proofshot\.hf\.space \| .*UNVERIFIED/);
   assert.match(list, /\| X post \| pending \| a human step/);
@@ -564,10 +565,10 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   // README first screen: moved, not new.
   const top = read("README.md").split("\n").slice(0, 30).join("\n");
   assert.match(top, /\*\*Live demo:\*\* https:\/\/rmanish2000-proofshot\.hf\.space\//);
-  assert.match(top, /\*\*Video:\*\* https:\/\/youtu\.be\/cOeRYwRZBlA /);
+  assert.match(top, /\*\*Video:\*\* VIDEO_LINK_TBD /); // FIN1
   assert.match(top, /\*\*Verify a receipt offline:\*\* `web\/verify\.html` makes no network request/);
   assert.match(top, /```\nnpm ci\nnpm run serve\nnpm test +# long-running[^\n]*\n```/); // RV15 2: npm test last, labelled
-  assert.equal([...read("README.md").matchAll(/https:\/\/youtu\.be\/cOeRYwRZBlA/g)].length, 1, "one video URL in README");
+  assert.equal([...read("README.md").matchAll(/https:\/\/youtu\.be\/cOeRYwRZBlA/g)].length, 1, "the superseded v8 URL once in README");
 });
 
 test("RV12 (Grok 07:20 2 Nov, self red-team): SUBMISSION cites no uncommitted file as proof, the v8 on-screen content is UNVERIFIED, and the recording checklist says it is for v6", () => {
@@ -575,14 +576,15 @@ test("RV12 (Grok 07:20 2 Nov, self red-team): SUBMISSION cites no uncommitted fi
   assert.match(read(".gitignore"), /^out\/$/m, "out/ is not committed");
   // Every SUBMISSION cite of out/final says it is not committed.
   for (const m of sub.matchAll(/`out\/final\/[^`]+`[^|]{0,120}/g)) assert.match(m[0], /not committed/, m[0]);
-  assert.match(sub, /what v8, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here/);
+  assert.match(sub, /what v9, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here/); // FIN1
   assert.doesNotMatch(sub, /\(v7 shows the 31 Oct verdict table/);
   const md = read("docs/DEMO.md").replace(/\s+/g, " ");
-  assert.match(md, /## Recording checklist For the v6 capture\. For v8, the video to submit, the frames are not in this repository/);
-  // The v8 section names eight beats, as SUBMISSION says.
-  const beats = new Set(read("docs/DEMO.md").split("### v8 fact check")[0]!.split("## v8: the video to submit")[1]!.split("\n").filter((l) => /^\| \d \| /.test(l)).map((l) => l[2]));
+  assert.match(md, /## Recording checklist For the v6 capture\. For v9, the video to submit, the frames are not in this repository/); // FIN1
+  // The v8 section (superseded 3 Nov) names eight beats, as SUBMISSION says.
+  const beats = new Set(read("docs/DEMO.md").split("### v8 fact check")[0]!.split("## v8 (superseded 3 Nov)")[1]!.split("\n").filter((l) => /^\| \d \| /.test(l)).map((l) => l[2]));
   assert.equal(beats.size, 8);
-  assert.match(sub, /The video to submit is v8 \(`docs\/DEMO\.md` "v8: the video to submit"\): eight beats/);
+  assert.match(sub, /The video to submit is v9 \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
+  assert.match(sub, /The v8 video \(eight beats, 167\.9 s/);
 });
 
 test("RV13 (Grok 08:05 2 Nov, DeepSeek CA2): CLAIMS_AUDIT scopes the shirts-only demo row to v6, deck and video counts to their date, and the concurrency row to AGENT_SCALING", () => {
@@ -591,7 +593,7 @@ test("RV13 (Grok 08:05 2 Nov, DeepSeek CA2): CLAIMS_AUDIT scopes the shirts-only
   assert.ok(row, "demo row present");
   assert.match(row!, /^\| The v6 demo capture shows the two shirts only/);
   assert.match(row!, /\| proven for v6 only \|/);
-  assert.match(row!, /What the v8 video \(the one to submit\) shows on screen is \*\*UNVERIFIED\*\* from the repo/);
+  assert.match(row!, /What the v9 video \(the one to submit since 3 Nov, final cut, VIDEO_LINK_TBD; v8 before it\) shows on screen is \*\*UNVERIFIED\*\* from the repo/); // FIN1
   assert.match(ca, /none released \(README, SUBMISSION; deck 6 and 7 and video C4 quote the earlier 7 of 7\)/);
   assert.match(ca, /they predate the 30–31 Oct run logs, so they show pack-only counts/);
   assert.match(ca, /held to its concurrent limit \(AGENT_SCALING\) \|/);
@@ -634,7 +636,9 @@ test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resy
   assert.match(anything, /what the official form asks for in this field is not recorded in this repository \(UNVERIFIED\)/);
   assert.doesNotMatch(row("Demo video"), /human step/);
   const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
-  assert.doesNotMatch(tbd, /video link/);
+  // FIN1 (3 Nov): the v9 link is not filled yet, so it is listed again until VID3 fills it.
+  if (read("SUBMISSION.md").includes("**Demo video:** VIDEO_LINK_TBD")) assert.match(tbd, /the demo video link \(VIDEO_LINK_TBD, after upload\)/);
+  else assert.doesNotMatch(tbd, /video link/);
   assert.match(tbd, /whether the rules allow a generated voice is UNVERIFIED/);
 });
 
@@ -820,4 +824,46 @@ test("RV22 (Grok 3 Nov, DeepSeek CA4/RM10/SC6): synthetic-01 scope matches, Muse
   assert.equal([...audit.matchAll(/two chains, not linked into one|a separate chain from the gate receipt, not linked into one/g)].length, 2);
   assert.match(audit, /`test\/sample-replay\.test\.ts` \(zero provider calls counted/);
   assert.match(audit, /\| <!--f:tests-->\d+<!--\/f--> tests; CI runs them and gitleaks on every push \(README, SUBMISSION\) \|/);
+});
+
+test("FIN1 (Grok 3 Nov, Manish's decision): judge-facing texts lead with what was built during the event; v9 is the video to submit, v8 superseded", () => {
+  const lead = "**All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository.";
+  const readme = read("README.md");
+  const sub = read("SUBMISSION.md");
+  const md = read("docs/DEMO.md");
+  // 1a, 1f: under the title.
+  assert.ok(readme.startsWith(`# ProofShot (hackathon build)\n\n${lead}\n\n**Live demo:**`));
+  assert.ok(md.startsWith(`# ProofShot demo script v9 (proofshot-hackathon)\n\n${lead}\n\n`));
+  // 1b, 1d: first paragraph of the built-during sections, the old text kept after it.
+  assert.ok(readme.includes(`## Built during the event\n\n${lead}\n\nWork in this repository starts`));
+  assert.ok(readme.includes("### Prior work used"));
+  assert.ok(sub.includes(`## Built during the event and prior work\n\n${lead}\n\nWork in this`));
+  // 1c: the paragraph leads with it and keeps the history note through the *(event)* sentence.
+  const para = sub.split("\n").find((l) => l.startsWith("**Built during the hackathon:**"))!;
+  assert.ok(para.startsWith(`**Built during the hackathon:** ${lead} (History was re-authored on 30 Oct 2026`));
+  assert.ok(para.endsWith("changes made during the event are marked *(event)* in `docs/SPEC.md`."));
+  // 1e.
+  assert.match(sub, /\*What is the first commit, and is pre-event code in it\?\* All of ProofShot's code was written during the event: `15658a4`, 27 Oct/);
+  // 2: v9 everywhere, v8 links only where marked superseded, the draft6b link nowhere.
+  for (const doc of ["README.md", "SUBMISSION.md", "docs/DEMO.md", "docs/SUBMIT_CHECKLIST.md", "CLAIMS_AUDIT.md"]) {
+    const text = read(doc);
+    assert.doesNotMatch(text, /1zhGuNVFlJA/, doc);
+    assert.doesNotMatch(text, /"v8: the video to submit"/, doc);
+    for (const line of text.split("\n").filter((l) => l.includes("cOeRYwRZBlA"))) assert.match(line, /superseded|replaces v8/, `${doc}: ${line}`);
+  }
+  assert.match(md, /^Current status \(3 Nov 2026\): the video to submit is v9, in the next section; v8 below is superseded and kept as history\.$/m);
+  const v9 = md.slice(md.indexOf("## v9: the video to submit"), md.indexOf("## v8 (superseded 3 Nov)"));
+  assert.match(v9, /172\.1 s, 1920x1080, 30 fps/);
+  assert.match(v9, /`upload-20261103-003600-8e63` \(synthetic-02, gate REFUSE\)/);
+  const rows = v9.split("\n").filter((l) => /^\| \d:\d\d \| /.test(l));
+  assert.equal(rows.length, 37);
+  assert.equal(rows[0], "| 0:01 | Hello. |");
+  assert.equal(rows.at(-1), "| 2:44 | But the rule is simple: if we cannot prove the photo is true, it does not go live. |");
+  assert.doesNotMatch(v9, /\| [^|]*Everything you will see was written fresh/);
+  assert.match(sub, /the demo video link \(VIDEO_LINK_TBD, after upload\)/);
+  assert.match(sub, /the video is v9 \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
+  assert.match(readme, /The video to submit is v9 \(`docs\/DEMO\.md` "v9: the video to submit"\); v8 below is superseded\./);
+  const list = read("docs/SUBMIT_CHECKLIST.md");
+  assert.match(list, /\| Demo video \| VIDEO_LINK_TBD \| the v9 final cut \(172\.1 s\) on YouTube \(link pending upload\)/);
+  assert.doesNotMatch(list, /checked by Grok on 2 Nov/);
 });

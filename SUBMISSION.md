@@ -50,15 +50,15 @@ English and Hindi listing copy is written after the gate, from the receipt, by m
 
 The decision is made by plain code, not a model. No Meta image generator is used; Muse Image is refused at runtime (`refuseMuseImage` in `src/render.ts` throws `MuseImageRefused`; `test/render.test.ts` "a Muse Image model is refused on every provider before any request"). AI try-on candidates came from Pruna on Replicate (<!--f:pruna_all_calls-->12<!--/f--> calls, all held by the gate); that is not a Meta model.
 
-**Built during the hackathon:** The hackathon opened on 26 Oct 2026 at 21:30 IST. This repository's first commit is `15658a4`, on 27 Oct 2026 at 11:10 IST, and `git log` has no commit dated before it. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: a written specification; two config files (`tsconfig.json`, `.gitignore`); one AI-generated synthetic model image (`data/models/synthetic-01/model.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md), used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov (new jobs use `synthetic-02`, made during the event); and an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied. The specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
+**Built during the hackathon:** **All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository. (History was re-authored on 30 Oct 2026 to remove a personal email address; dates unchanged, so commit hashes differ from earlier copies of these documents: the first commit was 4aa99f9.) Everything in the demo (the gate, the receipt chain, the verify page, the pipeline, the upload and judge pages) is code in this repository from that commit on. Prior work: a written specification; two config files (`tsconfig.json`, `.gitignore`); one AI-generated synthetic model image (`data/models/synthetic-01/model.png`, generated 23 Oct 2026 for MirrorOS, a fictional adult, see its LICENSE.md), used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov (new jobs use `synthetic-02`, made during the event); and an earlier private prototype (`rmanish2000-del/proofshot`, 24–26 Oct; tag `pre-hackathon-baseline`, 1485431) whose code is not in this repository: the code here was rewritten from the specification from 27 Oct, not copied. The specification's pre-event text and its 27 Oct update are published unchanged in `docs/prior-work/`, and changes made during the event are marked *(event)* in `docs/SPEC.md`.
 
 **Repository:** https://github.com/rmanish2000-del/proofshot-hackathon
 
 **Licence:** MIT (`LICENSE`).
 
-**Demo video:** https://youtu.be/cOeRYwRZBlA
+**Demo video:** VIDEO_LINK_TBD (v9 final cut, 172.1 s; replaces v8 https://youtu.be/cOeRYwRZBlA)
 
-**Still TBD:** the X post (a human step; `docs/SUBMIT_CHECKLIST.md` "X post", pending), and any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v8 (`docs/DEMO.md` "v8: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
+**Still TBD:** the X post (a human step; `docs/SUBMIT_CHECKLIST.md` "X post", pending), the demo video link (VIDEO_LINK_TBD, after upload), and any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v9 (`docs/DEMO.md` "v9: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->445<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->446<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -381,9 +381,11 @@ Checked against: README "What each Meta model does" and "Limits",
 
 ## Demo script
 
-The video to submit is v8 (`docs/DEMO.md` "v8: the video to submit"): eight
-beats, 167.9 s (about 2:48); the rendered file is not committed and no
-committed file gives that length, so it is UNVERIFIED here. Its narration is the recorded
+The video to submit is v9 (`docs/DEMO.md` "v9: the video to submit"), the
+final cut, 172.1 s; the rendered file is not committed, so its length is
+UNVERIFIED here, and its spoken lines are listed verbatim there. The v8 video
+(eight beats, 167.9 s (about 2:48); the rendered file is not committed and no
+committed file gives that length, so it is UNVERIFIED here) is superseded. Its narration is the recorded
 voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural), and each figure it
 speaks is checked in the "v8 fact check" table there. The v7 re-render script
 (its script runs 2:45, or 2:50 with the optional end card) is superseded.
@@ -406,6 +408,8 @@ v6 timecodes summing to 76 s, every job committed, no kurta job in any shot,
 every committed try-on a kurta job).
 
 ## Built during the event and prior work
+
+**All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository.
 
 Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30
@@ -464,7 +468,7 @@ endpoint URL in `src/` and `scripts/`.
 
 ## Questions a judge may ask
 
-- *What is the first commit, and is pre-event code in it?* `15658a4`, 27 Oct
+- *What is the first commit, and is pre-event code in it?* All of ProofShot's code was written during the event: `15658a4`, 27 Oct
   2026 at 11:10 IST, after the 26 Oct 21:30 IST opening (`git log --reverse`).
   `git log` has no commit dated before it, and the gate, receipt chain, verify
   page, provider code, demo and evidence are all in commits from 15658a4 on.
@@ -484,7 +488,7 @@ endpoint URL in `src/` and `scripts/`.
   (`evidence/tryon/SUMMARY.md`, all REFUSE). On the 28–29 Oct set the
   verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
   check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). The v6
-  demo shows the two shirts only and has no AI on-model image (the v7 script showed the 31 Oct verdict table, not the try-on images; what v8, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here), and no new
+  demo shows the two shirts only and has no AI on-model image (the v7 script showed the 31 Oct verdict table, not the try-on images; what v9, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here; its narration names a live AI try-on, `docs/DEMO.md` "v9: the video to submit"), and no new
   paid call was made for the video (`docs/DEMO.md`,
   `test/demo-capture.test.ts`).
 - *What can I run without a key?* With no install, the Live demo Space,

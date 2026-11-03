@@ -1,13 +1,73 @@
-# ProofShot demo script v8 (proofshot-hackathon)
+# ProofShot demo script v9 (proofshot-hackathon)
 
-Current status (2 Nov 2026): the video to submit is v8, in the next section.
+**All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository.
+
+Current status (3 Nov 2026): the video to submit is v9, in the next section; v8 below is superseded and kept as history.
 Its narration is the recorded voiceover: a generated Edge TTS voice
 (en-IN-PrabhatNeural). The v7 re-render script below is superseded and kept as
 history. The v6 sections (the status note, "What exists today", the timecode
 table ending at 1:16 and the shot list) still drive `npm run demo:capture`,
 which records the v6 frames.
 
-## v8: the video to submit
+## v9: the video to submit
+
+Grok, 3 Nov 2026 (#23, FIN1). The final cut: 172.1 s, 1920x1080, 30 fps. The
+rendered file is not committed, so its length is UNVERIFIED here. Voice: the
+recorded voiceover (a generated Edge TTS voice, en-IN-PrabhatNeural); whether
+the rules allow a generated voice is UNVERIFIED. Link: VIDEO_LINK_TBD. The live
+job shown is `upload-20261103-003600-8e63` (synthetic-02, gate REFUSE). The
+sample replay it shows is labelled recorded. The spoken lines below are
+verbatim from the cut's subtitle file (given in FIN1; the subtitle file is not
+committed).
+
+| Time | Spoken |
+|---|---|
+| 0:01 | Hello. |
+| 0:03 | This is ProofShot. |
+| 0:05 | All of the code you will see was written during this hackathon, from the twenty-seventh of October. |
+| 0:13 | Before the event, there was only the written specification the code was rebuilt from, two config files, and one sample model photo that this demo does not use. |
+| 0:26 | All three are disclosed in the repo. |
+| 0:30 | Meet a seller, anywhere in the world. |
+| 0:33 | She photographs every shirt on her phone. |
+| 0:37 | A cleaned-up shot, or an AI try-on, looks better. |
+| 0:42 | But it can quietly change the garment. |
+| 0:46 | And the buyer gets something else. |
+| 0:50 | ProofShot checks that image against her own photos before it goes on sale. |
+| 0:56 | This is the live demo, on a phone. |
+| 1:00 | Step one: photos. |
+| 1:03 | She adds three photos. |
+| 1:06 | She can type one line, like shirt, or nothing at all. |
+| 1:12 | Location, camera and date are stripped from every photo first. |
+| 1:17 | Step two: the result. |
+| 1:20 | SAM three point one segments the garment. |
+| 1:24 | Pruna on Replicate, not a Meta model, made this AI try-on. |
+| 1:30 | Muse Spark one point three, on the Meta Model API, reads nine attributes. |
+| 1:37 | Each one becomes a chip. |
+| 1:40 | Here, eight match, and the fabric could not be measured. |
+| 1:45 | She can correct a chip. |
+| 1:48 | That never changes the decision. |
+| 1:52 | A plain code gate, not a model, decides. |
+| 1:56 | Here it says: refuse. |
+| 1:59 | The measured fidelity check found the garment shrank in frame. |
+| 2:04 | In our committed runs, the gate held all twelve AI try-ons. |
+| 2:10 | Every step goes into a hash-chained receipt. |
+| 2:14 | The browser checks it, with no server. |
+| 2:17 | Valid. |
+| 2:20 | Change one byte, and it says tampered. |
+| 2:24 | The same page works on a desktop, a tablet or a phone, so a seller needs only her phone. |
+| 2:32 | And the seller can read the result in her own language. |
+| 2:37 | Here it's Hindi. |
+| 2:39 | This is early, and tested on a handful of garments. |
+| 2:44 | But the rule is simple: if we cannot prove the photo is true, it does not go live. |
+
+Fact-check note: "sample model photo that this demo does not use" =
+synthetic-01 (the demo uses synthetic-02); "All three" = the specification,
+the config files and synthetic-01, all under README "Prior work used"; the
+earlier private prototype is not spoken because its code is not here (README
+"Prior work used" lists it). The old v8/v9-draft line "Everything you will see
+was written fresh…" is no longer in the cut.
+
+## v8 (superseded 3 Nov)
 
 Grok 07:20 IST 2 Nov (#23). The narration was approved by Manish on 1 Nov 2026
 and the audio is already rendered (`ProofShot_demo_v8.mp4`, 167.9 s, about
@@ -105,7 +165,7 @@ Framed for "Build for Your World" with an Indian boutique seller. v5, v4 and v3
 are in git history. Every job on screen is a committed receipt; "What exists
 today" says what each one is. A `[TBD]` is not read out or shown on screen.
 
-v6 capture timing 76 s (the video to submit is v8, above: 167.9 s,
+v6 capture timing 76 s (the video to submit is v9, above: 172.1 s,
 UNVERIFIED here). Screen recording only, burned-in captions. Voice: the recorded voiceover (a
 generated Edge TTS voice, en-IN-PrabhatNeural; whether the rules allow it is UNVERIFIED). Word cap per beat = seconds x 2.5
 (150 wpm).
@@ -228,9 +288,9 @@ recording (checklist).
 
 ## Recording checklist
 
-For the v6 capture. For v8, the video to submit, the frames are not in this
+For the v6 capture. For v9, the video to submit, the frames are not in this
 repository, so whether each item below holds for it is UNVERIFIED here; the
-voice line applies to v8 as written.
+voice line applies to v9 (and the superseded v8) as written.
 
 - [ ] Every model named has its call log in the receipt on screen; none named otherwise.
 - [ ] No Muse Image anywhere, no `UNVERIFIED` on screen, no price, no claim about returns.

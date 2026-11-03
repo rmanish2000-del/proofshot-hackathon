@@ -1,13 +1,14 @@
 # ProofShot (hackathon build)
 
+**All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository.
+
 **Live demo:** https://rmanish2000-proofshot.hf.space/, a public Hugging Face
 Space (`rmanish2000/proofshot`) whose root opens the seller upload page
 (`/upload.html`), checked by Grok on 1 Nov 2026 at 20:10 IST. Which build and
 which providers the Space runs is not read from the Space repo in this README,
 so it is UNVERIFIED here; everything below is about this repository.
 
-**Video:** https://youtu.be/cOeRYwRZBlA (v8; its length and voice are under "The video to
-submit is v8" below).
+**Video:** VIDEO_LINK_TBD (v9 final cut, 172.1 s, 1920x1080; narration is the recorded voiceover, a generated Edge TTS voice, en-IN-PrabhatNeural; the link is added after the upload. The earlier v8 video, https://youtu.be/cOeRYwRZBlA, is superseded).
 
 **Verify a receipt offline:** `web/verify.html` makes no network request. Give
 it a `receipt.jsonl` and the image; steps 2 and 3 of "Quick verify in 2
@@ -62,8 +63,8 @@ the gate, the demo shows the two shirts only, and there was no shirt try-on. The
 The demo capture reads no API key (fixture providers only,
 `providersFromEnv({})` in `scripts/demo-capture.ts`) and every captured frame
 points at a committed job, recording or file (`test/demo-capture.test.ts`,
-DEMO1). The video to submit is v8 (`docs/DEMO.md` "v8: the video to submit"):
-167.9 s (about 2:48); the rendered file is not committed and no committed
+DEMO1). The video to submit is v9 (`docs/DEMO.md` "v9: the video to submit"); v8 below is superseded.
+v8 ran 167.9 s (about 2:48); the rendered file is not committed and no committed
 file gives that length, so it is UNVERIFIED here. Its narration is the recorded
 voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural), and each figure it
 speaks is checked in the "v8 fact check" table there. The v7 re-render script
@@ -170,7 +171,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->445<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->446<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -721,7 +722,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->445<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->446<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
@@ -734,6 +735,8 @@ Dated experiment rows (each live run and when it happened) are in
 | Public repo | public since 28 Oct 2026 (history scan clean: one fake test key in 6c6837f, no EXIF/GPS, no phone number; since the 30 Oct history re-authoring every commit's author and committer email is a GitHub noreply address, see the history note below and `docs/HISTORY.md`) | made public by Manish on 28 Oct after the history scan |
 
 ## Built during the event
+
+**All of ProofShot's code was written during the event, from 27 Oct 2026 (first commit [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), 11:10 IST; the hackathon opened 26 Oct 2026, 21:30 IST).** The gate, the receipt chain, the verify page, the pipeline and the upload, judge and shop pages are all code in this repository. Disclosed prior work, listed below: the written specification the code was rewritten from (pre-event text published unchanged in `docs/prior-work/`), two config files (`tsconfig.json`, `.gitignore`), and one AI-generated sample model image (`synthetic-01`, used only in try-on runs committed on 28 and 31 Oct and in Space jobs made before 2 Nov; the final demo uses `synthetic-02`, made 28 Oct, during the event). An earlier private prototype's code is not in this repository.
 
 Work in this repository starts with its first commit, [`15658a4`](https://github.com/rmanish2000-del/proofshot-hackathon/commit/15658a495f0f7469cc1de6fe025fec3bd7cf327e), on
 27 Oct 2026 at 11:10 IST, after the hackathon opened on 26 Oct 2026 at 21:30

@@ -13,7 +13,7 @@ pending.
 |---|---|---|
 | Repository | https://github.com/rmanish2000-del/proofshot-hackathon | public since 28 Oct 2026 (README "Public repo" row) |
 | Live demo | https://rmanish2000-proofshot.hf.space | a public Hugging Face Space; which build and providers it runs is UNVERIFIED here (README "Live demo" line); the build commit is stated here only after the Space is resynced to the submission commit and the commit it runs is read |
-| Demo video | https://youtu.be/cOeRYwRZBlA | the v8 video on YouTube (link checked by Grok on 2 Nov 2026); the same URL is in SUBMISSION.md and README.md |
+| Demo video | VIDEO_LINK_TBD | the v9 final cut (172.1 s) on YouTube (link pending upload); the same URL is in SUBMISSION.md and README.md |
 | X post | pending | a human step (a public post); nothing is posted from this repository |
 
 ## Form fields and their source
@@ -30,7 +30,7 @@ pending.
 | Built during the hackathon / prior work | SUBMISSION.md **Built during the hackathon**; "Built during the event and prior work" | first commit `15658a4` |
 | Live demo | SUBMISSION.md **Live demo** | see Links |
 | Repository, licence | SUBMISSION.md **Repository**, **Licence** | MIT (`LICENSE`) |
-| Demo video | SUBMISSION.md **Demo video** | https://youtu.be/cOeRYwRZBlA; the video is v8 (`docs/DEMO.md` "v8: the video to submit") |
+| Demo video | SUBMISSION.md **Demo video** | VIDEO_LINK_TBD; the video is the v9 final cut (172.1 s) (`docs/DEMO.md` "v9: the video to submit") |
 | Inspiration | SUBMISSION.md "Inspiration" | |
 | What it does | SUBMISSION.md "What it does" | |
 | How we built it / Built with | SUBMISSION.md "Built with / How we built it" | |
@@ -47,7 +47,7 @@ reviewers) and any UNVERIFIED claim stated as fact.
 
 | Figure | Value | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->445<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
+| Automated tests | <!--f:tests-->446<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
 | Committed receipts that verify | <!--f:receipt_chains-->43 of 43<!--/f--> | `npm run figures`; SUBMISSION Metrics, "Committed jobs with receipts" |
 | AI try-on images held by the gate | <!--f:tryon_all_total-->12<!--/f--> (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, <!--f:tryon_all_release-->0<!--/f--> RELEASE) | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`; SUBMISSION Metrics, "AI try-ons held by the gate" |
 | Verifier calls, Muse Spark 1.3 on the Meta Model API | <!--f:muse13_calls_all-->242<!--/f--> logged | `evidence/verifier-*.json`, `evidence/ms4/`, `evidence/<run>/logs/`; README "What each Meta model does" |

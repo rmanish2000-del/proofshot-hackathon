@@ -362,9 +362,13 @@ test("DEMO1k: the judge page opens a linked job even when it is not among the 20
 test("DM10: DEMO.md has no never/cannot absolutes, and says intake stripped metadata only if an intake record removed some", () => {
   const md = readFileSync(join(root, "docs/DEMO.md"), "utf8");
   // RV10: the v8 spoken lines are the rendered audio, quoted verbatim ("if we cannot prove the photo is true"), so they are left out.
-  const spoken = md.slice(md.indexOf("## v8: the video to submit"), md.indexOf("### v8 fact check"));
-  const ours = md.replace(spoken, "");
+  const spoken = md.slice(md.indexOf("## v8 (superseded 3 Nov)"), md.indexOf("### v8 fact check"));
+  // FIN1: the v9 spoken table is verbatim from the cut's subtitles too, so it is left out the same way.
+  const v9 = md.slice(md.indexOf("## v9: the video to submit"), md.indexOf("## v8 (superseded 3 Nov)"));
+  const ours = md.replace(spoken, "").replace(v9, "");
   assert.equal(spoken.split("\n").filter((l) => /\b(never|cannot|can't)\b/i.test(l)).length, 1, "only the one v8 line");
+  assert.equal(v9.split("\n").filter((l) => /^\| \d:\d\d \| /.test(l) && /\b(never|cannot|can't)\b/i.test(l)).length, 2, "only the two v9 lines");
+  assert.equal(v9.split("\n").filter((l) => !/^\| \d:\d\d \| /.test(l) && /\b(never|cannot|can't)\b/i.test(l)).length, 0, "no absolute outside the v9 spoken lines");
   assert.doesNotMatch(ours, /\b(never|cannot|can't)\b/i);
   const intake = readFileSync(join(root, "data/garments/shirt-plaid/intake.json"), "utf8");
   const files = (JSON.parse(intake) as { files: { removed: unknown[] }[] }).files;
