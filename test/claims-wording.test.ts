@@ -1039,10 +1039,21 @@ test("RV28 (Grok 3 Nov, DeepSeek PS-SUB13): SUBMISSION and CLAIMS_AUDIT give one
   assert.match(total, /\| proven, derived \| figures ms4_runs and ms4_pairs/);
   assert.ok(sub.includes(`All <!--f:ms4_runs-->${ms4.runs}<!--/f--> runs were answered; none is a not_verified run.`));
   // 4: the scaling line has a row; what no test shows is UNVERIFIED.
-  assert.ok(sub.includes("**Scaling:** local queue with N workers, stateless per-job steps, separate photo and record stores, per-seller limits, local metrics (`npm run agent:metrics`)"));
+  // RV29: the scaling line states nothing its row calls UNVERIFIED; "stateless" is gone and the script is run by a test.
+  const flat = (s: string) => s.replace(/\r?\n/g, " ");
+  const scalingLine = flat(sub).match(/\*\*Scaling:\*\*[^*]*?AGENT_SCALING\.md`\)\./)?.[0] ?? "";
+  assert.equal(scalingLine, "**Scaling:** local queue with N workers (tested with 2: two sellers' jobs at once, each receipt holding only its own photos), separate photo and record stores, per-seller limits, local metrics (`npm run agent:metrics`); the managed-queue path is a plan (`docs/AGENT_SCALING.md`).");
+  assert.doesNotMatch(flat(sub), /stateless/i);
+  assert.doesNotMatch(flat(read("README.md")), /stateless/i);
+  assert.doesNotMatch(flat(read("docs/AGENT_SCALING.md")), /stateless/i);
   const scaling = row("| Scaling line:");
   assert.match(scaling, /"agent 12" \(`FileQueue` \+ `drainQueue` with `workers: 2`/);
-  assert.match(scaling, /\*\*UNVERIFIED\*\* for "stateless" and for the script/);
-  assert.match(read("test/agent.test.ts"), /test\("agent 12: the queue runs two sellers' jobs at the same time[^"]*", async \(\) => \{\r?\n[^\n]*\n  const config = makeConfig\(\{ \.\.\.STEP_MS, workers: 2 \}\);/);
+  assert.match(scaling, /\| proven locally \|/);
+  assert.doesNotMatch(scaling, /\*\*UNVERIFIED\*\*/);
+  assert.match(scaling, /"agent 14" runs `scripts\/agent-metrics\.ts` \(the `agent:metrics` npm script\) on a temp store/);
+  const agentTests = read("test/agent.test.ts");
+  assert.match(agentTests, /test\("agent 12: the queue runs two sellers' jobs at the same time[^"]*", async \(\) => \{\r?\n[^\n]*\n  const config = makeConfig\(\{ \.\.\.STEP_MS, workers: 2 \}\);/);
+  assert.match(agentTests, /test\("agent 14: npm run agent:metrics prints the summary[^"]*"[\s\S]*?spawnSync\(process\.execPath, \["--experimental-strip-types", join\(ROOT, "scripts", "agent-metrics\.ts"\), "--root", root\]/);
+  assert.match(agentTests, /test\("agent 2: file access is scoped to one seller's one job"/);
   assert.match(read("scripts/agent-metrics.ts"), /summarizeMetrics\(root\)/);
 });

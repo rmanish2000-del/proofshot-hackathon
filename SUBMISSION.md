@@ -73,7 +73,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->451<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->452<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -209,8 +209,9 @@ canned verifier (no model judged the images) shows the mechanics: three close-up
 the full-length view → the seller adds it → the same gate → RELEASE → the seller approves → published; and an
 injected instruction is rejected. It is a demonstration of the agent's mechanics, not of model accuracy.
 
-**Scaling:** local queue with N workers, stateless per-job steps, separate photo and record stores, per-seller
-limits, local metrics (`npm run agent:metrics`); the managed-queue path is a plan (`docs/AGENT_SCALING.md`).
+**Scaling:** local queue with N workers (tested with 2: two sellers' jobs at once, each receipt holding only its own
+photos), separate photo and record stores, per-seller limits, local metrics (`npm run agent:metrics`); the
+managed-queue path is a plan (`docs/AGENT_SCALING.md`).
 
 ## Inspiration
 

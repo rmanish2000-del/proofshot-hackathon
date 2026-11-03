@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -7,7 +8,8 @@ import { fileURLToPath } from "node:url";
 
 import { ConfigError, makeConfig } from "../src/agent/config.ts";
 import type { AgentConfig } from "../src/agent/config.ts";
-import { summarizeMetrics } from "../src/agent/metrics.ts";
+import { appendMetric, summarizeMetrics } from "../src/agent/metrics.ts";
+import type { MetricLine } from "../src/agent/metrics.ts";
 import { ScopeError, checkId, scopedPath } from "../src/agent/paths.ts";
 import type { Proposer } from "../src/agent/policy.ts";
 import { checkPhotoQuality } from "../src/agent/quality.ts";
@@ -355,4 +357,33 @@ test("agent 13: per-seller image size limit, config bounds, and the local photo 
   assert.throws(() => makeConfig({ seller: { maxSpendUsd: "1" } }), ConfigError);
   assert.equal(checkPhotoQuality(photo("1-front.jpg")).issues.length, 0);
   assert.deepEqual(checkPhotoQuality(new Uint8Array([1, 2, 3])).issues, ["not_an_image"]);
+});
+
+test("agent 14: npm run agent:metrics prints the summary of a store's metrics.jsonl", () => {
+  const root = mkdtempSync(join(tmpdir(), "agent-m-"));
+  const line = (job: string, over: Partial<MetricLine>): MetricLine => ({
+    at: CLOCK(), seller: "seller-a", job, queue_ms: 10, processing_ms: 100, ok: true, error: null, cap: null, tools: 1,
+    reruns: 1, rejected: 0, model_calls: 1, cost_usd: 0.01, status: "done", decision: "RELEASE", ...over,
+  });
+  appendMetric(root, line("job-a", { queue_ms: 5, processing_ms: 50 }));
+  appendMetric(root, line("job-b", { ok: false, error: "step_timeout", cap: "max_steps", rejected: 1, decision: null }));
+  appendMetric(root, line("job-c", { queue_ms: 30, processing_ms: 300, cost_usd: 0.03, decision: "REVIEW" }));
+  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { scripts: Record<string, string> };
+  assert.equal(pkg.scripts["agent:metrics"], "node --experimental-strip-types scripts/agent-metrics.ts");
+  const run = spawnSync(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts", "agent-metrics.ts"), "--root", root], { encoding: "utf8" });
+  assert.equal(run.status, 0, run.stderr);
+  const out = JSON.parse(run.stdout) as ReturnType<typeof summarizeMetrics>;
+  assert.deepEqual(out, summarizeMetrics(root));
+  assert.equal(out.runs, 3);
+  assert.equal(out.failures, 1);
+  assert.equal(out.failure_rate, 0.333);
+  assert.deepEqual(out.cap_hits, { max_steps: 1 });
+  assert.equal(out.rejected_actions, 1);
+  assert.equal(out.gate_reruns, 3);
+  assert.equal(out.model_calls, 3);
+  assert.equal(out.spend_usd, 0.05);
+  assert.equal(out.completed_listings, 1);
+  assert.equal(out.cost_per_completed_listing_usd, 0.05);
+  assert.deepEqual(out.queue_ms, { p50: 10, p90: 30 });
+  assert.deepEqual(out.processing_ms, { p50: 100, p90: 300 });
 });

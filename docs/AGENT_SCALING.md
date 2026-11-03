@@ -1,7 +1,8 @@
 # Evidence-checking agent: scaling path (a plan, not built)
 
-**Built and tested today (local only):** the agent is stateless between jobs: each step reads only its own
-job's photos and receipts and writes its next action and result to its own job record (`src/agent/store.ts`).
+**Built and tested today (local only):** each step works on one seller's one job: it reads that job's photos and
+receipts and writes its next action and result to that job's record (`src/agent/store.ts`; file access is
+scoped in code, `test/agent.test.ts` "agent 2").
 Photos (`blobs/<seller>/<job>/`) and records (`records/<seller>/<job>/`: job record, gate receipts, the
 hash-chained agent section) are separate trees. A file queue (`src/agent/queue.ts`) runs N workers in one
 process (config `workers`, default 1); a task is claimed by an atomic rename, and per-seller limits (image size,
@@ -9,7 +10,7 @@ concurrent jobs, model calls, spend) are enforced in code. `test/agent.test.ts` 
 at the same time without mixing files or receipts and keeps one seller to one running job. One bounded agent
 step per queue run; a job is queued again only after the seller acts. Metrics (queue time, processing time,
 failures, cap hits, re-runs, spend, cost per completed listing) go to a local `metrics.jsonl`
-(`npm run agent:metrics`). The deterministic gate stays the final decision-maker throughout.
+(`npm run agent:metrics`, run on a temp store by "agent 14"). The deterministic gate stays the final decision-maker throughout.
 
 **Not built (plan):**
 
