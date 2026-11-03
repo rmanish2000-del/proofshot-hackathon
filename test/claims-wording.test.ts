@@ -178,7 +178,7 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
   assert.doesNotMatch(row, /v3\/v3d/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
-  assert.match(sub, /updated 1 Nov 2026, on master after 3d2f94e/);
+  assert.match(sub, /updated 3 Nov 2026, on master after 4c9a1af/);
 });
 
 test("CA1 1 (Grok 08:15 1 Nov): one byte of an entry's content breaks the chain, file layout does not; SUBMISSION, the pack README and CLAIMS_AUDIT say so", () => {
@@ -1062,13 +1062,13 @@ test("RV30 (Grok 3 Nov, DeepSeek PS-SUB12/RM11/DM17/CA6): v9 fact check covers 1
   const flat = (s: string) => s.replace(/\s+/g, " ");
   const audit = read("CLAIMS_AUDIT.md");
   const row = (start: string) => audit.split("\n").find((l) => l.startsWith(start))!;
-  // 1: both spoken lines have a fact-check row; 2:24 is UNVERIFIED, and every cited test exists.
+  // 1: both spoken lines have a fact-check row; 2:24 was UNVERIFIED here and RV31 flips it on the committed width check.
   const md = read("docs/DEMO.md");
   const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)"));
   assert.ok(md.includes("| 1:06 | She can type one line, like shirt, or nothing at all. |"));
   assert.ok(md.includes("| 2:24 | The same page works on a desktop, a tablet or a phone, so a seller needs only her phone. |"));
   assert.match(check, /\| She can type one line, like shirt, or nothing at all \(1:06\) \| matches: /);
-  assert.match(check, /\| The same page works on a desktop, a tablet or a phone, so a seller needs only her phone \(2:24\) \| UNVERIFIED in the repo: no committed test or file shows the page at desktop, tablet and phone widths/);
+  assert.match(check, /\| The same page works on a desktop, a tablet or a phone, so a seller needs only her phone \(2:24\) \| matches for the upload and verify pages at the widths measured \(RV31\)/);
   const serve = read("test/serve.test.ts");
   assert.match(serve, /test\("UX-EASY1 web\/upload\.html: two steps, no attribute fields to type, optional note, /);
   assert.match(serve, /test\("UX-EASY1: no typed note is accepted and recorded as NO_NOTE; /);
@@ -1099,4 +1099,43 @@ test("RV30 (Grok 3 Nov, DeepSeek PS-SUB12/RM11/DM17/CA6): v9 fact check covers 1
   assert.match(read("test/demo-capture.test.ts"), /test\("Codex 2: /);
   // 6: the licences row points at the RV23 test, which checks what the row says.
   assert.match(row("| Third-party licences and terms:"), /\*\*UNVERIFIED\*\* for the provider terms .*`test\/claims-wording\.test\.ts` "RV23"/);
+});
+
+test("RV31 + RV32 (Grok 3 Nov, DeepSeek PS-RV31W/PS-RV32W, 4c9a1af): the one committed upload job is named and scoped out of the counts, SUBMISSION opens with the event-built line, Pruna and any-doubt lines scoped, 2:24 rests on the committed width check", () => {
+  const flat = (s: string) => s.replace(/\s+/g, " ");
+  const job = "upload-20261103-003600-8e63";
+  const readme = flat(read("README.md"));
+  const sub = flat(read("SUBMISSION.md"));
+  const audit = read("CLAIMS_AUDIT.md");
+  const row = (start: string) => audit.split("\n").find((l) => l.startsWith(start))!;
+  // RV31 1(a): README names the .gitignore exception, and it is the real one with the real image name.
+  assert.ok(read(".gitignore").split(/\r?\n/).includes(`!data/jobs/${job}/`));
+  assert.ok(readme.includes(`One named exception, \`!data/jobs/${job}/\`: the v9 video's live Space job, committed on purpose (RV27) with its receipt, \`job.json\` and the try-on image \`${job}-r0.jpg\` (synthetic-02 model, gate REFUSE), and no seller photo.`));
+  assert.ok(readFileSync(join(root, "data/jobs", job, `${job}-r0.jpg`)).length > 0);
+  const gate = parseReceipt(read(`data/jobs/${job}/receipt.jsonl`)).filter((e) => e.kind === "gate");
+  assert.deepEqual(gate.map((e) => (e.payload as { decision: string }).decision), ["REFUSE"]);
+  // RV31 1(b): every "all 12" count is scoped to what src/figures.ts counts; the intro bullet covers the v9 job too.
+  assert.ok(readme.includes("counted by `src/figures.ts` (which skips `upload-*` jobs) were held by the gate"));
+  assert.ok(readme.includes(`**No generated on-model photo has been released**, neither in the runs the figures count nor in the committed v9 live Space job \`${job}\` (REFUSE)`));
+  // RV31 1(c): the static demo line says the v9 job is outside the count and its inclusion is UNVERIFIED.
+  assert.ok(readme.includes(`The committed v9 live Space job \`${job}\` is outside that count, and whether \`npm run demo:static\` includes it is UNVERIFIED here.`));
+  // RV31 2: SUBMISSION opens with README line 3's event-built line directly under Track/Team, and the header is current.
+  const lines = read("SUBMISSION.md").split(/\r?\n/).filter((l) => l.trim());
+  assert.match(lines[1]!, /^\*\*Track:\*\*/);
+  assert.match(lines[2]!, /^\*\*All of ProofShot's code was written during the event, from 27 Oct 2026/);
+  assert.ok(lines[2]!.startsWith(read("README.md").split(/\r?\n/)[2]!.split(" (first commit")[0]!));
+  assert.doesNotMatch(sub, /updated 1 Nov 2026, on master after 3d2f94e/);
+  // RV32 1: the 13th Pruna call is named and its cost is not recorded.
+  assert.ok(sub.includes(`the committed v9 live Space job \`${job}\` records a thirteenth Pruna call with \`cost_usd\` null (not recorded)`));
+  // RV32 2: any-doubt scoped like the audit row.
+  assert.ok(sub.includes("On the committed live runs, any doubt ends in REVIEW or REFUSE, never RELEASE (gate rules in `src/gate.ts`;"));
+  // RV32 3: the Space-root check has its own UNVERIFIED row.
+  assert.match(row("| The live demo Space root opens the seller upload page"), /checked by Grok on 1 Nov 2026 at 20:10 IST .*\| \*\*UNVERIFIED\*\* in this repo \|/);
+  // RV31 3: the 2:24 row cites the committed check; the audit has a scoped row; the two-step row stays UNVERIFIED.
+  const demo = read("docs/DEMO.md");
+  assert.match(demo, /\(2:24\) \| matches for the upload and verify pages at the widths measured \(RV31\): .*6 of 6 passed.*emulated viewports in one browser, not physical devices; the judge and shop pages were not measured.*\| `evidence\/responsive-2026-11-03\/results\.json`; `scripts\/responsive-check\.ts`; `test\/responsive\.test\.ts` \|/);
+  assert.match(row("| The upload and verify pages work at phone, tablet and desktop widths"), /\| proven for layout at 375, 768 and 1280 px in one browser \|.*Emulated viewports, not physical devices/);
+  assert.match(row("| The two-step upload page (Photos, Result) works in a real browser"), /\| \*\*UNVERIFIED\*\* \(as in README\) \|.*measures layout only, it does not upload or reach the Result step \|/);
+  assert.match(read("package.json"), /"check:responsive": "node --experimental-strip-types scripts\/responsive-check\.ts"/);
+  assert.equal((JSON.parse(read("evidence/responsive-2026-11-03/results.json")) as { passed: boolean }).passed, true);
 });

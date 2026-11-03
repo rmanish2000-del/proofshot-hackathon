@@ -4,7 +4,7 @@ out/
 *.log
 # Seller uploads from npm run serve: a seller's photos must never be committed by a sync.
 data/jobs/upload-*/
-# RV27: the v9 video's live Space job, kept on purpose (receipt + job.json only, no seller photos; the model is synthetic-02).
+# RV27: the v9 video's live Space job, kept on purpose (receipt, job.json and the try-on image, no seller photos; the model is synthetic-02).
 !data/jobs/upload-20261103-003600-8e63/
 # A seller's corrections to those uploads (UX-EASY2), stored outside the receipt chain.
 data/corrections/upload-*.json

@@ -8,7 +8,7 @@ Every field below is written from committed evidence in this repository
 (receipts in `data/jobs`, call logs and reports in `evidence/`, the README),
 except where a row or line says UNVERIFIED or TBD.
 The source is named under each section. First written 29 Oct 2026 from the Codex
-review; updated 1 Nov 2026, on master after 3d2f94e. Earlier Challenges and Calibration drafts were
+review; updated 3 Nov 2026, on master after 4c9a1af. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
 
@@ -77,7 +77,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->453<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->456<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts, in the committed runs `src/figures.ts` counts (`upload-*` jobs skipped) | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify. Outside those figures, the v9 live Space job `upload-20261103-003600-8e63`, committed 3 Nov, is an additional held job: REFUSE | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |

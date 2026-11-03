@@ -1,0 +1,239 @@
+{
+  "check": "RV31 responsive",
+  "browser": "Edg/157.0.4341.36",
+  "server": "UploadServer, fixture providers, GET only",
+  "passed": true,
+  "results": [
+    {
+      "page": "upload",
+      "path": "/upload.html",
+      "viewport": "375",
+      "kind": "phone",
+      "width": 375,
+      "height": 812,
+      "screenshot": "upload-375.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 375,
+        "scrollWidth": 375,
+        "controls": {
+          "photo picker": {
+            "found": true,
+            "display": "flex",
+            "visibility": "visible",
+            "left": 16,
+            "right": 359,
+            "width": 343,
+            "height": 176
+          },
+          "submit button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 359,
+            "width": 343,
+            "height": 54.28125
+          }
+        }
+      }
+    },
+    {
+      "page": "upload",
+      "path": "/upload.html",
+      "viewport": "768",
+      "kind": "tablet",
+      "width": 768,
+      "height": 1024,
+      "screenshot": "upload-768.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 768,
+        "scrollWidth": 768,
+        "controls": {
+          "photo picker": {
+            "found": true,
+            "display": "flex",
+            "visibility": "visible",
+            "left": 16,
+            "right": 752,
+            "width": 736,
+            "height": 176
+          },
+          "submit button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 752,
+            "width": 736,
+            "height": 54.28125
+          }
+        }
+      }
+    },
+    {
+      "page": "upload",
+      "path": "/upload.html",
+      "viewport": "1280",
+      "kind": "desktop",
+      "width": 1280,
+      "height": 800,
+      "screenshot": "upload-1280.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 1280,
+        "scrollWidth": 1280,
+        "controls": {
+          "photo picker": {
+            "found": true,
+            "display": "flex",
+            "visibility": "visible",
+            "left": 272,
+            "right": 1008,
+            "width": 736,
+            "height": 176
+          },
+          "submit button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 272,
+            "right": 1008,
+            "width": 736,
+            "height": 54.28125
+          }
+        }
+      }
+    },
+    {
+      "page": "verify",
+      "path": "/verify.html",
+      "viewport": "375",
+      "kind": "phone",
+      "width": 375,
+      "height": 812,
+      "screenshot": "verify-375.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 375,
+        "scrollWidth": 375,
+        "controls": {
+          "receipt file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 269,
+            "width": 253,
+            "height": 21
+          },
+          "image file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 269,
+            "width": 253,
+            "height": 21
+          },
+          "check button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 105.359375,
+            "width": 89.359375,
+            "height": 38
+          }
+        }
+      }
+    },
+    {
+      "page": "verify",
+      "path": "/verify.html",
+      "viewport": "768",
+      "kind": "tablet",
+      "width": 768,
+      "height": 1024,
+      "screenshot": "verify-768.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 768,
+        "scrollWidth": 768,
+        "controls": {
+          "receipt file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 269,
+            "width": 253,
+            "height": 21
+          },
+          "image file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 269,
+            "width": 253,
+            "height": 21
+          },
+          "check button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 16,
+            "right": 105.359375,
+            "width": 89.359375,
+            "height": 38
+          }
+        }
+      }
+    },
+    {
+      "page": "verify",
+      "path": "/verify.html",
+      "viewport": "1280",
+      "kind": "desktop",
+      "width": 1280,
+      "height": 800,
+      "screenshot": "verify-1280.png",
+      "problems": [],
+      "measure": {
+        "innerWidth": 1280,
+        "scrollWidth": 1280,
+        "controls": {
+          "receipt file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 272,
+            "right": 525,
+            "width": 253,
+            "height": 21
+          },
+          "image file input": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 272,
+            "right": 525,
+            "width": 253,
+            "height": 21
+          },
+          "check button": {
+            "found": true,
+            "display": "inline-block",
+            "visibility": "visible",
+            "left": 272,
+            "right": 361.359375,
+            "width": 89.359375,
+            "height": 38
+          }
+        }
+      }
+    }
+  ]
+}
