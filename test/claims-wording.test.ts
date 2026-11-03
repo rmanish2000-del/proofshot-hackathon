@@ -863,6 +863,49 @@ test("FIN1 (Grok 3 Nov, Manish's decision): judge-facing texts lead with what wa
   assert.doesNotMatch(read("docs/SUBMIT_CHECKLIST.md"), /checked by Grok on 2 Nov/);
 });
 
+test("RV23 (Grok 3 Nov, DeepSeek SUB11/SC7/V9F1): today's 0 of 2 leads, units named, calibration baselines split, TBD or UNVERIFIED, v9 paid-call claim scoped, licences generated, v9 fact check, correction Q/A", () => {
+  const sub = read("SUBMISSION.md");
+  const flat = sub.replace(/\s+/g, " ");
+  // 1
+  assert.match(flat, /On two real seller pairs, today's gate gives 0 of 2 RELEASE \(both REVIEW\), which matches "Resolved by the agent: 0 of 2" above\. Earlier, 2 of 2:/);
+  assert.ok(sub.includes("**Resolved by the agent: 0 of 2.**"));
+  // 2
+  assert.match(flat, /check returned REVIEW or REFUSE on each of the <!--f:tryon_total-->\d+<!--\/f--> images \(the gate cited fidelity for 4, the verifier for 3; the 4 of 21 are shortened checks, not images\)/);
+  // 3
+  assert.match(flat, /that compares the replayed gate with the decision recorded on each receipt, not with the labelled correct answer/);
+  assert.match(flat, /false refusals against the labelled correct answer/);
+  // 4
+  assert.match(sub, /Anything not in the repository is marked \*\*TBD\*\* or \*\*UNVERIFIED\*\*\./);
+  // 5
+  assert.match(flat, /no new paid call was made for the v6 capture .*For v9, the video to submit, the claim is UNVERIFIED: .*`upload-20261103-003600-8e63` \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
+  const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
+  assert.match(row, /proven for the v6 capture, .*\*\*UNVERIFIED\*\* for v9/);
+  // 6: every runtime dependency is listed with the licence its installed package.json gives.
+  const readme = read("README.md");
+  const lic = readme.slice(readme.indexOf("## Third-party licences and terms"), readme.indexOf("## Evidence pack"));
+  const deps = (JSON.parse(read("package.json")) as { dependencies: Record<string, string> }).dependencies;
+  assert.ok(Object.keys(deps).length > 0);
+  for (const [name, version] of Object.entries(deps)) {
+    const installed = JSON.parse(read(`node_modules/${name}/package.json`)) as { version: string; license: string };
+    assert.equal(installed.version, version, name);
+    assert.ok(lic.includes(`| \`${name}\` | ${version} | ${installed.license}`), `${name} ${installed.license}`);
+  }
+  for (const m of ["synthetic-01", "synthetic-02"]) assert.ok(lic.includes(`data/models/${m}/LICENSE.md`) && read(`data/models/${m}/LICENSE.md`).length > 0, m);
+  for (const p of ["Baseten", "Fireworks", "Replicate", "Pruna", "Meta Model API"]) assert.match(lic, new RegExp(`- ${p}[^\\n]*UNVERIFIED`), p);
+  // 7
+  const md = read("docs/DEMO.md");
+  const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)"));
+  assert.ok(md.indexOf("## v9: the video to submit") < md.indexOf("### v9 fact check"));
+  assert.match(check, /Whether any v9 frame shows `docs\/SPEC\.md`, `tsconfig\.json`, `\.gitignore` or the synthetic-01 image is UNVERIFIED/);
+  assert.match(check, /\| Here, eight match, and the fabric could not be measured \(1:40\) \| UNVERIFIED/);
+  assert.match(check, /the fidelity field behind "shrank in frame" is UNVERIFIED/);
+  assert.match(check, /\| This is the live demo, on a phone \(0:56\) \| UNVERIFIED/);
+  for (const m of check.matchAll(/`((?:src|test|web|data)\/[^`]+)`/g)) assert.ok(read(m[1]!).length > 0, `${m[1]} exists`);
+  // 8
+  assert.match(flat, /\*Can the seller type a note or correct a chip, and does that change the decision\?\* .*`data\/corrections\/<job>\.json`; it does not re-run the gate and never changes the decision/);
+  assert.match(read("test/serve.test.ts"), /test\("UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical"/);
+});
+
 test("VID3 (Grok 3 Nov): the final v9 link replaces the FIN1 placeholder; no pending-upload wording; draft6b link nowhere; v8 link only where superseded", () => {
   const link = "https://youtu.be/JSzJBOU11sA";
   // Split so a repo grep for the placeholder or the draft6b id stays empty (VID3 2).

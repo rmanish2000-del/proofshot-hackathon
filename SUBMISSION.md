@@ -13,7 +13,7 @@ refreshed here to the current receipts.
 
 For the Cerebral Valley submit form. Paste from the rendered page (the numbers are kept current by
 `npm run figures`). Every answer is from this repository; the evidence for each one is in the sections below
-and in README.md. Anything not in the repository is **TBD**.
+and in README.md. Anything not in the repository is marked **TBD** or **UNVERIFIED**.
 
 **Project name:** ProofShot
 
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->447<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->448<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -300,14 +300,14 @@ Checked against:
 
 `npm run calibrate:jobs` re-judges <!--f:cal_cases-->37<!--/f--> labelled renders from committed receipts
 (<!--f:cal_same-->18<!--/f--> same garment, <!--f:cal_different-->19<!--/f--> different) at threshold factors 0.5x to 2x. At 1x,
-<!--f:cal_reproduced-->37 of 37<!--/f--> rows match the gate decision each receipt recorded. <!--f:cal_unmeasured-->6<!--/f--> of those <!--f:cal_cases-->37<!--/f--> are
+<!--f:cal_reproduced-->37 of 37<!--/f--> rows match the gate decision each receipt recorded: that compares the replayed gate with the decision recorded on each receipt, not with the labelled correct answer (the false refusals below are against the label). <!--f:cal_unmeasured-->6<!--/f--> of those <!--f:cal_cases-->37<!--/f--> are
 unmeasured (no source or render mask, or a JPEG source from before the decoder, so the fidelity check could not run); they stay in the
 <!--f:cal_cases-->37<!--/f--> and in the counts below. Unmeasured is the fidelity check, not the verifier: these <!--f:cal_unmeasured-->6<!--/f--> are a
 different set from the 6 renders with no usable verifier answer (`evidence/pack/README.md`, Receipts), and only
 `live-kurta-01` is in both. A further <!--f:cal_skipped-->6<!--/f--> fixture renders are skipped,
 outside the <!--f:cal_cases-->37<!--/f-->, because their fidelity values were written, not measured.
 The gate reports <!--f:cal_false_match-->0<!--/f--> false matches at 1x (0 at every factor in the report).
-At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals: two failed verifier calls
+At 1x there are <!--f:cal_false_refuse-->4<!--/f--> false refusals against the labelled correct answer: two failed verifier calls
 (`live-shirt-plaid-composite-v2` and `-r2`, the failed runs under Challenges)
 and two verifier outputs that were not JSON (`live-kurta-01`,
 `live-kurta-01-composite`), all recorded as not_verified, so they are not a
@@ -487,10 +487,20 @@ endpoint URL in `src/` and `scripts/`.
   `data/jobs/live-kurta-0*-tryon*` (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and <!--f:tryon_run31_total-->5<!--/f--> in the 31 Oct run
   (`evidence/tryon/SUMMARY.md`, all REFUSE). On the 28–29 Oct set the
   verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks in MS4; the fidelity
-  check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4, the verifier for 3). The v6
+  check returned REVIEW or REFUSE on each of the <!--f:tryon_total-->7<!--/f--> images (the gate cited fidelity for 4, the verifier for 3; the 4 of 21 are shortened checks, not images). The v6
   demo shows the two shirts only and has no AI on-model image (the v7 script showed the 31 Oct verdict table, not the try-on images; what v9, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here; its narration names a live AI try-on, `docs/DEMO.md` "v9: the video to submit"), and no new
-  paid call was made for the video (`docs/DEMO.md`,
-  `test/demo-capture.test.ts`).
+  paid call was made for the v6 capture (`docs/DEMO.md`,
+  `test/demo-capture.test.ts`). For v9, the video to submit, the claim is
+  UNVERIFIED: its narration shows a live job, `upload-20261103-003600-8e63`
+  (`docs/DEMO.md` "v9: the video to submit"), which is not committed in this
+  repository, so its provider calls and their cost are not recorded here.
+- *Can the seller type a note or correct a chip, and does that change the
+  decision?* The seller can type one optional line with the photos, and can
+  correct any chip on the result card. A correction is saved outside the
+  receipt, in `data/corrections/<job>.json`; it does not re-run the gate and
+  never changes the decision (README "Seller upload", "Something wrong? Correct
+  it"; `test/serve.test.ts` "UX-EASY2: a correction is stored outside the
+  chain; the receipt bytes and the decision stay identical").
 - *What can I run without a key?* With no install, the Live demo Space,
   https://rmanish2000-proofshot.hf.space/ (which build and providers it runs is
   UNVERIFIED here, as in the Live demo line at the top). In this repository, `npm ci`, `npm test`, `npm run serve` and
@@ -516,7 +526,8 @@ reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x wit
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the
 fidelity check returned REVIEW or REFUSE on all <!--f:tryon_all_total-->12<!--/f--> committed try-on images (<!--f:tryon_total-->7<!--/f--> on 28–29 Oct, <!--f:tryon_run31_total-->5<!--/f--> on 31 Oct; for the 31 Oct five, fidelity REFUSE on each, `evidence/tryon/SUMMARY.md` Fidelity column).
 
-On two real seller pairs, the evidence-checking agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
+On two real seller pairs, today's gate gives 0 of 2 RELEASE (both REVIEW),
+which matches "Resolved by the agent: 0 of 2" above. Earlier, 2 of 2: the evidence-checking agent got both to RELEASE (recorded 31 Oct self-comparison; would be REVIEW today) by
 asking the seller to replace a bad first photo (2 of 2 with the seller's photo
 label as a trigger, 1 of 2 before I added it). The caveat comes first: the
 render was a stand-in, the seller's own new photo 1, so render and photo were

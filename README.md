@@ -171,7 +171,7 @@ Stop the server with Ctrl+C. Nothing is uploaded: the verify page makes no
 network request.
 
 The full test suite runs offline too, but takes longer (measured 316 s to 423 s on one
-laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->447<!--/f--> tests, the gate, receipt chain and verify core
+laptop, SUBMISSION "Judge setup on a clean clone"; 467 s on the Windows autorun box after FLK2): `npm test` runs <!--f:tests-->448<!--/f--> tests, the gate, receipt chain and verify core
 included.
 
 ## Evidence-checking agent (keyless demo)
@@ -711,6 +711,32 @@ The renderer takes an injected transport.
   will be our own garment photos under `data/garments/`, with metadata
   removed.
 
+## Third-party licences and terms
+
+Runtime dependencies (every entry of `dependencies` in `package.json`; each
+licence is the `license` field of the installed
+`node_modules/<name>/package.json`, checked against it by
+`test/claims-wording.test.ts` "RV23"):
+
+| Package | Version | Licence (from its installed package.json) |
+|---|---|---|
+| `@meta-sam/parser` | 0.1.0 | SEE LICENSE IN LICENSE (the SAM License, full text in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)) |
+| `jpeg-js` | 0.4.4 | BSD-3-Clause |
+
+Images: the two AI-generated sample model images carry their own terms,
+[`data/models/synthetic-01/LICENSE.md`](data/models/synthetic-01/LICENSE.md)
+and [`data/models/synthetic-02/LICENSE.md`](data/models/synthetic-02/LICENSE.md).
+
+Providers (services called at run time; none of their code is in this
+repository). The terms page of each is not read from a file in this
+repository, so whether ProofShot's use follows each one is UNVERIFIED here:
+
+- Baseten (Muse Spark Open): terms UNVERIFIED.
+- Fireworks (muse-spark-open listing copy): terms UNVERIFIED.
+- Replicate (hosts Pruna): terms UNVERIFIED.
+- Pruna (`prunaai/p-image-try-on`, AI try-on candidates): terms UNVERIFIED.
+- Meta Model API, `api.meta.ai` (SAM 3.1, Muse Spark 1.3): terms UNVERIFIED.
+
 ## Evidence pack
 
 `evidence/pack/` is built by `npm run evidence:pack` from committed material only: every receipt in `data/jobs` that has a render (one row per render in `results.csv`; the <!--f:receipts_no_render-->1<!--/f--> receipt that stopped before a render has no row, with chain check, providers, model ids and tokens), the call logs in `evidence/` (latency median and p90, and cost from logged usage, per stage), the MS4 cross-check, the calibration report and the copy. Museum samples (the Met, Rijksmuseum) are **not used**: no museum-image fetch is logged in `evidence/`, so the pack covers the 4 real garments only (`kurta-01`, `kurta-02`, `shirt-plaid`, `shirt-zebra`), not the 12 #10 first asked for. A test fails if the committed pack no longer matches the receipts. Summary: `evidence/pack/README.md`.
@@ -722,7 +748,7 @@ Dated experiment rows (each live run and when it happened) are in
 
 | Claim | Status | Evidence |
 |---|---|---|
-| Test suite | <!--f:tests-->447<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
+| Test suite | <!--f:tests-->448<!--/f--> tests; CI runs them and gitleaks on every push | `npm test`; the count is written by `npm run figures` from the test files |
 | Typecheck clean | yes | `npm run typecheck`, also run in CI |
 | Live model calls | every call logged, key replaced: SAM 3.1 <!--f:sam_calls-->130<!--/f-->, Muse Spark 1.3 <!--f:muse13_calls-->226<!--/f--> in the pack (plus <!--f:sam_calls_runs-->47<!--/f--> SAM 3.1 and <!--f:muse13_calls_runs-->16<!--/f--> Muse Spark 1.3 in the 30–31 Oct run logs, `evidence/<run>/logs/`), muse-spark-open on Fireworks <!--f:fireworks_calls-->293<!--/f-->, Muse Spark Open on Baseten <!--f:baseten_calls-->19<!--/f-->; Llama 3.3 70B on Fireworks: <!--f:llama_calls-->6<!--/f--> calls, none answered (404), no output used; Pruna try-on (`prunaai/p-image-try-on`) on Replicate: <!--f:pruna_all_calls-->12<!--/f--> calls, about <!--f:pruna_all_usd_est-->0.180<!--/f--> USD estimated (<!--f:pruna_calls-->7<!--/f--> kurta calls on 28–29 Oct, <!--f:pruna_usd_est-->0.105<!--/f--> USD, the same as the Replicate spend ledger read on 29 Oct; the rest in the 31 Oct try-on run, after that reading) | `evidence/`, counts in `evidence/pack/summary.json`; the Pruna calls are the `replicate-pruna-tryon` render entries in `data/jobs/live-kurta-0*-tryon*` and `evidence/tryon/*/pruna/receipt.jsonl` (`attempts`, `cost_estimated_usd`, `prediction_id`) |
 | Receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders (<!--f:live_renders-->37<!--/f--> live, <!--f:fixture_renders-->6<!--/f--> fixture); <!--f:chains-->42 of 42<!--/f--> hash chains verify. With the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipts-->43<!--/f--> receipts are committed and <!--f:receipt_chains-->43 of 43<!--/f--> verify | `evidence/pack/results.csv` |
