@@ -556,7 +556,7 @@ test("RV11 (Grok 07:20 2 Nov): the submit checklist maps each form field to its 
   assert.ok(list.includes("| Demo video | https://youtu.be/JSzJBOU11sA |")); // VID3
   assert.doesNotMatch(list, /v8 upload is a human step/);
   assert.match(list, /\| Live demo \| https:\/\/rmanish2000-proofshot\.hf\.space \| .*UNVERIFIED/);
-  assert.match(list, /\| X post \| pending \| a human step/);
+  assert.match(list, /\| X post \| posted 3 Nov 2026: /); // RV24 7
   // Every SUBMISSION section the list cites exists, and every bold field it cites is in SUBMISSION.
   const sub = read("SUBMISSION.md");
   const headings = new Set(sub.split("\n").filter((l) => l.startsWith("## ")).map((l) => l.slice(3)));
@@ -735,8 +735,9 @@ test("RV18 (Grok 2 Nov): SPEC 12 says intake, not the API, ends a non-JPEG job; 
   assert.doesNotMatch(sub, /\*What was carried over\?\* Only `docs\/SPEC\.md`/);
   assert.match(sub, /\*What was carried over\?\* The only prior-work items in this repo are `docs\/SPEC\.md`.*the earlier private prototype's code is not here\./);
   const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
-  assert.match(tbd, /the X post \(a human step;/);
-  assert.match(read("docs/SUBMIT_CHECKLIST.md"), /^\| X post \| pending \| a human step/m);
+  // RV24 7: the X post is posted, so it leaves Still TBD and the checklist row says so.
+  assert.doesNotMatch(tbd, /X post/);
+  assert.match(read("docs/SUBMIT_CHECKLIST.md"), /^\| X post \| posted 3 Nov 2026: .* \| a human step/m);
 });
 
 test("RV19 (Grok 2 Nov): composite v2 is never a mannequin in SUBMISSION, SAM log locations, theme claims only EN+HI, checklist spend matches SUBMISSION, gate weak spot never reads as RELEASE", () => {
@@ -922,4 +923,49 @@ test("VID3 (Grok 3 Nov): the final v9 link replaces the FIN1 placeholder; no pen
   assert.ok(list.includes(`| Demo video | SUBMISSION.md **Demo video** | ${link}; the video is the v9 final cut (172.1 s)`));
   const tbd = read("SUBMISSION.md").split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
   assert.doesNotMatch(tbd, /video link/);
+});
+
+test("RV24 (Grok 3 Nov): licences add the GUP quote, Muse Spark Open and Pruna rows; CLAIMS_AUDIT rows for the Space, the two-step page, spend caps (cited lines hold the values) and copy figures; v9 fact check on draft8; X post posted", () => {
+  const readme = read("README.md");
+  const lic = readme.slice(readme.indexOf("## Third-party licences and terms"), readme.indexOf("## Evidence pack")).replace(/\s+/g, " ");
+  // 1, 2
+  assert.ok(lic.includes(`"you may not access that Meta Model from ... Muse Image: India"`));
+  assert.match(lic, /`refuseMuseImage` in `src\/render\.ts`, `test\/render\.test\.ts`\)\. The policy reason stays UNVERIFIED/);
+  assert.match(lic, /Muse Spark Open licence: no geographic limit found \(excerpt only\); full licence text not reviewed: UNVERIFIED\./);
+  assert.match(lic, /Pruna on Replicate: data and output terms and India availability UNVERIFIED \(not a Meta model; used only for the AI try-on candidates\)\./);
+  assert.match(read("test/render.test.ts"), /refuseMuseImage/);
+  // 3
+  const audit = read("CLAIMS_AUDIT.md");
+  const row = (start: string) => audit.split("\n").find((l) => l.startsWith(start))!;
+  assert.match(row("| The live demo Space runs this repo at 2da6beb"), /Space commit b2bbb1a, resynced 3 Nov 2026.*\*\*UNVERIFIED\*\* in this repo \| the evidence is on the Space side/);
+  assert.match(row("| The two-step upload page (Photos, Result) works in a real browser"), /\*\*UNVERIFIED\*\* \(as in README\) \| no real-browser check of the current two-step page is committed/);
+  assert.match(readme, /\| Two-step upload page \(Photos, Result\) in a real browser \| \*\*UNVERIFIED\*\*/);
+  // 4: every cited file and line holds the cap the README states.
+  const line = (file: string, n: number) => read(file).split("\n")[n - 1]!;
+  assert.match(line("src/fireworks-copy.ts", 44), /FIREWORKS_SPEND_CAP_USD = 60;/);
+  assert.match(line("src/fireworks-copy.ts", 46), /FIREWORKS_RESERVE_USD = 40;/);
+  assert.match(line("src/spend-meta.ts", 34), /META_LIMIT.*cap_usd: 80, reserve_usd: 70/);
+  assert.match(line("src/spend-meta.ts", 39), /BASETEN_LIMIT.*cap_usd: 5, reserve_usd: 0/);
+  assert.match(line("src/render-replicate.ts", 48), /SPEND_CAP_USD = 5;/);
+  const caps = row("| Spend caps:");
+  for (const cite of ["`src/fireworks-copy.ts` lines 44 and 46", "`src/spend-meta.ts` line 34", "line 39 (`BASETEN_LIMIT` 5 / 0)", "`src/render-replicate.ts` line 48"]) assert.ok(caps.includes(cite), cite);
+  assert.match(readme.replace(/\s+/g, " "), /Fireworks: 60 USD batch \+ 40 reserve .* 80 USD batch \+ 70 reserve .* 5 USD, no reserve, .* Replicate 5 USD\./);
+  // 5: the copy figures are generated markers and match the pack summary.
+  const copy = (JSON.parse(read("evidence/pack/summary.json")) as { copy: { texts: number; by_model: number; template: number } }).copy;
+  const copyRow = row("| Listing copy (English and Hindi) is written after the gate");
+  assert.ok(copyRow.includes(`<!--f:copy_texts-->${copy.texts}<!--/f--> texts, <!--f:copy_model-->${copy.by_model}<!--/f--> by muse-spark-open, <!--f:copy_template-->${copy.template}<!--/f--> template`));
+  // 6
+  const md = read("docs/DEMO.md");
+  const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)")).replace(/\s+/g, " ");
+  assert.match(check, /The cut checked is v9 draft8, the final cut, https:\/\/youtu\.be\/JSzJBOU11sA/);
+  assert.match(check, /the capture is the live Space at a 375 px phone viewport; the chips and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on synthetic-02\. That job is not committed/);
+  assert.ok(!readdirSync(join(root, "data/jobs")).includes("upload-20261103-003600-8e63"), "the live Space job is still not committed");
+  for (const spoken of ["All of the code you will see was written during this hackathon", "one sample model photo that this demo does not use", "All three are disclosed in the repo"]) {
+    assert.ok(md.includes(spoken), `v9 table has: ${spoken}`);
+    assert.ok(check.includes(spoken), `fact check covers: ${spoken}`);
+  }
+  // 7
+  const post = "https://x.com/aiworkspacehq/status/2117516532163219581";
+  assert.ok(read("docs/SUBMIT_CHECKLIST.md").includes(`| X post | posted 3 Nov 2026: ${post} (posted by Manish) |`));
+  assert.ok(read("SUBMISSION.md").split("\n").includes(`**X post:** ${post}`));
 });

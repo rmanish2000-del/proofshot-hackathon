@@ -70,18 +70,35 @@ was written fresh…" is no longer in the cut.
 ### v9 fact check
 
 Each factual line of the v9 recorded voiceover, checked on 3 Nov against the
-committed files (RV23, DeepSeek V9F1). The audio is rendered, so a mismatch is
-recorded here, not fixed in the narration. The v9 frames are not in this
-repository.
+committed files (RV23, DeepSeek V9F1; pointed at the final cut by RV24,
+DeepSeek V9F2). The cut checked is v9 draft8, the final cut,
+https://youtu.be/JSzJBOU11sA, using the spoken lines in the table above (the
+draft6b opening line RV23 first checked is no longer in the cut). The audio is
+rendered, so a mismatch is recorded here, not fixed in the narration. The v9
+frames are not in this repository.
+
+Capture facts (Grok, RV24; not recorded in a committed file, so UNVERIFIED in
+the repo): the capture is the live Space at a 375 px phone viewport; the chips
+and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on
+synthetic-02. That job is not committed in this repository.
+
+Opening lines against SUBMISSION "What was carried over?" (which lists
+`docs/SPEC.md`, `tsconfig.json` and `.gitignore`, and
+`data/models/synthetic-01/model.png`, and says the earlier private prototype's
+code is not here): "All of the code you will see was written during this
+hackathon…" matches for ProofShot's code; "…one sample model photo that this
+demo does not use" is synthetic-01, and the demo job is named synthetic-02;
+"All three are disclosed in the repo" matches the three items that list names.
+The prototype is not spoken; SUBMISSION names it as not in this repository.
 
 | Spoken (time) | Status | Source |
 |---|---|---|
 | All of the code was written during this hackathon, from 27 October (0:05) | matches, for ProofShot's own code | first commit `15658a4`, 27 Oct 2026 11:10 IST; SUBMISSION **Built during the hackathon** |
 | Before the event: the specification, two config files, one sample model photo this demo does not use; all three disclosed (0:13, 0:26) | matches the disclosure (README "Prior work used"). Whether any v9 frame shows `docs/SPEC.md`, `tsconfig.json`, `.gitignore` or the synthetic-01 image is UNVERIFIED: the frames are not committed. The live job's model is named synthetic-02 by Grok (FIN1); its receipt is not committed | README "Prior work used"; `data/models/synthetic-01/LICENSE.md` |
-| This is the live demo, on a phone (0:56) | UNVERIFIED: whether it was captured on the live Space or a local server, and on which device or viewport, is not recorded in this repository | none committed |
+| This is the live demo, on a phone (0:56) | UNVERIFIED in the repo: per Grok (RV24) it is the live Space captured at a 375 px phone viewport, so a phone-sized browser window, not a recorded phone; no committed file records the capture | none committed |
 | Location, camera and date are stripped from every photo first (1:12) | matches for the intake step | `src/intake.ts`; README "Seller upload" |
 | SAM 3.1 segments; Pruna on Replicate, not a Meta model, made the try-on; Muse Spark 1.3 on the Meta Model API reads nine attributes (1:20-1:30) | matches | README "What each Meta model does"; `src/render-replicate.ts` |
-| Here, eight match, and the fabric could not be measured (1:40) | UNVERIFIED: the job shown, `upload-20261103-003600-8e63`, is not committed, so no receipt here shows those chips | none committed |
+| Here, eight match, and the fabric could not be measured (1:40) | UNVERIFIED: the job shown, `upload-20261103-003600-8e63` (live Space job on synthetic-02, per Grok RV24), is not committed, so no receipt here shows those chips | none committed |
 | She can correct a chip; the correction leaves the decision as it was (1:45, 1:48) | matches | README "Something wrong? Correct it"; `test/serve.test.ts` "UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical" |
 | Here it says: refuse; the measured fidelity check found the garment shrank in frame (1:56, 1:59) | gate REFUSE per Grok (FIN1); the fidelity field behind "shrank in frame" is UNVERIFIED: the receipt of `upload-20261103-003600-8e63` is not committed | none committed |
 | In our committed runs, the gate held all twelve AI try-ons (2:04) | matches | README intro (12 committed try-on images, all held) |

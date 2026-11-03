@@ -58,7 +58,9 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Demo video:** https://youtu.be/JSzJBOU11sA (v9 final cut, 172.1 s; replaces v8 https://youtu.be/cOeRYwRZBlA)
 
-**Still TBD:** the X post (a human step; `docs/SUBMIT_CHECKLIST.md` "X post", pending), and any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v9 (`docs/DEMO.md` "v9: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
+**X post:** https://x.com/aiworkspacehq/status/2117516532163219581
+
+**Still TBD:** any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v9 (`docs/DEMO.md` "v9: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -71,7 +73,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->448<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->449<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
