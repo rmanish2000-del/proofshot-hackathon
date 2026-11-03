@@ -29,7 +29,7 @@ A seller anywhere, from a boutique in India to a market stall in Lagos, lists ga
 
 ProofShot is an evidence-checking agent for those images, with a release gate at the end. For one candidate image it segments the seller's photos with SAM 3.1, takes or makes the candidate (the seller's own photo, a composite v2 that places the seller's own garment pixels on a plain studio backdrop, no body template, with no image model, or an AI try-on from Pruna on Replicate), verifies it against the photos with Muse Spark 1.3 on the Meta Model API (nine attributes: color, print_pattern, collar, sleeve_length, hem, pocket_count, buttons, logo_text, fabric_texture), measures fidelity on the SAM 3.1 masks, and lets a deterministic code gate decide RELEASE, REVIEW or REFUSE. Any doubt ends in REVIEW or REFUSE, never RELEASE.
 
-Every step from intake to the gate decision is written into a SHA-256 hash-chained receipt. `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of an entry's content (its sequence number, time, kind, payload or a hash) and it says TAMPERED, with the entry number. The hash covers each entry's parsed JSON fields, not the file's layout, so whitespace or key order alone does not count as a change.
+Every step to the gate decision is written into a SHA-256 hash-chained receipt (the intake photo hashes are in the `job` entry's `source_images`). `web/verify.html` re-checks the chain in the browser with WebCrypto and makes no network request: give it a receipt and an image and it says VALID, NOT RELEASED or TAMPERED. Change one byte of an entry's content (its sequence number, time, kind, payload or a hash) and it says TAMPERED, with the entry number. The hash covers each entry's parsed JSON fields, not the file's layout, so whitespace or key order alone does not count as a change.
 
 What the evidence shows, with its limits: <!--f:jobs-->42<!--/f--> jobs with a render and <!--f:renders-->43<!--/f--> renders are committed with receipts, and <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify. In calibration the gate reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions with <!--f:cal_false_match-->0<!--/f--> false matches and <!--f:cal_false_refuse-->4<!--/f--> false refusals, all verifier failures (no usable verifier answer), not a threshold effect. In a Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused. All <!--f:tryon_all_total-->12<!--/f--> committed AI try-on images were held by the gate (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, none released): the <!--f:tryon_total-->7<!--/f--> kurta try-ons of 28–29 Oct (<!--f:tryon_refuse-->5<!--/f--> REFUSE, <!--f:tryon_review-->2<!--/f--> REVIEW) and the <!--f:tryon_run31_total-->5<!--/f--> of the 31 Oct try-on run (<!--f:tryon_run31_refuse-->5<!--/f--> REFUSE). For the 28–29 Oct kurta try-ons, the verifier alone passed <!--f:ms4_changed_passed-->4 of 21<!--/f--> shortened try-on checks, and the fidelity check returned REVIEW or REFUSE on every one (the gate cited fidelity for 4 of them and the verifier for 3: two timeouts and one soft mismatch). For the 31 Oct five, the fidelity check returned REFUSE on each and the gate cited fidelity (`evidence/tryon/SUMMARY.md`, Cited and Fidelity columns). The jobs, calibration, cross-check and 28–29 Oct try-ons are on <!--f:garments-->4<!--/f--> garments (kurta-01, kurta-02, shirt-plaid, shirt-zebra), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--/f--> other real garments; no photo is shared between the two sets (sha256) and by eye none of the 5 is one of the 4, so <!--f:garments_all-->9<!--/f--> garments in all. That is not a general accuracy claim.
 
@@ -71,7 +71,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->444<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run before this edit: [41498491626](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41498491626), green on b4f331e at 440 tests (the count is generated; later commits may add tests) |
+| Automated tests | <!--f:tests-->445<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -228,8 +228,8 @@ no image model; or an AI
 try-on with Pruna on Replicate),
 verifies it against those photos with Muse Spark 1.3, measures fidelity on the
 SAM 3.1 masks, and lets a deterministic gate decide RELEASE, REVIEW or REFUSE.
-Every step from intake to the gate decision goes into a SHA-256 hash-chained
-receipt, and `web/verify.html` re-checks that receipt in the browser with
+Every step to the gate decision goes into a SHA-256 hash-chained receipt
+(the intake photo hashes are in the `job` entry's `source_images`), and `web/verify.html` re-checks that receipt in the browser with
 WebCrypto. English and Hindi listing copy is written after the gate by
 muse-spark-open on Fireworks, from the receipt, and is kept outside the chain
 (`data/copy`, each record naming the receipt head it was written from).
@@ -505,7 +505,8 @@ endpoint URL in `src/` and `scripts/`.
 I built ProofShot in TypeScript during the event, starting from the written
 spec. The pipeline segments a seller's photos, verifies a candidate image,
 measures fidelity, and lets a deterministic gate decide. It writes each step
-from intake to the gate decision into a SHA-256 hash-chained receipt, and
+to the gate decision into a SHA-256 hash-chained receipt (the intake photo
+hashes in the `job` entry), and
 `web/verify.html` checks that chain in the browser. In calibration, the gate
 reproduced <!--f:cal_reproduced-->37 of 37<!--/f--> recorded decisions at 1x with <!--f:cal_false_match-->0<!--/f--> false matches. In the
 Muse Spark cross-check, <!--f:ms4_wrong_refused-->153 of 153<!--/f--> wrong-garment runs were refused, and the

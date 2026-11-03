@@ -616,7 +616,7 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(sub, /The thresholds, the\s+gate rules and `src\/fidelity\.ts` are unchanged/);
   assert.match(sub, /the gate runner added this one check \(SC1\/SC2\),\s+which can only lower a RELEASE to REVIEW/);
   assert.doesNotMatch(sub, /41314918190/);
-  assert.match(sub, /actions\/runs\/41498491626\), green on b4f331e at 440 tests/); // RV17 2, RV20 nit: newest cited green run
+  assert.match(sub, /actions\/runs\/41505831456\), green on 2da6beb at 444 tests/); // RV17 2, RV20 nit, RV22 8: newest cited green run
   assert.doesNotMatch(sub, /41379178357|as reported by Grok/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
@@ -793,4 +793,31 @@ test("RV21 (Grok 3 Nov): README installs with npm ci everywhere, SAM price and M
   assert.doesNotMatch(twoStep, /\*\*checked\*\*/);
   const live = read("docs/SUBMIT_CHECKLIST.md").split("\n").find((l) => l.startsWith("| Live demo |"))!;
   assert.doesNotMatch(live, /67fda16/);
+});
+
+test("RV22 (Grok 3 Nov, DeepSeek CA4/RM10/SC6): synthetic-01 scope matches, Muse Image is the only policy refusal, steps qualified, verifier reads the chips, no intake entry, static demo needs an HTTP server, CLAIMS_AUDIT gaps", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  assert.doesNotMatch(readme, /remains only as the model named in the committed 31 Oct shirt receipts/);
+  assert.match(readme, /`synthetic-01` remains only as the model named in the try-on receipts committed on 28 Oct \(kurtas\) and 31 Oct \(shirts\) and in Space jobs made before 2 Nov/);
+  assert.doesNotMatch(readme, /Only that one model is not used/);
+  assert.match(readme, /Muse Image is the only model refused by policy; the `openai-images`, `fal` and `meta` render transports are a separate gap: they are not written yet/);
+  assert.doesNotMatch(readme, /as the providers actually return/);
+  assert.match(readme, /stand-in renderer and fixture providers unless live keys are set/);
+  assert.doesNotMatch(readme, /the agent reads nine attributes/);
+  assert.match(readme, /the verifier \(Muse Spark in a live run; recorded, not judged, in fixture mode\) reads nine attributes/);
+  // The receipt has no intake entry kind; intake hashes live in the job entry.
+  for (const doc of ["README.md", "SUBMISSION.md", "CLAIMS_AUDIT.md"]) {
+    assert.doesNotMatch(read(doc).replace(/\s+/g, " "), /(step|Every step) from intake to the gate/, doc);
+  }
+  assert.match(readme, /the intake photo hashes are recorded in the `job` entry's `source_images`/);
+  assert.match(read("src/pipeline.ts"), /source_images,/);
+  assert.doesNotMatch(readme, /It needs no server and no API key/);
+  assert.match(readme, /no application server and no API key \(any static HTTP server works\)/);
+  const audit = read("CLAIMS_AUDIT.md");
+  assert.doesNotMatch(audit, /needs no server and no key/);
+  assert.match(audit, /needs no application server and no API key \(any static HTTP server works/);
+  assert.match(audit, /same garment released <!--f:ms4_same_released-->24 of 30<!--\/f-->; 65 of 68/);
+  assert.equal([...audit.matchAll(/two chains, not linked into one|a separate chain from the gate receipt, not linked into one/g)].length, 2);
+  assert.match(audit, /`test\/sample-replay\.test\.ts` \(zero provider calls counted/);
+  assert.match(audit, /\| <!--f:tests-->\d+<!--\/f--> tests; CI runs them and gitleaks on every push \(README, SUBMISSION\) \|/);
 });
