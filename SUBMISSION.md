@@ -492,10 +492,11 @@ endpoint URL in `src/` and `scripts/`.
   check returned REVIEW or REFUSE on each of the <!--f:tryon_total-->7<!--/f--> images (the gate cited fidelity for 4, the verifier for 3; the 4 of 21 are shortened checks, not images). The v6
   demo shows the two shirts only and has no AI on-model image (the v7 script showed the 31 Oct verdict table, not the try-on images; what v9, the video to submit, shows on screen is not recorded in this repository, so UNVERIFIED here; its narration names a live AI try-on, `docs/DEMO.md` "v9: the video to submit"), and no new
   paid call was made for the v6 capture (`docs/DEMO.md`,
-  `test/demo-capture.test.ts`). For v9, the video to submit, the claim is
-  UNVERIFIED: its narration shows a live job, `upload-20261103-003600-8e63`
-  (`docs/DEMO.md` "v9: the video to submit"), which is not committed in this
-  repository, so its provider calls and their cost are not recorded here.
+  `test/demo-capture.test.ts`). For v9, the video to submit, the claim does not
+  hold: its narration shows a live job, `upload-20261103-003600-8e63`
+  (`docs/DEMO.md` "v9: the video to submit"), whose committed receipt
+  records new live calls (SAM 3.1, a Pruna try-on on Replicate, Muse Spark
+  1.3); their cost is not recorded in this repository.
 - *Can the seller type a note or correct a chip, and does that change the
   decision?* The seller can type one optional line with the photos, and can
   correct any chip on the result card. A correction is saved outside the

@@ -878,9 +878,10 @@ test("RV23 (Grok 3 Nov, DeepSeek SUB11/SC7/V9F1): today's 0 of 2 leads, units na
   // 4
   assert.match(sub, /Anything not in the repository is marked \*\*TBD\*\* or \*\*UNVERIFIED\*\*\./);
   // 5
-  assert.match(flat, /no new paid call was made for the v6 capture .*For v9, the video to submit, the claim is UNVERIFIED: .*`upload-20261103-003600-8e63` \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
+  // (RV27 corrected the v9 half from the committed receipt: see the RV27 test.)
+  assert.match(flat, /no new paid call was made for the v6 capture .*For v9, the video to submit, the claim does not hold: .*`upload-20261103-003600-8e63` \(`docs\/DEMO\.md` "v9: the video to submit"\)/);
   const row = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
-  assert.match(row, /proven for the v6 capture, .*\*\*UNVERIFIED\*\* for v9/);
+  assert.match(row, /proven for the v6 capture, .*\*\*false\*\* for v9/);
   // 6: every runtime dependency is listed with the licence its installed package.json gives.
   const readme = read("README.md");
   const lic = readme.slice(readme.indexOf("## Third-party licences and terms"), readme.indexOf("## Evidence pack"));
@@ -898,8 +899,7 @@ test("RV23 (Grok 3 Nov, DeepSeek SUB11/SC7/V9F1): today's 0 of 2 leads, units na
   const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)"));
   assert.ok(md.indexOf("## v9: the video to submit") < md.indexOf("### v9 fact check"));
   assert.match(check, /Whether any v9 frame shows `docs\/SPEC\.md`, `tsconfig\.json`, `\.gitignore` or the synthetic-01 image is UNVERIFIED/);
-  assert.match(check, /\| Here, eight match, and the fabric could not be measured \(1:40\) \| UNVERIFIED/);
-  assert.match(check, /the fidelity field behind "shrank in frame" is UNVERIFIED/);
+  // 1:40 and 1:56-1:59 were flipped to "matches" by RV27 (see that test); "on a phone" stays UNVERIFIED.
   assert.match(check, /\| This is the live demo, on a phone \(0:56\) \| UNVERIFIED/);
   for (const m of check.matchAll(/`((?:src|test|web|data)\/[^`]+)`/g)) assert.ok(read(m[1]!).length > 0, `${m[1]} exists`);
   // 8
@@ -958,8 +958,7 @@ test("RV24 (Grok 3 Nov): licences add the GUP quote, Muse Spark Open and Pruna r
   const md = read("docs/DEMO.md");
   const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)")).replace(/\s+/g, " ");
   assert.match(check, /The cut checked is v9 draft8, the final cut, https:\/\/youtu\.be\/JSzJBOU11sA/);
-  assert.match(check, /the capture is the live Space at a 375 px phone viewport; the chips and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on synthetic-02\. That job is not committed/);
-  assert.ok(!readdirSync(join(root, "data/jobs")).includes("upload-20261103-003600-8e63"), "the live Space job is still not committed");
+  assert.match(check, /the capture is the live Space at a 375 px phone viewport; the chips and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on synthetic-02\./);
   for (const spoken of ["All of the code you will see was written during this hackathon", "one sample model photo that this demo does not use", "All three are disclosed in the repo"]) {
     assert.ok(md.includes(spoken), `v9 table has: ${spoken}`);
     assert.ok(check.includes(spoken), `fact check covers: ${spoken}`);
@@ -970,13 +969,47 @@ test("RV24 (Grok 3 Nov): licences add the GUP quote, Muse Spark Open and Pruna r
   assert.ok(read("SUBMISSION.md").split("\n").includes(`**X post:** ${post}`));
 });
 
-test("RV26 (Grok 3 Nov): the live Space job is not committed, so DEMO says so in one plain line and its four dependent claims stay UNVERIFIED", () => {
-  assert.ok(!readdirSync(join(root, "data/jobs")).includes("upload-20261103-003600-8e63"));
+test("RV27 (Grok 3 Nov): the v9 live Space job is committed; its chain verifies and its chips and decision match the spoken lines; the v9 paid-call claim is corrected from it", () => {
+  const job = "upload-20261103-003600-8e63";
+  const dir = `data/jobs/${job}`;
+  assert.ok(readdirSync(join(root, "data/jobs")).includes(job));
+  assert.ok(read(".gitignore").split(/\r?\n/).includes(`!${dir}/`), "the one upload job kept on purpose");
+  // No seller photo is committed: only the receipt, the job record and (when copied) the try-on image.
+  for (const f of readdirSync(join(root, dir))) assert.ok(["receipt.jsonl", "job.json", `${job}-r0.jpg`].includes(f), f);
+  const entries = parseReceipt(read(`${dir}/receipt.jsonl`));
+  const chain = verifyChain(entries);
+  assert.equal(chain.ok, true);
+  assert.equal(entries.length, 6);
+  assert.equal(entries.at(-1)!.hash, "6b2eeca88dcbd5f360415abff4c7756c5b43afed66f4dac6075466366b756b32", "the head the Space's own verify returned");
+  const kind = (k: string) => entries.find((e) => e.kind === k)!.payload as Record<string, any>;
+  // 1:40 "eight match, and the fabric could not be measured"
+  const findings = kind("verifier").findings as { attribute: string; verdict: string }[];
+  assert.equal(findings.length, 9);
+  assert.equal(findings.filter((f) => f.verdict === "match").length, 8);
+  assert.deepEqual(findings.filter((f) => f.verdict !== "match").map((f) => [f.attribute, f.verdict]), [["fabric_texture", "uncertain"]]);
+  // 1:56-1:59 "refuse ... the measured fidelity check found the garment shrank in frame"
+  assert.equal(kind("gate").decision, "REFUSE");
+  assert.equal(kind("gate").cited.rule, "fidelity");
+  assert.equal(kind("fidelity").decision, "REFUSE");
+  assert.ok((kind("fidelity").reasons as string[]).includes("area 0.305 below 0.400: the garment shrank in frame"));
+  assert.ok(kind("fidelity").metrics.area < 0.4);
+  // The model image and the live calls the receipt records.
+  const render = kind("render");
+  assert.equal(render.model_image_id, "synthetic-02");
+  assert.equal(render.provider, "replicate-pruna-tryon");
+  assert.equal(render.prediction_id, "xxwnmte5p9rmt0d1kvarsnx9j4");
+  assert.equal(kind("segments").segmenter.model, "meta/sam-3.1 (api.meta.ai)");
+  assert.equal(kind("verifier").verifier.model, "muse-spark-1.3");
+  assert.equal(JSON.parse(read(`${dir}/job.json`)).result.head, entries.at(-1)!.hash);
+
   const md = read("docs/DEMO.md");
   const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)")).replace(/\s+/g, " ");
-  assert.match(check, /The live job ran on the Space and was not kept in this repository: its receipt and call logs could not be retrieved from here, so the rows that depend on it stay UNVERIFIED \(RV26\)\./);
-  assert.match(check, /\| Here, eight match, and the fabric could not be measured \(1:40\) \| UNVERIFIED/);
-  assert.match(check, /the fidelity field behind "shrank in frame" is UNVERIFIED/);
+  assert.doesNotMatch(check, /not kept in this repository|That job is not committed/);
+  assert.match(check, /\| Here, eight match, and the fabric could not be measured \(1:40\) \| matches: .* \| `data\/jobs\/upload-20261103-003600-8e63\/receipt\.jsonl` seq 3 \|/);
+  assert.match(check, /\(1:56, 1:59\) \| matches: gate REFUSE citing rule `fidelity`; .*"area 0\.305 below 0\.400: the garment shrank in frame"/);
   assert.match(check, /\| This is the live demo, on a phone \(0:56\) \| UNVERIFIED/);
-  assert.match(read("CLAIMS_AUDIT.md"), /\*\*UNVERIFIED\*\* for v9, which shows a live job \(`upload-20261103-003600-8e63`, not committed\)/);
+  assert.match(check, /model image is synthetic-02 \(render entry `model_image_id`\)/);
+  const audit = read("CLAIMS_AUDIT.md").split("\n").find((l) => l.startsWith("| No new paid call was made for the video"))!;
+  assert.match(audit, /\*\*false\*\* for v9: .*prediction `xxwnmte5p9rmt0d1kvarsnx9j4`/);
+  for (const doc of ["SUBMISSION.md", "CLAIMS_AUDIT.md", "docs/DEMO.md"]) assert.doesNotMatch(read(doc), /`upload-20261103-003600-8e63`, not committed|which is not committed in this\s+repository/, doc);
 });

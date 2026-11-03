@@ -251,7 +251,8 @@ test("DEMO1j: DEMO.md has no stale rows: the try-on transport exists, the upload
   assert.match(gen, /no generated image has been released/);
   // The call count is read from the committed receipts, never typed from memory.
   const jobs = join(root, "data/jobs");
-  const tryons = readdirSync(jobs).filter((d) => {
+  // upload-* jobs are not counted, as in src/figures.ts (RV27 commits the 3 Nov v9 Space job, a shirt).
+  const tryons = readdirSync(jobs).filter((d) => !d.startsWith("upload-")).filter((d) => {
     const p = join(jobs, d, "receipt.jsonl");
     return existsSync(p) && readFileSync(p, "utf8").includes(`"provider":"replicate-pruna-tryon"`);
   });

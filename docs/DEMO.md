@@ -77,14 +77,17 @@ draft6b opening line RV23 first checked is no longer in the cut). The audio is
 rendered, so a mismatch is recorded here, not fixed in the narration. The v9
 frames are not in this repository.
 
-Capture facts (Grok, RV24; not recorded in a committed file, so UNVERIFIED in
-the repo): the capture is the live Space at a 375 px phone viewport; the chips
-and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on
-synthetic-02. That job is not committed in this repository.
+Capture facts (Grok, RV24; the viewport is not recorded in a committed file, so
+UNVERIFIED in the repo): the capture is the live Space at a 375 px phone
+viewport; the chips and the REFUSE come from the live Space job
+`upload-20261103-003600-8e63` on synthetic-02.
 
-The live job ran on the Space and was not kept in this repository: its receipt
-and call logs could not be retrieved from here, so the rows that depend on it
-stay UNVERIFIED (RV26).
+The live job ran on the Space. Grok fetched its receipt and job record from the
+public Space on 3 Nov (RV27); they are committed as
+`data/jobs/upload-20261103-003600-8e63/receipt.jsonl` (6 entries, chain head
+`6b2eeca8…6b32`, checked by `verifyChain` in `test/claims-wording.test.ts`
+RV27) and `job.json`. No seller photo is committed: the receipt holds their
+hashes only. The try-on image itself is not yet in this checkout.
 
 Opening lines against SUBMISSION "What was carried over?" (which lists
 `docs/SPEC.md`, `tsconfig.json` and `.gitignore`, and
@@ -98,14 +101,14 @@ The prototype is not spoken; SUBMISSION names it as not in this repository.
 | Spoken (time) | Status | Source |
 |---|---|---|
 | All of the code was written during this hackathon, from 27 October (0:05) | matches, for ProofShot's own code | first commit `15658a4`, 27 Oct 2026 11:10 IST; SUBMISSION **Built during the hackathon** |
-| Before the event: the specification, two config files, one sample model photo this demo does not use; all three disclosed (0:13, 0:26) | matches the disclosure (README "Prior work used"). Whether any v9 frame shows `docs/SPEC.md`, `tsconfig.json`, `.gitignore` or the synthetic-01 image is UNVERIFIED: the frames are not committed. The live job's model is named synthetic-02 by Grok (FIN1); its receipt is not committed | README "Prior work used"; `data/models/synthetic-01/LICENSE.md` |
+| Before the event: the specification, two config files, one sample model photo this demo does not use; all three disclosed (0:13, 0:26) | matches the disclosure (README "Prior work used"). Whether any v9 frame shows `docs/SPEC.md`, `tsconfig.json`, `.gitignore` or the synthetic-01 image is UNVERIFIED: the frames are not committed. The live job's model image is synthetic-02 (render entry `model_image_id`) | README "Prior work used"; `data/models/synthetic-01/LICENSE.md`; `data/jobs/upload-20261103-003600-8e63/receipt.jsonl` seq 2 |
 | This is the live demo, on a phone (0:56) | UNVERIFIED in the repo: per Grok (RV24) it is the live Space captured at a 375 px phone viewport, so a phone-sized browser window, not a recorded phone; no committed file records the capture | none committed |
 | Location, camera and date are stripped from every photo first (1:12) | matches for the intake step | `src/intake.ts`; README "Seller upload" |
 | SAM 3.1 segments; Pruna on Replicate, not a Meta model, made the try-on; Muse Spark 1.3 on the Meta Model API reads nine attributes (1:20-1:30) | matches | README "What each Meta model does"; `src/render-replicate.ts` |
-| Here, eight match, and the fabric could not be measured (1:40) | UNVERIFIED: the job shown, `upload-20261103-003600-8e63` (live Space job on synthetic-02, per Grok RV24), is not committed, so no receipt here shows those chips | none committed |
+| Here, eight match, and the fabric could not be measured (1:40) | matches: the verifier entry has nine findings, eight `match` and `fabric_texture` `uncertain` (0.50) | `data/jobs/upload-20261103-003600-8e63/receipt.jsonl` seq 3 |
 | She can correct a chip; the correction leaves the decision as it was (1:45, 1:48) | matches | README "Something wrong? Correct it"; `test/serve.test.ts` "UX-EASY2: a correction is stored outside the chain; the receipt bytes and the decision stay identical" |
-| Here it says: refuse; the measured fidelity check found the garment shrank in frame (1:56, 1:59) | gate REFUSE per Grok (FIN1); the fidelity field behind "shrank in frame" is UNVERIFIED: the receipt of `upload-20261103-003600-8e63` is not committed | none committed |
-| In our committed runs, the gate held all twelve AI try-ons (2:04) | matches | README intro (12 committed try-on images, all held) |
+| Here it says: refuse; the measured fidelity check found the garment shrank in frame (1:56, 1:59) | matches: gate REFUSE citing rule `fidelity`; the fidelity entry is REFUSE with "area 0.305 below 0.400: the garment shrank in frame" (also delta_e, hist and texture out of range) | `data/jobs/upload-20261103-003600-8e63/receipt.jsonl` seq 4 and 5 |
+| In our committed runs, the gate held all twelve AI try-ons (2:04) | matches for the runs the figures count; the v9 live job, committed after the cut (RV27), is a thirteenth try-on, also held (REFUSE), and is not in the figures (they skip `upload-*` jobs) | README intro (12 committed try-on images, all held); `src/figures.ts` |
 | Hash-chained receipt; the browser checks it with no server; one changed byte reads tampered (2:10-2:20) | matches | README "Verify page"; `web/verify.html` |
 
 ## v8 (superseded 3 Nov)
