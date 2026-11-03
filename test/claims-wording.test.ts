@@ -969,3 +969,14 @@ test("RV24 (Grok 3 Nov): licences add the GUP quote, Muse Spark Open and Pruna r
   assert.ok(read("docs/SUBMIT_CHECKLIST.md").includes(`| X post | posted 3 Nov 2026: ${post} (posted by Manish) |`));
   assert.ok(read("SUBMISSION.md").split("\n").includes(`**X post:** ${post}`));
 });
+
+test("RV26 (Grok 3 Nov): the live Space job is not committed, so DEMO says so in one plain line and its four dependent claims stay UNVERIFIED", () => {
+  assert.ok(!readdirSync(join(root, "data/jobs")).includes("upload-20261103-003600-8e63"));
+  const md = read("docs/DEMO.md");
+  const check = md.slice(md.indexOf("### v9 fact check"), md.indexOf("## v8 (superseded 3 Nov)")).replace(/\s+/g, " ");
+  assert.match(check, /The live job ran on the Space and was not kept in this repository: its receipt and call logs could not be retrieved from here, so the rows that depend on it stay UNVERIFIED \(RV26\)\./);
+  assert.match(check, /\| Here, eight match, and the fabric could not be measured \(1:40\) \| UNVERIFIED/);
+  assert.match(check, /the fidelity field behind "shrank in frame" is UNVERIFIED/);
+  assert.match(check, /\| This is the live demo, on a phone \(0:56\) \| UNVERIFIED/);
+  assert.match(read("CLAIMS_AUDIT.md"), /\*\*UNVERIFIED\*\* for v9, which shows a live job \(`upload-20261103-003600-8e63`, not committed\)/);
+});

@@ -82,6 +82,10 @@ the repo): the capture is the live Space at a 375 px phone viewport; the chips
 and the REFUSE come from the live Space job `upload-20261103-003600-8e63` on
 synthetic-02. That job is not committed in this repository.
 
+The live job ran on the Space and was not kept in this repository: its receipt
+and call logs could not be retrieved from here, so the rows that depend on it
+stay UNVERIFIED (RV26).
+
 Opening lines against SUBMISSION "What was carried over?" (which lists
 `docs/SPEC.md`, `tsconfig.json` and `.gitignore`, and
 `data/models/synthetic-01/model.png`, and says the earlier private prototype's
