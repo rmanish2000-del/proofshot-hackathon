@@ -76,7 +76,7 @@ test("wording 9 (Grok 22:40 AGW5, 22:58 AGW6): README Limits and the SUBMISSION 
   assert.match(limit, /No photo is shared between the two sets .* <!--f:garments_all-->9<!--\/f--> real garments in all/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /That is <!--f:garments-->4<!--\/f--> garments/);
-  assert.match(sub, /on <!--f:garments-->4<!--\/f--> garments \(kurta-01, kurta-02, shirt-plaid, shirt-zebra\), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--\/f--> other real garments; no photo is shared between the two sets \(sha256\) and by eye none of the 5 is one of the 4, so <!--f:garments_all-->9<!--\/f--> garments in all/);
+  assert.match(sub, /on <!--f:garments-->4<!--\/f--> garments \(kurta-01, kurta-02, shirt-plaid, shirt-zebra\), all the owner's own; the 31 Oct run is on <!--f:tryon_run31_garments-->5<!--\/f--> other real garments; no photo is shared between the two sets \(sha256\) and by eye none of the 5 is one of the 4 \(that by-eye check was done by Claude Code \(autorun\) and is not a committed file, so that part is UNVERIFIED; the sha256 part is proven\), so <!--f:garments_all-->9<!--\/f--> garments in all/);
   assert.doesNotMatch(sub, /with no photo shared between the two sets, so/);
   // AGW6: the try-on summary's handoff folder kurta-01 must not read as data/garments/kurta-01.
   assert.match(read("evidence/tryon/SUMMARY.md"), /The handoff folder named `kurta-01` above is kurta-red-floral, not `data\/garments\/kurta-01` \(different sha256\)\./);
@@ -618,7 +618,7 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(sub, /The thresholds, the\s+gate rules and `src\/fidelity\.ts` are unchanged/);
   assert.match(sub, /the gate runner added this one check \(SC1\/SC2\),\s+which can only lower a RELEASE to REVIEW/);
   assert.doesNotMatch(sub, /41314918190/);
-  assert.match(sub, /actions\/runs\/41505831456\), green on 2da6beb at 444 tests/); // RV17 2, RV20 nit, RV22 8: newest cited green run
+  assert.match(sub, /actions\/runs\/41775049746\), green on efa460b at 457 tests/); // RV17 2, RV20 nit, RV22 8, RV34 3: newest cited green run
   assert.doesNotMatch(sub, /41379178357|as reported by Grok/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
@@ -1022,7 +1022,7 @@ test("RV28 (Grok 3 Nov, DeepSeek PS-SUB13): SUBMISSION and CLAIMS_AUDIT give one
   const test10 = read("test/agent-replace.test.ts");
   assert.match(test10, /const G = join\(ROOT, "data", "garments", "shirt-plaid"\);/);
   assert.match(test10, /const full = photo\("2-back\.jpg"\);\s+const candidate = resave\(full, 95, 2\);/);
-  assert.match(sub, /replace 10, re-run 3 Nov\) on a half-size copy of the committed photo `data\/garments\/shirt-plaid\/2-back\.jpg`: copies 0\.00 to 0\.74/);
+  assert.match(sub, /replace 10, re-run 3 Nov\) on a half-size copy of the committed photo `data\/garments\/shirt-plaid\/2-back\.jpg`: copies 0\.000 to 0\.737/);
   const sc2 = row("| A new photo 1 that is a JPEG or PNG copy");
   assert.match(sc2, /a half-size copy of `data\/garments\/shirt-plaid\/2-back\.jpg`, as SUBMISSION says; its re-saved, EXIF and half-size copies 0\.000 to 0\.737/);
   assert.doesNotMatch(sc2.replace("used to say 0.000 to 0.490", ""), /0\.490/);
@@ -1173,4 +1173,16 @@ test("RV33 (Grok 4 Nov): X post + thumbnails named, Node engines, the one compos
     assert.match(doc, /`\/upload\.html`\)?, reported outside this repo \(UNVERIFIED here\)/);
     assert.match(doc, /its 172\.1 s length is UNVERIFIED here, the rendered file is not committed/);
   }
+});
+
+test("RV34 (Grok 13:58 4 Nov, DeepSeek PS-SUB16): SUBMISSION near-copy distances match CLAIMS_AUDIT precision; Fireworks receipt summaries have a CLAIMS_AUDIT row; tests row cites the efa460b run; by-eye garment check UNVERIFIED; thumbnail cites PR #6", () => {
+  const sub = read("SUBMISSION.md");
+  const audit = read("CLAIMS_AUDIT.md");
+  assert.match(sub, /copies 0\.000 to 0\.737,/);
+  assert.match(audit, /copies 0\.000 to 0\.737/);
+  assert.doesNotMatch(sub, /copies 0\.00 to 0\.74,/);
+  assert.match(audit, /\| muse-spark-open on Fireworks writes English and Hindi listing copy and receipt summaries[^\n]*\| proven \|[^\n]*receipt_summary/);
+  assert.match(sub, /actions\/runs\/41775049746\), green on efa460b at 457 tests/);
+  assert.match(sub, /by-eye check was done by Claude Code \(autorun\) and is not a committed file, so that part is UNVERIFIED/);
+  assert.match(sub, /source: \[PR #6\]\(https:\/\/github\.com\/rmanish2000-del\/proofshot-hackathon\/pull\/6\)/);
 });
