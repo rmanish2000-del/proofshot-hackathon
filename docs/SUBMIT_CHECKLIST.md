@@ -38,7 +38,7 @@ pending.
 | Accomplishments | SUBMISSION.md "Accomplishments that I'm proud of" | |
 | What I learned | SUBMISSION.md "What I learned" | |
 | What's next | SUBMISSION.md "What's next" | plans, not results |
-| Anything else (thumbnail, social links) | nothing prepared; SUBMISSION.md **Still TBD** | what the official form asks for in this field is not recorded in this repository (UNVERIFIED); no thumbnail or social link is prepared here |
+| Anything else (thumbnail, social links) | SUBMISSION.md **X post** and **Still TBD** | X post https://x.com/aiworkspacehq/status/2117516532163219581; thumbnails `docs/media/proofshot-thumb-1200x630.png` and `docs/media/proofshot-thumb-1280x720.png` (a frame from the v9 video, no person, metadata stripped); what the official form asks for in this field is not recorded in this repository (UNVERIFIED) |
 
 Leave out of every form field: the "Checked against" lines (they are for
 reviewers) and any UNVERIFIED claim stated as fact.
@@ -47,7 +47,7 @@ reviewers) and any UNVERIFIED claim stated as fact.
 
 | Figure | Value | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->456<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
+| Automated tests | <!--f:tests-->457<!--/f--> | `npm test` (counted by `npm run figures`); SUBMISSION Metrics, "Automated tests" |
 | Committed receipts that verify | <!--f:receipt_chains-->43 of 43<!--/f--> | `npm run figures`; SUBMISSION Metrics, "Committed jobs with receipts" |
 | AI try-on images held by the gate, in the committed runs `src/figures.ts` counts (`upload-*` jobs skipped) | <!--f:tryon_all_total-->12<!--/f--> (<!--f:tryon_all_refuse-->10<!--/f--> REFUSE, <!--f:tryon_all_review-->2<!--/f--> REVIEW, <!--f:tryon_all_release-->0<!--/f--> RELEASE). The v9 live Space job `upload-20261103-003600-8e63`, committed 3 Nov, is outside this count and also held: REFUSE | `data/jobs/live-kurta-0*-tryon*`, `evidence/tryon/SUMMARY.md`; SUBMISSION Metrics, "AI try-ons held by the gate" |
 | Verifier calls, Muse Spark 1.3 on the Meta Model API | <!--f:muse13_calls_all-->242<!--/f--> logged | `evidence/verifier-*.json`, `evidence/ms4/`, `evidence/<run>/logs/`; README "What each Meta model does" |

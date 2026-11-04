@@ -8,7 +8,7 @@ Every field below is written from committed evidence in this repository
 (receipts in `data/jobs`, call logs and reports in `evidence/`, the README),
 except where a row or line says UNVERIFIED or TBD.
 The source is named under each section. First written 29 Oct 2026 from the Codex
-review; updated 3 Nov 2026, on master after 4c9a1af. Earlier Challenges and Calibration drafts were
+review; updated 4 Nov 2026, on master after 83b90ea. Earlier Challenges and Calibration drafts were
 reviewed by Grok on #23 (proofshot coordination); the figures in them are
 refreshed here to the current receipts.
 
@@ -20,7 +20,7 @@ and in README.md. Anything not in the repository is marked **TBD** or **UNVERIFI
 
 **Project name:** ProofShot
 
-**Live demo:** https://rmanish2000-proofshot.hf.space/ (a public Hugging Face Space, `rmanish2000/proofshot`; the root opens the seller upload page, `/upload.html`, checked by Grok on 1 Nov 2026 at 20:10 IST). Which build and which providers the Space runs is not read from the Space repo in this file: UNVERIFIED here. Every claim below is about this repository, which runs offline per README "Quick start".
+**Live demo:** https://rmanish2000-proofshot.hf.space/ (a public Hugging Face Space, `rmanish2000/proofshot`; the root opens the seller upload page, `/upload.html`, reported outside this repo (UNVERIFIED here)). Which build and which providers the Space runs is not read from the Space repo in this file: UNVERIFIED here. Every claim below is about this repository, which runs offline per README "Quick start".
 
 **Tagline:** An evidence-checking agent for seller listing images: it decides the next action (segment, render, verify, request missing evidence from the seller, or refuse), a deterministic gate decides RELEASE, REVIEW or REFUSE, and every decision gets a hash-chained receipt.
 
@@ -59,11 +59,13 @@ The decision is made by plain code, not a model. No Meta image generator is used
 
 **Licence:** MIT (`LICENSE`).
 
-**Demo video:** https://youtu.be/JSzJBOU11sA (v9 final cut, 172.1 s; replaces v8 https://youtu.be/cOeRYwRZBlA)
+**Demo video:** https://youtu.be/JSzJBOU11sA (v9 final cut; its 172.1 s length is UNVERIFIED here, the rendered file is not committed; replaces v8 https://youtu.be/cOeRYwRZBlA)
 
 **X post:** https://x.com/aiworkspacehq/status/2117516532163219581
 
-**Still TBD:** any form field not listed here (for example a thumbnail or social links). The voice is settled: the video is v9 (`docs/DEMO.md` "v9: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
+**Thumbnail:** `docs/media/proofshot-thumb-1200x630.png` and `docs/media/proofshot-thumb-1280x720.png` (a frame from the v9 video, no person, metadata stripped). Social link: the X post above.
+
+**Still TBD:** any form field not listed here; what the form asks for under thumbnail or social links is UNVERIFIED here. The voice is settled: the video is v9 (`docs/DEMO.md` "v9: the video to submit"), and its narration is the recorded voiceover, a generated Edge TTS voice (en-IN-PrabhatNeural); whether the rules allow a generated voice is UNVERIFIED.
 
 Sources: README.md (intro, "What each Meta model does", "What is verified and what is not", "Built during the event"),
 the sections below (Inspiration, What it does, Problem, Calibration, Built with, Built during the event and prior
@@ -77,7 +79,7 @@ figure marker are kept current by `npm run figures`. Anything not measured says 
 
 | What | Result | Source |
 |---|---|---|
-| Automated tests | <!--f:tests-->456<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
+| Automated tests | <!--f:tests-->457<!--/f--> tests, all passing (CI runs them and gitleaks on every push) | `npm test`, `.github/workflows/ci.yml`; latest green master CI run read before this edit: [41505831456](https://github.com/rmanish2000-del/proofshot-hackathon/actions/runs/41505831456), green on 2da6beb at 444 tests (the count in this row is generated from the test files at each commit, so it can be higher than that run's) |
 | Committed jobs with receipts, in the committed runs `src/figures.ts` counts (`upload-*` jobs skipped) | <!--f:jobs-->42<!--/f--> jobs with a render, <!--f:renders-->43<!--/f--> renders; <!--f:chains-->42 of 42<!--/f--> hash chains verify; with the <!--f:receipts_no_render-->1<!--/f--> job that stopped before a render, <!--f:receipt_chains-->43 of 43<!--/f--> committed receipts verify. Outside those figures, the v9 live Space job `upload-20261103-003600-8e63`, committed 3 Nov, is an additional held job: REFUSE | `evidence/pack/summary.json`; `npm run figures` for all receipts |
 | Calibration: recorded gate decisions reproduced at 1x | <!--f:cal_reproduced-->37 of 37<!--/f--> | `evidence/calibration-jobs-2026-10-29.json` |
 | Calibration: false matches | <!--f:cal_false_match-->0<!--/f--> at every threshold factor (0.5x to 2x) | same |
@@ -334,7 +336,7 @@ decision each receipt recorded: 37 of 37 the same".
 
 ## Built with / How we built it
 
-ProofShot is TypeScript on Node 22 (`node:test`, no framework; dependencies
+ProofShot is TypeScript on Node 22.6 or later (`node:test`, no framework; dependencies
 `@meta-sam/parser` and `jpeg-js`). The pipeline for one candidate image is:
 segment the seller's photos, make or take the candidate, verify it against the
 photos, measure fidelity, and let a deterministic gate decide. Each step is
@@ -545,7 +547,8 @@ label as a trigger, 1 of 2 before I added it). The caveat comes first: the
 render was a stand-in, the seller's own new photo 1, so render and photo were
 the same file. That proves the evidence path works, not that a generated image
 is faithful, and two pairs is not a rate. In a try-on run on 5 real garments,
-0 of 5 AI try-ons were released. The one RELEASE was a composite v2, the
+0 of 5 AI try-ons were released. The one RELEASE in that run was a composite v2
+(shirt-pink, `evidence/tryon/shirt-pink/composite/receipt.jsonl`), the
 seller's own pixels placed again, not a generated image.
 
 Checked against: Built during the event (first commit 15658a4), Calibration

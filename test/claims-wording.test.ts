@@ -178,7 +178,7 @@ test("wording 12 (Grok 05:40 1 Nov, VO1): no doc says whose voice the recorded v
   assert.doesNotMatch(row, /v3\/v3d/);
   const sub = read("SUBMISSION.md");
   assert.doesNotMatch(sub, /Updated 29 Oct 2026 from the Codex\s+review, on master after 7de2c9c/);
-  assert.match(sub, /updated 3 Nov 2026, on master after 4c9a1af/);
+  assert.match(sub, /updated 4 Nov 2026, on master after 83b90ea/); // RV33
 });
 
 test("CA1 1 (Grok 08:15 1 Nov): one byte of an entry's content breaks the chain, file layout does not; SUBMISSION, the pack README and CLAIMS_AUDIT say so", () => {
@@ -534,9 +534,9 @@ test("RV10 (Grok 07:20 2 Nov): no doc says the voice is not synthesized or is a 
   assert.doesNotMatch(v8, /\b\d{3} tests\b/);
   // 3: one token for the link in both files; the voice is no longer TBD.
   const sub = read("SUBMISSION.md");
-  assert.match(sub, /\*\*Demo video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut, 172\.1 s; replaces v8 https:\/\/youtu\.be\/cOeRYwRZBlA\)\n/); // FIN1, VID3
+  assert.match(sub, /\*\*Demo video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut; its 172\.1 s length is UNVERIFIED here, the rendered file is not committed; replaces v8 https:\/\/youtu\.be\/cOeRYwRZBlA\)\n/); // FIN1, VID3, RV33 6
   assert.doesNotMatch(sub, /YOUTUBE_URL_TBD|which voice the rest of the v7 narration uses/);
-  assert.match(read("README.md"), /\*\*Video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut, 172\.1 s, 1920x1080;/);
+  assert.match(read("README.md"), /\*\*Video:\*\* https:\/\/youtu\.be\/JSzJBOU11sA \(v9 final cut, 1920x1080; its 172\.1 s length is UNVERIFIED here, the rendered file is not committed;/); // RV33 6
   // VID1: the token is gone everywhere it was.
   for (const doc of ["SUBMISSION.md", "README.md", "docs/SUBMIT_CHECKLIST.md", "docs/DEMO.md"]) {
     assert.doesNotMatch(read(doc), /VIDEO_URL_PENDING/, doc);
@@ -622,7 +622,7 @@ test("RV14 (Grok 09:00 2 Nov, DeepSeek RM6/SUB7/SC1): composite v2 default, v7 v
   assert.doesNotMatch(sub, /41379178357|as reported by Grok/);
   const checklist = read("docs/SUBMIT_CHECKLIST.md");
   assert.doesNotMatch(checklist, /not in this repository \| SUBMISSION\.md \*\*Still TBD\*\*/);
-  assert.match(checklist, /\| nothing prepared; SUBMISSION\.md \*\*Still TBD\*\* \|/); // RV16 4: not "pending"
+  assert.match(checklist, /\| SUBMISSION\.md \*\*X post\*\* and \*\*Still TBD\*\* \|/); // RV16 4: not "pending"; RV33 1: X post + thumbnails
 });
 
 test("RV16 (Grok 2 Nov): checklist Live demo names no build until the Space resync, spend has a cutoff, Anything else is not pending; SUBMISSION Still TBD drops the filled video link", () => {
@@ -1138,4 +1138,39 @@ test("RV31 + RV32 (Grok 3 Nov, DeepSeek PS-RV31W/PS-RV32W, 4c9a1af): the one com
   assert.match(row("| The two-step upload page (Photos, Result) works in a real browser"), /\| \*\*UNVERIFIED\*\* \(as in README\) \|.*measures layout only, it does not upload or reach the Result step \|/);
   assert.match(read("package.json"), /"check:responsive": "node --experimental-strip-types scripts\/responsive-check\.ts"/);
   assert.equal((JSON.parse(read("evidence/responsive-2026-11-03/results.json")) as { passed: boolean }).passed, true);
+});
+
+test("RV33 (Grok 4 Nov): X post + thumbnails named, Node engines, the one composite RELEASE cited, Space check and video length UNVERIFIED", () => {
+  const sub = read("SUBMISSION.md");
+  const readme = read("README.md");
+  const thumbs = ["docs/media/proofshot-thumb-1200x630.png", "docs/media/proofshot-thumb-1280x720.png"];
+  const post = "https://x.com/aiworkspacehq/status/2117516532163219581";
+  // 1: checklist Anything else names the post and both thumbnails, and keeps the form note.
+  const anything = read("docs/SUBMIT_CHECKLIST.md").split("\n").find((l) => l.startsWith("| Anything else"))!;
+  assert.doesNotMatch(anything, /nothing prepared|no thumbnail/);
+  assert.ok(anything.includes(post));
+  assert.match(anything, /what the official form asks for in this field is not recorded in this repository \(UNVERIFIED\)/);
+  // 2: SUBMISSION names both thumbnails; Still TBD no longer lists the thumbnail as missing.
+  const thumbLine = sub.split("\n").find((l) => l.startsWith("**Thumbnail:**"))!;
+  for (const t of thumbs) {
+    assert.ok(thumbLine.includes(`\`${t}\``));
+    assert.ok(anything.includes(`\`${t}\``));
+    assert.ok(readFileSync(join(root, t)).length > 0, `${t} is committed`);
+  }
+  const tbd = sub.split("\n").find((l) => l.startsWith("**Still TBD:**"))!;
+  assert.doesNotMatch(tbd, /for example a thumbnail/);
+  // 3: Node version matches package.json engines.
+  assert.equal((JSON.parse(read("package.json")) as { engines: { node: string } }).engines.node, ">=22.6");
+  assert.match(sub, /TypeScript on Node 22\.6 or later/);
+  assert.doesNotMatch(sub, /Node 22(?!\.6)/);
+  // 4: the one RELEASE of the 31 Oct run is cited to its committed receipt, which ends RELEASE.
+  assert.match(sub, /The one RELEASE in that run was a composite v2\s+\(shirt-pink, `evidence\/tryon\/shirt-pink\/composite\/receipt\.jsonl`\)/);
+  const gate = parseReceipt(read("evidence/tryon/shirt-pink/composite/receipt.jsonl")).filter((e) => e.kind === "gate");
+  assert.deepEqual(gate.map((e) => (e.payload as { decision: string }).decision), ["RELEASE"]);
+  // 5 and 6: the 1 Nov Space check and the 172.1 s length are UNVERIFIED in both files.
+  for (const doc of [sub, readme]) {
+    assert.doesNotMatch(doc, /checked by Grok on 1 Nov 2026 at 20:10 IST\)?\. Which build|`\/upload\.html`, checked by Grok/);
+    assert.match(doc, /`\/upload\.html`\)?, reported outside this repo \(UNVERIFIED here\)/);
+    assert.match(doc, /its 172\.1 s length is UNVERIFIED here, the rendered file is not committed/);
+  }
 });
